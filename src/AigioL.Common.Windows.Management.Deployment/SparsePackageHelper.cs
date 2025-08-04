@@ -7,7 +7,7 @@ using Windows.Management.Deployment;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
-namespace Windows.ApplicationModel;
+namespace Windows.Management.Deployment;
 
 /// <summary>
 /// 稀疏包助手类

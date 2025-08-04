@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 namespace Windows.Management.Deployment;
 
 /// <summary>
-/// MSIX 助手类
+/// Windows SDK 助手类
 /// </summary>
-public static partial class MSIXHelper
+public static partial class WindowsKitsHelper
 {
     public enum WinVersion : ushort
     {
@@ -61,7 +61,7 @@ public static partial class MSIXHelper
     //}
 }
 
-unsafe partial class MSIXHelper
+unsafe partial class WindowsKitsHelper
 {
     static delegate* managed<ProcessStartInfo, bool, void> StartAndWaitForExitFuncPtr;
 

@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace Windows.Management.Deployment;
 
-static partial class MSIXHelper
+static partial class WindowsKitsHelper
 {
     /// <summary>
     /// SignTool.exe 是一个命令行工具，用于对文件进行数字签名，以及验证文件和时间戳文件中的签名。

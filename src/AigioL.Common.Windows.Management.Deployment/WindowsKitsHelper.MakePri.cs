@@ -4,7 +4,7 @@ using Windows.Storage;
 
 namespace Windows.Management.Deployment;
 
-static partial class MSIXHelper
+static partial class WindowsKitsHelper
 {
     /// <summary>
     /// MakePri.exe 是可用于创建和转储 PRI 文件的命令行工具。

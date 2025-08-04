@@ -3,7 +3,7 @@ using Windows.Storage;
 
 namespace Windows.Management.Deployment;
 
-static partial class MSIXHelper
+static partial class WindowsKitsHelper
 {
     /// <summary>
     /// 应用包程序 (MakeAppx.exe) 从磁盘上的文件创建应用包，或将应用包中的文件提取到磁盘。

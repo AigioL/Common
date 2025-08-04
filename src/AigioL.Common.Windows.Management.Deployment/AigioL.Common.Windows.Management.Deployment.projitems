@@ -9,10 +9,10 @@
     <Import_RootNamespace>Windows.Management.Deployment</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)MSIXHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSIXHelper.MakeAppx.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSIXHelper.MakePri.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSIXHelper.SignTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WindowsKitsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WindowsKitsHelper.MakeAppx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WindowsKitsHelper.MakePri.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WindowsKitsHelper.SignTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SparsePackageHelper.cs" />
   </ItemGroup>
   <ItemGroup>
