@@ -1,0 +1,11 @@
+@AigioL.Common.WebApplication1_HostAddress = http://localhost:5109
+
+GET {{AigioL.Common.WebApplication1_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{AigioL.Common.WebApplication1_HostAddress}}/todos/1
+Accept: application/json
+
+###

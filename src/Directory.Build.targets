@@ -10,6 +10,7 @@
 		<EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
 		<EnableAotAnalyzer>true</EnableAotAnalyzer>
 		<IsAotCompatible>true</IsAotCompatible>
+		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 
 </Project>

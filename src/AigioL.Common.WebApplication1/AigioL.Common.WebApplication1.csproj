@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$([System.OperatingSystem]::IsWindows())">
+		<TargetFrameworks>net$(DotNet_Version);net$(DotNet_Version)-windows$(WinSDK_Version)</TargetFrameworks>
+	</PropertyGroup>
+
+	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
+
+</Project>

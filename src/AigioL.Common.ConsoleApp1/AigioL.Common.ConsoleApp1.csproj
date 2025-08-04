@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+		<PublishAot>true</PublishAot>
+		<ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="$([System.OperatingSystem]::IsWindows())">
+		<TargetFrameworks>net$(DotNet_Version);net$(DotNet_Version)-windows$(WinSDK_Version)</TargetFrameworks>
+	</PropertyGroup>
+
+	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
+
+</Project>

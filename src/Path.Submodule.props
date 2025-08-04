@@ -1,0 +1,11 @@
+<Project>
+
+	<!-- 👇 git 子模块路径定义 -->
+	<PropertyGroup>
+		<Path_Submodule>$(MSBuildThisFileDirectory)..\..\</Path_Submodule>
+		<Path_Submodule_Common>$(MSBuildThisFileDirectory)..\</Path_Submodule_Common>
+	</PropertyGroup>
+
+	<Import Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\.gitmodules') AND Exists('$(MSBuildThisFileDirectory)..\..\..\src\Path.Submodule.props')" Project="$(MSBuildThisFileDirectory)..\..\..\src\Path.Submodule.props" />
+
+</Project>

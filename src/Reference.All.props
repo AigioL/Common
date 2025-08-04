@@ -1,0 +1,31 @@
+<Project>
+
+	<!-- 👇 Windows 平台配置项 -->
+	<Choose>
+		<When Condition="($(TargetFramework.StartsWith('net3')) OR $(TargetFramework.StartsWith('net4')) OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' OR $(DefineConstants.Contains('WINDOWS')))">
+			<ItemGroup>
+				<PackageReference Include="Microsoft.Windows.CsWin32">
+					<PrivateAssets>all</PrivateAssets>
+					<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+				</PackageReference>
+				<!--<PackageReference Include="System.Management" />-->
+				<PackageReference Include="WmiLight" />
+				<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
+			</ItemGroup>
+		</When>
+	</Choose>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
+	</ItemGroup>
+
+	<ImportGroup Condition="($(TargetFramework.StartsWith('net3')) OR $(TargetFramework.StartsWith('net4')) OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' OR $(DefineConstants.Contains('WINDOWS')))">
+		<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Management.NetworkInformation\AigioL.Common.System.Management.NetworkInformation.projitems" Label="Shared" />
+		<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Management.Deployment\AigioL.Common.Windows.Management.Deployment.projitems" Label="Shared" />
+	</ImportGroup>
+
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.ProjectUtils\AigioL.Common.ProjectUtils.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.IOPath.FileSystem\AigioL.Common.System.IOPath.FileSystem.projitems" Label="Shared" />
+
+</Project>

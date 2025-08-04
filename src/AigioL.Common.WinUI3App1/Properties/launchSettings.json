@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AigioL.Common.WinUI3App1 (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AigioL.Common.WinUI3App1 (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

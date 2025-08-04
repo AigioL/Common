@@ -1,0 +1,49 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/1.Root/">
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+    <File Path="src/.editorconfig" />
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Build.targets" />
+    <File Path="src/Directory.Packages.props" />
+    <File Path="src/Path.Submodule.props" />
+    <File Path="src/Reference.All.props" />
+    <File Path="src/TFM_NETX_ALL.props" />
+    <File Path="src/Version.props" />
+  </Folder>
+  <Folder Name="/1.Root/ISSUE_TEMPLATE/">
+    <File Path=".github/ISSUE_TEMPLATE/bug-report.en.md" />
+    <File Path=".github/ISSUE_TEMPLATE/bug-report.md" />
+    <File Path=".github/ISSUE_TEMPLATE/question.en.md" />
+    <File Path=".github/ISSUE_TEMPLATE/question.md" />
+  </Folder>
+  <Folder Name="/2.Document/" />
+  <Folder Name="/2.Libraries/">
+    <Project Path="src/AigioL.Common.Bcl/AigioL.Common.Bcl.shproj" Id="86dfc3a4-0f30-40f0-af39-6e76e46d78f1" />
+    <Project Path="src/AigioL.Common.ProjectUtils/AigioL.Common.ProjectUtils.shproj" Id="13633681-22dd-4032-aa2c-8c789f0a1962" />
+    <Project Path="src/AigioL.Common.System.IOPath.FileSystem/AigioL.Common.System.IOPath.FileSystem.shproj" Id="31e68277-e8bf-4a35-bbbd-b520cc2ed821" />
+    <Project Path="src/AigioL.Common.System.Management.NetworkInformation/AigioL.Common.System.Management.NetworkInformation.shproj" Id="44bfa2e3-668d-424e-ac76-792ffde32bd4" />
+    <Project Path="src/AigioL.Common.Windows.Management.Deployment/AigioL.Common.Windows.Management.Deployment.shproj" Id="6665560f-5c89-4d1a-a2bd-7a7a9b449604" />
+  </Folder>
+  <Folder Name="/3.EntryPoint/">
+    <Project Path="src/AigioL.Common.ConsoleApp1/AigioL.Common.ConsoleApp1.csproj" Id="79183e06-3987-4668-b026-7ed9253ada3b" />
+    <Project Path="src/AigioL.Common.WebApplication1/AigioL.Common.WebApplication1.csproj" Id="dafafcc8-1f8a-4d8b-a937-c667e6b6ed94" />
+    <Project Path="src/AigioL.Common.WinUI3App1/AigioL.Common.WinUI3App1.csproj" Id="5eff84ca-bdbf-4d5e-b10a-017e83abd09f">
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Platform Solution="Debug|Any CPU" Project="x64" />
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/4.Tools/" />
+  <Folder Name="/5.UnitTest/">
+    <Project Path="src/AigioL.Common.UnitTest/AigioL.Common.UnitTest.csproj" Id="3f280b00-5410-426a-9cdd-108de7d8e45a" />
+  </Folder>
+</Solution>

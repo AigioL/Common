@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>86dfc3a4-0f30-40f0-af39-6e76e46d78f1</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>System</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)LogInit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)nil.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeAsyncDisposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeDisposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShortGuid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Text\Json\Serialization\IJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Threading\AsyncGate.cs" />
+  </ItemGroup>
+</Project>
