@@ -19,6 +19,10 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
 	</ItemGroup>
 
+	<ItemGroup Condition="$(DefineConstants.Contains('USE_IO_HASHING'))">
+		<PackageReference Include="System.IO.Hashing" />
+	</ItemGroup>
+
 	<ImportGroup Condition="($(TargetFramework.StartsWith('net3')) OR $(TargetFramework.StartsWith('net4')) OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' OR $(DefineConstants.Contains('WINDOWS')))">
 		<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Management.NetworkInformation\AigioL.Common.System.Management.NetworkInformation.projitems" Label="Shared" />
 		<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Management.Deployment\AigioL.Common.Windows.Management.Deployment.projitems" Label="Shared" />
@@ -27,5 +31,8 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.ProjectUtils\AigioL.Common.ProjectUtils.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.IOPath.FileSystem\AigioL.Common.System.IOPath.FileSystem.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Security.Cryptography.HashAlgorithms\AigioL.Common.System.Security.Cryptography.HashAlgorithms.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Security.Cryptography.Aes\AigioL.Common.System.Security.Cryptography.Aes.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Security.Cryptography.RSA\AigioL.Common.System.Security.Cryptography.RSA.projitems" Label="Shared" />
 
 </Project>

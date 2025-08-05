@@ -29,6 +29,9 @@
     <Project Path="src/AigioL.Common.ProjectUtils/AigioL.Common.ProjectUtils.shproj" Id="13633681-22dd-4032-aa2c-8c789f0a1962" />
     <Project Path="src/AigioL.Common.System.IOPath.FileSystem/AigioL.Common.System.IOPath.FileSystem.shproj" Id="31e68277-e8bf-4a35-bbbd-b520cc2ed821" />
     <Project Path="src/AigioL.Common.System.Management.NetworkInformation/AigioL.Common.System.Management.NetworkInformation.shproj" Id="44bfa2e3-668d-424e-ac76-792ffde32bd4" />
+    <Project Path="src/AigioL.Common.System.Security.Cryptography.Aes/AigioL.Common.System.Security.Cryptography.Aes.shproj" Id="bafc6195-e7f9-4e81-b1ec-0d1de60d5fdc" />
+    <Project Path="src/AigioL.Common.System.Security.Cryptography.HashAlgorithms/AigioL.Common.System.Security.Cryptography.HashAlgorithms.shproj" Id="49917bf7-8b4f-4bbb-a3f4-df5715759605" />
+    <Project Path="src/AigioL.Common.System.Security.Cryptography.RSA/AigioL.Common.System.Security.Cryptography.RSA.shproj" Id="dc3e79b1-9785-421d-b9aa-62d2f77f124d" />
     <Project Path="src/AigioL.Common.Windows.Management.Deployment/AigioL.Common.Windows.Management.Deployment.shproj" Id="6665560f-5c89-4d1a-a2bd-7a7a9b449604" />
   </Folder>
   <Folder Name="/3.EntryPoint/">

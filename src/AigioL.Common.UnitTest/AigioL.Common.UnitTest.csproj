@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net$(DotNet_Version)</TargetFramework>
 		<IsPackable>false</IsPackable>
+		<DefineConstants>$(DefineConstants);USE_IO_HASHING</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([System.OperatingSystem]::IsWindows())">

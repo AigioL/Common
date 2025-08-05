@@ -3,6 +3,7 @@
 // https://github.com/AigioL/CSharpVitamins.ShortGuid/blob/master/CSharpVitamins.ShortGuid/ShortGuid.cs
 // https://github.com/csharpvitamins/CSharpVitamins.ShortGuid/blob/master/CSharpVitamins.ShortGuid/ShortGuid.cs
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Buffers.Text;
 using System.Diagnostics;
 
@@ -466,4 +467,33 @@ public struct ShortGuid
     }
 
     #endregion
+
+    /// <summary>
+    /// 从 GUID v7 中获取 DateTimeOffset
+    /// <para>https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-7</para>
+    /// </summary>
+    /// <param name="guid_v7"></param>
+    /// <returns></returns>
+    public static DateTimeOffset GetDateTimeOffset(Guid guid_v7)
+    {
+        const int lenGuidBytes = 16;
+        var buffer = ArrayPool<byte>.Shared.Rent(lenGuidBytes);
+        try
+        {
+            guid_v7.TryWriteBytes(buffer, true, out var bytesWritten);
+            if (bytesWritten != lenGuidBytes)
+                throw new ArgumentException("Invalid GUID format", nameof(guid_v7));
+            // Unix Epoch 时间戳的 48 位大端无符号数字 毫秒，如第 6.1 节所示
+            // 占用位 0 到 47（八位字节 0-5）
+            long a = BinaryPrimitives.ReadInt32BigEndian(buffer.AsSpan(0, 4)); // 前 4 字节
+            var b = BinaryPrimitives.ReadInt16BigEndian(buffer.AsSpan(4, 2)); // 接下来的 2 字节
+            var timestamp = (a << 16) + b; // 合并时间戳
+            var dateTime = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
+            return dateTime;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer, true);
+        }
+    }
 }
