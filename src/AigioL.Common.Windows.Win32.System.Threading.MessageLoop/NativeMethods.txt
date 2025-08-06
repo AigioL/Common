@@ -1,0 +1,6 @@
+GetCurrentThreadId
+PostThreadMessage
+PeekMessage
+GetMessage
+TranslateMessage
+DispatchMessage

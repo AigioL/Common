@@ -33,10 +33,13 @@
     <Project Path="src/AigioL.Common.System.Security.Cryptography.HashAlgorithms/AigioL.Common.System.Security.Cryptography.HashAlgorithms.shproj" Id="49917bf7-8b4f-4bbb-a3f4-df5715759605" />
     <Project Path="src/AigioL.Common.System.Security.Cryptography.RSA/AigioL.Common.System.Security.Cryptography.RSA.shproj" Id="dc3e79b1-9785-421d-b9aa-62d2f77f124d" />
     <Project Path="src/AigioL.Common.Windows.Management.Deployment/AigioL.Common.Windows.Management.Deployment.shproj" Id="6665560f-5c89-4d1a-a2bd-7a7a9b449604" />
+    <Project Path="src/AigioL.Common.Windows.Win32.RegisterHotKey/AigioL.Common.Windows.Win32.RegisterHotKey.shproj" Id="c3c8526d-e029-4c04-ba12-bed1d4a2b8a9" />
+    <Project Path="src/AigioL.Common.Windows.Win32.System.Threading.MessageLoop/AigioL.Common.Windows.Win32.System.Threading.MessageLoop.shproj" Id="5ba03b40-b43e-4df5-ae77-a65dfc7d79c7" />
   </Folder>
   <Folder Name="/3.EntryPoint/">
     <Project Path="src/AigioL.Common.ConsoleApp1/AigioL.Common.ConsoleApp1.csproj" Id="79183e06-3987-4668-b026-7ed9253ada3b" />
     <Project Path="src/AigioL.Common.WebApplication1/AigioL.Common.WebApplication1.csproj" Id="dafafcc8-1f8a-4d8b-a937-c667e6b6ed94" />
+    <Project Path="src/AigioL.Common.WinFormsApp1/AigioL.Common.WinFormsApp1.csproj" Id="d1edde1b-fd3c-4aed-8c9e-efbd9e04f938" />
     <Project Path="src/AigioL.Common.WinUI3App1/AigioL.Common.WinUI3App1.csproj" Id="5eff84ca-bdbf-4d5e-b10a-017e83abd09f">
       <Platform Solution="*|ARM64" Project="ARM64" />
       <Platform Solution="*|x64" Project="x64" />

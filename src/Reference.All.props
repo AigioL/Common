@@ -34,5 +34,7 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Security.Cryptography.HashAlgorithms\AigioL.Common.System.Security.Cryptography.HashAlgorithms.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Security.Cryptography.Aes\AigioL.Common.System.Security.Cryptography.Aes.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Security.Cryptography.RSA\AigioL.Common.System.Security.Cryptography.RSA.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.System.Threading.MessageLoop\AigioL.Common.Windows.Win32.System.Threading.MessageLoop.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.RegisterHotKey\AigioL.Common.Windows.Win32.RegisterHotKey.projitems" Label="Shared" />
 
 </Project>

@@ -1,11 +1,13 @@
 #if WINDOWS
 using System.Management.NetworkInformation;
+using Windows.Win32.System.Threading;
 #endif
 
 namespace AigioL.Common.ConsoleApp1;
 
 static class Program
 {
+    [STAThread]
     static void Main(string[] args)
     {
         LogInit.InitLog("AigioL.Common", "ConsoleApp1");
@@ -15,9 +17,38 @@ static class Program
         TestNetworkAdapterUsage();
         Console.Write("MacAddressHash: ");
         Console.WriteLine(NetAdapterHelper.GetMacAddressHash());
-#endif
 
+        Console.WriteLine("按下 CTRL+C 退出");
+        LightMessageLoop messageLoop = new();
+        // 订阅事件
+        messageLoop.Idle += (sender, e) =>
+        {
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 消息循环空闲");
+        };
+        messageLoop.UnhandledException += (sender, e) =>
+        {
+            Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 未处理异常: {(e.ExceptionObject is Exception ex ? ex.Message : null)}");
+        };
+        //messageLoop.Exited += (sender, e) =>
+        //{
+        //    Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 消息循环已退出");
+        //};
+        Console.CancelKeyPress += (_, e) =>
+        {
+            if (!e.Cancel)
+            {
+                messageLoop.Dispose();
+                //Environment.Exit(0);
+            }
+        };
+        messageLoop.Run();
+
+#if DEBUG
+        Environment.Exit(0);
+#endif
+#else
         Console.ReadLine();
+#endif
     }
 
 #if WINDOWS
