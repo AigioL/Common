@@ -8,9 +8,12 @@ public sealed class HotkeyPressedEventArgs : EventArgs
 {
     public HotkeyInfo HotkeyInfo { get; }
 
-    public HotkeyPressedEventArgs(HotkeyInfo hotkeyInfo)
+    public string? Description { get; }
+
+    public HotkeyPressedEventArgs(HotkeyInfo hotkeyInfo, string? description = null)
     {
         HotkeyInfo = hotkeyInfo;
+        Description = description;
     }
 }
 #endif

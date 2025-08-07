@@ -188,7 +188,7 @@ public sealed partial class GlobalHotkeyListener : IDisposable
             {
                 var hotkeyInfo = new HotkeyInfo(hotkeyId, registration.Combo.Modifiers,
                     registration.Combo.Key, registration.Action);
-                HotkeyPressed?.Invoke(this, new HotkeyPressedEventArgs(hotkeyInfo));
+                HotkeyPressed?.Invoke(this, new HotkeyPressedEventArgs(hotkeyInfo, registration.Description));
                 registration.Action?.Invoke();
             }
             catch (Exception ex)
