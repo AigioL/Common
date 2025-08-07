@@ -1,5 +1,6 @@
 #if WINDOWS
 using Microsoft.Extensions.Logging;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -50,7 +51,7 @@ public sealed partial class GlobalHotkeyListener : IDisposable
     public HotkeyRegistrationResult RegisterHotkey(
         ModifierKeys modifiers,
         VirtualKey key,
-        Action action,
+        Action? action,
         string? description = null)
     {
         ThrowIfDisposed();
@@ -130,7 +131,7 @@ public sealed partial class GlobalHotkeyListener : IDisposable
     {
         lock (_lockHotkeys)
         {
-            return _registeredHotkeys.Values.ToList().AsReadOnly();
+            return [.. _registeredHotkeys.Values];
         }
     }
 
