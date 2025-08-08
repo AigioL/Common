@@ -19,7 +19,7 @@ public static partial class LogInit
     /// <summary>
     /// 初始化日志工厂与提供程序
     /// </summary>
-    public static void InitLog(string? eventLogName = null, string? sourceName = null) => _.InitLog(eventLogName, sourceName);
+    public static void InitLog(string? sourceName = null) => _.InitLog(sourceName);
 
     /// <summary>
     /// 设置或获取全局日志级别
@@ -119,7 +119,7 @@ file static partial class _
 {
     static SimpleOptionsMonitor<LoggerFilterOptions>? filterOptionsMonitor;
 
-    internal static void InitLog(string? eventLogName, string? sourceName)
+    internal static void InitLog(string? sourceName)
     {
         LoggerFilterOptions filterOptions = new()
         {
@@ -131,7 +131,7 @@ file static partial class _
             _.AddConsole(),
 #endif
 #if WINDOWS
-            _.AddEventLog(eventLogName, sourceName),
+            _.AddEventLog(sourceName),
 #endif
         ];
         var factory = new LoggerFactory(providers, filterOptionsMonitor);
@@ -267,13 +267,13 @@ file static partial class _ // Windows 事件日志
     /// <item>筛选当前日志 - 事件来源 == <see cref="EventLogSettings.SourceName"/></item>
     /// </list>
     /// </summary>
-    internal static ILoggerProvider AddEventLog(string? eventLogName = null, string? sourceName = null)
+    internal static ILoggerProvider AddEventLog(string? sourceName = null)
     {
-        eventLogName ??= TryGetProcessFileNameWithoutExtension();
+        sourceName ??= TryGetProcessFileNameWithoutExtension();
         EventLogSettings settings = new()
         {
             SourceName = sourceName, // 必须设置值，否则 null 值会使用默认值为 ".NET Runtime"
-            LogName = eventLogName, // 必须设置值，否则 null 值会使用默认值为 "Application"
+            LogName = null, // null 值会使用默认值为 "Application"
             Filter = FilterEventLog,
         };
         EventLogLoggerProvider provider = new(settings);
