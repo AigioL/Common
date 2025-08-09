@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -37,6 +38,32 @@ public sealed partial class KeyboardHook
         {
             nativeErrorCode = Marshal.GetLastWin32Error();
         }
+    }
+
+    public HotkeyRegistrationResult[] RegisterHotkeys<T>(params IReadOnlyList<T> hotkeys) where T : struct
+    {
+        var registeredHotkeys = new HotKeyInfo[hotkeys.Count];
+        var result = new HotkeyRegistrationResult[hotkeys.Count];
+        for (int i = 0; i < hotkeys.Count; i++)
+        {
+            var it = hotkeys[i];
+            ref var refIt = ref it;
+            ref ValueTuple<uint, uint, uint> refTuple = ref Unsafe.As<T, ValueTuple<uint, uint, uint>>(ref refIt);
+            ReadOnlySpan<ValueTuple<uint, uint, uint>> span = new(ref refTuple);
+            var combo = HotkeyCombo.Create(span[0].Item1, span[0].Item2, span[0].Item3);
+            registeredHotkeys[i] = new(combo, span[0]);
+            result[i] = new()
+            {
+                Success = nativeErrorCode == 0,
+                Combo = combo,
+                NativeErrorCode = nativeErrorCode,
+                P0 = span[0].Item1,
+                P1 = span[0].Item2,
+                P2 = span[0].Item3,
+            };
+        }
+        _registeredHotkeys = [.. registeredHotkeys];
+        return result;
     }
 
     public HotkeyRegistrationResult[] RegisterHotkeys(params IReadOnlyList<ValueTuple<uint, uint, uint>> hotkeys)
@@ -95,7 +122,6 @@ public sealed partial class KeyboardHook
                         {
                             LoggerMessages.OnHotkeyPressedException(logger, ex, hotkey.Key);
                         }
-                        break;
                     }
                 }
             }
