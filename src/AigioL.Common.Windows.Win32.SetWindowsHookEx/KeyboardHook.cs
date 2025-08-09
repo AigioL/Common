@@ -1,5 +1,6 @@
 #if WINDOWS
 using ABI.System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using System.Collections.Immutable;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -17,6 +18,10 @@ public sealed partial class KeyboardHook
     readonly int nativeErrorCode;
     readonly Lock _lockHotkeys = new();
     ImmutableArray<HotKeyInfo> _registeredHotkeys;
+
+#pragma warning disable IDE1006 // 命名样式
+    ILogger logger => field ??= Log.CreateLogger<KeyboardHook>();
+#pragma warning restore IDE1006 // 命名样式
 
     /// <summary>
     /// 热键按下事件
@@ -57,12 +62,16 @@ public sealed partial class KeyboardHook
         return result;
     }
 
-    unsafe LRESULT HookCallback(int code, WPARAM wParam, LPARAM lParam)
+    LRESULT HookCallback(int code, WPARAM wParam, LPARAM lParam)
     {
         if (code >= 0 && wParam.Value == WM_KEYDOWN)
         {
-            var kbd = (KBDLLHOOKSTRUCT*)lParam.Value;
-            var key = (VirtualKey)kbd->vkCode;
+            VirtualKey key;
+            unsafe
+            {
+                var kbd = (KBDLLHOOKSTRUCT*)lParam.Value;
+                key = (VirtualKey)kbd->vkCode;
+            }
             var modifiers = GetCurrentModifiers();
 
             var registeredHotkeys = _registeredHotkeys;
@@ -72,13 +81,20 @@ public sealed partial class KeyboardHook
                 {
                     if (hotkey.Key.Key == key && hotkey.Key.Modifiers == modifiers)
                     {
-                        HotkeyPressed?.Invoke(this, new()
+                        try
                         {
-                            Combo = hotkey.Key,
-                            P0 = hotkey.Value.Item1,
-                            P1 = hotkey.Value.Item2,
-                            P2 = hotkey.Value.Item3,
-                        });
+                            HotkeyPressed?.Invoke(this, new()
+                            {
+                                Combo = hotkey.Key,
+                                P0 = hotkey.Value.Item1,
+                                P1 = hotkey.Value.Item2,
+                                P2 = hotkey.Value.Item3,
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            LoggerMessages.OnHotkeyPressedException(logger, ex, hotkey.Key);
+                        }
                         break;
                     }
                 }
@@ -134,5 +150,13 @@ partial class KeyboardHook : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
+}
+
+static partial class LoggerMessages
+{
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "执行热键动作时发生异常，Combo：{combo}")]
+    internal static partial void OnHotkeyPressedException(this ILogger logger, Exception exception, HotkeyCombo combo);
 }
 #endif
