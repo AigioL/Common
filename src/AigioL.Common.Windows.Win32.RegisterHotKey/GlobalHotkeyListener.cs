@@ -16,7 +16,7 @@ namespace Windows.Win32.UI.Input.KeyboardAndMouse;
 /// </summary>
 public sealed partial class GlobalHotkeyListener : IDisposable
 {
-    readonly Dictionary<int, HotkeyRegistration> _registeredHotkeys = new();
+    readonly Dictionary<int, HotkeyInfo> _registeredHotkeys = new();
     readonly Dictionary<HotkeyCombo, int> _comboToId = new();
     readonly Lock _lockHotkeys = new();
     int _nextHotkeyId = 1;
@@ -77,7 +77,7 @@ public sealed partial class GlobalHotkeyListener : IDisposable
 
             if (success)
             {
-                var registration = new HotkeyRegistration(hotkeyId, combo, action, description);
+                var registration = new HotkeyInfo(hotkeyId, combo, action, description);
                 _registeredHotkeys[hotkeyId] = registration;
                 _comboToId[combo] = hotkeyId;
 
@@ -127,7 +127,7 @@ public sealed partial class GlobalHotkeyListener : IDisposable
     /// <summary>
     /// 获取所有已注册的热键信息
     /// </summary>
-    public IReadOnlyList<HotkeyRegistration> GetRegisteredHotkeys()
+    public IReadOnlyList<HotkeyInfo> GetRegisteredHotkeys()
     {
         lock (_lockHotkeys)
         {
@@ -177,24 +177,22 @@ public sealed partial class GlobalHotkeyListener : IDisposable
 
     void OnHotkeyPressed(int hotkeyId)
     {
-        HotkeyRegistration? registration = null;
+        HotkeyInfo? hotkeyInfo = null;
         lock (_lockHotkeys)
         {
-            _registeredHotkeys.TryGetValue(hotkeyId, out registration);
+            _registeredHotkeys.TryGetValue(hotkeyId, out hotkeyInfo);
         }
-        if (registration != null)
+        if (hotkeyInfo != null)
         {
             try
             {
-                var hotkeyInfo = new HotkeyInfo(hotkeyId, registration.Combo.Modifiers,
-                    registration.Combo.Key, registration.Action);
-                HotkeyPressed?.Invoke(this, new HotkeyPressedEventArgs(hotkeyInfo, registration.Description));
-                registration.Action?.Invoke();
+                HotkeyPressed?.Invoke(this, new HotkeyPressedEventArgs(hotkeyInfo));
+                hotkeyInfo.Action?.Invoke();
             }
             catch (Exception ex)
             {
                 LoggerMessages.OnHotkeyPressedException(logger, ex,
-                    registration.Id, registration.Combo, registration.Description);
+                    hotkeyInfo.Id, hotkeyInfo.Combo, hotkeyInfo.Description);
             }
         }
     }

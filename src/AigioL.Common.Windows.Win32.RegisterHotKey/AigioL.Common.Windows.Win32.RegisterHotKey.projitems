@@ -15,7 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyCombo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyPressedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HotkeyRegistration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyRegistrationError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyRegistrationFailedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyRegistrationResult.cs" />
