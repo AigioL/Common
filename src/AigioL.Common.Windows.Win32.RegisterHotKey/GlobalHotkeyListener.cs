@@ -68,6 +68,7 @@ public sealed partial class GlobalHotkeyListener : IDisposable
                     Success = false,
                     NativeErrorCode = ERROR_HOTKEY_ALREADY_REGISTERED,
                     Message = $"热键 {combo} 已在此应用程序中注册",
+                    Combo = combo,
                     ErrorCode = HotkeyRegistrationError.AlreadyRegisteredByThisApp,
                 };
             }
@@ -118,7 +119,8 @@ public sealed partial class GlobalHotkeyListener : IDisposable
                     Success = false,
                     NativeErrorCode = error,
                     ErrorCode = errorCode,
-                    Message = message
+                    Combo = combo,
+                    Message = message,
                 };
             }
         }

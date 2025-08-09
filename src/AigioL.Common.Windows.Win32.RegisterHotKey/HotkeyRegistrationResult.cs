@@ -1,4 +1,6 @@
 #if WINDOWS
+using System.Text.Json.Serialization;
+
 namespace Windows.Win32.UI.Input.KeyboardAndMouse;
 
 /// <summary>
@@ -19,7 +21,14 @@ public sealed record class HotkeyRegistrationResult
     /// <summary>
     /// 注册的热键组合
     /// </summary>
-    public HotkeyCombo? Combo { get; set; }
+    [JsonIgnore]
+    public HotkeyCombo Combo { get; set; }
+
+    public uint Modifiers => (uint)Combo.Modifiers;
+
+    public uint Key => (uint)Combo.Key;
+
+    public string? ComboString => Combo.ToString();
 
     /// <summary>
     /// Win32 错误代码
