@@ -10,7 +10,7 @@ static class Program
     [STAThread]
     static void Main(string[] args)
     {
-        LogInit.InitLog("AigioL.Common", "ConsoleApp1");
+        LogInit.InitLog("AigioL.Common.ConsoleApp1");
 
 #if WINDOWS
         Console.WriteLine("\n=== Win32 API 方式 ===");

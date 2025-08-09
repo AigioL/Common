@@ -80,7 +80,15 @@ public enum VirtualKey : uint
 
     // 修饰键（通常不单独作为热键使用）
     Control = 0x11,
+    LControl = 0xA2,
+    RControl = 0xA3,
     Alt = 0x12,
+    LAlt = 0xA4,
+    RAlt = 0xA5,
     Shift = 0x10,
+    LShift = 0xA0,
+    RShift = 0xA1,
+    LWin = 0x5B,
+    RWin = 0x5C,
 }
 #endif

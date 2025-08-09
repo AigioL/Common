@@ -9,7 +9,7 @@ sealed class Program
     /// <returns></returns>
     internal int Main(string[] args)
     {
-        LogInit.InitLog("AigioL.Common", "UnitTest");
+        LogInit.InitLog("AigioL.Common.UnitTest");
 
         return 0;
     }

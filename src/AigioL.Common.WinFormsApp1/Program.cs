@@ -4,7 +4,7 @@ namespace AigioL.Common.WinFormsApp1;
 
 static class Program
 {
-    static GlobalHotkeyListener? hotkeyListener;
+    static KeyboardHook? hotkeyListener;
     static readonly TaskCompletionSource<SynchronizationContext> tcsAppRun = new();
 
     /// <summary>
@@ -29,53 +29,47 @@ static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
 
-        LogInit.InitLog("AigioL.Common", "WinFormsApp1");
+        LogInit.InitLog("AigioL.Common.WinFormsApp1");
 
         Task.Run(async () =>
         {
             await Task.Delay(1200);
 
             var ctx = await tcsAppRun.Task;
-            var list = new List<HotkeyRegistrationResult>();
+            IReadOnlyList<HotkeyRegistrationResult> list = null!;
             // 在新线程中执行注册热键
             ctx.Send((_) =>
             {
-                hotkeyListener = new GlobalHotkeyListener();
+                hotkeyListener = new();
 
                 // 订阅事件
                 hotkeyListener.HotkeyPressed += (sender, e) =>
                 {
-                    var hotkey = e.HotkeyInfo;
-                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 热键被按下: {hotkey.Modifiers} + {hotkey.Key}");
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 热键被按下: {e.ComboString}");
+                };
+
+                ValueTuple<uint, uint, uint>[] hotkeys =
+                {
+                    ((uint)VirtualKey.Control, (uint)VirtualKey.F1, 0),
+                    ((uint)VirtualKey.LControl, (uint)VirtualKey.Alt, (uint)VirtualKey.F1),
+                    ((uint)VirtualKey.Control, (uint)VirtualKey.Alt, (uint)VirtualKey.F2),
+                    ((uint)VirtualKey.Control, (uint)VirtualKey.Alt, (uint)VirtualKey.A),
+                    ((uint)VirtualKey.NumPad0, 0, 0),
+                    ((uint)VirtualKey.NumPad1, 0, 0),
+                    ((uint)VirtualKey.NumPad2, 0, 0),
+                    ((uint)VirtualKey.NumPad3, 0, 0),
+                    (0, (uint)VirtualKey.NumPad3, 0),
+                    (0, 0,  (uint)VirtualKey.NumPad4),
+                    (0, 0,  (uint)VirtualKey.NumPad5),
+                    ((uint)VirtualKey.NumPad6, 0, 0),
+                    (0, 0,  (uint)VirtualKey.NumPad7),
+                    ((uint)VirtualKey.NumPad8, 0, 0),
+                    ((uint)VirtualKey.NumPad9, 0, 0),
+                    ((uint)VirtualKey.NumPad0, 0, 0),
                 };
 
                 // 注册热键
-                var hotkeyId1 = hotkeyListener.RegisterHotkey(
-                    ModifierKeys.Control | ModifierKeys.Alt,
-                    VirtualKey.F1,
-                    () => Console.WriteLine(">>> Ctrl+Alt+F1 功能执行"),
-                    "显示帮助"
-                );
-                list.Add(hotkeyId1);
-                Console.WriteLine($"注册热键【显示帮助】: {hotkeyId1}");
-
-                var hotkeyId2 = hotkeyListener.RegisterHotkey(
-                    ModifierKeys.Control | ModifierKeys.Alt,
-                    VirtualKey.F2,
-                    () => Console.WriteLine(">>> Ctrl+Alt+F2 功能执行"),
-                    "显示状态"
-                );
-                list.Add(hotkeyId2);
-                Console.WriteLine($"注册热键【显示状态】: {hotkeyId2}");
-
-                var hotkeyId3 = hotkeyListener.RegisterHotkey(
-                    ModifierKeys.Control | ModifierKeys.Alt,
-                    VirtualKey.A,
-                    () => Console.WriteLine(">>> Ctrl+Alt+A 功能执行"),
-                    "截图"
-                );
-                list.Add(hotkeyId3);
-                Console.WriteLine($"注册热键【截图】: {hotkeyId3}");
+                list = hotkeyListener.RegisterHotkeys(hotkeys);
             }, null);
 
             Console.WriteLine($"热键注册完成，总数：{list.Count}");

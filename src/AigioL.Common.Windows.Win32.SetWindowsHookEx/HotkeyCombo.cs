@@ -141,6 +141,78 @@ public readonly record struct HotkeyCombo(ModifierKeys Modifiers, VirtualKey Key
         return new HotkeyCombo(modifiers, key);
     }
 
+    public static HotkeyCombo Create(uint p0, uint p1, uint p2)
+    {
+        ModifierKeys modifiers;
+        VirtualKey key = default;
+        switch ((VirtualKey)p0)
+        {
+            case VirtualKey.Control:
+            case VirtualKey.LControl:
+            case VirtualKey.RControl:
+                modifiers = ModifierKeys.Control;
+                break;
+            case VirtualKey.Alt:
+            case VirtualKey.LAlt:
+            case VirtualKey.RAlt:
+                modifiers = ModifierKeys.Alt;
+                break;
+            case VirtualKey.Shift:
+            case VirtualKey.LShift:
+            case VirtualKey.RShift:
+                modifiers = ModifierKeys.Shift;
+                break;
+            case VirtualKey.LWin:
+            case VirtualKey.RWin:
+                modifiers = ModifierKeys.Win;
+                break;
+            default:
+                modifiers = ModifierKeys.None;
+                if (p1 == p2 && p2 == 0)
+                {
+                    return new HotkeyCombo(ModifierKeys.None, (VirtualKey)p0);
+                }
+                break;
+        }
+        switch ((VirtualKey)p1)
+        {
+            case VirtualKey.Control:
+            case VirtualKey.LControl:
+            case VirtualKey.RControl:
+                modifiers |= ModifierKeys.Control;
+                key = (VirtualKey)p2;
+                break;
+            case VirtualKey.Alt:
+            case VirtualKey.LAlt:
+            case VirtualKey.RAlt:
+                modifiers |= ModifierKeys.Alt;
+                key = (VirtualKey)p2;
+                break;
+            case VirtualKey.Shift:
+            case VirtualKey.LShift:
+            case VirtualKey.RShift:
+                modifiers |= ModifierKeys.Shift;
+                key = (VirtualKey)p2;
+                break;
+            case VirtualKey.LWin:
+            case VirtualKey.RWin:
+                modifiers |= ModifierKeys.Win;
+                key = (VirtualKey)p2;
+                break;
+            default:
+                if (p2 != 0)
+                {
+                    key = (VirtualKey)p2;
+                }
+                else
+                {
+                    key = (VirtualKey)p1;
+                }
+                break;
+        }
+        return new HotkeyCombo(modifiers, key);
+    }
+
     /// <summary>
     /// 从字符串解析热键组合
     /// </summary>
@@ -241,23 +313,23 @@ public readonly record struct HotkeyCombo(ModifierKeys Modifiers, VirtualKey Key
         };
     }
 
-    /// <summary>
-    /// 获取所有常用的热键组合示例
-    /// </summary>
-    /// <returns>常用热键组合列表</returns>
-    public static IReadOnlyList<HotkeyCombo> GetCommonCombos()
-    {
-        return
-        [
-            new HotkeyCombo(ModifierKeys.Control | ModifierKeys.Alt, VirtualKey.F1),
-            new HotkeyCombo(ModifierKeys.Control | ModifierKeys.Alt, VirtualKey.F2),
-            new HotkeyCombo(ModifierKeys.Control | ModifierKeys.Shift, VirtualKey.Q),
-            new HotkeyCombo(ModifierKeys.Win, VirtualKey.D1),
-            new HotkeyCombo(ModifierKeys.Alt, VirtualKey.Space),
-            new HotkeyCombo(ModifierKeys.None, VirtualKey.F1),
-            new HotkeyCombo(ModifierKeys.None, VirtualKey.F2),
-        ];
-    }
+    ///// <summary>
+    ///// 获取所有常用的热键组合示例
+    ///// </summary>
+    ///// <returns>常用热键组合列表</returns>
+    //public static IReadOnlyList<HotkeyCombo> GetCommonCombos()
+    //{
+    //    return
+    //    [
+    //        new HotkeyCombo(ModifierKeys.Control | ModifierKeys.Alt, VirtualKey.F1),
+    //        new HotkeyCombo(ModifierKeys.Control | ModifierKeys.Alt, VirtualKey.F2),
+    //        new HotkeyCombo(ModifierKeys.Control | ModifierKeys.Shift, VirtualKey.Q),
+    //        new HotkeyCombo(ModifierKeys.Win, VirtualKey.D1),
+    //        new HotkeyCombo(ModifierKeys.Alt, VirtualKey.Space),
+    //        new HotkeyCombo(ModifierKeys.None, VirtualKey.F1),
+    //        new HotkeyCombo(ModifierKeys.None, VirtualKey.F2),
+    //    ];
+    //}
 
     /// <summary>
     /// 检查两个热键组合是否冲突（相同）

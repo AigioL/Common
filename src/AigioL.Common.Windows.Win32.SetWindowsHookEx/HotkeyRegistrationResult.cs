@@ -14,11 +14,6 @@ public sealed record class HotkeyRegistrationResult
     public bool Success { get; set; }
 
     /// <summary>
-    /// 热键 Id（成功时有效）
-    /// </summary>
-    public int HotkeyId { get; set; }
-
-    /// <summary>
     /// 注册的热键组合
     /// </summary>
     [JsonIgnore]
@@ -35,14 +30,10 @@ public sealed record class HotkeyRegistrationResult
     /// </summary>
     public int NativeErrorCode { get; set; }
 
-    /// <summary>
-    /// 错误代码
-    /// </summary>
-    public HotkeyRegistrationError ErrorCode { get; set; }
+    public uint P0 { get; set; }
 
-    /// <summary>
-    /// 结果消息
-    /// </summary>
-    public string? Message { get; set; }
+    public uint P1 { get; set; }
+
+    public uint P2 { get; set; }
 }
 #endif
