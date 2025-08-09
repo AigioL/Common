@@ -122,6 +122,7 @@ public sealed partial class KeyboardHook
                         {
                             LoggerMessages.OnHotkeyPressedException(logger, ex, hotkey.Key);
                         }
+                        break; // 找到匹配的热键后退出循环
                     }
                 }
             }
