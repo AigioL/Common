@@ -1,0 +1,82 @@
+#if !DISABLE_MP2
+using MemoryPack;
+#endif
+using System.Net;
+using System.Text.Json;
+
+namespace AigioL.Common.Models;
+
+#if !DISABLE_MP2
+//#if MP2_GENERATE_TS
+//[global::MemoryPack.GenerateTypeScript] 已手动修改生成代码
+//#endif
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Sequential)]
+#endif
+public partial record class ApiRsp
+{
+    /// <summary>
+    /// 是否成功
+    /// </summary>
+    /// <returns></returns>
+    public bool IsSuccess() => (Code >= 200u) && (Code <= 299u);
+
+    /// <summary>
+    /// 状态码
+    /// </summary>
+    public uint Code { get; set; }
+
+    /// <summary>
+    /// 附加消息
+    /// </summary>
+    public string? Message { get; set; }
+
+    /// <summary>
+    /// 调用的名称标识，例如请求地址或命令名称
+    /// </summary>
+    public string? Url { get; set; }
+
+    public static implicit operator ApiRsp(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
+
+    public static implicit operator ApiRsp(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
+
+    public static implicit operator ApiRsp(string message) => new() { Message = message };
+
+    public static implicit operator ApiRsp(Exception exception)
+    {
+        ApiRsp result = new();
+        result.SetException(exception);
+        return result;
+    }
+
+    public static ApiRsp<TContent> Create<TContent>(TContent content)
+    {
+        var result = new ApiRsp<TContent> { Content = content };
+        return result;
+    }
+}
+
+#if !DISABLE_MP2
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Sequential)]
+#endif
+public sealed partial record class ApiRsp<TContent> : ApiRsp
+{
+    /// <summary>
+    /// 附加内容
+    /// </summary>
+    public TContent? Content { get; set; }
+
+    public static implicit operator ApiRsp<TContent>(TContent content) => new() { Content = content };
+
+    public static implicit operator ApiRsp<TContent>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
+
+    public static implicit operator ApiRsp<TContent>(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
+
+    public static implicit operator ApiRsp<TContent>(string message) => new() { Message = message };
+
+    public static implicit operator ApiRsp<TContent>(Exception exception)
+    {
+        ApiRsp<TContent> result = new();
+        result.SetException(exception);
+        return result;
+    }
+}

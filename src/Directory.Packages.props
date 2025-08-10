@@ -32,4 +32,9 @@
 		<PackageVersion Include="System.IO.Hashing" Version="9.0.8" />
 	</ItemGroup>
 
+	<!-- 👇 序列化 -->
+	<ItemGroup>
+		<PackageVersion Include="MemoryPack" Version="1.21.4" />
+	</ItemGroup>
+
 </Project>
