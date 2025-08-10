@@ -40,7 +40,7 @@ static class Program
             // 在新线程中执行注册热键
             ctx.Send((_) =>
             {
-                hotkeyListener = new();
+                hotkeyListener = KeyboardHook.Instance;
 
                 // 订阅事件
                 hotkeyListener.HotkeyPressed += (sender, e) =>

@@ -14,11 +14,31 @@ namespace Windows.Win32.UI.Input.KeyboardAndMouse;
 
 public sealed partial class KeyboardHook
 {
-    readonly HHOOK hhk;
+    readonly nint hhk;
     const nuint WM_KEYDOWN = 0x0100;
     readonly int nativeErrorCode;
     readonly Lock _lockHotkeys = new();
     ImmutableArray<HotKeyInfo> _registeredHotkeys;
+
+    static KeyboardHook? instance;
+    static readonly Lock lockInstance = new();
+
+    public static KeyboardHook Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                lock (lockInstance)
+                {
+                    instance ??= new();
+                }
+            }
+            return instance;
+        }
+    }
+
+    public static IDisposable? Disposable => instance;
 
 #pragma warning disable IDE1006 // 命名样式
     ILogger logger => field ??= Log.CreateLogger<KeyboardHook>();
@@ -29,11 +49,16 @@ public sealed partial class KeyboardHook
     /// </summary>
     public event EventHandler<HotkeyPressedEventArgs>? HotkeyPressed;
 
-    public KeyboardHook()
+    const int WH_KEYBOARD_LL = 13; // WINDOWS_HOOK_ID https://learn.microsoft.com/zh-cn/windows/win32/api/winuser/nf-winuser-setwindowshookexa#parameters
+
+    KeyboardHook()
     {
         PCWSTR lpModuleName = default;
         var hmod = PInvoke.GetModuleHandle(lpModuleName);
-        hhk = PInvoke.SetWindowsHookEx(WINDOWS_HOOK_ID.WH_KEYBOARD_LL, HookCallback, hmod, 0);
+        unsafe
+        {
+            hhk = PInvoke.オペレーティングシステムフックを設定する(WH_KEYBOARD_LL, &Lpfn, hmod, 0);
+        }
         if (hhk == default)
         {
             nativeErrorCode = Marshal.GetLastWin32Error();
@@ -89,14 +114,21 @@ public sealed partial class KeyboardHook
         return result;
     }
 
-    LRESULT HookCallback(int code, WPARAM wParam, LPARAM lParam)
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall),])]
+    static LRESULT Lpfn(int code, WPARAM wParam, LPARAM lParam)
+    {
+        var result = Instance.LpfnCore(code, wParam, lParam);
+        return result;
+    }
+
+    LRESULT LpfnCore(int code, WPARAM wParam, LPARAM lParam)
     {
         if (code >= 0 && wParam.Value == WM_KEYDOWN)
         {
             VirtualKey key;
             unsafe
             {
-                var kbd = (KBDLLHOOKSTRUCT*)lParam.Value;
+                var kbd = (キーボードダイナミックリンクライブラリフックストラクチャ*)lParam.Value;
                 key = (VirtualKey)kbd->vkCode;
             }
             var modifiers = GetCurrentModifiers();
@@ -128,19 +160,19 @@ public sealed partial class KeyboardHook
             }
         }
         // 返回 CallNextHookEx，让系统继续处理
-        return PInvoke.CallNextHookEx(hhk, code, wParam, lParam);
+        return PInvoke.次のフックを呼び出す(hhk, code, wParam, lParam);
     }
 
     static ModifierKeys GetCurrentModifiers()
     {
         ModifierKeys mods = ModifierKeys.None;
-        if ((PInvoke.GetAsyncKeyState(unchecked((int)VirtualKey.Control)) & 0x8000) != 0)
+        if ((PInvoke.非同期キー状態を取得する(unchecked((int)VirtualKey.Control)) & 0x8000) != 0)
             mods |= ModifierKeys.Control;
-        if ((PInvoke.GetAsyncKeyState(unchecked((int)VirtualKey.Shift)) & 0x8000) != 0)
+        if ((PInvoke.非同期キー状態を取得する(unchecked((int)VirtualKey.Shift)) & 0x8000) != 0)
             mods |= ModifierKeys.Shift;
-        if ((PInvoke.GetAsyncKeyState(unchecked((int)VirtualKey.Alt)) & 0x8000) != 0)
+        if ((PInvoke.非同期キー状態を取得する(unchecked((int)VirtualKey.Alt)) & 0x8000) != 0)
             mods |= ModifierKeys.Alt;
-        if ((PInvoke.GetAsyncKeyState(0x5B) & 0x8000) != 0 || (PInvoke.GetAsyncKeyState(0x5C) & 0x8000) != 0)
+        if ((PInvoke.非同期キー状態を取得する(0x5B) & 0x8000) != 0 || (PInvoke.非同期キー状態を取得する(0x5C) & 0x8000) != 0)
             mods |= ModifierKeys.Win;
         return mods;
     }
@@ -160,7 +192,7 @@ partial class KeyboardHook : IDisposable
                 // 释放托管状态(托管对象)
                 if (hhk != default)
                 {
-                    PInvoke.UnhookWindowsHookEx(hhk);
+                    PInvoke.オペレーティングシステムのフックを解除する(hhk);
                 }
             }
 

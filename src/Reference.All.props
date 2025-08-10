@@ -37,5 +37,6 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.System.Threading.MessageLoop\AigioL.Common.Windows.Win32.System.Threading.MessageLoop.projitems" Label="Shared" />
 	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.RegisterHotKey\AigioL.Common.Windows.Win32.RegisterHotKey.projitems" Label="Shared" />-->
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
 
 </Project>

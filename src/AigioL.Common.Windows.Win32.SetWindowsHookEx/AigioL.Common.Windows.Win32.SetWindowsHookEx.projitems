@@ -12,8 +12,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyCombo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HotkeyRegistrationResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KBDLLHOOKSTRUCT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyboardHook.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModifierKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PInvoke.USER32.dll.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VirtualKey.cs" />
   </ItemGroup>
   <ItemGroup>

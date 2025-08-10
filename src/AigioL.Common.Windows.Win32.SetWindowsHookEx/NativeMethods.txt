@@ -1,6 +1,1 @@
-SetWindowsHookEx
-CallNextHookEx
-UnhookWindowsHookEx
 GetModuleHandle
-KBDLLHOOKSTRUCT
-GetAsyncKeyState
