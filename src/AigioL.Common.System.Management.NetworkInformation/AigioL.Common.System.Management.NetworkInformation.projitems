@@ -12,4 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)NetAdapterInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NetAdapterHelper.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
 </Project>

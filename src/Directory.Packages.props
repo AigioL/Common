@@ -17,6 +17,8 @@
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="9.0.8" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="9.0.8" />
+		<PackageVersion Include="NLog" Version="6.0.3" />
+		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.0.3" />
 	</ItemGroup>
 
 	<!-- 👇 xunit 单元测试 -->
@@ -30,6 +32,25 @@
 	<!-- 👇 哈希算法 -->
 	<ItemGroup>
 		<PackageVersion Include="System.IO.Hashing" Version="9.0.8" />
+	</ItemGroup>
+
+	<!-- 👇 JsonWebToken -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.13.1" />
+		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.13.1" />
+	</ItemGroup>
+
+	<!-- 👇 可回收内存流 -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+	</ItemGroup>
+
+	<!-- 👇 EF Core -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.8" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
+		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
 	</ItemGroup>
 
 	<!-- 👇 序列化 -->

@@ -2,7 +2,7 @@ using System.Buffers;
 
 namespace System.Security.Cryptography;
 
-public static class AESUtils
+public static partial class AESUtils
 {
     /// <summary>
     /// 使用 GUID 作为 AES 密钥和 IV，密钥长度为 128 位，创建一个 <see cref="Aes"/> 实例

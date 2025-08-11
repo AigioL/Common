@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>66c06857-99f9-4aa4-9504-e2f1070aa7ae</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.AspNetCore.AdminCenter</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\TenantConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AdminCenterIdentityDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RSAUtils.Decrypt.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Columns\Abstractions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Entities\Abstractions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Models\" />
+  </ItemGroup>
+</Project>

@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)NativeMethods.txt" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)NativeMethods.txt">

@@ -2,7 +2,7 @@ using System.Buffers.Binary;
 
 namespace System.Security.Cryptography;
 
-public static class RSAUtils
+public static partial class RSAUtils
 {
     public static RSAParameters ReadParameters(Stream s, long? position = 0)
     {

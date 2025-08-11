@@ -25,6 +25,8 @@
   </Folder>
   <Folder Name="/2.Document/" />
   <Folder Name="/2.Libraries/">
+    <Project Path="src/AigioL.Common.AspNetCore.AdminCenter/AigioL.Common.AspNetCore.AdminCenter.shproj" Id="66c06857-99f9-4aa4-9504-e2f1070aa7ae" />
+    <Project Path="src/AigioL.Common.AspNetCore.Helpers.ProgramMain/AigioL.Common.AspNetCore.Helpers.ProgramMain.shproj" Id="276306f9-8c73-4b7a-a517-e7a502cd5f2b" />
     <Project Path="src/AigioL.Common.Bcl/AigioL.Common.Bcl.shproj" Id="86dfc3a4-0f30-40f0-af39-6e76e46d78f1" />
     <Project Path="src/AigioL.Common.Models.ApiRsp/AigioL.Common.Models.ApiRsp.shproj" Id="d9eafcce-1041-489d-a46b-27adc768a916" />
     <Project Path="src/AigioL.Common.ProjectUtils/AigioL.Common.ProjectUtils.shproj" Id="13633681-22dd-4032-aa2c-8c789f0a1962" />
@@ -38,6 +40,11 @@
     <Project Path="src/AigioL.Common.Windows.Win32.RegisterHotKey/AigioL.Common.Windows.Win32.RegisterHotKey.shproj" Id="c3c8526d-e029-4c04-ba12-bed1d4a2b8a9" />
     <Project Path="src/AigioL.Common.Windows.Win32.SetWindowsHookEx/AigioL.Common.Windows.Win32.SetWindowsHookEx.shproj" Id="a883709a-ed64-40c9-9db5-c418da234d60" />
     <Project Path="src/AigioL.Common.Windows.Win32.System.Threading.MessageLoop/AigioL.Common.Windows.Win32.System.Threading.MessageLoop.shproj" Id="5ba03b40-b43e-4df5-ae77-a65dfc7d79c7" />
+  </Folder>
+  <Folder Name="/2.Libraries/JsonWebTokens/">
+    <Project Path="src/AigioL.Common.JsonWebTokens.Entities/AigioL.Common.JsonWebTokens.Entities.shproj" Id="26839620-b9b9-4fbe-b03b-a92d5a034e8e" />
+    <Project Path="src/AigioL.Common.JsonWebTokens.Models/AigioL.Common.JsonWebTokens.Models.shproj" Id="2deca514-57a3-414f-9715-c37c4a7d8b5c" />
+    <Project Path="src/AigioL.Common.JsonWebTokens.Services/AigioL.Common.JsonWebTokens.Services.shproj" Id="fe10fe98-b87c-4ee5-a793-ac0c22fd3bc0" />
   </Folder>
   <Folder Name="/3.EntryPoint/">
     <Project Path="src/AigioL.Common.ConsoleApp1/AigioL.Common.ConsoleApp1.csproj" Id="79183e06-3987-4668-b026-7ed9253ada3b" />

@@ -21,4 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Text\Json\Serialization\IJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\AsyncGate.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
 </Project>

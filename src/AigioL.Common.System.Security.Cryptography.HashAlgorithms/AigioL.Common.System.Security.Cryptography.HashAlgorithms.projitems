@@ -12,4 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)HashAlgorithmTypeName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Hashs.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
 </Project>

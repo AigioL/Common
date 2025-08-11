@@ -1,5 +1,9 @@
 <Project>
 
+	<PropertyGroup>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
 	<!-- 👇 Windows 平台配置项 -->
 	<Choose>
 		<When Condition="($(TargetFramework.StartsWith('net3')) OR $(TargetFramework.StartsWith('net4')) OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows' OR $(DefineConstants.Contains('WINDOWS')))">
@@ -16,7 +20,17 @@
 	</Choose>
 
 	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
+		<PackageReference Include="NLog" />
+		<PackageReference Include="NLog.Web.AspNetCore" />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 		<PackageReference Include="MemoryPack" />
 	</ItemGroup>
 
@@ -39,6 +53,5 @@
 	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.RegisterHotKey\AigioL.Common.Windows.Win32.RegisterHotKey.projitems" Label="Shared" />-->
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
-	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Models.ApiRsp\AigioL.Common.Models.ApiRsp.projitems" Label="Shared" />
 
 </Project>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>fe10fe98-b87c-4ee5-a793-ac0c22fd3bc0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.JsonWebTokens.Services</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IJsonWebTokenValueProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\JsonWebTokenValueProviderBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IdentityExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JsonWebTokenValueProvider.cs" />
+  </ItemGroup>
+</Project>

@@ -1,3 +1,5 @@
+using System.Text.Encodings.Web;
+
 namespace System.Text.Json.Serialization;
 
 interface IJsonSerializerContext
@@ -53,5 +55,22 @@ interface IJsonSerializerContext
 #pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
 #pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
         }
+    }
+
+    public static void SetDefaultOptions(JsonSerializerOptions o)
+    {
+        // https://github.com/dotnet/runtime/issues/94135
+        o.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping; // 不转义字符！！！
+        o.AllowTrailingCommas = true;
+
+        #region JsonSerializerDefaults.Web https://github.com/dotnet/runtime/blob/v9.0.7/src/libraries/System.Text.Json/src/System/Text/Json/Serialization/JsonSerializerOptions.cs#L172-L174
+
+        o.PropertyNameCaseInsensitive = true; // 忽略大小写
+        o.PropertyNamingPolicy = JsonNamingPolicy.CamelCase; // 驼峰命名
+        o.NumberHandling = JsonNumberHandling.AllowReadingFromString; // 允许从字符串读取数字
+
+        #endregion
+
+        o.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // 忽略 null 值
     }
 }

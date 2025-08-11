@@ -12,4 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ProjectUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProjectUtils.ProjPath.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
 </Project>
