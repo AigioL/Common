@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Common;
 using NLog.Config;
@@ -80,6 +82,7 @@ public static partial class ProgramHelper
                 configureServices = default;
             }
             var app = builder.Build();
+            Log.ConfigureLoggerFactory(app.Services.GetRequiredService<ILoggerFactory>());
             //InitFileSystem(app.Environment);
             //Ioc.ConfigureServices(app.Services);
             if (configure != default)

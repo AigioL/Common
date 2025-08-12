@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IOPath.App.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProgramHelper.ConsoleWriteInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProgramHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProgramHelper.InfoController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

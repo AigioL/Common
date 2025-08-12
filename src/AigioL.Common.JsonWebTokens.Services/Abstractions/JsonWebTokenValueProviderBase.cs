@@ -1,3 +1,4 @@
+using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.JsonWebTokens.Models.Abstractions;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Buffers.Text;
@@ -22,7 +23,7 @@ public abstract class JsonWebTokenValueProviderBase<[DynamicallyAccessedMembers(
 
     protected abstract string? GetUserIdClaimType();
 
-    public async ValueTask<(DateTimeOffset expiresIn, string accessToken, string? refreshToken)?> GenerateTokenAsync(
+    public async ValueTask<JsonWebTokenValue?> GenerateTokenAsync(
         Guid userId,
         IEnumerable<string>? roles,
         Action<List<Claim>>? aciton,
@@ -79,7 +80,13 @@ public abstract class JsonWebTokenValueProviderBase<[DynamicallyAccessedMembers(
             expires: expires.DateTime,
             signingCredentials: options.SigningCredentials);
         var encodedJwt = handler.WriteToken(jwt);
-        return (expires, encodedJwt, refresh_token);
+        JsonWebTokenValue m = new()
+        {
+            AccessToken = encodedJwt,
+            ExpiresIn = expires,
+            RefreshToken = refresh_token,
+        };
+        return m;
     }
 
     /// <summary>

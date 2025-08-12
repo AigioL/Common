@@ -1,3 +1,4 @@
+using AigioL.Common.JsonWebTokens.Models;
 using System.Security.Claims;
 
 namespace AigioL.Common.JsonWebTokens.Services.Abstractions;
@@ -11,7 +12,7 @@ public interface IJsonWebTokenValueProvider
     /// 生成 JsonWebToken
     /// </summary>
     /// <returns></returns>
-    ValueTask<(DateTimeOffset expiresIn, string accessToken, string? refreshToken)?> GenerateTokenAsync(
+    ValueTask<JsonWebTokenValue?> GenerateTokenAsync(
         Guid userId,
         IEnumerable<string>? roles,
         Action<List<Claim>>? aciton,

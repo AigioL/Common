@@ -9,17 +9,18 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AdminCenter</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ACMinimalApis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TenantConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\InfoController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\IPController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AdminCenterIdentityDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ACMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiRspACExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiRspAC.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\InitSystemRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RSAUtils.Decrypt.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Columns\Abstractions\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Entities\Abstractions\" />
   </ItemGroup>
 </Project>

@@ -11,5 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IJsonWebTokenOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstractions\JsonWebTokenOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JsonWebTokenValue.cs" />
   </ItemGroup>
 </Project>
