@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TenantConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AdminCenterIdentityDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ApiRspACExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ApiRspAC.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RSAUtils.Decrypt.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -19,6 +21,5 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Columns\Abstractions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Entities\Abstractions\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Models\" />
   </ItemGroup>
 </Project>

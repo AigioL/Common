@@ -7,7 +7,7 @@ static class Program
 {
     public static unsafe void Main(string[] args)
     {
-        ProgramHelper.Main("AigioL.Common.WebApplication1", args, &ConfigureServices, &Configure);
+        ProgramHelper.M("AigioL.Common.WebApplication1", args, &ConfigureServices, &Configure);
     }
 
     static void ConfigureServices(WebApplicationBuilder builder)

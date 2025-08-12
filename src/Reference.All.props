@@ -53,5 +53,18 @@
 	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.RegisterHotKey\AigioL.Common.Windows.Win32.RegisterHotKey.projitems" Label="Shared" />-->
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AdminCenter\AigioL.Common.AspNetCore.AdminCenter.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.Helpers.ProgramMain\AigioL.Common.AspNetCore.Helpers.ProgramMain.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Models.ApiRsp\AigioL.Common.Models.ApiRsp.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Primitives\AigioL.Common.Primitives.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.FeishuOApi.Sdk\AigioL.Common.FeishuOApi.Sdk.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.EntityFrameworkCore\AigioL.Common.EntityFrameworkCore.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Repositories\AigioL.Common.Repositories.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Repositories.EntityFrameworkCore\AigioL.Common.Repositories.EntityFrameworkCore.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.SmsSender.Models\AigioL.Common.SmsSender.Models.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.SmsSender.Services\AigioL.Common.SmsSender.Services.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Entities\AigioL.Common.JsonWebTokens.Entities.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Models\AigioL.Common.JsonWebTokens.Models.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Services\AigioL.Common.JsonWebTokens.Services.projitems" Label="Shared" />
 
 </Project>

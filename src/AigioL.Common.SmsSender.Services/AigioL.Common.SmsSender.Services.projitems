@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5238362e-d36a-430f-a92e-b9b841cd5981</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.SmsSender.Services</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\AlibabaCloud\SenderProviderInvoker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\AlibabaCloud\SmsSenderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\HuaweiCloud\SenderProviderInvoker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\HuaweiCloud\SmsSenderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\NetEaseCloud\SenderProviderInvoker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\NetEaseCloud\SmsSenderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\TencentCloud\SenderProviderInvoker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\TencentCloud\SmsSenderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\_21VianetBlueCloud\SenderProviderInvoker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\_21VianetBlueCloud\SmsSenderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\DebugSmsSenderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\SmsSenderBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\SmsSenderWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ISmsSender.cs" />
+  </ItemGroup>
+</Project>

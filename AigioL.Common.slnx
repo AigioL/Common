@@ -28,8 +28,15 @@
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter/AigioL.Common.AspNetCore.AdminCenter.shproj" Id="66c06857-99f9-4aa4-9504-e2f1070aa7ae" />
     <Project Path="src/AigioL.Common.AspNetCore.Helpers.ProgramMain/AigioL.Common.AspNetCore.Helpers.ProgramMain.shproj" Id="276306f9-8c73-4b7a-a517-e7a502cd5f2b" />
     <Project Path="src/AigioL.Common.Bcl/AigioL.Common.Bcl.shproj" Id="86dfc3a4-0f30-40f0-af39-6e76e46d78f1" />
+    <Project Path="src/AigioL.Common.EntityFrameworkCore/AigioL.Common.EntityFrameworkCore.shproj" Id="a39bde5d-77a9-4136-a88e-0e2d2b0701d0" />
+    <Project Path="src/AigioL.Common.FeishuOApi.Sdk/AigioL.Common.FeishuOApi.Sdk.shproj" Id="8b693671-817b-4e46-b1df-0f81623e3eb1" />
     <Project Path="src/AigioL.Common.Models.ApiRsp/AigioL.Common.Models.ApiRsp.shproj" Id="d9eafcce-1041-489d-a46b-27adc768a916" />
+    <Project Path="src/AigioL.Common.Primitives/AigioL.Common.Primitives.shproj" Id="2fc56f9c-d2f9-4e05-b21b-179dc776d471" />
     <Project Path="src/AigioL.Common.ProjectUtils/AigioL.Common.ProjectUtils.shproj" Id="13633681-22dd-4032-aa2c-8c789f0a1962" />
+    <Project Path="src/AigioL.Common.Repositories.EntityFrameworkCore/AigioL.Common.Repositories.EntityFrameworkCore.shproj" Id="c07f1f94-4eca-426b-a7a0-80a7d6c5d220" />
+    <Project Path="src/AigioL.Common.Repositories/AigioL.Common.Repositories.shproj" Id="fba610e0-548c-44e9-bb4e-fa609800796a" />
+    <Project Path="src/AigioL.Common.SmsSender.Models/AigioL.Common.SmsSender.Models.shproj" Id="f7a3e2fa-2830-4eb6-b797-a1a80d93f85e" />
+    <Project Path="src/AigioL.Common.SmsSender.Services/AigioL.Common.SmsSender.Services.shproj" Id="5238362e-d36a-430f-a92e-b9b841cd5981" />
     <Project Path="src/AigioL.Common.System.IOPath.FileSystem/AigioL.Common.System.IOPath.FileSystem.shproj" Id="31e68277-e8bf-4a35-bbbd-b520cc2ed821" />
     <Project Path="src/AigioL.Common.System.Management.NetworkInformation/AigioL.Common.System.Management.NetworkInformation.shproj" Id="44bfa2e3-668d-424e-ac76-792ffde32bd4" />
     <Project Path="src/AigioL.Common.System.Security.Cryptography.Aes/AigioL.Common.System.Security.Cryptography.Aes.shproj" Id="bafc6195-e7f9-4e81-b1ec-0d1de60d5fdc" />
@@ -50,13 +57,6 @@
     <Project Path="src/AigioL.Common.ConsoleApp1/AigioL.Common.ConsoleApp1.csproj" Id="79183e06-3987-4668-b026-7ed9253ada3b" />
     <Project Path="src/AigioL.Common.WebApplication1/AigioL.Common.WebApplication1.csproj" Id="dafafcc8-1f8a-4d8b-a937-c667e6b6ed94" />
     <Project Path="src/AigioL.Common.WinFormsApp1/AigioL.Common.WinFormsApp1.csproj" Id="d1edde1b-fd3c-4aed-8c9e-efbd9e04f938" />
-    <Project Path="src/AigioL.Common.WinUI3App1/AigioL.Common.WinUI3App1.csproj" Id="5eff84ca-bdbf-4d5e-b10a-017e83abd09f">
-      <Platform Solution="*|ARM64" Project="ARM64" />
-      <Platform Solution="*|x64" Project="x64" />
-      <Platform Solution="*|x86" Project="x86" />
-      <Platform Solution="Debug|Any CPU" Project="x64" />
-      <Deploy />
-    </Project>
   </Folder>
   <Folder Name="/4.Tools/" />
   <Folder Name="/5.UnitTest/">

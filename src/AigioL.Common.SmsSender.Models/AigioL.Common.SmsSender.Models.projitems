@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>f7a3e2fa-2830-4eb6-b797-a1a80d93f85e</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.SmsSender.Models</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\ChannelSmsOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\ICheckSmsResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\ISendSmsResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\ISmsResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\ISmsSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\ISmsSubResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\SmsResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\AlibabaCloud\AlibabaCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\AlibabaCloud\SendSmsAlibabaCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\AlibabaCloud\SmsAlibabaCloudOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\HuaweiCloud\HuaweiCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\HuaweiCloud\SendHuaweiCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\HuaweiCloud\SmsHuaweiCloudOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\NetEaseCloud\NetEaseCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\NetEaseCloud\SendSmsNetEaseCloudResponseCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\NetEaseCloud\SendSmsNetEaseCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\NetEaseCloud\SmsNetEaseCloudOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\SendSmsTencentCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\SmsTencentCloudOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\TencentCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\_21VianetBlueCloud\RequestData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\_21VianetBlueCloud\SendSms21VianetBlueCloudResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\_21VianetBlueCloud\Sms21VianetBlueCloudOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CheckSmsResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SendSmsResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SmsOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SmsOptionsTemplateId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SmsSenderJsonSerializerContext.cs" />
+  </ItemGroup>
+</Project>

@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.GetAllMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IExplicitHasValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LogInit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)nil.cs" />
@@ -20,6 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShortGuid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Text\Json\Serialization\IJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\AsyncGate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Threading\IRequestAbortedProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThrowHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

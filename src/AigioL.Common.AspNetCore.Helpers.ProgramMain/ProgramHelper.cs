@@ -34,7 +34,7 @@ public static partial class ProgramHelper
     /// <summary>
     /// 适用于 ASP.NET Core 6.0+ 中新的最小托管模型的代码
     /// </summary>
-    public static unsafe void Main(
+    public static unsafe void M(
        string projectName,
        string[] args,
        delegate* managed<WebApplicationBuilder, void> configureServices = default,

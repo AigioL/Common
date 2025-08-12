@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>fba610e0-548c-44e9-bb4e-fa609800796a</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.Repositories</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\DbRowExecResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IGetPrimaryKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IRepository`1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IRepository`2.cs" />
+  </ItemGroup>
+</Project>

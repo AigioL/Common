@@ -2,7 +2,7 @@ using System.Text.Encodings.Web;
 
 namespace System.Text.Json.Serialization;
 
-interface IJsonSerializerContext
+public interface IJsonSerializerContext
 {
     /// <summary>
     /// 返回 Json 源生成的 <see cref="JsonSerializerContext"/> 默认实例

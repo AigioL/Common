@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a39bde5d-77a9-4136-a88e-0e2d2b0701d0</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.EntityFrameworkCore</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContextExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContextExtensions.UpdateModifiedTrackerEntriesTime.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EntityPropertyBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ModelBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryableExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryableExtensions.Delete.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryableExtensions.Paging.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ColumnHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SqlStringHelper.cs" />
+  </ItemGroup>
+</Project>
