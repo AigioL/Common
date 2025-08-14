@@ -1,6 +1,7 @@
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.JsonWebTokens.Models.Abstractions;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.IdentityModel.Tokens;
 using System.Buffers.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,6 +23,19 @@ public abstract class JsonWebTokenValueProviderBase<[DynamicallyAccessedMembers(
     protected abstract TOptions GetOptions();
 
     protected abstract string? GetUserIdClaimType();
+
+    SigningCredentials? signingCredentials;
+
+    protected SigningCredentials GetSigningCredentials()
+    {
+        if (signingCredentials == null)
+        {
+            var o = GetOptions();
+            var securityKey = IJsonWebTokenOptions.GetSymmetricSecurityKey(o);
+            signingCredentials = new SigningCredentials(securityKey, o.SecretAlgorithm);
+        }
+        return signingCredentials;
+    }
 
     public async ValueTask<JsonWebTokenValue?> GenerateTokenAsync(
         Guid userId,
@@ -78,7 +92,7 @@ public abstract class JsonWebTokenValueProviderBase<[DynamicallyAccessedMembers(
             claims: claims,
             notBefore: now.DateTime,
             expires: expires.DateTime,
-            signingCredentials: options.SigningCredentials);
+            signingCredentials: GetSigningCredentials());
         var encodedJwt = handler.WriteToken(jwt);
         JsonWebTokenValue m = new()
         {

@@ -10,8 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IAvatar.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreateUserId.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreateUserIdNullable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreationTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IDescription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IDisable.cs" />
@@ -21,9 +19,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IIsTop.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\INickName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\INote.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Columns\IOperatorUserId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IPassword.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IPhoneNumber.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\IRowVersion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\ISmsCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\ISoftDeleted.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\ISort.cs" />
@@ -31,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Columns\ITitle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IUpdateTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\MaxLengths.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IDoNothingEntityGuid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\INEWSEQUENTIALID.cs" />

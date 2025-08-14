@@ -1,4 +1,4 @@
-namespace AigioL.Common.Primitives.Columns;
+using AigioL.Common.Primitives.Columns;
 
 /// <summary>
 /// 最后操作人（记录最后操作此条目的管理后台用户）

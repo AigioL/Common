@@ -13,6 +13,9 @@ public interface IPhoneNumber : IReadOnlyPhoneNumber
     /// <inheritdoc cref="IPhoneNumber"/>
     new string? PhoneNumber { get; set; }
 
+    const int DatabaseMaxLength = 16;
+    const int RegionCodeDatabaseMaxLength = 8;
+
     /// <summary>
     /// 代表一个隐藏字符，以保护用户隐私或防止信息泄露
     /// </summary>

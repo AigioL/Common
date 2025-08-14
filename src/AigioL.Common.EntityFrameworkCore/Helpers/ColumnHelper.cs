@@ -57,6 +57,11 @@ public static partial class ColumnHelper
     public static readonly Type PEntityGuid = typeof(IEntity<Guid>);
 
     /// <summary>
+    /// 类型 <see cref="IRowVersion"/> 的 Type 对象
+    /// </summary>
+    public static readonly Type PRowVersion = typeof(IRowVersion);
+
+    /// <summary>
     /// 存储了特定类型的对象，这些对象被标记为"软删除"
     /// </summary>
     internal static readonly HashSet<Type> SoftDeleted = [];

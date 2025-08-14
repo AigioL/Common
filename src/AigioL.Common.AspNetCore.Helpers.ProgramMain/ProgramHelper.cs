@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ using NLog.Targets;
 using NLog.Web;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Nodes;
 using NLogLevel = NLog.LogLevel;
 
 namespace AigioL.Common.AspNetCore.Helpers.ProgramMain;
@@ -282,5 +284,47 @@ public static partial class ProgramHelper
                 UnixFileMode.OtherRead |
                 UnixFileMode.OtherWrite;
         }
+    }
+
+    /// <summary>
+    /// 通过 .NET Aspire 资源名获取数据库连接字符串
+    /// </summary>
+    /// <param name="connectionName"></param>
+    /// <param name="appHostUserSecretsId"></param>
+    /// <param name="hostPortUsername"></param>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static string GetConnectionString(
+        string connectionName,
+#if DEBUG
+        string appHostUserSecretsId,
+        string? hostPortUsername,
+#endif
+        WebApplicationBuilder builder)
+    {
+        var connectionString = builder.Configuration.GetConnectionString(connectionName);
+#if DEBUG
+        if (string.IsNullOrWhiteSpace(connectionString) && OperatingSystem.IsWindows())
+        {
+            JsonNode? postgres_password = null;
+            var secrets_path = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                $@"Microsoft\UserSecrets\{appHostUserSecretsId}\secrets.json");
+            var secrets_u8 = File.ReadAllText(secrets_path);
+            var secrets_obj = JsonNode.Parse(secrets_u8)?.AsObject();
+            secrets_obj?.TryGetPropertyValue("Parameters:postgres-password", out postgres_password);
+            if (postgres_password != null)
+            {
+                hostPortUsername ??= "Host=localhost;Port=5432;Username=postgres";
+                connectionString = $"{hostPortUsername.AsSpan().TrimEnd(';')};Password={postgres_password.GetValue<string>()};Database={connectionName}";
+            }
+        }
+#endif
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException($"Connection string '{connectionString}' not found.");
+        }
+        return connectionString;
     }
 }

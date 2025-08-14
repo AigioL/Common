@@ -1,4 +1,4 @@
-namespace AigioL.Common.Primitives.Columns;
+namespace AigioL.Common.AspNetCore.AdminCenter.Columns;
 
 /// <summary>
 /// 创建人（创建此条目的管理后台用户）

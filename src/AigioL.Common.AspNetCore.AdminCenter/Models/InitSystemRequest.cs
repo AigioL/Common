@@ -1,7 +1,7 @@
 namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 
 /// <summary>
-/// 初始化后台管理系统请求
+/// 初始化管理后台系统请求
 /// </summary>
 /// <param name="TenantId">租户 Id</param>
 /// <param name="TenantName">租户名称</param>

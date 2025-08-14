@@ -1,3 +1,4 @@
+using AigioL.Common.EntityFrameworkCore.Helpers;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -21,15 +22,13 @@ public static partial class ModelBuilderExtensions
     /// <param name="type"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "MakeGenericType is safe because IEntity<TPrimaryKey>.LambdaEqualId is a reference type.")]
     static LambdaExpression SoftDeletedQueryFilter([DynamicallyAccessedMembers(IEntity.DAMT)] Type type)
     {
         var parameter = Expression.Parameter(type);
         var left = Expression.Property(parameter, type, nameof(ISoftDeleted.SoftDeleted));
         var body = Expression.Not(left);
-        // 👇 忽略 IL 警告因为接口 IEntity<TPrimaryKey> 中的 LambdaEqualId 函数声明了委托类型 Func<TEntity, bool>，只要此函数未被裁剪 MakeGenericType 就不会动态创建新的类型
-#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
         return Expression.Lambda(typeof(Func<,>).MakeGenericType(type, typeof(bool)), body, parameter);
-#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
     }
 
     /// <summary>
@@ -117,8 +116,8 @@ public static partial class ModelBuilderExtensions
             {
                 buildAction += p =>
                 {
-                    p.Property(nameof(IPhoneNumber.PhoneNumber)).HasMaxLength(18);
-                    p.Property(nameof(IPhoneNumber.PhoneNumberRegionCode)).HasMaxLength(12);
+                    p.Property(nameof(IPhoneNumber.PhoneNumber)).HasMaxLength(IPhoneNumber.DatabaseMaxLength);
+                    p.Property(nameof(IPhoneNumber.PhoneNumberRegionCode)).HasMaxLength(IPhoneNumber.RegionCodeDatabaseMaxLength);
                 };
             }
 
@@ -204,6 +203,22 @@ public static partial class ModelBuilderExtensions
             }
 
             #endregion
+
+            switch (DatabaseProvider)
+            {
+                case PostgreSQL:
+                    {
+                        if (PRowVersion.IsAssignableFrom(type))
+                        {
+                            buildAction += p =>
+                            {
+                                // https://www.npgsql.org/efcore/modeling/concurrency.html?tabs=fluent-api
+                                p.Property(nameof(IRowVersion.RowVersion)).IsRowVersion();
+                            };
+                        }
+                    }
+                    break;
+            }
 
             if (action != null)
             {

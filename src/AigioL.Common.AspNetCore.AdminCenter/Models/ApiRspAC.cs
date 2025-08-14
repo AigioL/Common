@@ -47,6 +47,11 @@ public partial record class ApiRspAC
     /// </summary>
     public string? Url { get; set; }
 
+    /// <summary>
+    /// https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Http/Http.Extensions/src/DefaultProblemDetailsWriter.cs#L58
+    /// </summary>
+    public string? TraceId { get; set; }
+
     public static implicit operator ApiRspAC(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 
     public static implicit operator ApiRspAC(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
@@ -93,6 +98,7 @@ public partial record class ApiRspAC
         Code = apiRsp.Code,
         Messages = apiRsp.Message == null ? [] : [apiRsp.Message],
         Url = apiRsp.Url,
+        TraceId = apiRsp.TraceId,
     };
 }
 
@@ -138,6 +144,7 @@ public sealed partial record class ApiRspAC<TContent> : ApiRspAC
         Messages = apiRsp.Message == null ? [] : [apiRsp.Message],
         Url = apiRsp.Url,
         Content = apiRsp.Content,
+        TraceId = apiRsp.TraceId,
     };
 
     public static new ApiRspAC<TContent> Ok => new()

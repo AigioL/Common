@@ -35,6 +35,11 @@ public partial record class ApiRsp
     /// </summary>
     public string? Url { get; set; }
 
+    /// <summary>
+    /// https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Http/Http.Extensions/src/DefaultProblemDetailsWriter.cs#L58
+    /// </summary>
+    public string? TraceId { get; set; }
+
     public static implicit operator ApiRsp(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 
     public static implicit operator ApiRsp(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
