@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

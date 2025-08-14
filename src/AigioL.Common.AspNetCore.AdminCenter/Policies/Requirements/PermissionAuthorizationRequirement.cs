@@ -1,0 +1,32 @@
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
+using AigioL.Common.AspNetCore.AdminCenter.Models;
+using Microsoft.AspNetCore.Authorization;
+
+namespace AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
+
+/// <summary>
+/// 权限授权要求类，用于定义控制器的权限授权需求
+/// </summary>
+/// <param name="controllerName"></param>
+/// <param name="buttonType"></param>
+public sealed record class PermissionAuthorizationRequirement(string controllerName, ACButtonType buttonType) : IAuthorizationRequirement
+{
+    /// <summary>
+    /// 控制器名称
+    /// </summary>
+    public string ControllerName => controllerName;
+
+    /// <summary>
+    /// 按钮类型
+    /// </summary>
+    public ACButtonType ButtonType => buttonType;
+
+    public AuthorizationPolicy GetAuthorizationPolicy() => new([this], [BMLoginController.BearerScheme]);
+
+
+    public static implicit operator AuthorizationPolicy(PermissionAuthorizationRequirement obj) => obj.GetAuthorizationPolicy();
+
+    public static string GetPolicyName(string controllerName, ACButtonType buttonType) => $"{controllerName}{buttonType}";
+
+    public string GetPolicyName() => GetPolicyName(controllerName, buttonType);
+}

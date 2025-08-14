@@ -1,7 +1,14 @@
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
+using AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
+using AigioL.Common.AspNetCore.AdminCenter.Repositories;
+using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AdminCenter;
 
@@ -15,12 +22,19 @@ public static partial class ACMinimalApis
     /// </summary>
     public const int ControllerNameMaxLength = 128;
 
-    public static void MapACMinimalApis(this IEndpointRouteBuilder b)
+    /// <summary>
+    /// 注册管理后台的最小 API 路由
+    /// </summary>
+    /// <typeparam name="TUser"></typeparam>
+    /// <param name="b"></param>
+    public static void MapACMinimalApis<TUser>(this IEndpointRouteBuilder b) where TUser : ACUser
     {
         b.MapPostInfo();
-
-        b.MapGetIpV6();
-        b.MapGetIpVal();
+        b.MapBMLogin<TUser>();
+        b.MapBMMenus();
+        b.MapBMRoles();
+        b.MapBMUser();
+        b.MapBMUsers();
     }
 
     static string GetPath(HttpContext context, out Exception? error)
@@ -103,4 +117,105 @@ public static partial class ACMinimalApis
                 cancellationToken: context.RequestAborted);
         });
     });
+
+    /// <summary>
+    /// 给响应设置 HTTP 上下文信息，通常在返回之前末尾调用，以设置跟踪 Id 与请求地址
+    /// </summary>
+    /// <typeparam name="TApiRspAC"></typeparam>
+    /// <param name="apiRsp"></param>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public static TApiRspAC SetHttpContext<TApiRspAC>(this TApiRspAC apiRsp, HttpContext context) where TApiRspAC : ApiRspAC
+    {
+        if (string.IsNullOrWhiteSpace(apiRsp.Url))
+        {
+            apiRsp.Url = context.Request.Path;
+        }
+        if (string.IsNullOrWhiteSpace(apiRsp.TraceId))
+        {
+            apiRsp.TraceId = GetTraceId(context);
+        }
+        return apiRsp;
+    }
+
+    /// <summary>
+    /// 配置权限过滤器
+    /// </summary>
+    /// <typeparam name="TBuilder"></typeparam>
+    /// <param name="builder"></param>
+    /// <param name="controllerName"></param>
+    /// <param name="buttonType"></param>
+    /// <returns></returns>
+    public static TBuilder PermissionFilter<TBuilder>(this TBuilder builder, string controllerName, ACButtonType buttonType = default)
+        where TBuilder : IEndpointConventionBuilder
+        => builder.RequireAuthorization(new PermissionAuthorizationRequirement(controllerName, buttonType));
+
+    /// <summary>
+    /// 添加管理后台的仓储层服务接口
+    /// </summary>
+    /// <typeparam name="TDbContext"></typeparam>
+    /// <typeparam name="TACUser"></typeparam>
+    /// <typeparam name="TACRole"></typeparam>
+    /// <typeparam name="TACUserRole"></typeparam>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddACRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUser,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACRole,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUserRole>(this IServiceCollection services)
+        where TDbContext : ACDbContextBase<TACUser, TACRole, TACUserRole>
+        where TACUser : ACUser
+        where TACRole : ACRole
+        where TACUserRole : ACUserRole
+    {
+        services.AddScoped<IUserManagerExtensions, UserManagerExtensions<TDbContext, TACUser, TACRole, TACUserRole>>();
+        services.TryAddScoped<IACUserRepository, ACUserRepository<TDbContext, TACUser, TACRole, TACUserRole>>();
+        services.TryAddScoped<IACRoleRepository, ACRoleRepository<TDbContext, TACUser, TACRole, TACUserRole>>();
+        services.TryAddScoped<IACMenuRepository, ACMenuRepository<TDbContext, TACUser, TACRole, TACUserRole>>();
+        return services;
+    }
+
+    /// <summary>
+    /// 从 HTTP 上下文中获取管理后台用户 Id
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public static Guid GetACUserId(this HttpContext ctx)
+    {
+        var userManager = ctx.RequestServices.GetRequiredService<IUserManagerExtensions>();
+        var userId = userManager.GetUserId(ctx);
+        return userId;
+    }
+}
+
+file interface IUserManagerExtensions
+{
+    Guid GetUserId(HttpContext ctx);
+}
+
+file sealed class UserManagerExtensions<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUser,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACRole,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUserRole> :
+    IUserManagerExtensions
+    where TDbContext : ACDbContextBase<TACUser, TACRole, TACUserRole>
+    where TACUser : ACUser
+    where TACRole : ACRole
+    where TACUserRole : ACUserRole
+{
+    readonly TDbContext db;
+
+    public UserManagerExtensions(TDbContext db)
+    {
+        this.db = db;
+    }
+
+    public Guid GetUserId(HttpContext ctx)
+    {
+        var userId = db.GetUserId(ctx);
+        ArgumentNullException.ThrowIfNull(userId);
+        return userId.Value;
+    }
 }

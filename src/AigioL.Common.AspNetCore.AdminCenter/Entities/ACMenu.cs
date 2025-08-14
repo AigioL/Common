@@ -1,11 +1,13 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
 
@@ -123,4 +125,19 @@ public partial class ACMenu :
                    );
         }
     }
+}
+
+partial class ACMenu
+{
+    public static Expression<Func<ACMenu, ACMenuModel>> GetExpression() => item => new()
+    {
+        Id = item.Id,
+        Name = item.Name,
+        IconUrl = item.IconUrl,
+        Key = item.Key,
+        Sort = item.Sort,
+        ParentId = item.ParentId,
+        Url = item.Url,
+        Note = item.Note,
+    };
 }

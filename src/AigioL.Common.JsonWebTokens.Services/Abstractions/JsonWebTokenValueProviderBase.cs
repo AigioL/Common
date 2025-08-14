@@ -37,7 +37,7 @@ public abstract class JsonWebTokenValueProviderBase<[DynamicallyAccessedMembers(
         return signingCredentials;
     }
 
-    public async ValueTask<JsonWebTokenValue?> GenerateTokenAsync(
+    public async ValueTask<JsonWebTokenValue> GenerateTokenAsync(
         Guid userId,
         IEnumerable<string>? roles,
         Action<List<Claim>>? aciton,

@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 
-namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
+namespace AigioL.Common.AspNetCore.Helpers.ProgramMain.Controllers.Infrastructure;
 
 /// <summary>
 /// IP 地址测试接口

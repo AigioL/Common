@@ -16,9 +16,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IOperatorACUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IOperatorUserId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\TenantConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMLoginController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMMenusController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMRolesController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMUserController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMUsersController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\InfoController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\IPController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\ACIdentityDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\ACDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\CreationBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICreationBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IOperatorBaseEntity.cs" />
@@ -35,14 +39,29 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ACUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ACUserRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ACAppSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ACButtonModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ACButtonType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ACMenuOpenMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ACRoleModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ACUserTableItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\ACMenuButtonModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\ACMenuEdit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\ACMenuModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\ACMenuTreeItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ACMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiRspACExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiRspAC.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\InitSystemRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ACTenantAuditStatus.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RSAUtils.Decrypt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ACMinimalApis.Decrypt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\PermissionAuthorizationHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Policies\Requirements\PermissionAuthorizationRequirement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IACMenuRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IACRoleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IACUserRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ACMenuRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ACRoleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ACUserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

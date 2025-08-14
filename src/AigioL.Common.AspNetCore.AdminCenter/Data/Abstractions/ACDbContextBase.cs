@@ -15,7 +15,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
 /// <typeparam name="TACUser"></typeparam>
 /// <typeparam name="TACRole"></typeparam>
 /// <typeparam name="TACUserRole"></typeparam>
-public abstract partial class ACIdentityDbContextBase<
+public abstract partial class ACDbContextBase<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUserRole> :
@@ -26,18 +26,13 @@ public abstract partial class ACIdentityDbContextBase<
 {
     protected readonly IHttpContextAccessor? a;
 
-    protected ACIdentityDbContextBase(IServiceProvider serviceProvider, DbContextOptions options) : base(options)
+    protected ACDbContextBase(IServiceProvider serviceProvider, DbContextOptions options) : base(options)
     {
         a = serviceProvider.GetService<IHttpContextAccessor>();
     }
 
-    /// <summary>
-    /// 从当前 Http 上下文中获取管理后台用户 Id
-    /// </summary>
-    /// <returns></returns>
-    protected virtual Guid? GetCurrentUserId()
+    public virtual Guid? GetUserId(HttpContext? ctx)
     {
-        var ctx = a?.HttpContext;
         if (ctx != null)
         {
             var userManager = ctx.RequestServices.GetRequiredService<UserManager<TACUser>>();
@@ -46,6 +41,21 @@ public abstract partial class ACIdentityDbContextBase<
             {
                 return userIdG;
             }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 从当前 Http 上下文中获取管理后台用户 Id
+    /// </summary>
+    /// <returns></returns>
+    public virtual Guid? GetCurrentUserId()
+    {
+        var ctx = a?.HttpContext;
+        if (ctx != null)
+        {
+            var userId = GetUserId(ctx);
+            return userId;
         }
         return null;
     }

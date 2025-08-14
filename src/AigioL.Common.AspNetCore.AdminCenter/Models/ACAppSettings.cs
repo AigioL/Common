@@ -23,6 +23,11 @@ public abstract class ACAppSettings : JsonWebTokenOptions
     /// </summary>
     public virtual string? InitSystemSecuritySalt { get; set; }
 
+    /// <summary>
+    /// 管理后台的 RSA 私钥
+    /// </summary>
+    public virtual byte[]? AdminRSAPrivateKey { get; set; }
+
     public const int DefaultAccessExpirationFromDays = 31;
     public const int DefaultRefreshExpirationFromDays = 62;
 

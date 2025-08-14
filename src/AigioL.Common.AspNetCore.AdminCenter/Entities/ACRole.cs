@@ -1,10 +1,12 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
+using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
 
@@ -100,4 +102,13 @@ partial class ACRole : ITenantBaseEntity<Guid>
     /// <inheritdoc/>
     [Comment("租户 Id")]
     public Guid TenantId { get; set; }
+}
+
+partial class ACRole
+{
+    public static Expression<Func<ACRole, ACRoleModel>> GetExpression() => x => new()
+    {
+        Id = x.Id,
+        Name = x.Name!,
+    };
 }

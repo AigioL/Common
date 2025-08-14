@@ -18,11 +18,11 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AigioL.Common.AspNetCore.Helpers.ProgramMain;
+namespace AigioL.Common.AspNetCore.Helpers.ProgramMain.Controllers.Infrastructure;
 
-static partial class ProgramHelper
+public static partial class InfoController
 {
-    public static void MapGetInfoController(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "api/info")
+    public static void MapGetInfo(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "api/info")
     {
         b.MapGet(pattern, async (HttpContext context) =>
         {
@@ -30,7 +30,7 @@ static partial class ProgramHelper
 
             if (!env.IsDevelopment())
             {
-                return Results.Content($"{ProjectName} v{Version}");
+                return Results.Content($"{ProgramHelper.ProjectName} v{ProgramHelper.Version}");
             }
 
             var ip = context.Connection.RemoteIpAddress?.ToString();
@@ -66,7 +66,7 @@ static partial class ProgramHelper
             cts = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, context.RequestAborted);
             try
             {
-                var db = context.RequestServices.GetService<IInfoDbContext>()?.GetDbContext();
+                var db = context.RequestServices.GetService<ProgramHelper.IDbContext>()?.GetDbContext();
                 if (db != null)
                 {
                     dbVersion = [(await db.Database.SqlQueryRaw<VersionEntity>("SELECT version()").FirstOrDefaultAsync(cts.Token))?.version];
@@ -83,8 +83,8 @@ static partial class ProgramHelper
             InfoModel m = new()
             {
                 IpAddress = ip,
-                ProjectName = ProjectName,
-                Version = Version,
+                ProjectName = ProgramHelper.ProjectName,
+                Version = ProgramHelper.Version,
                 RuntimeVersion = Environment.Version.ToString(),
                 //CentralProcessorName = $"{ProgramHelper.CentralProcessorName} x{Environment.ProcessorCount}",
                 WebRootPath = env.WebRootPath,
@@ -118,11 +118,6 @@ static partial class ProgramHelper
             };
             return Results.Json(m, JSC.Default.InfoModel);
         }).AllowAnonymous();
-    }
-
-    public interface IInfoDbContext
-    {
-        DbContext GetDbContext();
     }
 
     sealed record class VersionEntity

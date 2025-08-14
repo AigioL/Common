@@ -1,13 +1,13 @@
 using Microsoft.IO;
 using System.Buffers;
 using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 
-#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
-namespace System.Security.Cryptography;
+namespace AigioL.Common.AspNetCore.AdminCenter;
 
-static partial class RSAUtils
+static partial class ACMinimalApis
 {
     /// <summary>
     /// 用于 JS 前端数据的 RSA 解密

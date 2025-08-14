@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -326,5 +327,10 @@ public static partial class ProgramHelper
             throw new InvalidOperationException($"Connection string '{connectionString}' not found.");
         }
         return connectionString;
+    }
+
+    public interface IDbContext
+    {
+        DbContext GetDbContext();
     }
 }

@@ -12,7 +12,7 @@ public interface IJsonWebTokenValueProvider
     /// 生成 JsonWebToken
     /// </summary>
     /// <returns></returns>
-    ValueTask<JsonWebTokenValue?> GenerateTokenAsync(
+    ValueTask<JsonWebTokenValue> GenerateTokenAsync(
         Guid userId,
         IEnumerable<string>? roles,
         Action<List<Claim>>? aciton,
