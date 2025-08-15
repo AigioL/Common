@@ -54,6 +54,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\InitSystemRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ACTenantAuditStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ACMinimalApis.Decrypt.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Users\ACUserInfoModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Users\AddACUserModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Users\EditACUserInfoModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Users\EditACUserModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\PermissionAuthorizationHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Requirements\PermissionAuthorizationRequirement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IACMenuRepository.cs" />

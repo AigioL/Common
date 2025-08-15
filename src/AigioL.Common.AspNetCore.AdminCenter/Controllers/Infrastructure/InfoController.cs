@@ -28,6 +28,8 @@ public static partial class InfoController
                 result.SetException(ex);
             }
             return Results.Json(result, ACMinimalApisJsonSerializerContext.Default.ApiRspACJsonWebTokenValue);
-        }).AllowAnonymous();
+        })
+        .AllowAnonymous()
+        .WithDescription("创建一个默认系统管理员账号");
     }
 }

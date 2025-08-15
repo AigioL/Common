@@ -6,6 +6,7 @@ using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Repositories;
@@ -26,27 +27,42 @@ sealed partial class ACUserRepository<
     {
     }
 
-    public async Task<PagedModel<ACUserTableItem>> QueryAsync(string? userName, int current = 1, int pageSize = 10)
+    public DatabaseFacade Database => db.Database;
+
+    public async Task<PagedModel<ACUserTableItem>> QueryAsync(string? userName, string? nickName, string? name, int current = 1, int pageSize = 10)
     {
-        var role = from ur in db.UserRoles.AsNoTrackingWithIdentityResolution()
-                   join r in db.Roles.AsNoTrackingWithIdentityResolution() on ur.RoleId equals r.Id
-                   select new
-                   {
-                       ur.UserId,
-                       r.Name,
-                   };
-        var query = from user in db.Users.AsNoTrackingWithIdentityResolution()
-                    select new ACUserTableItem
+        var roles = from ur in db.UserRoles.AsNoTrackingWithIdentityResolution()
+                    join role in db.Roles.AsNoTrackingWithIdentityResolution() on ur.RoleId equals role.Id
+                    select new
                     {
-                        Id = user.Id,
-                        UserName = user.UserName!,
-                        LockoutEnabled = user.LockoutEnabled,
-                        Roles = role.Where(x => x.UserId == user.Id).Select(x => x.Name).ToList(),
+                        ur.UserId,
+                        role.Name,
                     };
+        var query = from user in db.Users.AsNoTrackingWithIdentityResolution()
+                    select user;
         if (!string.IsNullOrEmpty(userName))
         {
-            query = query.Where(x => x.UserName.Contains(userName));
+            query = query.Where(x => x.NormalizedUserName!.Contains(userName));
         }
-        return await query.PagingAsync(current, pageSize, RequestAborted);
+        if (!string.IsNullOrEmpty(nickName))
+        {
+            query = query.Where(x => x.NickName != null && x.NickName.Contains(nickName));
+        }
+        if (!string.IsNullOrEmpty(name))
+        {
+            query = query.Where(x => x.NormalizedUserName!.Contains(name) || (x.NickName != null && x.NickName.Contains(name)));
+        }
+
+        var q1 = query.Select(user => new ACUserTableItem
+        {
+            Id = user.Id,
+            UserName = user.UserName!,
+            NickName = user.NickName,
+            LockoutEnabled = user.LockoutEnabled,
+            Roles = roles.Where(x => x.UserId == user.Id).Select(x => x.Name).ToList(),
+        });
+
+        var r = await q1.PagingAsync(current, pageSize, RequestAborted);
+        return r;
     }
 }

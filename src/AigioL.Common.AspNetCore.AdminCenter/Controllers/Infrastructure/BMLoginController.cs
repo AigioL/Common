@@ -21,13 +21,15 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMLoginController
 {
-    public static void MapBMLogin<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/login") where TUser : ACUser
+    public static void MapBMLogin<TACUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/login") where TACUser : ACUser
     {
         b.MapPost(pattern, async (HttpContext context, [FromBody] string[] args) =>
         {
-            var r = await LoginAsync<TUser>(context, args);
+            var r = await LoginAsync<TACUser>(context, args);
             return r.SetHttpContext(context);
-        }).AllowAnonymous();
+        })
+        .AllowAnonymous()
+        .WithDescription("管理后台用户登录");
     }
 
     const int MaxIpAccessFailedCount = 10;

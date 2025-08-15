@@ -1,4 +1,7 @@
+using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
+using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 using AigioL.Common.JsonWebTokens.Models;
+using AigioL.Common.Primitives.Models;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -42,6 +45,32 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 [JsonSerializable(typeof(ApiRspAC<nil?>))]
 [JsonSerializable(typeof(InitSystemRequest))]
 [JsonSerializable(typeof(ApiRspAC<JsonWebTokenValue>))]
+#region BMMenusController
+[JsonSerializable(typeof(ApiRspAC<List<ACMenuTreeItem>?>))]
+[JsonSerializable(typeof(ApiRspAC<ACMenuModel?>))]
+[JsonSerializable(typeof(ACMenuEdit))]
+[JsonSerializable(typeof(ApiRspAC<List<ACMenuModel>?>))]
+[JsonSerializable(typeof(ApiRspAC<List<ACButtonModel>?>))]
+[JsonSerializable(typeof(ApiRspAC<List<Guid>?>))]
+[JsonSerializable(typeof(IEnumerable<Guid>))]
+[JsonSerializable(typeof(IEnumerable<ACButtonModel>))]
+#endregion
+#region BMRolesController
+[JsonSerializable(typeof(ApiRspAC<List<SelectItemModel<Guid>>?>))]
+[JsonSerializable(typeof(ApiRspAC<PagedModel<ACRoleModel>?>))]
+[JsonSerializable(typeof(ApiRspAC<List<Guid>?>))]
+[JsonSerializable(typeof(ACRoleModel))]
+#endregion
+#region BMUserController
+[JsonSerializable(typeof(ApiRspAC<ACUserInfoModel>))]
+[JsonSerializable(typeof(ApiRspAC<List<Guid>?>))]
+[JsonSerializable(typeof(EditACUserInfoModel))]
+#endregion
+#region BMUsersController
+[JsonSerializable(typeof(ApiRspAC<PagedModel<ACUserTableItem>>))]
+[JsonSerializable(typeof(AddACUserModel))]
+[JsonSerializable(typeof(EditACUserModel))]
+#endregion
 [JsonSourceGenerationOptions]
 public sealed partial class ACMinimalApisJsonSerializerContext : JsonSerializerContext
 {

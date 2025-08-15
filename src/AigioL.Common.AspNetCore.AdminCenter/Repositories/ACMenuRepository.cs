@@ -349,7 +349,7 @@ partial class ACMenuRepository<TDbContext, TACUser, TACRole, TACUserRole> // 菜
         return true;
     }
 
-    public async Task<bool> EditMenuButtonsAsync(string name, Guid userId, Guid roleId, Guid menuId, Guid tenantId, params List<ACButtonModel> buttons)
+    public async Task<bool> EditMenuButtonsAsync(string name, Guid userId, Guid roleId, Guid menuId, Guid tenantId, params IEnumerable<ACButtonModel> buttons)
     {
         var menu = await db.Menus.AsNoTrackingWithIdentityResolution()
                .FirstOrDefaultAsync(x => x.Id == menuId && x.TenantId == tenantId, RequestAborted);

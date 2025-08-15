@@ -102,7 +102,7 @@ partial interface IACMenuRepository // 菜单权限
          Guid roleId,
          Guid menuId,
          Guid tenantId,
-         params List<ACButtonModel> buttons);
+         params IEnumerable<ACButtonModel> buttons);
 
     /// <summary>
     /// 删除菜单权限

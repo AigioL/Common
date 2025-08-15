@@ -5,8 +5,11 @@ using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.OpenApi.Models;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -25,16 +28,18 @@ public static partial class ACMinimalApis
     /// <summary>
     /// 注册管理后台的最小 API 路由
     /// </summary>
-    /// <typeparam name="TUser"></typeparam>
-    /// <param name="b"></param>
-    public static void MapACMinimalApis<TUser>(this IEndpointRouteBuilder b) where TUser : ACUser
+    public static void MapACMinimalApis<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUser,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACRole>(this IEndpointRouteBuilder b)
+        where TACUser : ACUser, new()
+        where TACRole : ACRole, new()
     {
         b.MapPostInfo();
-        b.MapBMLogin<TUser>();
+        b.MapBMLogin<TACUser>();
         b.MapBMMenus();
-        b.MapBMRoles();
-        b.MapBMUser();
-        b.MapBMUsers();
+        b.MapBMRoles<TACRole>();
+        b.MapBMUser<TACUser>();
+        b.MapBMUsers<TACUser>();
     }
 
     static string GetPath(HttpContext context, out Exception? error)
@@ -187,6 +192,13 @@ public static partial class ACMinimalApis
         var userId = userManager.GetUserId(ctx);
         return userId;
     }
+
+    /// <summary>
+    /// 添加 Bearer 安全方案（JWT）转换器到 OpenAPI 文档转换器
+    /// </summary>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static OpenApiOptions AddBearerSecuritySchemeTransformer(this OpenApiOptions options) => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 }
 
 file interface IUserManagerExtensions
@@ -217,5 +229,32 @@ file sealed class UserManagerExtensions<
         var userId = db.GetUserId(ctx);
         ArgumentNullException.ThrowIfNull(userId);
         return userId.Value;
+    }
+}
+
+/// <summary>
+/// https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/openapi/customize-openapi#use-document-transformers
+/// </summary>
+/// <param name="authenticationSchemeProvider"></param>
+file sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
+{
+    public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+    {
+        var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
+        if (authenticationSchemes.Any(authScheme => authScheme.Name == BMLoginController.BearerScheme))
+        {
+            var requirements = new Dictionary<string, OpenApiSecurityScheme>
+            {
+                [BMLoginController.BearerScheme] = new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = BMLoginController.BearerScheme.ToLowerInvariant(), // "bearer" refers to the header name here
+                    In = ParameterLocation.Header,
+                    BearerFormat = "Json Web Token",
+                }
+            };
+            document.Components ??= new OpenApiComponents();
+            document.Components.SecuritySchemes = requirements;
+        }
     }
 }

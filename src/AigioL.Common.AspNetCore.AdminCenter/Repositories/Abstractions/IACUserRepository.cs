@@ -1,20 +1,19 @@
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 
 public interface IACUserRepository
 {
+    DatabaseFacade Database { get; }
+
     /// <summary>
     /// 表格查询
     /// </summary>
-    /// <param name="userName"></param>
-    /// <param name="current"></param>
-    /// <param name="pageSize"></param>
-    /// <returns></returns>
     Task<PagedModel<ACUserTableItem>> QueryAsync(
-             string? userName,
+             string? userName, string? nickName, string? name,
              int current = IPagedModel.DefaultCurrent,
              int pageSize = IPagedModel.DefaultPageSize);
 }

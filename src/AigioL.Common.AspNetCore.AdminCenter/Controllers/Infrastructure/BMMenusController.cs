@@ -17,46 +17,98 @@ public static partial class BMMenusController
 
     public static void MapBMMenus(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/menus")
     {
-        var routeGroup = b.MapGroup(pattern);
+        var routeGroup = b.MapGroup(pattern)
+            .WithDescription("管理后台的菜单管理");
 
-        // 增删改查
         routeGroup.MapGet("/tree", async (HttpContext context) =>
         {
             var r = await Tree(context);
             return r.SetHttpContext(context);
-        }).PermissionFilter(ControllerName, ACButtonType.Query);
+        }).PermissionFilter(ControllerName, ACButtonType.Query)
+        .WithDescription("查询管理后台菜单树结构（仅支持二级）");
+
+        // 增删改查
         routeGroup.MapGet("/{id}", async (HttpContext context, [FromRoute] Guid id) =>
         {
             var r = await Get(context, id);
             return r.SetHttpContext(context);
-        }).PermissionFilter(ControllerName, ACButtonType.Detail);
+        }).PermissionFilter(ControllerName, ACButtonType.Detail)
+        .WithDescription("查询管理后台菜单详情");
         routeGroup.MapPost("", async (HttpContext context, [FromBody] ACMenuEdit model) =>
         {
             var r = await Post(context, model);
             return r.SetHttpContext(context);
-        }).PermissionFilter(ControllerName, ACButtonType.Add);
+        }).PermissionFilter(ControllerName, ACButtonType.Add)
+        .WithDescription("新增管理后台菜单");
         routeGroup.MapDelete("/{id}", async (HttpContext context, [FromRoute] Guid id) =>
         {
             var r = await Delete(context, id);
             return r.SetHttpContext(context);
-        }).PermissionFilter(ControllerName, ACButtonType.Delete);
+        }).PermissionFilter(ControllerName, ACButtonType.Delete)
+        .WithDescription("删除管理后台菜单");
         routeGroup.MapPut("", async (HttpContext context, [FromBody] ACMenuEdit model) =>
         {
             var r = await Put(context, model);
             return r.SetHttpContext(context);
-        }).PermissionFilter(ControllerName, ACButtonType.Edit);
+        }).PermissionFilter(ControllerName, ACButtonType.Edit)
+        .WithDescription("编辑管理后台菜单");
 
         // 菜单权限
+        routeGroup.MapGet("roletree", async (HttpContext context) =>
+        {
+            var r = await RoleTree(context);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Query)
+        .WithDescription("查询管理后台菜单权限树结构（仅支持二级）");
+        routeGroup.MapGet("bottons", async (HttpContext context) =>
+        {
+            var r = await GetButtons(context);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Query)
+        .WithDescription("获取管理后台按钮列表");
+        routeGroup.MapGet("bottons/{menuId}", async (HttpContext context, [FromRoute] Guid menuId) =>
+        {
+            var r = await GetMenuButtons(context, menuId);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Query)
+        .WithDescription("获取管理后台菜单的按钮列表");
+        routeGroup.MapPost("bottons/{menuId}", async (HttpContext context, [FromRoute] Guid menuId) =>
+        {
+            var r = await AddMenuButtons(context, menuId);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Add)
+        .WithDescription("新增管理后台菜单的按钮");
+        routeGroup.MapPut("bottons/{menuId}", async (HttpContext context, [FromRoute] Guid menuId) =>
+        {
+            var r = await EditMenuButtons(context, menuId);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Edit)
+        .WithDescription("编辑管理后台菜单的按钮");
 
-        // roletree GET
-        // bottons GET
-        // bottons/{menuId} GET
-        // bottons/{menuId} POST
-        // bottons/{menuId} PUT
-        // bottons/{roleId}/{menuId} GET
-        // bottons/{roleId}/{menuId} POST
-        // bottons/{roleId}/{menuId} PUT
-        // bottons/{roleId}/{menuId} DELETE
+        routeGroup.MapGet("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId) =>
+        {
+            var r = await GetRoleMenuButtonsAsync(context, roleId, menuId);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Query)
+        .WithDescription("获取管理后台菜单权限按钮列表");
+        routeGroup.MapPost("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId, [FromBody] IEnumerable<ACButtonModel> buttons) =>
+        {
+            var r = await AddMenuButtons(context, roleId, menuId, buttons);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Add)
+        .WithDescription("新增管理后台菜单权限按钮");
+        routeGroup.MapPut("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId, [FromQuery] string name, [FromBody] IEnumerable<ACButtonModel> buttons) =>
+        {
+            var r = await EditMenuButtons(context, roleId, menuId, name, buttons);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Edit)
+        .WithDescription("编辑管理后台菜单权限按钮");
+        routeGroup.MapDelete("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId) =>
+        {
+            var r = await DeleteMenuButtons(context, roleId, menuId);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, ACButtonType.Edit)
+        .WithDescription("删除管理后台菜单权限按钮");
     }
 
     static async Task<ApiRspAC<List<ACMenuTreeItem>?>> Tree(HttpContext context)
@@ -119,4 +171,94 @@ public static partial class BMMenusController
         var r = await PostOrPut(context, model);
         return r;
     }
+
+    #region 菜单权限
+
+    static async Task<ApiRspAC<List<ACMenuModel>?>> RoleTree(HttpContext context)
+    {
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.GetRoleTreeAsync();
+        return r;
+    }
+
+    static async Task<ApiRspAC<List<ACButtonModel>?>> GetButtons(HttpContext context)
+    {
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.GetButtonsAsync();
+        return r;
+    }
+
+    static async Task<ApiRspAC<List<Guid>?>> GetMenuButtons(HttpContext context, Guid menuId)
+    {
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.GetMenuButtonsAsync(menuId, TenantConstants.RootTenantIdG);
+        return r;
+    }
+
+    static async Task<ApiRspAC<bool>> AddMenuButtons(HttpContext context, Guid menuId, params IEnumerable<Guid> buttons)
+    {
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.EditMenuButtonsAsync(menuId, TenantConstants.RootTenantIdG, buttons);
+        return new ApiRspAC<bool>
+        {
+            Code = StatusCodes.Status200OK,
+            Content = r,
+        };
+    }
+
+    static async Task<ApiRspAC<bool>> EditMenuButtons(HttpContext context, Guid menuId, params IEnumerable<Guid> buttons)
+    {
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.EditMenuButtonsAsync(menuId, TenantConstants.RootTenantIdG, buttons);
+        return new ApiRspAC<bool>
+        {
+            Code = StatusCodes.Status200OK,
+            Content = r,
+        };
+    }
+
+    static async Task<ApiRspAC<List<ACButtonModel>?>> GetRoleMenuButtonsAsync(HttpContext context, Guid roleId, Guid menuId)
+    {
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.GetRoleMenuButtonsAsync(roleId, menuId, TenantConstants.RootTenantIdG);
+        return r;
+    }
+
+    static async Task<ApiRspAC<bool>> AddMenuButtons(HttpContext context, Guid roleId, Guid menuId, params IEnumerable<ACButtonModel> buttons)
+    {
+        var userId = context.GetACUserId();
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.AddMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
+        return new ApiRspAC<bool>
+        {
+            Code = StatusCodes.Status200OK,
+            Content = r,
+        };
+    }
+
+    static async Task<ApiRspAC<bool>> EditMenuButtons(HttpContext context, Guid roleId, Guid menuId, string name, params IEnumerable<ACButtonModel> buttons)
+    {
+        var userId = context.GetACUserId();
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.EditMenuButtonsAsync(name, userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
+        return new ApiRspAC<bool>
+        {
+            Code = StatusCodes.Status200OK,
+            Content = r,
+        };
+    }
+
+    static async Task<ApiRspAC<bool>> DeleteMenuButtons(HttpContext context, Guid roleId, Guid menuId)
+    {
+        var userId = context.GetACUserId();
+        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var r = await repo.DeleteMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG);
+        return new ApiRspAC<bool>
+        {
+            Code = StatusCodes.Status200OK,
+            Content = r,
+        };
+    }
+
+    #endregion
 }

@@ -117,7 +117,9 @@ public static partial class InfoController
                 IsDynamicCodeSupported = RuntimeFeature.IsDynamicCodeSupported,
             };
             return Results.Json(m, JSC.Default.InfoModel);
-        }).AllowAnonymous();
+        })
+        .AllowAnonymous()
+        .WithDescription("测试输出信息");
     }
 
     sealed record class VersionEntity

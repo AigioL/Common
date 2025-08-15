@@ -1,4 +1,5 @@
 using AigioL.Common.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Net;
 using System.Text.Json.Serialization;
@@ -100,6 +101,25 @@ public partial record class ApiRspAC
         Url = apiRsp.Url,
         TraceId = apiRsp.TraceId,
     };
+
+    protected static IEnumerable<string> GetErrors(IdentityResult identityResult)
+    {
+        foreach (var error in identityResult.Errors)
+            if (!string.IsNullOrWhiteSpace(error.Description))
+                yield return error.Description;
+            else if (!string.IsNullOrWhiteSpace(error.Code))
+                yield return $"Identity Error, Code: {error.Code}";
+    }
+
+    public static implicit operator ApiRspAC(IdentityResult identityResult)
+    {
+        ApiRspAC r = new()
+        {
+            Messages = [.. GetErrors(identityResult)],
+        };
+        r.SetIsSuccess(false);
+        return r;
+    }
 }
 
 /// <summary>
@@ -146,6 +166,16 @@ public sealed partial record class ApiRspAC<TContent> : ApiRspAC
         Content = apiRsp.Content,
         TraceId = apiRsp.TraceId,
     };
+
+    public static implicit operator ApiRspAC<TContent>(IdentityResult identityResult)
+    {
+        ApiRspAC<TContent> r = new()
+        {
+            Messages = [.. GetErrors(identityResult)],
+        };
+        r.SetIsSuccess(false);
+        return r;
+    }
 
     public static new ApiRspAC<TContent> Ok => new()
     {

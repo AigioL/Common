@@ -24,7 +24,9 @@ public static class IPController
             if (ip != null && ip.AddressFamily == AddressFamily.InterNetworkV6)
                 return Results.Ok();
             return Results.BadRequest();
-        }).AllowAnonymous();
+        })
+        .AllowAnonymous()
+        .WithDescription("测试 IPv6 获取");
     }
 
     /// <summary>
@@ -38,6 +40,8 @@ public static class IPController
         {
             var ip = context.Connection.RemoteIpAddress;
             return Results.Content(ip?.ToString());
-        }).AllowAnonymous();
+        })
+        .AllowAnonymous()
+        .WithDescription("测试 IP 地址获取");
     }
 }
