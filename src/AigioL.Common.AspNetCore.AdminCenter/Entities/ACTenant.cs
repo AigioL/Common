@@ -60,14 +60,14 @@ public partial class ACTenant :
     /// <summary>
     /// 注册人电话
     /// </summary>
-    [Comment("联系人电话")]
+    [Comment("注册人电话")]
     [StringLength(IPhoneNumber.DatabaseMaxLength)]
     public string? RegisterPhoneNumber { get; set; }
 
     /// <summary>
     /// 注册人电话国家或地区代码
     /// </summary>
-    [Comment("联系人电话国家或地区代码")]
+    [Comment("注册人电话国家或地区代码")]
     [StringLength(IPhoneNumber.RegionCodeDatabaseMaxLength)]
     public string? RegisterPhoneNumberRegionCode { get; set; }
 
