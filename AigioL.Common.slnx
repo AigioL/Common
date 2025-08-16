@@ -26,6 +26,11 @@
   <Folder Name="/2.Document/" />
   <Folder Name="/2.Libraries/">
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter/AigioL.Common.AspNetCore.AdminCenter.shproj" Id="66c06857-99f9-4aa4-9504-e2f1070aa7ae" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics/AigioL.Common.AspNetCore.AppCenter.Analytics.shproj" Id="4741fdd2-d3e8-43a7-a068-03d0f9859292" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic/AigioL.Common.AspNetCore.AppCenter.Basic.shproj" Id="3b025ecf-b924-4625-9635-68b1c88e3cd3" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering/AigioL.Common.AspNetCore.AppCenter.Ordering.shproj" Id="050a2e79-a588-44b3-87b4-4c32d5af4414" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment/AigioL.Common.AspNetCore.AppCenter.Payment.shproj" Id="437a68a1-83ad-4227-b4b3-b2dbf24afcf5" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter/AigioL.Common.AspNetCore.AppCenter.shproj" Id="80235da3-43b6-4c66-bdd7-dd3857d3e0bd" />
     <Project Path="src/AigioL.Common.AspNetCore.Helpers.ProgramMain/AigioL.Common.AspNetCore.Helpers.ProgramMain.shproj" Id="276306f9-8c73-4b7a-a517-e7a502cd5f2b" />
     <Project Path="src/AigioL.Common.Bcl/AigioL.Common.Bcl.shproj" Id="86dfc3a4-0f30-40f0-af39-6e76e46d78f1" />
     <Project Path="src/AigioL.Common.EntityFrameworkCore/AigioL.Common.EntityFrameworkCore.shproj" Id="a39bde5d-77a9-4136-a88e-0e2d2b0701d0" />
