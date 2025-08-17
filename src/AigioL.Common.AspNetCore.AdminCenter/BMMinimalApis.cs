@@ -198,7 +198,7 @@ public static partial class BMMinimalApis
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static OpenApiOptions AddBearerSecuritySchemeTransformer(this OpenApiOptions options) => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    public static OpenApiOptions AddBMBearerSecuritySchemeTransformer(this OpenApiOptions options) => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 }
 
 file interface IUserManagerExtensions
