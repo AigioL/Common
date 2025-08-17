@@ -64,7 +64,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 #region BMUserController
 [JsonSerializable(typeof(BMApiRsp<BMUserInfoModel>))]
 [JsonSerializable(typeof(BMApiRsp<List<Guid>?>))]
-[JsonSerializable(typeof(EditBMUserInfoModel))
+[JsonSerializable(typeof(EditBMUserInfoModel))]
 [JsonSerializable(typeof(BMChangePasswordRequest))]
 #endregion
 #region BMUsersController
