@@ -12,20 +12,20 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Policies.Handlers;
 /// 基于策略的授权
 /// <para>https://learn.microsoft.com/zh-cn/aspnet/core/security/authorization/policies#authorization-handlers</para>
 /// </summary>
-/// <typeparam name="TACDbContext"></typeparam>
-/// <typeparam name="TACUser"></typeparam>
-/// <typeparam name="TACRole"></typeparam>
-/// <typeparam name="TACUserRole"></typeparam>
+/// <typeparam name="TDbContext"></typeparam>
+/// <typeparam name="TUser"></typeparam>
+/// <typeparam name="TRole"></typeparam>
+/// <typeparam name="TUserRole"></typeparam>
 public sealed class PermissionAuthorizationHandler<
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACDbContext,
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUser,
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACRole,
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TACUserRole>
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole>
     : AuthorizationHandler<PermissionAuthorizationRequirement>
-    where TACDbContext : ACDbContextBase<TACUser, TACRole, TACUserRole>
-    where TACUser : ACUser
-    where TACRole : ACRole
-    where TACUserRole : ACUserRole
+    where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>
+    where TUser : BMUser
+    where TRole : BMRole
+    where TUserRole : BMUserRole
 {
     readonly IServiceProvider serviceProvider;
 
@@ -40,7 +40,7 @@ public sealed class PermissionAuthorizationHandler<
         return HandleRequirementAsync(context, requirement, cancellationToken);
     }
 
-    internal static IQueryable<TACUserRole> GetQuery(TACDbContext db, Guid userId, string policyName)
+    internal static IQueryable<TUserRole> GetQuery(TDbContext db, Guid userId, string policyName)
     {
         var query = from role in db.UserRoles
                     join user in db.Users on role.UserId equals user.Id
@@ -61,8 +61,8 @@ public sealed class PermissionAuthorizationHandler<
     async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionAuthorizationRequirement requirement, CancellationToken cancellationToken)
     {
         using var s = serviceProvider.CreateScope();
-        var db = s.ServiceProvider.GetRequiredService<TACDbContext>();
-        var userManager = s.ServiceProvider.GetRequiredService<UserManager<TACUser>>();
+        var db = s.ServiceProvider.GetRequiredService<TDbContext>();
+        var userManager = s.ServiceProvider.GetRequiredService<UserManager<TUser>>();
 
         if (ShortGuid.TryParse(userManager.GetUserId(context.User), out Guid userId))
         {

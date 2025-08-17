@@ -23,7 +23,7 @@ public abstract class OperatorBaseEntity<[DynamicallyAccessedMembers(IEntity.DAM
     public Guid? OperatorUserId { get; set; }
 
     /// <inheritdoc/>
-    public virtual ACUser? OperatorUser { get; set; }
+    public virtual BMUser? OperatorUser { get; set; }
 
     public new abstract class EntityTypeConfiguration<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity> : CreationBaseEntity<TPrimaryKey>.EntityTypeConfiguration<TEntity>
          where TEntity : OperatorBaseEntity<TPrimaryKey>

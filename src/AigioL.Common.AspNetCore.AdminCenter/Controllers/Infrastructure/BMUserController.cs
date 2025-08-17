@@ -20,7 +20,7 @@ public static partial class BMUserController
 {
     const string DefaultACUserAvatarUrl = "/img/default-avatar.png";
 
-    public static void MapBMUser<TACUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/user") where TACUser : ACUser
+    public static void MapBMUser<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/user") where TUser : BMUser
     {
         var routeGroup = b.MapGroup(pattern)
             .RequireAuthorization(new AuthorizeAttribute()
@@ -32,34 +32,34 @@ public static partial class BMUserController
         routeGroup.MapGet("", async (HttpContext context) =>
         {
             var tenantId = TenantConstants.RootTenantIdG;
-            var r = await Get<TACUser>(context, tenantId);
+            var r = await Get<TUser>(context, tenantId);
             return r.SetHttpContext(context);
         })
         .WithDescription("获取当前登录管理后台的用户个人资料");
-        routeGroup.MapPut("", async (HttpContext context, [FromBody] EditACUserInfoModel model) =>
+        routeGroup.MapPut("", async (HttpContext context, [FromBody] EditBMUserInfoModel model) =>
         {
-            var r = await Put<TACUser>(context, model);
+            var r = await Put<TUser>(context, model);
             return r.SetHttpContext(context);
         })
         .WithDescription("编辑当前登录管理后台的用户个人资料");
         routeGroup.MapGet("menus", async (HttpContext context) =>
         {
             var tenantId = TenantConstants.RootTenantIdG;
-            var r = await GetRoleMenus<TACUser>(context, tenantId);
+            var r = await GetRoleMenus<TUser>(context, tenantId);
             return r.SetHttpContext(context);
         })
         .WithDescription("获取当前登录管理后台的用户角色菜单主键列表");
-        routeGroup.MapPut("cpwd", async (HttpContext context, [FromBody] string[] args) =>
+        routeGroup.MapPut("cpwd", async (HttpContext context, [FromBody] BMChangePasswordRequest model) =>
         {
-            var r = await Put<TACUser>(context, args);
+            var r = await Put<TUser>(context, model);
             return r.SetHttpContext(context);
         })
         .WithDescription("修改当前登录管理后台用户的密码（验证旧密码相同）");
     }
 
-    static async Task<ApiRspAC<ACUserInfoModel>> Get<TACUser>(HttpContext context, Guid tenantId) where TACUser : ACUser
+    static async Task<BMApiRsp<BMUserInfoModel>> Get<TUser>(HttpContext context, Guid tenantId) where TUser : BMUser
     {
-        var userManager = context.RequestServices.GetRequiredService<UserManager<TACUser>>();
+        var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
         if (user == null)
         {
@@ -67,10 +67,10 @@ public static partial class BMUserController
         }
         ArgumentNullException.ThrowIfNull(user.UserName);
 
-        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var menus = await repo.GetUserMenuAsync(user.Id, tenantId);
 
-        ACUserInfoModel r = new()
+        BMUserInfoModel r = new()
         {
             UserName = user.UserName,
             NickName = user.NickName,
@@ -81,9 +81,9 @@ public static partial class BMUserController
         return r;
     }
 
-    static async Task<ApiRspAC> Put<TACUser>(HttpContext context, EditACUserInfoModel model) where TACUser : ACUser
+    static async Task<BMApiRsp> Put<TUser>(HttpContext context, EditBMUserInfoModel model) where TUser : BMUser
     {
-        var userManager = context.RequestServices.GetRequiredService<UserManager<TACUser>>();
+        var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
         if (user == null)
         {
@@ -113,9 +113,9 @@ public static partial class BMUserController
         return HttpStatusCode.OK;
     }
 
-    static async Task<ApiRspAC<List<Guid>?>> GetRoleMenus<TACUser>(HttpContext context, Guid tenantId) where TACUser : ACUser
+    static async Task<BMApiRsp<List<Guid>?>> GetRoleMenus<TUser>(HttpContext context, Guid tenantId) where TUser : BMUser
     {
-        var userManager = context.RequestServices.GetRequiredService<UserManager<TACUser>>();
+        var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
         if (user == null)
         {
@@ -123,30 +123,30 @@ public static partial class BMUserController
         }
         ArgumentNullException.ThrowIfNull(user.UserName);
 
-        var repo = context.RequestServices.GetRequiredService<IACMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var r = await repo.GetRoleMenus(user.Id, tenantId);
         return r;
     }
 
-    static async Task<ApiRspAC> Put<TACUser>(HttpContext context, string[] args) where TACUser : ACUser
+    static async Task<BMApiRsp> Put<TUser>(HttpContext context, BMChangePasswordRequest model) where TUser : BMUser
     {
-        if (args.Length < 2)
-        {
-            return HttpStatusCode.BadRequest;
-        }
+        var appSettings = context.RequestServices.GetRequiredService<IOptions<BMAppSettings>>().Value;
 
-        var appSettings = context.RequestServices.GetRequiredService<IOptions<ACAppSettings>>().Value;
-
+#if ENABLE_ALL_PWD_DECRYPT
         var rsaPrivateKey = appSettings.AdminRSAPrivateKey;
         ArgumentNullException.ThrowIfNull(rsaPrivateKey);
         var rsaParameters = RSAUtils.ReadParameters(rsaPrivateKey);
         using var rsa = RSA.Create(rsaParameters);
 
-        var oldPassword = ACMinimalApis.DecryptAC(rsa, args[0]);
-        var newPassword = ACMinimalApis.DecryptAC(rsa, args[1]);
+        var oldPassword = BMMinimalApis.DecryptAC(rsa, model.OldPassword);
+        var newPassword = BMMinimalApis.DecryptAC(rsa, model.NewPassword);
+#else
+        var oldPassword = model.OldPassword;
+        var newPassword = model.NewPassword;
+#endif
 
 
-        var userManager = context.RequestServices.GetRequiredService<UserManager<TACUser>>();
+        var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
         if (user == null)
         {

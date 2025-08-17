@@ -21,11 +21,11 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMLoginController
 {
-    public static void MapBMLogin<TACUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/login") where TACUser : ACUser
+    public static void MapBMLogin<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/login") where TUser : BMUser
     {
         b.MapPost(pattern, async (HttpContext context, [FromBody] string[] args) =>
         {
-            var r = await LoginAsync<TACUser>(context, args);
+            var r = await LoginAsync<TUser>(context, args);
             return r.SetHttpContext(context);
         })
         .AllowAnonymous()
@@ -36,7 +36,7 @@ public static partial class BMLoginController
     public const string BearerScheme = "Bearer";
     const string ResponseDataUserNameNotFoundOrPasswordInvalid = "用户名不存在或密码错误";
 
-    static async Task<ApiRspAC<JsonWebTokenValue?>> LoginAsync<TUser>(HttpContext context, string[] args) where TUser : ACUser
+    static async Task<BMApiRsp<JsonWebTokenValue?>> LoginAsync<TUser>(HttpContext context, string[] args) where TUser : BMUser
     {
         if (args.Length < 2)
         {
@@ -75,20 +75,20 @@ public static partial class BMLoginController
         return result;
     }
 
-    static async Task<ApiRspAC<JsonWebTokenValue?>> LoginCoreAsync<TUser>(HttpContext context, string[] args, IDistributedCache cache) where TUser : ACUser
+    static async Task<BMApiRsp<JsonWebTokenValue?>> LoginCoreAsync<TUser>(HttpContext context, string[] args, IDistributedCache cache) where TUser : BMUser
     {
         var jwtValueProvider = context.RequestServices.GetRequiredService<IJsonWebTokenValueProvider>();
-        var appSettings = context.RequestServices.GetRequiredService<IOptions<ACAppSettings>>().Value;
+        var appSettings = context.RequestServices.GetRequiredService<IOptions<BMAppSettings>>().Value;
 
         var rsaPrivateKey = appSettings.AdminRSAPrivateKey;
         ArgumentNullException.ThrowIfNull(rsaPrivateKey);
         var rsaParameters = RSAUtils.ReadParameters(rsaPrivateKey);
         using var rsa = RSA.Create(rsaParameters);
 
-        var userName = ACMinimalApis.DecryptAC(rsa, args[0]);
-        var password = ACMinimalApis.DecryptAC(rsa, args[1]);
-        var twoFactorCode = args.Length >= 3 ? ACMinimalApis.DecryptAC(rsa, args[2]) : null;
-        var twoFactorRecoveryCode = args.Length >= 4 ? ACMinimalApis.DecryptAC(rsa, args[3]) : null;
+        var userName = BMMinimalApis.DecryptAC(rsa, args[0]);
+        var password = BMMinimalApis.DecryptAC(rsa, args[1]);
+        var twoFactorCode = args.Length >= 3 ? BMMinimalApis.DecryptAC(rsa, args[2]) : null;
+        var twoFactorRecoveryCode = args.Length >= 4 ? BMMinimalApis.DecryptAC(rsa, args[3]) : null;
 
         // https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Identity/Core/src/IdentityApiEndpointRouteBuilderExtensions.cs#L90
         var signInManager = context.RequestServices.GetRequiredService<SignInManager<TUser>>();
@@ -133,7 +133,7 @@ public static partial class BMLoginController
         return token;
     }
 
-    static async Task<JsonWebTokenValue> GenerateTokenAsync<TUser>(HttpContext context, IJsonWebTokenValueProvider jwtValueProvider, UserManager<TUser> userManager, TUser user) where TUser : ACUser
+    static async Task<JsonWebTokenValue> GenerateTokenAsync<TUser>(HttpContext context, IJsonWebTokenValueProvider jwtValueProvider, UserManager<TUser> userManager, TUser user) where TUser : BMUser
     {
         var roles = await userManager.GetRolesAsync(user);
         var token = await jwtValueProvider.GenerateTokenAsync(user.Id, roles, aciton: (list) =>

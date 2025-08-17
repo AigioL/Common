@@ -23,7 +23,7 @@ public abstract class CreationBaseEntity<[DynamicallyAccessedMembers(IEntity.DAM
     public Guid? CreateUserId { get; set; }
 
     /// <inheritdoc/>
-    public virtual ACUser? CreateUser { get; set; }
+    public virtual BMUser? CreateUser { get; set; }
 
     public abstract class EntityTypeConfiguration<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity> :
         IEntityTypeConfiguration<TEntity>

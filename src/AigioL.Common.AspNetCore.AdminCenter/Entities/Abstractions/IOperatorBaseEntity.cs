@@ -13,7 +13,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 public interface IOperatorBaseEntity :
     IEntity,
     IUpdateTime,
-    IOperatorACUser,
+    IOperatorBMUser,
     IOperatorUserId
 {
     static void Configure<[DynamicallyAccessedMembers(DAMT)] TEntity>(EntityTypeBuilder<TEntity> builder)

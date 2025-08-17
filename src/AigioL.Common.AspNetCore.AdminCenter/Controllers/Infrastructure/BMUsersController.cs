@@ -22,7 +22,7 @@ public static partial class BMUsersController
 {
     const string ControllerName = "SystemUser";
 
-    public static void MapBMUsers<TACUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/users") where TACUser : ACUser, new()
+    public static void MapBMUsers<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/users") where TUser : BMUser, new()
     {
         var routeGroup = b.MapGroup(pattern)
         .RequireAuthorization(new AuthorizeAttribute()
@@ -36,31 +36,31 @@ public static partial class BMUsersController
             var r = await Get(context, current, pageSize, userName, nickName, name);
             return r.SetHttpContext(context);
         })
-        .PermissionFilter(ControllerName, ACButtonType.Query)
+        .PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("查询管理后台的用户");
-        routeGroup.MapPost("", async (HttpContext context, [FromBody] AddACUserModel model) =>
+        routeGroup.MapPost("", async (HttpContext context, [FromBody] AddBMUserModel model) =>
         {
             var tenantId = TenantConstants.RootTenantIdG;
-            var r = await Post<TACUser>(context, model, tenantId);
+            var r = await Post<TUser>(context, model, tenantId);
             return r.SetHttpContext(context);
         })
         .WithDescription("新增管理后台的用户");
-        routeGroup.MapPut("{id}", async (HttpContext context, [FromRoute] Guid id, [FromBody] EditACUserModel model) =>
+        routeGroup.MapPut("{id}", async (HttpContext context, [FromRoute] Guid id, [FromBody] EditBMUserModel model) =>
         {
-            var r = await Put<TACUser>(context, id, model);
+            var r = await Put<TUser>(context, id, model);
             return r.SetHttpContext(context);
         })
         .WithDescription("修改管理后台的用户");
     }
 
-    static async Task<ApiRspAC<PagedModel<ACUserTableItem>>> Get(HttpContext context, int current, int pageSize, string? userName = null, string? nickName = null, string? name = null)
+    static async Task<BMApiRsp<PagedModel<BMUserTableItem>>> Get(HttpContext context, int current, int pageSize, string? userName = null, string? nickName = null, string? name = null)
     {
-        var repo = context.RequestServices.GetRequiredService<IACUserRepository>();
+        var repo = context.RequestServices.GetRequiredService<IBMUserRepository>();
         var r = await repo.QueryAsync(userName, nickName, name, current, pageSize);
         return r;
     }
 
-    static async Task<ApiRspAC> Post<TACUser>(HttpContext context, AddACUserModel model, Guid tenantId) where TACUser : ACUser, new()
+    static async Task<BMApiRsp> Post<TUser>(HttpContext context, AddBMUserModel model, Guid tenantId) where TUser : BMUser, new()
     {
         if (string.IsNullOrWhiteSpace(model.UserName))
         {
@@ -71,15 +71,21 @@ public static partial class BMUsersController
             return "请输入密码";
         }
 
-        var appSettings = context.RequestServices.GetRequiredService<IOptions<ACAppSettings>>().Value;
+        var appSettings = context.RequestServices.GetRequiredService<IOptions<BMAppSettings>>().Value;
 
+#if ENABLE_ALL_PWD_DECRYPT
         var rsaPrivateKey = appSettings.AdminRSAPrivateKey;
         ArgumentNullException.ThrowIfNull(rsaPrivateKey);
         var rsaParameters = RSAUtils.ReadParameters(rsaPrivateKey);
         using var rsa = RSA.Create(rsaParameters);
 
-        var password1 = ACMinimalApis.DecryptAC(rsa, model.Password1);
-        var password2 = ACMinimalApis.DecryptAC(rsa, model.Password2);
+        var password1 = BMMinimalApis.DecryptAC(rsa, model.Password1);
+        var password2 = BMMinimalApis.DecryptAC(rsa, model.Password2);
+#else
+        var password1 = model.Password1;
+        var password2 = model.Password2;
+#endif
+
 
         if (password1 != password2)
         {
@@ -87,14 +93,14 @@ public static partial class BMUsersController
         }
 
 
-        var userManager = context.RequestServices.GetRequiredService<UserManager<TACUser>>();
+        var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.FindByNameAsync(model.UserName);
         if (user != null)
         {
             return $"用户名 {model.UserName} 已存在";
         }
 
-        var repo = context.RequestServices.GetRequiredService<IACUserRepository>();
+        var repo = context.RequestServices.GetRequiredService<IBMUserRepository>();
         using var transaction = repo.Database.BeginTransaction();
         user = new()
         {
@@ -121,13 +127,13 @@ public static partial class BMUsersController
         return HttpStatusCode.OK;
     }
 
-    static async Task<ApiRspAC> Put<TACUser>(HttpContext context, Guid id, EditACUserModel model) where TACUser : ACUser
+    static async Task<BMApiRsp> Put<TUser>(HttpContext context, Guid id, EditBMUserModel model) where TUser : BMUser
     {
         var userId = context.GetACUserId();
         if (userId == id)
             return "不能编辑自己，请在个人中心修改用户名或密码";
 
-        var userManager = context.RequestServices.GetRequiredService<UserManager<TACUser>>();
+        var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.FindByIdAsync(id.ToString());
         if (user == null)
         {
@@ -135,7 +141,7 @@ public static partial class BMUsersController
         }
 
         var userName = await userManager.GetUserNameAsync(user);
-        var repo = context.RequestServices.GetRequiredService<IACUserRepository>();
+        var repo = context.RequestServices.GetRequiredService<IBMUserRepository>();
         using var transaction = repo.Database.BeginTransaction();
         if (model.UserName != userName)
         {

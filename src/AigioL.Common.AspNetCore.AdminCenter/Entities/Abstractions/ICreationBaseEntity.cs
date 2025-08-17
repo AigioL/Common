@@ -13,7 +13,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 public interface ICreationBaseEntity :
     IEntity,
     ICreationTime,
-    ICreateACUser,
+    ICreateBMUser,
     ICreateUserIdNullable
 {
     static void Configure<[DynamicallyAccessedMembers(DAMT)] TEntity>(EntityTypeBuilder<TEntity> builder)

@@ -14,9 +14,9 @@ public static partial class InfoController
     /// <param name="pattern"></param>
     public static void MapPostInfo(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "api/info")
     {
-        b.MapPost(pattern, (HttpContext context, [FromBody] InitSystemRequest model) =>
+        b.MapPost(pattern, (HttpContext context, [FromBody] BMInitSystemRequest model) =>
         {
-            ApiRspAC<JsonWebTokenValue> result;
+            BMApiRsp<JsonWebTokenValue> result;
             try
             {
                 // TODO: 实现初始化系统的逻辑
@@ -27,7 +27,7 @@ public static partial class InfoController
                 result = new();
                 result.SetException(ex);
             }
-            return Results.Json(result, ACMinimalApisJsonSerializerContext.Default.ApiRspACJsonWebTokenValue);
+            return Results.Json(result, BMMinimalApisJsonSerializerContext.Default.BMApiRspJsonWebTokenValue);
         })
         .AllowAnonymous()
         .WithDescription("创建一个默认系统管理员账号");
