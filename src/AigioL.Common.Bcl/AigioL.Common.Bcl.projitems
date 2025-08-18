@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionExtensions.GetAllMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IExplicitHasValue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LogInit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)nil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeAsyncDisposable.cs" />

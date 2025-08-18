@@ -8,6 +8,22 @@
 		<TargetFrameworks>net$(DotNet_Version);net$(DotNet_Version)-windows$(WinSDK_Version)</TargetFrameworks>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Scalar.AspNetCore" />
+	</ItemGroup>
+
+	<Import Project="..\AigioL.Common.AspNetCore.AdminCenter\AigioL.Common.AspNetCore.AdminCenter.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AdminCenter.Core\AigioL.Common.AspNetCore.AdminCenter.Core.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Analytics\AigioL.Common.AspNetCore.AppCenter.Analytics.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Analytics.Core\AigioL.Common.AspNetCore.AppCenter.Analytics.Core.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Basic\AigioL.Common.AspNetCore.AppCenter.Basic.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Basic.Core\AigioL.Common.AspNetCore.AppCenter.Basic.Core.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Core\AigioL.Common.AspNetCore.AppCenter.Core.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Ordering\AigioL.Common.AspNetCore.AppCenter.Ordering.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Ordering.Core\AigioL.Common.AspNetCore.AppCenter.Ordering.Core.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Payment\AigioL.Common.AspNetCore.AppCenter.Payment.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Payment.Core\AigioL.Common.AspNetCore.AppCenter.Payment.Core.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
 
 </Project>

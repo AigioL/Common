@@ -17,7 +17,7 @@ namespace System;
 public static partial class LogInit
 {
     /// <summary>
-    /// 初始化日志工厂与提供程序
+    /// 使用日志源名称初始化日志工厂与提供程序
     /// </summary>
     public static void InitLog(string? sourceName = null) => _.InitLog(sourceName);
 

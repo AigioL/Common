@@ -44,6 +44,7 @@
 	</ImportGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Bcl.LogInit\AigioL.Common.Bcl.LogInit.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.ProjectUtils\AigioL.Common.ProjectUtils.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.IOPath.FileSystem\AigioL.Common.System.IOPath.FileSystem.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.System.Security.Cryptography.HashAlgorithms\AigioL.Common.System.Security.Cryptography.HashAlgorithms.projitems" Label="Shared" />
@@ -53,7 +54,6 @@
 	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.RegisterHotKey\AigioL.Common.Windows.Win32.RegisterHotKey.projitems" Label="Shared" />-->
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
-	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AdminCenter\AigioL.Common.AspNetCore.AdminCenter.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.Helpers.ProgramMain\AigioL.Common.AspNetCore.Helpers.ProgramMain.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Models.ApiRsp\AigioL.Common.Models.ApiRsp.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Primitives\AigioL.Common.Primitives.projitems" Label="Shared" />
