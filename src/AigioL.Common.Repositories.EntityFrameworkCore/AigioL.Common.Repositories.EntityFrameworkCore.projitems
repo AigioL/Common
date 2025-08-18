@@ -9,6 +9,7 @@
     <Import_RootNamespace>AigioL.Common.Repositories.EntityFrameworkCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IEFRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IEFRepository`1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstractions\Repository`1.cs" />

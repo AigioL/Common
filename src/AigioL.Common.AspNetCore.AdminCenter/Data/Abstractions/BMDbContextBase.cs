@@ -1,8 +1,10 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Diagnostics.CodeAnalysis;
@@ -20,11 +22,17 @@ public abstract partial class BMDbContextBase<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
-    IdentityDbContext<TUser, TRole, Guid, IdentityUserClaim<Guid>, TUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
+    IdentityDbContext<TUser, TRole, Guid, IdentityUserClaim<Guid>, TUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IBMDbContextBase, IDbContextBase
     where TUser : BMUser
     where TRole : BMRole
     where TUserRole : BMUserRole
 {
+    /// <inheritdoc/>
+    DbContext IDbContextBase.GetDbContext() => this;
+
+    /// <inheritdoc/>
+    DatabaseFacade IDbContextBase.GetDatabase() => Database;
+
     protected readonly IHttpContextAccessor? a;
 
     protected BMDbContextBase(IServiceProvider serviceProvider, DbContextOptions options) : base(options)
@@ -32,6 +40,7 @@ public abstract partial class BMDbContextBase<
         a = serviceProvider.GetService<IHttpContextAccessor>();
     }
 
+    /// <inheritdoc/>
     public virtual Guid? GetUserId(HttpContext? ctx)
     {
         if (ctx != null)
@@ -46,10 +55,7 @@ public abstract partial class BMDbContextBase<
         return null;
     }
 
-    /// <summary>
-    /// 从当前 Http 上下文中获取管理后台用户 Id
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public virtual Guid? GetCurrentUserId()
     {
         var ctx = a?.HttpContext;

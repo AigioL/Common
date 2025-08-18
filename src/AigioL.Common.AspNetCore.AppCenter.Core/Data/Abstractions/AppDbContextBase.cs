@@ -1,8 +1,8 @@
+using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 using TableNames = AigioL.Common.AspNetCore.AppCenter.Data.Abstractions.IAppDbContextBase.TableNames;
 
@@ -18,11 +18,17 @@ public abstract partial class AppDbContextBase<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
-    IdentityDbContext<TUser, TRole, Guid, IdentityUserClaim<Guid>, TUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IAppDbContextBase
+    IdentityDbContext<TUser, TRole, Guid, IdentityUserClaim<Guid>, TUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IAppDbContextBase, IDbContextBase
     where TUser : IdentityUser<Guid>
     where TRole : IdentityRole<Guid>
     where TUserRole : IdentityUserRole<Guid>
 {
+    /// <inheritdoc/>
+    DbContext IDbContextBase.GetDbContext() => this;
+
+    /// <inheritdoc/>
+    DatabaseFacade IDbContextBase.GetDatabase() => Database;
+
     protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);

@@ -1,6 +1,8 @@
+using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+
 namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 
-public interface IAppDbContextBase
+public interface IAppDbContextBase : IDbContextBase
 {
     static class TableNames
     {
