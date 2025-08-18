@@ -13,6 +13,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\User.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDelete.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDeleteExternalAccount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserJsonWebToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserMembership.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserMembershipChangeRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserRefreshJsonWebToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWallet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWalletChangeRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyUserWalletValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletPaymentDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
   </ItemGroup>
 </Project>

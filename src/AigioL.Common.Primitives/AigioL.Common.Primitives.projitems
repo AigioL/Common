@@ -35,6 +35,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\INEWSEQUENTIALID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IPagedModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientPlatform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DevicePlatform2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Gender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GenderEnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PagedModel.cs" />

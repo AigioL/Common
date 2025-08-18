@@ -33,7 +33,6 @@ public static partial class BMLoginController
     }
 
     const int MaxIpAccessFailedCount = 10;
-    public const string BearerScheme = "Bearer";
     const string ResponseDataUserNameNotFoundOrPasswordInvalid = "用户名不存在或密码错误";
 
     static async Task<BMApiRsp<JsonWebTokenValue?>> LoginAsync<TUser>(HttpContext context, string[] args) where TUser : BMUser
@@ -92,7 +91,7 @@ public static partial class BMLoginController
 
         // https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Identity/Core/src/IdentityApiEndpointRouteBuilderExtensions.cs#L90
         var signInManager = context.RequestServices.GetRequiredService<SignInManager<TUser>>();
-        signInManager.AuthenticationScheme = BearerScheme;
+        signInManager.AuthenticationScheme = BMMinimalApis.BearerScheme;
         const bool isPersistent = false;/*(useCookies == true) && (useSessionCookies != true)*/;
 
         var user = await signInManager.UserManager.FindByNameAsync(userName);

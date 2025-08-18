@@ -1,14 +1,8 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
@@ -116,7 +110,7 @@ public static partial class InfoController
                 IsDynamicCodeCompiled = RuntimeFeature.IsDynamicCodeCompiled,
                 IsDynamicCodeSupported = RuntimeFeature.IsDynamicCodeSupported,
             };
-            return Results.Json(m, JSC.Default.InfoModel);
+            return Results.Json(m, InfoController_InfoModel_JSC.Default.InfoModel);
         })
         .AllowAnonymous()
         .WithDescription("测试输出信息");
@@ -129,7 +123,7 @@ public static partial class InfoController
 #pragma warning restore IDE1006 // 命名样式
     }
 
-    sealed record class InfoModel
+    internal sealed record class InfoModel
     {
         public string? IpAddress { get; set; }
 
@@ -276,32 +270,6 @@ public static partial class InfoController
         }
     }
 
-    [JsonSerializable(typeof(InfoModel))]
-    [JsonSourceGenerationOptions(
-        UseStringEnumConverter = true)]
-    sealed partial class JSC : JsonSerializerContext
-    {
-        static JSC()
-        {
-            // https://github.com/dotnet/runtime/issues/94135
-            JsonSerializerOptions o = new()
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // 不转义字符！！！
-                AllowTrailingCommas = true,
-
-                #region JsonSerializerDefaults.Web https://github.com/dotnet/runtime/blob/v9.0.7/src/libraries/System.Text.Json/src/System/Text/Json/Serialization/JsonSerializerOptions.cs#L172-L174
-
-                PropertyNameCaseInsensitive = true, // 忽略大小写
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // 驼峰命名
-                NumberHandling = JsonNumberHandling.AllowReadingFromString, // 允许从字符串读取数字
-
-                #endregion
-
-            };
-            Default = new JSC(o);
-        }
-    }
-
     /// <summary>
     /// https://github.com/dotnet/dotnet-docker/blob/334580f27f92b87a54fd7f46ee46a6557a26bf86/samples/aspnetapp/aspnetapp/EnvironmentInfo.cs
     /// </summary>
@@ -357,5 +325,31 @@ public static partial class InfoController
 
             return 0;
         }
+    }
+}
+
+[JsonSerializable(typeof(InfoController.InfoModel))]
+[JsonSourceGenerationOptions(
+    UseStringEnumConverter = true)]
+sealed partial class InfoController_InfoModel_JSC : JsonSerializerContext
+{
+    static InfoController_InfoModel_JSC()
+    {
+        // https://github.com/dotnet/runtime/issues/94135
+        JsonSerializerOptions o = new()
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // 不转义字符！！！
+            AllowTrailingCommas = true,
+
+            #region JsonSerializerDefaults.Web https://github.com/dotnet/runtime/blob/v9.0.7/src/libraries/System.Text.Json/src/System/Text/Json/Serialization/JsonSerializerOptions.cs#L172-L174
+
+            PropertyNameCaseInsensitive = true, // 忽略大小写
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // 驼峰命名
+            NumberHandling = JsonNumberHandling.AllowReadingFromString, // 允许从字符串读取数字
+
+            #endregion
+
+        };
+        Default = new InfoController_InfoModel_JSC(o);
     }
 }

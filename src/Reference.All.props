@@ -20,7 +20,6 @@
 	</Choose>
 
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
 		<PackageReference Include="NLog" />
 		<PackageReference Include="NLog.Web.AspNetCore" />
@@ -54,7 +53,6 @@
 	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.RegisterHotKey\AigioL.Common.Windows.Win32.RegisterHotKey.projitems" Label="Shared" />-->
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
-	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.Helpers.ProgramMain\AigioL.Common.AspNetCore.Helpers.ProgramMain.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Models.ApiRsp\AigioL.Common.Models.ApiRsp.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Primitives\AigioL.Common.Primitives.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.FeishuOApi.Sdk\AigioL.Common.FeishuOApi.Sdk.projitems" Label="Shared" />

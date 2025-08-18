@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
 
 /// <summary>
 /// 管理后台的用户表实体类
 /// </summary>
+[DebuggerDisplay("{DebuggerDisplay(),nq}")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class BMUser :
     IdentityUser<Guid>,
@@ -22,6 +24,8 @@ public partial class BMUser :
     IDisable,
     IPasswordHash
 {
+    string DebuggerDisplay() => $"{NickName ?? UserName}, {Id}";
+
     ///// <summary>
     ///// 组织架构 Id
     ///// </summary>

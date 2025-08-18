@@ -133,7 +133,7 @@ var jsonWebKey = JsonWebKeyConverter.ConvertFromRSASecurityKey(
 """u8;
             context.Response.BodyWriter.Write(htmlU8_1);
 
-            await JsonSerializer.SerializeAsync(context.Response.BodyWriter, jsonWebKey, JSC.Default.JsonWebKey, context.RequestAborted);
+            await JsonSerializer.SerializeAsync(context.Response.BodyWriter, jsonWebKey, BMMinimalApis_JsonWebKey_JSC.Default.JsonWebKey, context.RequestAborted);
             var htmlU8_2 =
 """
 
@@ -440,33 +440,33 @@ var jsonWebKey = JsonWebKeyConverter.ConvertFromRSASecurityKey(
             await context.Response.BodyWriter.FlushAsync(context.RequestAborted);
         }).AllowAnonymous();
     }
+}
 
-    [JsonSerializable(typeof(JsonWebKey))]
-    [JsonSourceGenerationOptions(
-        UseStringEnumConverter = true)]
-    sealed partial class JSC : JsonSerializerContext
+[JsonSerializable(typeof(JsonWebKey))]
+[JsonSourceGenerationOptions(
+    UseStringEnumConverter = true)]
+sealed partial class BMMinimalApis_JsonWebKey_JSC : JsonSerializerContext
+{
+    static BMMinimalApis_JsonWebKey_JSC()
     {
-        static JSC()
+        // https://github.com/dotnet/runtime/issues/94135
+        JsonSerializerOptions o = new()
         {
-            // https://github.com/dotnet/runtime/issues/94135
-            JsonSerializerOptions o = new()
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // 不转义字符！！！
-                AllowTrailingCommas = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, // 不转义字符！！！
+            AllowTrailingCommas = true,
 
-                #region JsonSerializerDefaults.Web https://github.com/dotnet/runtime/blob/v9.0.7/src/libraries/System.Text.Json/src/System/Text/Json/Serialization/JsonSerializerOptions.cs#L172-L174
+            #region JsonSerializerDefaults.Web https://github.com/dotnet/runtime/blob/v9.0.7/src/libraries/System.Text.Json/src/System/Text/Json/Serialization/JsonSerializerOptions.cs#L172-L174
 
-                PropertyNameCaseInsensitive = true, // 忽略大小写
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // 驼峰命名
-                NumberHandling = JsonNumberHandling.AllowReadingFromString, // 允许从字符串读取数字
+            PropertyNameCaseInsensitive = true, // 忽略大小写
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // 驼峰命名
+            NumberHandling = JsonNumberHandling.AllowReadingFromString, // 允许从字符串读取数字
 
-                #endregion
+            #endregion
 
-                WriteIndented = true,
+            WriteIndented = true,
 
-            };
-            Default = new JSC(o);
-        }
+        };
+        Default = new BMMinimalApis_JsonWebKey_JSC(o);
     }
 }
 

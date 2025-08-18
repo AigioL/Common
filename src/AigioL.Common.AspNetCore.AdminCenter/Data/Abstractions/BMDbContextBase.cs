@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Diagnostics.CodeAnalysis;
+using TableNames = AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions.IBMDbContextBase.TableNames;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
 
@@ -93,17 +94,6 @@ public abstract partial class BMDbContextBase<
     protected virtual Action<EntityTypeBuilder>? AppendBuildEntities(ModelBuilder modelBuilder, IMutableEntityType entityType, Type type, Action<EntityTypeBuilder>? buildAction)
     {
         return buildAction;
-    }
-
-    public static class TableNames
-    {
-        public const string Users = "ACUsers";
-        public const string Roles = "ACRoles";
-        public const string RoleClaims = "ACRoleClaims";
-        public const string UserClaims = "ACUserClaims";
-        public const string UserLogins = "ACUserLogins";
-        public const string UserRoles = "ACUserRoles";
-        public const string UserTokens = "ACUserTokens";
     }
 
     /// <inheritdoc cref="BMButton"/>

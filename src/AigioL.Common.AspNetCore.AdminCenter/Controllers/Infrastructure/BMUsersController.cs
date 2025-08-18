@@ -27,7 +27,7 @@ public static partial class BMUsersController
         var routeGroup = b.MapGroup(pattern)
         .RequireAuthorization(new AuthorizeAttribute()
         {
-            AuthenticationSchemes = BMLoginController.BearerScheme,
+            AuthenticationSchemes = BMMinimalApis.BearerScheme,
         })
         .WithDescription("管理后台的用户管理");
 

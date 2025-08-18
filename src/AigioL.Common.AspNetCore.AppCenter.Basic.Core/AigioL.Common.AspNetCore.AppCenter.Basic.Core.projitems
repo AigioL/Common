@@ -9,5 +9,8 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Basic</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialCustomMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessageType.cs" />
   </ItemGroup>
 </Project>

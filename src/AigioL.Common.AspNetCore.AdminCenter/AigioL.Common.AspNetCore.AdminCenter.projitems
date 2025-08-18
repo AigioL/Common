@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMUsersController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\InfoController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\BMDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IBMDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\CreationBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICreationBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IOperatorBaseEntity.cs" />

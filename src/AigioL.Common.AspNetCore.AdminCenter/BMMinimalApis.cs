@@ -24,6 +24,8 @@ public static partial class BMMinimalApis
     /// 控制器名称最大长度限制
     /// </summary>
     public const int ControllerNameMaxLength = 128;
+    public const string BearerScheme = "Bearer";
+    public const string BearerSchemeLower = "bearer";
 
     /// <summary>
     /// 注册管理后台的最小 API 路由
@@ -241,14 +243,14 @@ file sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider 
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
     {
         var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
-        if (authenticationSchemes.Any(authScheme => authScheme.Name == BMLoginController.BearerScheme))
+        if (authenticationSchemes.Any(authScheme => authScheme.Name == BMMinimalApis.BearerScheme))
         {
             var requirements = new Dictionary<string, OpenApiSecurityScheme>
             {
-                [BMLoginController.BearerScheme] = new OpenApiSecurityScheme
+                [BMMinimalApis.BearerScheme] = new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
-                    Scheme = BMLoginController.BearerScheme.ToLowerInvariant(), // "bearer" refers to the header name here
+                    Scheme = BMMinimalApis.BearerSchemeLower, // "bearer" refers to the header name here
                     In = ParameterLocation.Header,
                     BearerFormat = "Json Web Token",
                 }

@@ -100,3 +100,36 @@ public static partial class MaxLengths
     /// </summary>
     public const int Max_PasswordHash = 256;
 }
+
+static partial class MaxLengths
+{
+    /// <summary>
+    /// 客户端用户昵称最大长度
+    /// </summary>
+    public const int Max_CUserNickName = 36;
+
+    /// <summary>
+    /// 客户端用户个性签名最大长度
+    /// </summary>
+    public const int Max_CUserPersonalizedSignature = 100;
+
+    /// <summary>
+    /// 客户端用户设备名称最大长度
+    /// </summary>
+    public const int Max_CUserDeviceName = 100;
+
+    /// <summary>
+    /// 设备 Id，版本代号为 R
+    /// </summary>
+    public const int DeviceIdR = 7;
+
+    /// <summary>
+    /// 设备 Id 最大长度
+    /// </summary>
+    public const int Max_DeviceId = ShortGuid.StringLength + DeviceIdR + 64;
+
+    /// <summary>
+    /// 变更原因最大长度
+    /// </summary>
+    public const int Max_ChangeReason = 600;
+}
