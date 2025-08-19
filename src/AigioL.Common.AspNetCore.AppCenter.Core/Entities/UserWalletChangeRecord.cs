@@ -1,10 +1,10 @@
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 
@@ -12,7 +12,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// 用户钱包变更记录表实体类
 /// </summary>
 [Index(nameof(UserId))]
-[Table(nameof(UserWalletChangeRecord) + "s")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class UserWalletChangeRecord :
     Entity<Guid>,
@@ -97,6 +96,8 @@ public partial class UserWalletChangeRecord :
     {
         public void Configure(EntityTypeBuilder<UserWalletChangeRecord> builder)
         {
+            builder.ToTable(IAppDbContextBase.TableNames.UserWalletChangeRecords);
+
             builder.HasIndex(x => x.SourceId).IsUnique();
         }
     }

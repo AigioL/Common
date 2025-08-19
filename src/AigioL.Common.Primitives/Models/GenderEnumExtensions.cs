@@ -15,4 +15,28 @@ public static partial class GenderEnumExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsMaleOrFemale(this Gender gender)
         => gender == Gender.Male || gender == Gender.Female;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Gender ParseGender(string? str)
+    {
+        if (!string.IsNullOrWhiteSpace(str))
+        {
+            switch (str[0])
+            {
+                case '男':
+                    return Gender.Male;
+                case '女':
+                    return Gender.Female;
+                default:
+                    {
+                        if (Enum.TryParse<Gender>(str, true, out var result))
+                        {
+                            return result;
+                        }
+                    }
+                    break;
+            }
+        }
+        return Gender.Unknown;
+    }
 }

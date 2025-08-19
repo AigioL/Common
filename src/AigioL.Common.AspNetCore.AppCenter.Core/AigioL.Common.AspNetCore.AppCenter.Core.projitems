@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AuthMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDelete.cs" />
@@ -27,6 +28,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWallet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWalletChangeRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyUserWalletValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalLoginChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipLicenseFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SmsCodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletPaymentDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletState.cs" />

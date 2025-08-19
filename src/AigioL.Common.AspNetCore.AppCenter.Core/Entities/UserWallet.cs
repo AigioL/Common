@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.Primitives.Columns;
@@ -12,7 +13,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// <summary>
 /// 用户钱包
 /// </summary>
-[Table(nameof(UserWallet) + "s")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class UserWallet :
     IEntity<Guid>,
@@ -98,6 +98,8 @@ public partial class UserWallet :
     {
         public void Configure(EntityTypeBuilder<UserWallet> builder)
         {
+            builder.ToTable(IAppDbContextBase.TableNames.UserWallets);
+
             builder.HasOne(u => u.User)
                 .WithOne(u => u.Wallet)
                 .HasForeignKey<UserWallet>(u => u.Id)

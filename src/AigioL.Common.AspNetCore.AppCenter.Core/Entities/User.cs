@@ -1,4 +1,7 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -6,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Entities;
@@ -149,9 +151,7 @@ public partial class User :
     [Comment("最后读取官方消息时间")]
     public DateTimeOffset? LastReadSystemMessageTime { get; set; }
 
-    /// <summary>
-    /// 创建时间
-    /// </summary>
+    /// <inheritdoc/>
     [Comment("创建时间")]
     public DateTimeOffset CreationTime { get; set; }
 
@@ -178,6 +178,59 @@ public partial class User :
     /// <inheritdoc/>
     [Comment("是否禁用")]
     public bool Disable { get; set; }
+}
+
+partial class User // Relationships
+{
+    /// <summary>
+    /// 修改人
+    /// </summary>
+    public virtual BMUser OperatorUser { get; set; } = null!;
+
+    #region User
+
+    public virtual List<UserDelete> Cancels { get; set; } = null!;
+
+    public virtual List<UserDevice> Devices { get; set; } = null!;
+
+    //public virtual List<UserExpRecord> ExpRecords { get; set; } = null!;
+
+    ///// <summary>
+    ///// 当前用户接收到的消息
+    ///// </summary>
+    //public virtual List<UserMessage> Messages { get; set; } = null!;
+
+    ///// <summary>
+    ///// 当前用户发送的消息
+    ///// </summary>
+    //public virtual List<UserMessage> SourceMessages { get; set; } = null!;
+
+    public virtual UserWallet Wallet { get; set; } = new();
+
+    public virtual List<UserWalletChangeRecord> WalletChangeRecords { get; set; } = null!;
+
+    //public virtual List<UserClockInRecord> ClockInRecords { get; set; } = null!;
+
+    public virtual UserMembership Membership { get; set; } = null!;
+
+    public virtual List<UserMembershipChangeRecord> MembershipChangeRecords { get; set; } = null!;
+
+    /// <summary>
+    /// 关联的外部账号
+    /// </summary>
+    public virtual List<ExternalAccount> ExternalAccounts { get; set; } = null!;
+
+    #endregion
+
+    public virtual List<AuthMessageRecord> AuthMessageRecords { get; set; } = null!;
+
+    #region Order（订单）
+
+    public virtual List<MerchantDeductionAgreement> MerchantDeductionAgreements { get; set; } = null!;
+
+    public virtual List<MembershipBusinessOrder> MembershipBusinessOrders { get; set; } = null!;
+
+    #endregion
 }
 
 partial class User

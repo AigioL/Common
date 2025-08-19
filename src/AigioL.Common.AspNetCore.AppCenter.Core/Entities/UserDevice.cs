@@ -11,7 +11,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// <summary>
 /// 用户设备
 /// </summary>
-[Table(nameof(UserDevice) + "s")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class UserDevice :
     Entity<Guid>,
