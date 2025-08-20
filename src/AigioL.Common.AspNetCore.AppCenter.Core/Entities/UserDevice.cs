@@ -40,6 +40,13 @@ public partial class UserDevice :
     public string? DeviceId { get; set; }
 
     /// <summary>
+    /// 网卡 MAC 地址哈希值
+    /// </summary>
+    [Comment("网卡 MAC 地址哈希值")]
+    [StringLength(MaxLengths.Max_SHA384)]
+    public string? MacAddressHash { get; set; }
+
+    /// <summary>
     /// 上次登录时间
     /// </summary>
     [Comment("上次登录时间")]

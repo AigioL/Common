@@ -3,7 +3,7 @@
 //using AigioL.Common.Primitives.Entities.Abstractions;
 //using System.ComponentModel.DataAnnotations.Schema;
 
-//namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities;
+//namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.OfficialMessages;
 
 ///// <summary>
 ///// 官方消息类型实体类

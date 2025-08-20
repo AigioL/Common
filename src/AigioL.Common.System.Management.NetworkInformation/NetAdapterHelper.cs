@@ -132,9 +132,9 @@ public static class NetAdapterHelper
                     }
                     salt.CopyTo(buffer.AsSpan(writeCount)); // 将盐值追加到缓冲区末尾
                     s = buffer.AsSpan(0, writeCount + salt.Length);
-                    // 使用 SHA512 哈希算法计算 MAC 地址的哈希值
-                    Span<byte> result = stackalloc byte[SHA512.HashSizeInBytes];
-                    SHA512.HashData(s, result);
+                    // 使用 SHA384 哈希算法计算 MAC 地址的哈希值
+                    Span<byte> result = stackalloc byte[SHA384.HashSizeInBytes];
+                    SHA384.HashData(s, result);
                     return Convert.ToHexString(result);
                 }
                 finally

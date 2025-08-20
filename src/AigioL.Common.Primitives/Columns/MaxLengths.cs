@@ -124,12 +124,27 @@ static partial class MaxLengths
     public const int DeviceIdR = 7;
 
     /// <summary>
+    /// SHA256 算法的哈希 Hex 字符串长度
+    /// </summary>
+    public const int Max_SHA256 = 64;
+
+    /// <summary>
+    /// SHA384 算法的哈希 Hex 字符串长度
+    /// </summary>
+    public const int Max_SHA384 = 96;
+
+    /// <summary>
     /// 设备 Id 最大长度
     /// </summary>
-    public const int Max_DeviceId = ShortGuid.StringLength + DeviceIdR + 64;
+    public const int Max_DeviceId = ShortGuid.StringLength + DeviceIdR + Max_SHA256;
 
     /// <summary>
     /// 变更原因最大长度
     /// </summary>
     public const int Max_ChangeReason = 600;
+
+    /// <summary>
+    /// IP 地址最大长度，通常 IPv6 的最大长度为 45，但可能有多个 IP 地址使用分号分割，例如 HTTP_X_FORWARDED_FOR
+    /// </summary>
+    public const int Max_IPAddress = 540;
 }

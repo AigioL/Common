@@ -9,5 +9,25 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Analytics</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\ActiveUserAnonymousStatistic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserAppVerSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserArchitectureSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserDayWeekMonthSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserOSSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserPlatformSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserScreenResolutionSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserStatisticSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisApp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisDevice.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisEventLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisInstall.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisLogPropertiesRelation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisPropertie.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisServiceLogRelation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisStartServiceLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisStartSessionLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\EventRelatedPropertieSummary.cs" />
   </ItemGroup>
 </Project>

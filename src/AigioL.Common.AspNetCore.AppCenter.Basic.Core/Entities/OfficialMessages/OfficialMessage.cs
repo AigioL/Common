@@ -1,5 +1,5 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Basic.Models;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities;
+namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.OfficialMessages;
 
 /// <summary>
 /// 官方消息实体类
 /// </summary>
 [Index(nameof(CreationTime), IsDescending = new[] { true })]
-[Table("OfficialMessages")]
+[Table(nameof(OfficialMessage) + "s")]
 public class OfficialMessage :
     TenantBaseEntity<Guid>,
     INEWSEQUENTIALID,

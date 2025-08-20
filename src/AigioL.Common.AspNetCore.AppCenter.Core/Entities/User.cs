@@ -189,7 +189,7 @@ partial class User // Relationships
 
     #region User
 
-    public virtual List<UserDelete> Cancels { get; set; } = null!;
+    public virtual List<UserDelete> Deletes { get; set; } = null!;
 
     public virtual List<UserDevice> Devices { get; set; } = null!;
 
@@ -233,32 +233,30 @@ partial class User // Relationships
     #endregion
 }
 
-partial class User
+partial class User // EntityTypeConfiguration
 {
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            //builder.HasIndex(x => x.AreaId);
-            //builder.HasIndex(x => x.PhoneNumber);
+            builder.HasIndex(x => x.AreaId);
+            builder.HasIndex(x => x.PhoneNumber);
+            builder.HasIndex(x => x.PhoneNumberRegionCode);
 
-            //builder.Property(x => x.PhoneNumber).HasMaxLength(PhoneNumberHelper.DatabaseMaxLength);
-            //builder.Property(x => x.Email).HasMaxLength(MaxLengths.Email);
+            builder.HasOne(x => x.OperatorUser)
+                .WithMany()
+                .HasForeignKey(x => x.OperatorUserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
-            //builder.HasOne(x => x.OperatorUser)
-            //    .WithMany()
-            //    .HasForeignKey(x => x.OperatorUserId)
-            //    .OnDelete(DeleteBehavior.SetNull);
+            builder.HasMany(u => u.Deletes)
+                .WithOne(u => u.User)
+                .HasForeignKey(u => u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            //builder.HasMany(u => u.Cancels)
-            //    .WithOne(u => u.User)
-            //    .HasForeignKey(u => u.UserId)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //builder.HasMany(u => u.Devices)
-            //    .WithOne(x => x.User)
-            //    .HasForeignKey(u => u.UserId)
-            //    .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(u => u.Devices)
+                .WithOne(x => x.User)
+                .HasForeignKey(u => u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //builder.HasMany(u => u.Messages)
             //    .WithOne(x => x.User)
@@ -275,10 +273,10 @@ partial class User
             //    .HasForeignKey(u => u.UserId)
             //    .OnDelete(DeleteBehavior.Cascade);
 
-            //builder.HasMany(u => u.WalletChangeRecords)
-            //    .WithOne(x => x.User)
-            //    .HasForeignKey(u => u.UserId)
-            //    .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(u => u.WalletChangeRecords)
+                .WithOne(x => x.User)
+                .HasForeignKey(u => u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //builder.HasMany(u => u.ClockInRecords)
             //    .WithOne(x => x.User)
@@ -297,10 +295,10 @@ partial class User
             //   .HasForeignKey(p => p.UserId)
             //   .OnDelete(DeleteBehavior.SetNull);
 
-            //builder.HasMany(u => u.MembershipChangeRecords)
-            //    .WithOne(x => x.User)
-            //    .HasForeignKey(u => u.UserId)
-            //    .OnDelete(DeleteBehavior.Cascade);
+            builder.HasMany(u => u.MembershipChangeRecords)
+                .WithOne(x => x.User)
+                .HasForeignKey(u => u.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

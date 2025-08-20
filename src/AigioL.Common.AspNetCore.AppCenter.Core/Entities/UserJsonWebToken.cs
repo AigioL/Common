@@ -40,7 +40,7 @@ public partial class UserJsonWebToken
     /// 关联的 JWT 刷新数据
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(2)]
-    public virtual UserRefreshJsonWebToken Refresh { get; set; } = new();
+    public virtual UserRefreshJsonWebToken Refresh { get; set; } = null!;
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<UserJsonWebToken>
     {

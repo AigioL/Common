@@ -1,4 +1,4 @@
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models;
+namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
 
 /// <summary>
 /// 官方消息类型

@@ -1,9 +1,9 @@
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using System.Diagnostics.CodeAnalysis;
 using TableNames = AigioL.Common.AspNetCore.AppCenter.Data.Abstractions.IAppDbContextBase.TableNames;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
@@ -11,17 +11,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 /// <summary>
 /// 客户端 App WebApi 的数据库上下文基类
 /// </summary>
-/// <typeparam name="TUser"></typeparam>
-/// <typeparam name="TRole"></typeparam>
-/// <typeparam name="TUserRole"></typeparam>
-public abstract partial class AppDbContextBase<
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
-    IdentityDbContext<TUser, TRole, Guid, IdentityUserClaim<Guid>, TUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IAppDbContextBase, IDbContextBase
-    where TUser : IdentityUser<Guid>
-    where TRole : IdentityRole<Guid>
-    where TUserRole : IdentityUserRole<Guid>
+public abstract partial class AppDbContextBase :
+    IdentityDbContext<User, IdentityRole<Guid>, Guid, IdentityUserClaim<Guid>, IdentityUserRole<Guid>, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>,
+    IAppDbContextBase,
+    IDbContextBase,
+    IIdentityDbContext
 {
     /// <inheritdoc/>
     DbContext IDbContextBase.GetDbContext() => this;
@@ -34,12 +28,40 @@ public abstract partial class AppDbContextBase<
         base.OnModelCreating(b);
 
         // 重命名 Identity 相关表名
-        b.Entity<TUser>().ToTable(TableNames.Users);
-        b.Entity<TRole>().ToTable(TableNames.Roles);
+        b.Entity<User>().ToTable(TableNames.Users);
+        b.Entity<IdentityRole<Guid>>().ToTable(TableNames.Roles);
         b.Entity<IdentityRoleClaim<Guid>>().ToTable(TableNames.RoleClaims);
         b.Entity<IdentityUserClaim<Guid>>().ToTable(TableNames.UserClaims);
         b.Entity<IdentityUserLogin<Guid>>().ToTable(TableNames.UserLogins);
-        b.Entity<TUserRole>().ToTable(TableNames.UserRoles);
+        b.Entity<IdentityUserRole<Guid>>().ToTable(TableNames.UserRoles);
         b.Entity<IdentityUserToken<Guid>>().ToTable(TableNames.UserTokens);
     }
+
+    #region 用户模块
+
+    public DbSet<UserDelete> UserDeletes { get; set; } = null!;
+
+    public DbSet<UserDevice> UserDevices { get; set; } = null!;
+
+    public DbSet<UserWallet> UserWallets { get; set; } = null!;
+
+    public DbSet<UserWalletChangeRecord> UserWalletChangeRecords { get; set; } = null!;
+
+    public DbSet<ExternalAccount> ExternalAccounts { get; set; } = null!;
+
+    public DbSet<UserDeleteExternalAccount> UserDeleteExternalAccounts { get; set; } = null!;
+
+    public DbSet<UserMembership> UserMemberships { get; set; } = null!;
+
+    public DbSet<UserMembershipChangeRecord> UserMembershipChangeRecords { get; set; } = null!;
+
+    #endregion
+
+    #region JsonWebToken
+
+    public DbSet<UserJsonWebToken> UserJsonWebTokens { get; set; } = null!;
+
+    public DbSet<UserRefreshJsonWebToken> UserRefreshJsonWebTokens { get; set; } = null!;
+
+    #endregion
 }
