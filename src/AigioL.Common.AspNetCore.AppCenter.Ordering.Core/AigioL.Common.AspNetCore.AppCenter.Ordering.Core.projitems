@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OrderBusinessPaymentConfiguration.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OrderPaymentComposition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\RefundBill.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Summaries\OrderAmountQtySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\TransferOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserCouponInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />

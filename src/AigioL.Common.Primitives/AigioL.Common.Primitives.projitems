@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IGender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IIPAddress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IIsTop.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\IMatchDomainNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\INickName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\INote.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IPassword.cs" />
@@ -36,10 +37,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IPagedModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientPlatform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DeviceIdiom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DevicePlatform2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Gender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GenderEnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PagedModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SelectItemModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WebApiCompatDevicePlatform.cs" />
   </ItemGroup>
 </Project>

@@ -9,6 +9,13 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Analytics</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IActiveUsersDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IActiveUsersSummariesDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAnalysisLogDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAnalysisLogSummariesDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IBigDataAnalysisDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKomaasharuDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKomaasharuSummariesDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\ActiveUserAnonymousStatistic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserAppVerSummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserArchitectureSummary.cs" />
@@ -21,13 +28,35 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisDevice.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisEventLog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisInstall.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\AnalysisLog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisLogPropertiesRelation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisPropertie.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisServiceLogRelation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisStartServiceLog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\AnalysisStartSessionLog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\ActiveUserDeviceSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\ActiveUserLanguageSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\AnalysisEventLogSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\AnalysisStartServiceLogSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\AnalysisStartSessionLogSummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\EventRelatedPropertieSummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Komaasharu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\KomaasharuPersonalized.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatistic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatisticPerDaySummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserStatisticsType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\ActiveUserSumResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ClientDistributionChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\StatisticsActiveUserOSResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\UserActivityStatisticsResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuOrientation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\Summaries\StatisticsKomaasharuResponse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\" />
   </ItemGroup>
 </Project>

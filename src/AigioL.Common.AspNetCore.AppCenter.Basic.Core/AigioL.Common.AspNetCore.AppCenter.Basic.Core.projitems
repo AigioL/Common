@@ -21,6 +21,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialCustomMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessageAppVerRelation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificatePackable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateRawDataType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
   </ItemGroup>
   <ItemGroup>

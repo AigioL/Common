@@ -101,7 +101,7 @@ public static partial class MaxLengths
     public const int Max_PasswordHash = 256;
 }
 
-static partial class MaxLengths
+static partial class MaxLengths // 业务相关字段
 {
     /// <summary>
     /// 客户端用户昵称最大长度
@@ -122,6 +122,11 @@ static partial class MaxLengths
     /// 设备 Id，版本代号为 R
     /// </summary>
     public const int DeviceIdR = 7;
+
+    /// <summary>
+    /// SHA1 算法的哈希 Hex 字符串长度
+    /// </summary>
+    public const int Max_SHA1 = 40;
 
     /// <summary>
     /// SHA256 算法的哈希 Hex 字符串长度
@@ -147,4 +152,14 @@ static partial class MaxLengths
     /// IP 地址最大长度，通常 IPv6 的最大长度为 45，但可能有多个 IP 地址使用分号分割，例如 HTTP_X_FORWARDED_FOR
     /// </summary>
     public const int Max_IPAddress = 540;
+
+    /// <summary>
+    /// 版本号最大长度
+    /// </summary>
+    public const int Max_Version = 23;
+
+    /// <summary>
+    /// 人类最长寿命(岁)
+    /// </summary>
+    public const int HumanMaxAge = 122;
 }
