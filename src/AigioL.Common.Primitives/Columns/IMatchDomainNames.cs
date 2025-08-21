@@ -41,7 +41,7 @@ public static partial class MatchDomainNamesExtensions
         List<string> results = new();
         while (split.MoveNext())
         {
-            var it = matchDomainNamesSpan[split.Current];
+            var it = matchDomainNamesSpan[split.Current].Trim();
             if (it.IsWhiteSpace())
             {
                 continue;

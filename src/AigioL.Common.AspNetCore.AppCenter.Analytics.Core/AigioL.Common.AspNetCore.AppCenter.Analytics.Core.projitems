@@ -48,7 +48,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserStatisticsType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\ActiveUserSumResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ClientDistributionChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\StatisticsActiveUserOSResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\UserActivityStatisticsResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuOrientation.cs" />

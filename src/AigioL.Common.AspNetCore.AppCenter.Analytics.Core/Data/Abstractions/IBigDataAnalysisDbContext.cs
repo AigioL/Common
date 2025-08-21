@@ -3,7 +3,7 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Data.Abstractions;
 
-[Obsolete]
+[Obsolete("use IActiveUsersDbContext OR IKomaasharuDbContext OR IAnalysisLogDbContext OR IXXXXSummariesDbContext", true)]
 public interface IBigDataAnalysisDbContext : IDbContextBase
 {
     //DbSet<AuthMessageRecord> AuthMessageRecords { get; set; }

@@ -159,7 +159,26 @@ static partial class MaxLengths // 业务相关字段
     public const int Max_Version = 23;
 
     /// <summary>
+    /// 版本信息最大长度
+    /// </summary>
+    public const int Max_InformationalVersion = 32;
+
+    /// <summary>
     /// 人类最长寿命(岁)
     /// </summary>
     public const int HumanMaxAge = 122;
+
+    /// <summary>
+    /// 文件名称最大长度
+    /// </summary>
+    public const int Max_FileName = 260;
+
+    /// <summary>
+    /// 文章标题最大长度
+    /// </summary>
+    public const int Max_ArticleTitle = 200;
+
+    public const int Max_ArticleCategoryName = 300;
+
+    public const int Max_ArticleTagName = 30;
 }

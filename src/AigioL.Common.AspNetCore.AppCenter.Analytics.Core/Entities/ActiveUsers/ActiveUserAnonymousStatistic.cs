@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;

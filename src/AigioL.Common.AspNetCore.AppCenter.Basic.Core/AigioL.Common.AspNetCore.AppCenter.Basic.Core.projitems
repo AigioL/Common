@@ -9,23 +9,43 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Basic</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppVerDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IArticleDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKeyValuePairsDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOfficialMessageDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ApiGateway\ServerCertificate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\ICloudFileInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\Abstractions\IReadOnlyAppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\AppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\AppVerBuild.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\AppVerFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\AppVerRedisModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Articles\Article.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Articles\ArticleCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Articles\ArticleTag.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Articles\ArticleTagRelation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Articles\ArticleVisitStatistic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\FileSystem\StaticResource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\FileSystem\StaticResourceUploadRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePairs\BinKeyValuePair.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePairs\KeyValuePair.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePairs\NumberKeyValuePair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialCustomMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessageAppVerRelation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificatePackable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateRawDataType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\ClientDistributionChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\DeploymentMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\DownloadMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\UpdateChannelType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleCategoryModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleCategoryTreeModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\FileSystem\CloudFileType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\" />
   </ItemGroup>
 </Project>
