@@ -113,6 +113,7 @@ public partial class AppVerBuild :
         switch (platform)
         {
 #pragma warning disable CS0612 // 类型或成员已过时
+#pragma warning disable CS0618 // 类型或成员已过时
             case WebApiCompatDevicePlatform.Unknown:
                 break;
             case WebApiCompatDevicePlatform.Windows:
@@ -141,6 +142,7 @@ public partial class AppVerBuild :
                 }
                 break;
 #pragma warning restore CS0612 // 类型或成员已过时
+#pragma warning restore CS0618 // 类型或成员已过时
             default:
                 break;
         }

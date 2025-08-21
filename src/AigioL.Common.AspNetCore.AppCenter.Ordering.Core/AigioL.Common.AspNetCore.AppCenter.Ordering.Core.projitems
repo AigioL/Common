@@ -9,15 +9,20 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Ordering</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\Order.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOrderingDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOrderingPaymentBaseDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICoupon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICouponEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\MerchantDeductionAgreementConfiguration.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Order.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AftersalesBill.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\CooperatorAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Coupon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\FeeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipBusinessOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoods.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodsMDARelation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodsUserFirstRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGood.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodMDARelation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodUserFirstRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipProductKeyRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\MerchantDeductionAgreement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OrderBusinessPaymentConfiguration.cs" />
@@ -26,11 +31,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Summaries\OrderAmountQtySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\TransferOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserCouponInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AgreementStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\BusinessSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CouponReleaseScenario.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CouponRestrictedUserType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CouponType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AuditStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\GoodRechargeStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\NoticeStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderType.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Data\Abstractions\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Entities\Abstractions\" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\RefundChannelType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\RefundStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\TransferStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponStatus.cs" />
   </ItemGroup>
 </Project>

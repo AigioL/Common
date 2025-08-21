@@ -181,4 +181,9 @@ static partial class MaxLengths // 业务相关字段
     public const int Max_ArticleCategoryName = 300;
 
     public const int Max_ArticleTagName = 30;
+
+    /// <summary>
+    /// 优惠劵名称最大长度
+    /// </summary>
+    public const int Max_CouponName = 120;
 }

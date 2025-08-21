@@ -1,0 +1,28 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
+using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using Microsoft.EntityFrameworkCore;
+
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Data.Abstractions;
+
+public interface IPaymentDbContext : IOrderingPaymentBaseDbContext, IDbContextBase
+{
+    DbSet<OrderBusinessPaymentConfiguration> OrderBusinessPaymentConfigurations { get; }
+
+    DbSet<CooperatorAccount> CooperatorAccounts { get; }
+
+    DbSet<MerchantDeductionAgreement> MerchantDeductionAgreements { get; }
+
+    DbSet<MerchantDeductionAgreementConfiguration> MerchantDeductionAgreementConfigurations { get; }
+
+    DbSet<MembershipBusinessOrder> MembershipBusinessOrders { get; }
+
+    DbSet<MembershipGood> MembershipGoods { get; }
+
+    DbSet<MembershipGoodMDARelation> MembershipGoodsMDARelations { get; }
+
+    DbSet<MembershipProductKeyRecord> MembershipProductKeyRecords { get; }
+
+    DbSet<MembershipGoodUserFirstRecord> MembershipGoodsUserFirstRecords { get; }
+}

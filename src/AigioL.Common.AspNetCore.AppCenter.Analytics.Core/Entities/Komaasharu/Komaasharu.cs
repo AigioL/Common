@@ -133,8 +133,8 @@ public partial class Komaasharu :
             base.Configure(builder);
 
             builder.HasMany(x => x.Statistics)
-                .WithOne(x => x.Advertisement)
-                .HasForeignKey(x => x.AdvertisementId)
+                .WithOne(x => x.Komaasharu)
+                .HasForeignKey(x => x.KomaasharuId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(x => x.AdvertisementPersonalized)

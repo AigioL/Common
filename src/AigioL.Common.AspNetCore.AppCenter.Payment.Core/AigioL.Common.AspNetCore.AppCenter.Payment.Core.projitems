@@ -9,6 +9,9 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Payment</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IPaymentDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentType.cs" />
   </ItemGroup>
 </Project>
