@@ -20,9 +20,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Coupon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\FeeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipBusinessOrder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGood.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodMDARelation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodUserFirstRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodsMDARelation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipGoodsUserFirstRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Membership\MembershipProductKeyRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\MerchantDeductionAgreement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OrderBusinessPaymentConfiguration.cs" />

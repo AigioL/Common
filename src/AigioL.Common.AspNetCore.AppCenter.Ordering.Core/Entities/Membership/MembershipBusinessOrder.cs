@@ -142,7 +142,7 @@ public partial class MembershipBusinessOrder :
 
     public virtual MerchantDeductionAgreement MerchantDeductionAgreement { get; set; } = null!;
 
-    public virtual MembershipGood MembershipGoods { get; set; } = null!;
+    public virtual MembershipGoods MembershipGoods { get; set; } = null!;
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<MembershipBusinessOrder>
     {

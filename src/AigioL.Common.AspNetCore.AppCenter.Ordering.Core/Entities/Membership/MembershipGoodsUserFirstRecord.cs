@@ -8,9 +8,9 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 /// <summary>
 /// 会员商品与用户首次购买记录多对多关系表实体类
 /// </summary>
-[Table(nameof(MembershipGoodUserFirstRecord) + "s")]
+[Table(nameof(MembershipGoodsUserFirstRecord) + "s")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
-public partial class MembershipGoodUserFirstRecord
+public partial class MembershipGoodsUserFirstRecord
 {
     public Guid MembershipGoodsId { get; set; }
 
@@ -18,21 +18,21 @@ public partial class MembershipGoodUserFirstRecord
 
     public Guid MembershipBusinessOrderId { get; set; }
 
-    public virtual MembershipGood MembershipGoods { get; set; } = null!;
+    public virtual MembershipGoods MembershipGoods { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 
     public virtual MembershipBusinessOrder MembershipBusinessOrder { get; set; } = null!;
 
-    public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<MembershipGoodUserFirstRecord>
+    public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<MembershipGoodsUserFirstRecord>
     {
-        public void Configure(EntityTypeBuilder<MembershipGoodUserFirstRecord> builder)
+        public void Configure(EntityTypeBuilder<MembershipGoodsUserFirstRecord> builder)
         {
             builder.HasIndex(x => new { x.UserId, x.MembershipGoodsId, x.MembershipBusinessOrderId });
 
             builder.HasOne(x => x.MembershipBusinessOrder)
                 .WithOne()
-                .HasForeignKey<MembershipGoodUserFirstRecord>(x => x.MembershipBusinessOrderId)
+                .HasForeignKey<MembershipGoodsUserFirstRecord>(x => x.MembershipBusinessOrderId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

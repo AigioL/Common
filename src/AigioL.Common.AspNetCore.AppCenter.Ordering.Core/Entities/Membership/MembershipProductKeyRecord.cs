@@ -18,7 +18,7 @@ public partial class MembershipProductKeyRecord :
     INEWSEQUENTIALID,
     IDisable
 {
-    public virtual MembershipGood MembershipGood { get; set; } = null!;
+    public virtual MembershipGoods MembershipGood { get; set; } = null!;
 
     /// <summary>
     /// 会员商品 Id

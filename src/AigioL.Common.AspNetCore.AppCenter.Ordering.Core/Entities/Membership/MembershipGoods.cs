@@ -12,9 +12,9 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 /// <summary>
 /// 会员商品表实体类
 /// </summary>
-[Table(nameof(MembershipGood) + "s")]
+[Table("MembershipGoods")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
-public partial class MembershipGood :
+public partial class MembershipGoods :
     OperatorBaseEntity<Guid>,
     INote,
     ICreationTime,
@@ -96,17 +96,17 @@ public partial class MembershipGood :
     /// <summary>
     /// 会员商品用户首次购买记录
     /// </summary>
-    public virtual List<MembershipGoodUserFirstRecord> MembershipGoodsUserFirstRecords { get; set; } = null!;
+    public virtual List<MembershipGoodsUserFirstRecord> MembershipGoodsUserFirstRecords { get; set; } = null!;
 
-    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<MembershipGood>
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<MembershipGoods>
     {
-        public override void Configure(EntityTypeBuilder<MembershipGood> builder)
+        public override void Configure(EntityTypeBuilder<MembershipGoods> builder)
         {
             base.Configure(builder);
 
             builder.HasMany<MerchantDeductionAgreementConfiguration>(x => x.MerchantDeductionAgreementConfigurations)
                 .WithMany()
-                .UsingEntity<MembershipGoodMDARelation>(
+                .UsingEntity<MembershipGoodsMDARelation>(
                     j => j.HasOne(x => x.MerchantDeductionAgreementConfiguration)
                         .WithMany()
                         .HasForeignKey(x => x.MerchantDeductionAgreementConfigurationId),
@@ -119,7 +119,7 @@ public partial class MembershipGood :
 
             builder.HasMany<User>()
                 .WithMany()
-                .UsingEntity<MembershipGoodUserFirstRecord>(
+                .UsingEntity<MembershipGoodsUserFirstRecord>(
                     j => j.HasOne(x => x.User)
                         .WithMany()
                         .HasForeignKey(x => x.UserId),

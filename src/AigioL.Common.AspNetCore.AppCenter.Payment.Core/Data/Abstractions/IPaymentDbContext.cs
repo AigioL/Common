@@ -18,11 +18,11 @@ public interface IPaymentDbContext : IOrderingPaymentBaseDbContext, IDbContextBa
 
     DbSet<MembershipBusinessOrder> MembershipBusinessOrders { get; }
 
-    DbSet<MembershipGood> MembershipGoods { get; }
+    DbSet<MembershipGoods> MembershipGoods { get; }
 
-    DbSet<MembershipGoodMDARelation> MembershipGoodsMDARelations { get; }
+    DbSet<MembershipGoodsMDARelation> MembershipGoodsMDARelations { get; }
 
     DbSet<MembershipProductKeyRecord> MembershipProductKeyRecords { get; }
 
-    DbSet<MembershipGoodUserFirstRecord> MembershipGoodsUserFirstRecords { get; }
+    DbSet<MembershipGoodsUserFirstRecord> MembershipGoodsUserFirstRecords { get; }
 }
