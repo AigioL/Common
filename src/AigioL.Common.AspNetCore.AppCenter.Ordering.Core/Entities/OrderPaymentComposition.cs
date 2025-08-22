@@ -23,8 +23,10 @@ public partial class OrderPaymentComposition :
     /// <summary>
     /// 订单 Id
     /// </summary>
+    [Required]
+    [StringLength(MaxLengths.Max_OrderId)]
     [Comment("订单 Id")]
-    public Guid OrderId { get; set; }
+    public required string OrderId { get; set; }
 
     public virtual Order Order { get; set; } = null!;
 

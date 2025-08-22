@@ -12,7 +12,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 /// 客户端 App WebApi 的数据库上下文基类
 /// </summary>
 public abstract partial class AppDbContextBase :
-    IdentityDbContext<User, IdentityRole<Guid>, Guid, IdentityUserClaim<Guid>, IdentityUserRole<Guid>, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>,
+    IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>,
     IAppDbContextBase,
     IDbContextBase,
     IIdentityDbContext
@@ -28,13 +28,7 @@ public abstract partial class AppDbContextBase :
         base.OnModelCreating(b);
 
         // 重命名 Identity 相关表名
-        b.Entity<User>().ToTable(TableNames.Users);
-        b.Entity<IdentityRole<Guid>>().ToTable(TableNames.Roles);
-        b.Entity<IdentityRoleClaim<Guid>>().ToTable(TableNames.RoleClaims);
-        b.Entity<IdentityUserClaim<Guid>>().ToTable(TableNames.UserClaims);
-        b.Entity<IdentityUserLogin<Guid>>().ToTable(TableNames.UserLogins);
-        b.Entity<IdentityUserRole<Guid>>().ToTable(TableNames.UserRoles);
-        b.Entity<IdentityUserToken<Guid>>().ToTable(TableNames.UserTokens);
+        IAppDbContextBase.ToIdentitysTable(b);
     }
 
     #region 用户模块

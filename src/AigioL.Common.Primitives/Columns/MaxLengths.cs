@@ -186,4 +186,6 @@ static partial class MaxLengths // 业务相关字段
     /// 优惠劵名称最大长度
     /// </summary>
     public const int Max_CouponName = 120;
+
+    public const int Max_OrderId = 64;
 }

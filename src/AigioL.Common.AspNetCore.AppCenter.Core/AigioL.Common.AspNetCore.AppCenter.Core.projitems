@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AuthMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Identitys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDelete.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDeleteExternalAccount.cs" />

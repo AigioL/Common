@@ -22,7 +22,7 @@ public abstract partial class BMDbContextBase<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
-    IdentityDbContext<TUser, TRole, Guid, IdentityUserClaim<Guid>, TUserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>, IBMDbContextBase, IDbContextBase
+    IdentityDbContext<TUser, TRole, Guid, BMUserClaim, TUserRole, BMUserLogin, BMRoleClaim, BMUserToken>, IBMDbContextBase, IDbContextBase
     where TUser : BMUser
     where TRole : BMRole
     where TUserRole : BMUserRole
@@ -79,11 +79,11 @@ public abstract partial class BMDbContextBase<
         // 重命名 Identity 相关表名
         b.Entity<TUser>().ToTable(TableNames.Users);
         b.Entity<TRole>().ToTable(TableNames.Roles);
-        b.Entity<IdentityRoleClaim<Guid>>().ToTable(TableNames.RoleClaims);
-        b.Entity<IdentityUserClaim<Guid>>().ToTable(TableNames.UserClaims);
-        b.Entity<IdentityUserLogin<Guid>>().ToTable(TableNames.UserLogins);
+        b.Entity<BMRoleClaim>().ToTable(TableNames.RoleClaims);
+        b.Entity<BMUserClaim>().ToTable(TableNames.UserClaims);
+        b.Entity<BMUserLogin>().ToTable(TableNames.UserLogins);
         b.Entity<TUserRole>().ToTable(TableNames.UserRoles);
-        b.Entity<IdentityUserToken<Guid>>().ToTable(TableNames.UserTokens);
+        b.Entity<BMUserToken>().ToTable(TableNames.UserTokens);
 
         b.BuildEntities(AppendBuildEntities_);
     }

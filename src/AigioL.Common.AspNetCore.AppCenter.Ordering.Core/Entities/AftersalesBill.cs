@@ -23,8 +23,10 @@ public partial class AftersalesBill :
     /// <summary>
     /// 订单 Id
     /// </summary>
+    [Required]
+    [StringLength(MaxLengths.Max_OrderId)]
     [Comment("订单 Id")]
-    public Guid OrderId { get; set; }
+    public required string OrderId { get; set; }
 
     /// <summary>
     /// 用户 Id

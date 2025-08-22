@@ -59,10 +59,12 @@ public partial class MembershipBusinessOrder :
     public int RechargeDays { get; set; }
 
     /// <summary>
-    /// 通用订单 Id
+    /// 订单 Id
     /// </summary>
-    [Comment("通用订单 Id")]
-    public Guid? GenericOrderId { get; set; }
+    [Required]
+    [StringLength(MaxLengths.Max_OrderId)]
+    [Comment("订单 Id")]
+    public required string OrderId { get; set; }
 
     /// <summary>
     /// 应收金额
@@ -155,7 +157,7 @@ public partial class MembershipBusinessOrder :
 
             builder.HasOne(o => o.Order)
                 .WithOne()
-                .HasForeignKey<MembershipBusinessOrder>(f => f.GenericOrderId)
+                .HasForeignKey<MembershipBusinessOrder>(f => f.OrderId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasOne(o => o.MembershipGoods)

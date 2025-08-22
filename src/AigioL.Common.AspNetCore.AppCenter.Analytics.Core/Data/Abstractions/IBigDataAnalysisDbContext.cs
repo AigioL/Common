@@ -6,10 +6,10 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Data.Abstractions;
 [Obsolete("use IActiveUsersDbContext OR IKomaasharuDbContext OR IAnalysisLogDbContext OR IXXXXSummariesDbContext", true)]
 public interface IBigDataAnalysisDbContext : IDbContextBase
 {
-    //DbSet<AuthMessageRecord> AuthMessageRecords { get; set; }
+    //DbSet<AuthMessageRecord> AuthMessageRecords { get; }
 
-    //DbSet<EmailSendRecord> EmailSendRecords { get; set; }
+    //DbSet<EmailSendRecord> EmailSendRecords { get; }
 
-    //DbSet<OrderAmountQtySummary> OrderAmountQtySummaries { get; set; }
+    //DbSet<OrderAmountQtySummary> OrderAmountQtySummaries { get; }
 }
 #endif
