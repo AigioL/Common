@@ -188,4 +188,9 @@ static partial class MaxLengths // 业务相关字段
     public const int Max_CouponName = 120;
 
     public const int Max_OrderId = 64;
+
+    /// <summary>
+    /// 控制器名称最大长度限制
+    /// </summary>
+    public const int BMControllerNameMaxLength = 128;
 }

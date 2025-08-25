@@ -8,6 +8,7 @@ using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Repositories;
@@ -66,7 +67,7 @@ sealed partial class BMMenuRepository<
     public async Task<BMMenuModel?> InfoAsync(Guid id)
     {
         var r = await db.Menus.AsNoTrackingWithIdentityResolution()
-           .Select(BMMenu.GetExpression())
+           .Select(_.MenuExpr)
            .FirstOrDefaultAsync(x => x.Id == id, RequestAborted);
         return r;
     }
@@ -200,7 +201,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
             .Where(x => !x.SoftDeleted)
             .Distinct()
             .OrderBy(x => x.Sort)
-            .Select(BMMenu.GetExpression());
+            .Select(_.MenuExpr);
 
         var r = await query.ToListAsync(RequestAborted);
         return r;
@@ -210,7 +211,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
     {
         var query = db.Buttons.AsNoTrackingWithIdentityResolution()
             .Where(x => !x.SoftDeleted)
-            .Select(BMButton.GetExpression());
+            .Select(_.BtnExpr);
 
         var r = await query.ToListAsync(RequestAborted);
         return r;
@@ -239,7 +240,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
         query = query.Where(x => x.TenantId == tenantId);
 
         var r = await query
-            .Select(BMButton.GetExpression()).ToListAsync(RequestAborted);
+            .Select(_.BtnExpr).ToListAsync(RequestAborted);
         return r;
     }
 
@@ -519,4 +520,25 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
 file static class _
 {
     internal static readonly Comparison<BMMenuTreeItem> menuComparisonBySort = (a, b) => (int)(a.Sort - b.Sort);
+
+    internal static readonly Expression<Func<BMButton, BMButtonModel>> BtnExpr = it => new()
+    {
+        Id = it.Id,
+        Name = it.Name,
+        Type = it.Type,
+        //Style = it.Style,
+        Disable = it.Disable,
+    };
+
+    internal static readonly Expression<Func<BMMenu, BMMenuModel>> MenuExpr = item => new()
+    {
+        Id = item.Id,
+        Name = item.Name,
+        IconUrl = item.IconUrl,
+        Key = item.Key,
+        Sort = item.Sort,
+        ParentId = item.ParentId,
+        Url = item.Url,
+        Note = item.Note,
+    };
 }

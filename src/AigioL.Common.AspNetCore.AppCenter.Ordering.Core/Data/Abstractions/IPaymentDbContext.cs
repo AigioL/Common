@@ -1,11 +1,10 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
-using AigioL.Common.AspNetCore.AppCenter.Payment.Data.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Payment.Data.Abstractions
+namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions
 {
     public interface IPaymentDbContext : IOrderingPaymentBaseDbContext, IDbContextBase
     {

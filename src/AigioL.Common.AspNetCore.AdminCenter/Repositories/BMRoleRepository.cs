@@ -7,6 +7,7 @@ using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Repositories;
 
@@ -37,7 +38,7 @@ sealed partial class BMRoleRepository<
         query = query.OrderByDescending(static x => x.CreationTime);
 
         var q2 = query.OrderByDescending(static x => x.CreationTime)
-            .Select(BMRole.GetExpression());
+            .Select(_.RoleExpr);
 
 #if DEBUG
         var sql = q2.ToQueryString();
@@ -73,4 +74,13 @@ sealed partial class BMRoleRepository<
         var r = await query.Select(x => x.MenuId).Distinct().ToListAsync(RequestAborted);
         return r;
     }
+}
+
+file static class _
+{
+    internal static readonly Expression<Func<BMRole, BMRoleModel>> RoleExpr = x => new()
+    {
+        Id = x.Id,
+        Name = x.Name!,
+    };
 }

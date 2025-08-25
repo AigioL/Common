@@ -58,4 +58,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Payment.Models;
+namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 
 /// <summary>
 /// 支付方式

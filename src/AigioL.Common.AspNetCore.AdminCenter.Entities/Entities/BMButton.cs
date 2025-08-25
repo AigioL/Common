@@ -1,6 +1,5 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
-using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -58,16 +57,4 @@ public partial class BMButton :
             base.Configure(builder);
         }
     }
-}
-
-partial class BMButton
-{
-    public static Expression<Func<BMButton, BMButtonModel>> GetExpression() => it => new()
-    {
-        Id = it.Id,
-        Name = it.Name,
-        Type = it.Type,
-        //Style = it.Style,
-        Disable = it.Disable,
-    };
 }

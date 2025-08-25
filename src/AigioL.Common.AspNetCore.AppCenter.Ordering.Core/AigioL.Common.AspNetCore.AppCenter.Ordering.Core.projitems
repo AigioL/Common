@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOrderingDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOrderingPaymentBaseDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IPaymentDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICoupon.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICouponEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\MerchantDeductionAgreementConfiguration.cs" />
@@ -41,10 +42,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\NoticeStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\RefundChannelType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\RefundStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TransferStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponStatus.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
 </Project>

@@ -48,4 +48,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
 </Project>

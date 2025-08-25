@@ -3,7 +3,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
 /// <summary>
 /// 客户端分发渠道
 /// </summary>
-public enum ClientDistributionChannel : byte
+public enum ClientDistributionChannel
 {
     /// <summary>
     /// 官方发行

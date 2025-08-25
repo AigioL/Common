@@ -1,7 +1,9 @@
-using AigioL.Common.AspNetCore.AdminCenter.Entities;
-using AigioL.Common.AspNetCore.AppCenter.Models;
+#if INCLUDE_ORDERING
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
+#endif
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -226,9 +228,11 @@ partial class User // Relationships
 
     #region Order（订单）
 
+#if INCLUDE_ORDERING
     public virtual List<MerchantDeductionAgreement> MerchantDeductionAgreements { get; set; } = null!;
 
     public virtual List<MembershipBusinessOrder> MembershipBusinessOrders { get; set; } = null!;
+#endif
 
     #endregion
 }

@@ -1,2 +1,2 @@
 ### AigioL.Common.AspNetCore.AppCenter.Ordering
-客户端 App 的 WebApi 项目，提供通用订单功能。  
+提供客户端 App 的通用订单功能的 WebApi 与 Job 共享项目。

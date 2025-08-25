@@ -20,10 +20,6 @@ namespace AigioL.Common.AspNetCore.AdminCenter;
 /// </summary>
 public static partial class BMMinimalApis
 {
-    /// <summary>
-    /// 控制器名称最大长度限制
-    /// </summary>
-    public const int ControllerNameMaxLength = 128;
     public const string BearerScheme = "Bearer";
     public const string BearerSchemeLower = "bearer";
 

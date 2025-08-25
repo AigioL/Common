@@ -1,2 +1,7 @@
 ### AigioL.Common.AspNetCore.AppCenter.Core
-客户端 App 的 WebApi 项目通用类库，提供所有 API 服务需要的底层内容。  
+提供客户端 App 的微服务需要的底层内容的 WebApi 与 Job 与 AdminCenter 共享项目。
+
+#### 文件夹结构
+- Data 数据库上下文
+- Entities 实体类
+- Models 模型类

@@ -1,6 +1,5 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
-using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -125,19 +124,4 @@ public partial class BMMenu :
                    );
         }
     }
-}
-
-partial class BMMenu
-{
-    public static Expression<Func<BMMenu, BMMenuModel>> GetExpression() => item => new()
-    {
-        Id = item.Id,
-        Name = item.Name,
-        IconUrl = item.IconUrl,
-        Key = item.Key,
-        Sort = item.Sort,
-        ParentId = item.ParentId,
-        Url = item.Url,
-        Note = item.Note,
-    };
 }

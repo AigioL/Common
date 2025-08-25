@@ -1,4 +1,3 @@
-using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -42,7 +41,7 @@ public partial class BMMenuButtonRole :
     /// 控制器名称
     /// </summary>
     [Required]
-    [StringLength(BMMinimalApis.ControllerNameMaxLength)]
+    [StringLength(MaxLengths.BMControllerNameMaxLength)]
     [Comment("控制器名称")]
     public required string ControllerName { get; set; }
 

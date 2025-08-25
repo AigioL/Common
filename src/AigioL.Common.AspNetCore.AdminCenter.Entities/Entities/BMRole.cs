@@ -1,5 +1,4 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
-using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.AspNetCore.Identity;
@@ -102,13 +101,4 @@ partial class BMRole : ITenantBaseEntity<Guid>
     /// <inheritdoc/>
     [Comment("租户 Id")]
     public Guid TenantId { get; set; }
-}
-
-partial class BMRole
-{
-    public static Expression<Func<BMRole, BMRoleModel>> GetExpression() => x => new()
-    {
-        Id = x.Id,
-        Name = x.Name!,
-    };
 }

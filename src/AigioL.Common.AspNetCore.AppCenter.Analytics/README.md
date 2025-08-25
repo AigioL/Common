@@ -1,2 +1,2 @@
 ### AigioL.Common.AspNetCore.AppCenter.Analytics
-客户端 App 的 WebApi 项目，提供数据分析、收集、统计功能。  
+提供客户端 App 的数据分析、收集、统计功能等功能的 WebApi 与 Job 共享项目。

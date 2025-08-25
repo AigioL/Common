@@ -48,6 +48,7 @@
     <Project Path="src/AigioL.Common.Windows.Win32.System.Threading.MessageLoop/AigioL.Common.Windows.Win32.System.Threading.MessageLoop.shproj" Id="5ba03b40-b43e-4df5-ae77-a65dfc7d79c7" />
   </Folder>
   <Folder Name="/2.Libraries/AspNetCore/">
+    <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.Entities/AigioL.Common.AspNetCore.AdminCenter.Entities.shproj" Id="e6c5f93e-333f-41c9-8e27-e0046d5ce19c" />
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter/AigioL.Common.AspNetCore.AdminCenter.shproj" Id="66c06857-99f9-4aa4-9504-e2f1070aa7ae" />
     <Project Path="src/AigioL.Common.AspNetCore.Helpers.ProgramMain/AigioL.Common.AspNetCore.Helpers.ProgramMain.shproj" Id="276306f9-8c73-4b7a-a517-e7a502cd5f2b" />
   </Folder>

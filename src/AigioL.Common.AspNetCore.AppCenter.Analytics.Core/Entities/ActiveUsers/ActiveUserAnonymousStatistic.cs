@@ -1,5 +1,4 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers;
-using AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -134,7 +133,7 @@ public partial class ActiveUserAnonymousStatistic :
     /// 客户端分发渠道
     /// </summary>
     [Comment("客户端分发渠道")]
-    public ClientDistributionChannel ClientDistributionChannel { get; set; }
+    public int ClientDistributionChannel { get; set; }
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<ActiveUserAnonymousStatistic>
     {
