@@ -12,6 +12,7 @@
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
@@ -28,17 +29,24 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserRefreshJsonWebToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWallet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWalletChangeRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\CacheExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyUserWalletValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalLoginChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipLicenseFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MSMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SmsCodeType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeviceIsTrustMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletPaymentDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.Redis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\JsonWebTokenAuthorizationMiddlewareResultHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\UserManager2.cs" />
   </ItemGroup>
 </Project>

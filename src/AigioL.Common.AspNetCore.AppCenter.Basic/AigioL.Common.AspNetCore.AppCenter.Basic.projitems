@@ -11,4 +11,12 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ArticleController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\CustomerServiceController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKeyValuePairRepository.cs" />
+  </ItemGroup>
 </Project>

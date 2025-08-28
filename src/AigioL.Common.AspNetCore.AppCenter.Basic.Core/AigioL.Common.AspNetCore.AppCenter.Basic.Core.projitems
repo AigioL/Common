@@ -9,6 +9,7 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Basic</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\BasicConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppVerDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IArticleDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKeyValuePairsDbContext.cs" />
@@ -41,6 +42,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\UpdateChannelType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleCategoryModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleCategoryTreeModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleItemModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleOrderBy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleTagModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FileSystem\CloudFileType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
   </ItemGroup>

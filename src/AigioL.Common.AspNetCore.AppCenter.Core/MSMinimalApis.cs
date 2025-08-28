@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Models;
 
@@ -15,6 +16,8 @@ public static partial class MSMinimalApis
     /// <param name="options"></param>
     /// <returns></returns>
     public static OpenApiOptions AddMSBearerSecuritySchemeTransformer(this OpenApiOptions options) => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+
+    public static readonly AuthorizeAttribute MSApiControllerBaseAuthorize = new() { AuthenticationSchemes = BearerScheme, };
 }
 
 /// <summary>

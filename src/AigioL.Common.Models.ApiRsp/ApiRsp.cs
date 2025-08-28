@@ -85,3 +85,30 @@ public sealed partial record class ApiRsp<TContent> : ApiRsp
         return result;
     }
 }
+
+partial record class ApiRsp // Code 常量
+{
+    #region 限定值范围 1008~1099
+
+    /// <summary>
+    /// 找不到 HTTP 请求授权头
+    /// </summary>
+    public const uint Code_MissingAuthHeader = 1008;
+
+    /// <summary>
+    /// HTTP 请求授权声明不正确
+    /// </summary>
+    public const uint Code_SchemeNotCorrect = 1009;
+
+    /// <summary>
+    /// 用户登录设备被踢出
+    /// </summary>
+    public const uint Code_UserDeviceIsNotTrust = 1010;
+
+    /// <summary>
+    /// 找不到用户
+    /// </summary>
+    public const uint Code_UserNotFound = 1011;
+
+    #endregion
+}

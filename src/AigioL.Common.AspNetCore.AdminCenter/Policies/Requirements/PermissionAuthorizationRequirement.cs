@@ -23,7 +23,6 @@ public sealed record class PermissionAuthorizationRequirement(string controllerN
 
     public AuthorizationPolicy GetAuthorizationPolicy() => new([this], [BMMinimalApis.BearerScheme]);
 
-
     public static implicit operator AuthorizationPolicy(PermissionAuthorizationRequirement obj) => obj.GetAuthorizationPolicy();
 
     public static string GetPolicyName(string controllerName, BMButtonType buttonType) => $"{controllerName}{buttonType}";

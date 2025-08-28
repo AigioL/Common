@@ -77,4 +77,11 @@
 		<PackageVersion Include="AspNet.Security.OAuth.Feishu" Version="9.4.0" />
 	</ItemGroup>
 
+	<!-- 👇 Redis -->
+	<ItemGroup>
+		<PackageVersion Include="Aspire.Hosting.Redis" Version="9.4.0" />
+		<PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.4.0" />
+		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.4.1" />
+	</ItemGroup>
+
 </Project>
