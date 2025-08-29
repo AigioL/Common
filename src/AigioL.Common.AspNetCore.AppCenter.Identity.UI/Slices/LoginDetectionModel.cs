@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -20,7 +21,18 @@ public sealed record class LoginDetectionModel
     }
 
     /// <inheritdoc cref="LayoutModel"/>
-    public required LayoutModel Layout { get; init; }
+    public required LayoutModel Layout
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(field.HeadTitle))
+            {
+                field.HeadTitle = $"{AppName} | {Resources.LoginAndRegister}";
+            }
+            return field;
+        }
+        init => field = value;
+    }
 
     /// <summary>
     /// 登录成功的 JWT 值
@@ -62,7 +74,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string PleaseWait
     {
-        get => field ?? "请稍后…";
+        get => field ?? Resources.PleaseWait;
         init;
     }
 
@@ -71,7 +83,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string BrowserIsSupported1
     {
-        get => field ?? "很抱歉，您正在使用一个过时的浏览器。建议升级您的浏览器或使用";
+        get => field ?? Resources.BrowserIsSupported1;
         init;
     }
 
@@ -80,25 +92,25 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public required string BrowserIsSupported2
     {
-        get => field ?? "等其他现代浏览器，以提高您的体验。";
+        get => field ?? Resources.BrowserIsSupported2;
         init;
     }
 
     public string Url_MicrosoftEdge
     {
-        get => field ?? "https://www.microsoft.com/edge";
+        get => field ?? Resources.Url_MicrosoftEdge;
         init;
     }
 
     public string Url_Chrome
     {
-        get => field ?? "https://www.google.cn/chrome/browser/desktop";
+        get => field ?? Resources.Url_Chrome;
         init;
     }
 
     public string Url_Firefox
     {
-        get => field ?? "https://www.mozilla.org/firefox/browsers";
+        get => field ?? Resources.Url_Firefox;
         init;
     }
 
@@ -107,7 +119,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string ModelErrorTitle
     {
-        get => field ?? "错误!";
+        get => field ?? Resources.ModelErrorTitle;
         init;
     }
 
@@ -122,7 +134,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string ModelSuccessTitle_
     {
-        get => field ?? "{0}成功!";
+        get => field ?? Resources.ModelSuccessTitle_;
         init;
     }
 
@@ -140,7 +152,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string CopySuccess
     {
-        get => field ?? "成功复制到剪贴板";
+        get => field ?? Resources.CopySuccess;
         init;
     }
 
@@ -149,7 +161,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string CopyNoSupport
     {
-        get => field ?? "该浏览器不支持点击复制到剪贴板";
+        get => field ?? Resources.CopyNoSupport;
         init;
     }
 
@@ -168,7 +180,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string LoginOrBindText
     {
-        get => field ?? (IsBind ? "绑定" : "登录");
+        get => field ?? (IsBind ? Resources.Bind : Resources.Login2);
         set;
     }
 
@@ -188,7 +200,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string LoginSuccessTip1___
     {
-        get => field ?? "{0} {1}已完成，您可以关闭此窗口并返回至 {2}。";
+        get => field ?? Resources.LoginSuccessTip1___;
         init;
     }
 
@@ -197,7 +209,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string LoginSuccessTip2
     {
-        get => field ?? "此浏览器窗口/标签页将会在 10 秒内尝试自动关闭，您也可以手动关闭。";
+        get => field ?? Resources.LoginSuccessTip2;
         set;
     }
 
@@ -212,7 +224,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public required string ClickHereTryAgain
     {
-        get => field ?? "点击此处重试";
+        get => field ?? Resources.ClickHereTryAgain;
         set;
     }
 
@@ -221,7 +233,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public required string WebSocketLostTip
     {
-        get => field ?? "与程序的连接丢失，点击重试或重新在程序内点击快速登录。";
+        get => field ?? Resources.WebSocketLostTip;
         set;
     }
     /// <summary>
@@ -229,7 +241,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public required string PleaseCheckSteamCommunity
     {
-        get => field ?? "请检查是否能正常访问 Steam 社区。";
+        get => field ?? Resources.PleaseCheckSteamCommunity;
         set;
     }
 
@@ -238,7 +250,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public required string LongTimeNoJump
     {
-        get => field ?? "长时间未跳转？";
+        get => field ?? Resources.LongTimeNoJump;
         set;
     }
 
@@ -247,7 +259,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public required string ManualCopyTip
     {
-        get => field ?? "连接程序出错，请手动复制以下内容到程序点击手动登录。";
+        get => field ?? Resources.ManualCopyTip;
         set;
     }
 
@@ -256,7 +268,7 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public required string CopyButton
     {
-        get => field ?? "点此复制";
+        get => field ?? Resources.CopyButton;
         set;
     }
 }

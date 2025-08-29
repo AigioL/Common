@@ -1,64 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -118,78 +59,75 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BodyNoScript" xml:space="preserve">
-    <value>需要开启 JavaScript 才能浏览本站点。</value>
-    <comment>html 的 body noscript</comment>
+    <value>이 사이트를 탐색하려면 JavaScript가 필요합니다.</value>
   </data>
   <data name="BrowserIsSupported1" xml:space="preserve">
-    <value>很抱歉，您正在使用一个过时的浏览器。建议升级您的浏览器或使用</value>
+    <value>죄송합니다. 구버전 브라우저를 사용하고 계십니다. 브라우저를 업데이트하거나</value>
   </data>
   <data name="BrowserIsSupported2" xml:space="preserve">
-    <value>等其他现代浏览器，以提高您的体验。</value>
+    <value>또는 다른 최신 브라우저를 사용하여 경험을 개선해 주세요.</value>
   </data>
   <data name="ColorPrimary" xml:space="preserve">
     <value>#2196F3</value>
-    <comment>主颜色</comment>
   </data>
   <data name="MetaMSApplicationWindow" xml:space="preserve">
     <value>width=1024;height=768</value>
-    <comment>html 的 meta msapplication-window</comment>
   </data>
   <data name="PleaseWait" xml:space="preserve">
-    <value>请稍后…</value>
+    <value>잠시 기다려 주세요...</value>
   </data>
   <data name="Url_Firefox" xml:space="preserve">
     <value>https://www.mozilla.org/firefox/browsers</value>
   </data>
   <data name="Url_Chrome" xml:space="preserve">
-    <value>https://www.google.cn/chrome/browser/desktop</value>
+    <value>https://www.google.com/chrome/browser/desktop</value>
   </data>
   <data name="Url_MicrosoftEdge" xml:space="preserve">
     <value>https://www.microsoft.com/edge</value>
   </data>
   <data name="ModelErrorTitle" xml:space="preserve">
-    <value>错误!</value>
+    <value>오류!</value>
   </data>
   <data name="ModelSuccessTitle_" xml:space="preserve">
-    <value>{0}成功!</value>
+    <value>{0} 성공!</value>
   </data>
   <data name="CopySuccess" xml:space="preserve">
-    <value>成功复制到剪贴板</value>
+    <value>클립보드에 성공적으로 복사되었습니다</value>
   </data>
   <data name="CopyNoSupport" xml:space="preserve">
-    <value>该浏览器不支持点击复制到剪贴板</value>
+    <value>이 브라우저는 클릭하여 클립보드에 복사하는 기능을 지원하지 않습니다</value>
   </data>
   <data name="Bind" xml:space="preserve">
-    <value>绑定</value>
+    <value>연결</value>
   </data>
   <data name="Login2" xml:space="preserve">
-    <value>登录</value>
+    <value>로그인</value>
   </data>
   <data name="LoginSuccessTip1___" xml:space="preserve">
-    <value>{0} {1}已完成，您可以关闭此窗口并返回至 {2}。</value>
+    <value>{0} {1}이(가) 완료되었습니다. 이 창을 닫고 {2}로 돌아가실 수 있습니다.</value>
   </data>
   <data name="LoginSuccessTip2" xml:space="preserve">
-    <value>此浏览器窗口/标签页将会在 10 秒内尝试自动关闭，您也可以手动关闭。</value>
+    <value>이 브라우저 창/탭은 10초 내에 자동으로 닫히려고 시도하거나 수동으로 닫을 수 있습니다.</value>
   </data>
   <data name="ClickHereTryAgain" xml:space="preserve">
-    <value>点击此处重试</value>
+    <value>다시 시도하려면 여기를 클릭하세요</value>
   </data>
   <data name="WebSocketLostTip" xml:space="preserve">
-    <value>与程序的连接丢失，点击重试或重新在程序内点击快速登录。</value>
+    <value>애플리케이션과의 연결이 끊어졌습니다. 다시 시도를 클릭하거나 애플리케이션에서 빠른 로그인을 다시 클릭하세요.</value>
   </data>
   <data name="PleaseCheckSteamCommunity" xml:space="preserve">
-    <value>请检查是否能正常访问 Steam 社区。</value>
+    <value>Steam Community에 정상적으로 접근할 수 있는지 확인해 주세요.</value>
   </data>
   <data name="LongTimeNoJump" xml:space="preserve">
-    <value>长时间未跳转？</value>
+    <value>오랫동안 리디렉션이 없으신가요?</value>
   </data>
   <data name="ManualCopyTip" xml:space="preserve">
-    <value>连接程序出错，请手动复制以下内容到程序点击手动登录。</value>
+    <value>애플리케이션 연결 오류입니다. 아래 내용을 수동으로 애플리케이션에 복사하고 수동 로그인을 클릭해 주세요.</value>
   </data>
   <data name="CopyButton" xml:space="preserve">
-    <value>点此复制</value>
+    <value>복사하려면 클릭</value>
   </data>
   <data name="LoginAndRegister" xml:space="preserve">
-    <value>登录 / 注册</value>
+    <value>로그인 / 회원가입</value>
   </data>
 </root>

@@ -1,3 +1,5 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties;
+
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Slices;
 
 /// <summary>
@@ -20,14 +22,12 @@ public sealed record class LayoutModel
     /// </summary>
     public required string MetaDescription { get; init; }
 
-    const string DefaultColor = "#2196F3";
-
     /// <summary>
     /// html 的 meta theme-color
     /// </summary>
     public string MetaThemeColor
     {
-        get => field ?? DefaultColor;
+        get => field ?? Resources.ColorPrimary;
         init;
     }
 
@@ -36,7 +36,7 @@ public sealed record class LayoutModel
     /// </summary>
     public string MetaMSApplicationTileColor
     {
-        get => field ?? DefaultColor;
+        get => field ?? Resources.ColorPrimary;
         init;
     }
 
@@ -45,21 +45,21 @@ public sealed record class LayoutModel
     /// </summary>
     public string MetaMSApplicationWindow
     {
-        get => field ?? "width=1024;height=768";
+        get => field ?? Resources.MetaMSApplicationWindow;
         init;
     }
 
     /// <summary>
     /// html 的 head title
     /// </summary>
-    public required string HeadTitle { get; init; }
+    public string? HeadTitle { get; set; }
 
     /// <summary>
     /// html 的 body noscript
     /// </summary>
     public string NoScript
     {
-        get => field ?? "需要开启 JavaScript 才能浏览本站点。";
+        get => field ?? Resources.BodyNoScript;
         init;
     }
 }

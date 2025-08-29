@@ -59,5 +59,221 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似 绑定 的本地化字符串。
+        /// </summary>
+        internal static string Bind {
+            get {
+                return ResourceManager.GetString("Bind", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 需要开启 JavaScript 才能浏览本站点。 的本地化字符串。
+        /// </summary>
+        internal static string BodyNoScript {
+            get {
+                return ResourceManager.GetString("BodyNoScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 很抱歉，您正在使用一个过时的浏览器。建议升级您的浏览器或使用 的本地化字符串。
+        /// </summary>
+        internal static string BrowserIsSupported1 {
+            get {
+                return ResourceManager.GetString("BrowserIsSupported1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 等其他现代浏览器，以提高您的体验。 的本地化字符串。
+        /// </summary>
+        internal static string BrowserIsSupported2 {
+            get {
+                return ResourceManager.GetString("BrowserIsSupported2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点击此处重试 的本地化字符串。
+        /// </summary>
+        internal static string ClickHereTryAgain {
+            get {
+                return ResourceManager.GetString("ClickHereTryAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 #2196F3 的本地化字符串。
+        /// </summary>
+        internal static string ColorPrimary {
+            get {
+                return ResourceManager.GetString("ColorPrimary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 点此复制 的本地化字符串。
+        /// </summary>
+        internal static string CopyButton {
+            get {
+                return ResourceManager.GetString("CopyButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 该浏览器不支持点击复制到剪贴板 的本地化字符串。
+        /// </summary>
+        internal static string CopyNoSupport {
+            get {
+                return ResourceManager.GetString("CopyNoSupport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 成功复制到剪贴板 的本地化字符串。
+        /// </summary>
+        internal static string CopySuccess {
+            get {
+                return ResourceManager.GetString("CopySuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录 的本地化字符串。
+        /// </summary>
+        internal static string Login2 {
+            get {
+                return ResourceManager.GetString("Login2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 登录 / 注册 的本地化字符串。
+        /// </summary>
+        internal static string LoginAndRegister {
+            get {
+                return ResourceManager.GetString("LoginAndRegister", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0} {1}已完成，您可以关闭此窗口并返回至 {2}。 的本地化字符串。
+        /// </summary>
+        internal static string LoginSuccessTip1___ {
+            get {
+                return ResourceManager.GetString("LoginSuccessTip1___", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 此浏览器窗口/标签页将会在 10 秒内尝试自动关闭，您也可以手动关闭。 的本地化字符串。
+        /// </summary>
+        internal static string LoginSuccessTip2 {
+            get {
+                return ResourceManager.GetString("LoginSuccessTip2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 长时间未跳转？ 的本地化字符串。
+        /// </summary>
+        internal static string LongTimeNoJump {
+            get {
+                return ResourceManager.GetString("LongTimeNoJump", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 连接程序出错，请手动复制以下内容到程序点击手动登录。 的本地化字符串。
+        /// </summary>
+        internal static string ManualCopyTip {
+            get {
+                return ResourceManager.GetString("ManualCopyTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 width=1024;height=768 的本地化字符串。
+        /// </summary>
+        internal static string MetaMSApplicationWindow {
+            get {
+                return ResourceManager.GetString("MetaMSApplicationWindow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 错误! 的本地化字符串。
+        /// </summary>
+        internal static string ModelErrorTitle {
+            get {
+                return ResourceManager.GetString("ModelErrorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0}成功! 的本地化字符串。
+        /// </summary>
+        internal static string ModelSuccessTitle_ {
+            get {
+                return ResourceManager.GetString("ModelSuccessTitle_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请检查是否能正常访问 Steam 社区。 的本地化字符串。
+        /// </summary>
+        internal static string PleaseCheckSteamCommunity {
+            get {
+                return ResourceManager.GetString("PleaseCheckSteamCommunity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请稍后… 的本地化字符串。
+        /// </summary>
+        internal static string PleaseWait {
+            get {
+                return ResourceManager.GetString("PleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 https://www.google.cn/chrome/browser/desktop 的本地化字符串。
+        /// </summary>
+        internal static string Url_Chrome {
+            get {
+                return ResourceManager.GetString("Url_Chrome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 https://www.mozilla.org/firefox/browsers 的本地化字符串。
+        /// </summary>
+        internal static string Url_Firefox {
+            get {
+                return ResourceManager.GetString("Url_Firefox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 https://www.microsoft.com/edge 的本地化字符串。
+        /// </summary>
+        internal static string Url_MicrosoftEdge {
+            get {
+                return ResourceManager.GetString("Url_MicrosoftEdge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 与程序的连接丢失，点击重试或重新在程序内点击快速登录。 的本地化字符串。
+        /// </summary>
+        internal static string WebSocketLostTip {
+            get {
+                return ResourceManager.GetString("WebSocketLostTip", resourceCulture);
+            }
+        }
     }
 }
