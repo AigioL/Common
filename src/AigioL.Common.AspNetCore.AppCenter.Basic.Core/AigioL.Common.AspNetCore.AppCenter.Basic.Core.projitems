@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOfficialMessageDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ApiGateway\ServerCertificate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\ICloudFileInfo.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\Abstractions\IReadOnlyAppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\AppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\AppVerBuild.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AppVersions\AppVerFile.cs" />
@@ -36,6 +35,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessageAppVerRelation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificatePackable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateRawDataType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateValidateKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\AppVersionModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\AppVersionTauriModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\ClientDistributionChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\DeploymentMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\DownloadMethod.cs" />
@@ -46,12 +48,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleOrderBy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleTagModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\BasicMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FileSystem\CloudFileType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageItemModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

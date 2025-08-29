@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>15ff553c-b7f2-4f92-8bae-eb489368c189</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Identity</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ErrorController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ExternalLoginController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\IdentityAccountController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\IdentityManageController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\IdentityWalletController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.cs" />
+  </ItemGroup>
+</Project>

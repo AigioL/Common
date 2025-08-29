@@ -56,6 +56,7 @@
 	<!-- 👇 序列化 -->
 	<ItemGroup>
 		<PackageVersion Include="MemoryPack" Version="1.21.4" />
+		<PackageVersion Include="MemoryPack.Streaming" Version="1.21.4" />
 	</ItemGroup>
 
 	<!-- 👇 OpenApi -->
@@ -82,6 +83,11 @@
 		<PackageVersion Include="Aspire.Hosting.Redis" Version="9.4.0" />
 		<PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.4.0" />
 		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.4.1" />
+	</ItemGroup>
+
+	<!-- 👇 Razor -->
+	<ItemGroup>
+		<PackageVersion Include="RazorSlices" Version="0.9.5" />
 	</ItemGroup>
 
 </Project>

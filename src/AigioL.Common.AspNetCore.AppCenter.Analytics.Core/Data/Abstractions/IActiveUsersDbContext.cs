@@ -14,10 +14,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Data.Abstractions
     }
 }
 
-#if PROJ_DBCONTEXT_BM // TODO: 使用源生成器标注 dbcontext 子类检查接口自动补全 DbSet 属性后，删除这些 #if PROJ_DBCONTEXT_BM 块代码
-namespace GameTrainer.ApiService.AdminCenter.Data
+#if !REMOVE_APP_DBCONTEXT // TODO: 使用源生成器标注 dbcontext 子类检查接口自动补全 DbSet 属性后，删除这些 #if !REMOVE_APP_DBCONTEXT 块代码
+#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
+namespace AigioL.Common.AspNetCore.Data
 {
-    partial class BMDbContext : IActiveUsersDbContext
+    partial class AppDbContext : IActiveUsersDbContext
     {
         public DbSet<ActiveUserAnonymousStatistic> ActiveUserRecords { get; set; } = null!;
     }

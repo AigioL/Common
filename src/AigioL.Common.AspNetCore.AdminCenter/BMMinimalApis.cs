@@ -6,11 +6,9 @@ using AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AdminCenter;
@@ -40,50 +38,17 @@ public static partial class BMMinimalApis
         b.MapBMUsers<TUser>();
     }
 
-    static string GetPath(HttpContext context, out Exception? error)
-    {
-        error = null;
-        string path;
-        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-        if (exceptionHandlerPathFeature != null)
-        {
-            path = exceptionHandlerPathFeature.Path;
-            error = exceptionHandlerPathFeature.Error;
-        }
-        else
-        {
-            var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
-            if (exceptionHandlerFeature != null)
-            {
-                path = exceptionHandlerFeature.Path;
-                error = exceptionHandlerFeature.Error;
-            }
-            else
-            {
-                path = context.Request.Path;
-            }
-        }
-        return path;
-    }
-
-    static string GetTraceId(HttpContext context)
-    {
-        // https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Http/Http.Extensions/src/DefaultProblemDetailsWriter.cs#L58
-        var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
-        return traceId;
-    }
-
     /// <summary>
     /// 使用 <see cref="BMApiRsp"/> 格式的异常处理与状态码响应
     /// <para>https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/error-handling</para>
     /// </summary>
     /// <param name="app"></param>
     /// <returns></returns>
-    public static IApplicationBuilder UseApiRspACExceptionHandler(this IApplicationBuilder app) => app.UseExceptionHandler(exceptionHandlerApp =>
+    public static IApplicationBuilder UseBMApiRspExceptionHandler(this IApplicationBuilder app) => app.UseExceptionHandler(exceptionHandlerApp =>
     {
         exceptionHandlerApp.Run(async context =>
         {
-            var path = GetPath(context, out var error);
+            var path = context.GetExceptionHandlerPath(out var error);
             BMApiRsp apiRsp = new();
             if (error != null)
             {
@@ -94,7 +59,7 @@ public static partial class BMMinimalApis
                 apiRsp.Code = StatusCodes.Status500InternalServerError;
             }
             apiRsp.Url = path;
-            var traceId = GetTraceId(context);
+            var traceId = context.GetTraceId();
             apiRsp.TraceId = traceId;
 
             context.Response.StatusCode = StatusCodes.Status200OK;
@@ -106,7 +71,7 @@ public static partial class BMMinimalApis
     {
         statusCodePagesApp.Run(async context =>
         {
-            var traceId = GetTraceId(context);
+            var traceId = context.GetTraceId();
             BMApiRsp apiRsp = new()
             {
                 Code = unchecked((uint)context.Response.StatusCode),
@@ -136,7 +101,7 @@ public static partial class BMMinimalApis
         }
         if (string.IsNullOrWhiteSpace(apiRsp.TraceId))
         {
-            apiRsp.TraceId = GetTraceId(context);
+            apiRsp.TraceId = context.GetTraceId();
         }
         return apiRsp;
     }

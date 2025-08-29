@@ -10,7 +10,7 @@ namespace AigioL.Common.Models;
 //#if MP2_GENERATE_TS
 //[global::MemoryPack.GenerateTypeScript] 已手动修改生成代码
 //#endif
-[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Sequential)]
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Sequential)]
 #endif
 public partial record class ApiRsp
 {
@@ -61,7 +61,7 @@ public partial record class ApiRsp
 }
 
 #if !DISABLE_MP2
-[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Sequential)]
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Sequential)]
 #endif
 public sealed partial record class ApiRsp<TContent> : ApiRsp
 {

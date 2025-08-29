@@ -29,7 +29,6 @@
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Ordering\AigioL.Common.AspNetCore.AppCenter.Ordering.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Ordering.Core\AigioL.Common.AspNetCore.AppCenter.Ordering.Core.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Payment\AigioL.Common.AspNetCore.AppCenter.Payment.projitems" Label="Shared" />
-	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Payment.Core\AigioL.Common.AspNetCore.AppCenter.Payment.Core.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
 
 </Project>

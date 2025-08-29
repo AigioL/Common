@@ -1,4 +1,4 @@
-using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using MemoryPack;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions;

@@ -25,13 +25,6 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
 {
     readonly AuthorizationMiddlewareResultHandler defaultHandler = new();
 
-    static string GetTraceId(HttpContext context)
-    {
-        // https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Http/Http.Extensions/src/DefaultProblemDetailsWriter.cs#L58
-        var traceId = Activity.Current?.Id ?? context.TraceIdentifier;
-        return traceId;
-    }
-
     static async Task Fail(HttpContext context, uint failCode)
     {
         const int statusCode = StatusCodes.Status401Unauthorized;
@@ -42,7 +35,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
             ApiRsp.Code_UserDeviceIsNotTrust => UserIsBanErrorMessage,
             _ => string.Format(AuthorizationFailErrorMessage_, failCode),
         };
-        var traceId = GetTraceId(context);
+        var traceId = context.GetTraceId();
         ApiRsp apiRsp = new()
         {
             Code = failCode,
@@ -51,8 +44,9 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
             Message = message,
         };
         context.Response.StatusCode = statusCode;
-        await context.Response.WriteAsJsonAsync(apiRsp,
-            MSMinimalApisJsonSerializerContext.Default.ApiRsp,
+        await MSMinimalApis.WriteApiRspAsync(
+            context.Response,
+            apiRsp,
             cancellationToken: context.RequestAborted);
     }
 
@@ -109,16 +103,8 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         var authHeader = AuthenticationHeaderValue.Parse(authHeaderValue.ToString());
         if (!string.Equals(MSMinimalApis.BearerScheme, authHeader.Scheme, StringComparison.InvariantCultureIgnoreCase))
         {
-            if (hasAllowAnonymous)
-            {
-                await defaultHandler.HandleAsync(next, context, policy, authorizeResult);
-                return;
-            }
-            else
-            {
-                await Fail(context, FailCode.SchemeNotCorrect);
-                return;
-            }
+            await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
+                ApiRsp.Code_SchemeNotCorrect);
         }
 
         var nameId = context.User.FindFirst(ClaimTypes.NameIdentifier);

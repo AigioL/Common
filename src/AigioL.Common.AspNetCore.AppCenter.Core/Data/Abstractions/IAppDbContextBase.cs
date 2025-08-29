@@ -262,10 +262,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions
     }
 }
 
-#if PROJ_DBCONTEXT_BM
-namespace GameTrainer.ApiService.AdminCenter.Data
+#if !REMOVE_APP_DBCONTEXT
+#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
+namespace AigioL.Common.AspNetCore.Data
 {
-    partial class BMDbContext : IAppDbContextBase
+    partial class AppDbContext : IAppDbContextBase
     {
         public DbSet<User> ACUsers { get; set; } = null!;
 

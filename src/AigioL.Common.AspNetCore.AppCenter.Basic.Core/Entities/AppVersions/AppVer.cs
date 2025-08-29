@@ -1,5 +1,5 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;

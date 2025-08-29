@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\InfoController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\BMDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IBMDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMButtonModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMRoleModel.cs" />

@@ -1,6 +1,6 @@
 using AigioL.Common.Primitives.Columns;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions.Abstractions;
+namespace AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 
 /// <summary>
 /// APP 版本号信息只读接口

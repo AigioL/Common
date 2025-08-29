@@ -14,6 +14,11 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ArticleController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\CustomerServiceController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ImageController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\OfficialMessageController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ServerCertificateController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\VersionsController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleRepository.cs" />

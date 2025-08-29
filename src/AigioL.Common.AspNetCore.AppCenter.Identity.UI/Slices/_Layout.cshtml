@@ -1,0 +1,31 @@
+@using AigioL.Common.AspNetCore.AppCenter.Identity.UI.Slices
+@inherits RazorLayoutSlice<LayoutModel>
+
+<!DOCTYPE html>
+<html lang="@Model.HtmlLang">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="never">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="wap-font-scale" content="no">
+    <meta name="theme-color" content="@(Model.MetaThemeColor)">
+    <meta name="msapplication-TileColor" content="@(Model.MetaMSApplicationTileColor)">
+    <meta name="msapplication-window" content="@(Model.MetaMSApplicationWindow)">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="keywords"
+          content="@Model.MetaKeywords" />
+    <meta name="description"
+          content="@Model.MetaDescription" />
+    <title>@Model.HeadTitle</title>
+    @await RenderSectionAsync("Styles")
+</head>
+<body>
+    <noscript>@Model.NoScript</noscript>
+    @await RenderBodyAsync()
+    @await RenderSectionAsync("Scripts")
+</body>
+</html>

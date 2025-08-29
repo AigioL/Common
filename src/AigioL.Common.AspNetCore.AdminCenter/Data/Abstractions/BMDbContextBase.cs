@@ -33,11 +33,11 @@ public abstract partial class BMDbContextBase<
     /// <inheritdoc/>
     DatabaseFacade IDbContextBase.GetDatabase() => Database;
 
-    protected readonly IHttpContextAccessor? a;
+    protected readonly IHttpContextAccessor? httpContextAccessor;
 
     protected BMDbContextBase(IServiceProvider serviceProvider, DbContextOptions options) : base(options)
     {
-        a = serviceProvider.GetService<IHttpContextAccessor>();
+        httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
     }
 
     /// <inheritdoc/>
@@ -58,7 +58,7 @@ public abstract partial class BMDbContextBase<
     /// <inheritdoc/>
     public virtual Guid? GetCurrentUserId()
     {
-        var ctx = a?.HttpContext;
+        var ctx = httpContextAccessor?.HttpContext;
         if (ctx != null)
         {
             var userId = GetUserId(ctx);

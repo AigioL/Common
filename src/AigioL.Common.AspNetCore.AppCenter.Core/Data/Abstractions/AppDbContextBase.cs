@@ -1,10 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
-using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using TableNames = AigioL.Common.AspNetCore.AppCenter.Data.Abstractions.IAppDbContextBase.TableNames;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 
@@ -12,23 +9,13 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 /// 客户端 App WebApi 的数据库上下文基类
 /// </summary>
 public abstract partial class AppDbContextBase :
-    IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>,
-    IAppDbContextBase,
-    IDbContextBase,
-    IIdentityDbContext
+    IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
 {
-    /// <inheritdoc/>
-    DbContext IDbContextBase.GetDbContext() => this;
+    protected readonly IHttpContextAccessor? httpContextAccessor;
 
-    /// <inheritdoc/>
-    DatabaseFacade IDbContextBase.GetDatabase() => Database;
-
-    protected override void OnModelCreating(ModelBuilder b)
+    protected AppDbContextBase(IServiceProvider serviceProvider, DbContextOptions options) : base(options)
     {
-        base.OnModelCreating(b);
-
-        // 重命名 Identity 相关表名
-        IAppDbContextBase.ToIdentitysTable(b);
+        httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
     }
 
     #region 用户模块

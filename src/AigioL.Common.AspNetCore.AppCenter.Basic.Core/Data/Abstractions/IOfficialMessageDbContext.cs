@@ -20,10 +20,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Data.Abstractions
 #endif
 }
 
-#if PROJ_DBCONTEXT_BM
-namespace GameTrainer.ApiService.AdminCenter.Data
+#if !REMOVE_APP_DBCONTEXT
+#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
+namespace AigioL.Common.AspNetCore.Data
 {
-    partial class BMDbContext : IOfficialMessageDbContext
+    partial class AppDbContext : IOfficialMessageDbContext
     {
         public DbSet<OfficialMessage> OfficialMessages { get; set; } = null!;
 

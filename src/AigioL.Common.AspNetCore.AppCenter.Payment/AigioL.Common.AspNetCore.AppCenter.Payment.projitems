@@ -11,4 +11,12 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\AgreementController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\CooperatorOrderController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\MembershipController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\PaymentController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\TestController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\VipPaymentController.cs" />
+  </ItemGroup>
 </Project>

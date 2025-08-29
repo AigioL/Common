@@ -58,9 +58,10 @@
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic.Core/AigioL.Common.AspNetCore.AppCenter.Basic.Core.shproj" Id="9a99af09-34a7-46b8-8345-095b02f846e1" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic/AigioL.Common.AspNetCore.AppCenter.Basic.shproj" Id="3b025ecf-b924-4625-9635-68b1c88e3cd3" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Core/AigioL.Common.AspNetCore.AppCenter.Core.shproj" Id="8c072252-eabc-401a-aa84-59b8b38eda49" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity.UI/AigioL.Common.AspNetCore.AppCenter.Identity.UI.csproj" Id="6b5b1110-b7f7-4f3a-ba59-00c621df7d4d" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity/AigioL.Common.AspNetCore.AppCenter.Identity.shproj" Id="15ff553c-b7f2-4f92-8bae-eb489368c189" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering.Core/AigioL.Common.AspNetCore.AppCenter.Ordering.Core.shproj" Id="be46ad26-3ee2-445a-80f2-26bc29e7b545" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering/AigioL.Common.AspNetCore.AppCenter.Ordering.shproj" Id="050a2e79-a588-44b3-87b4-4c32d5af4414" />
-    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment.Core/AigioL.Common.AspNetCore.AppCenter.Payment.Core.shproj" Id="9cf0f663-1bb5-4805-888c-241acbc0a4b3" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment/AigioL.Common.AspNetCore.AppCenter.Payment.shproj" Id="437a68a1-83ad-4227-b4b3-b2dbf24afcf5" />
   </Folder>
   <Folder Name="/2.Libraries/JsonWebTokens/">

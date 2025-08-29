@@ -6,7 +6,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 /// 管理后台的配置项，使用 UserSecrets 存储值
 /// <para>https://learn.microsoft.com/zh-cn/aspnet/core/security/app-secrets</para>
 /// </summary>
-public abstract class BMAppSettings : JsonWebTokenOptions
+public class BMAppSettings : JsonWebTokenOptions
 {
     /// <summary>
     /// 用于创建一个默认管理员账号的用户名
