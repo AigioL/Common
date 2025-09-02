@@ -32,6 +32,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Summaries\OrderAmountQtySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\TransferOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserCouponInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillAddDto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillDetailModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AgreementStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BusinessSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CouponReleaseScenario.cs" />
@@ -40,6 +42,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuditStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GoodRechargeStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\NoticeStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OrderDetailModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OrderingMinimalApisJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OrderPayInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentMethod.cs" />

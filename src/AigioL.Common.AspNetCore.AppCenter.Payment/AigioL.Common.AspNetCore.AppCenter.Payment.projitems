@@ -18,5 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\PaymentController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\TestController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VipPaymentController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
   </ItemGroup>
 </Project>

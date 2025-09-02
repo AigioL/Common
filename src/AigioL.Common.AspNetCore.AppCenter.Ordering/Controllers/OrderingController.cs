@@ -1,8 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Controllers;
-class OrderingController
+
+public static class OrderingController
 {
+    public static void MapOrdering(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "ordering")
+    {
+        var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+
+        routeGroup.MapGet("{id}", async (HttpContext context,
+            [FromRoute] Guid id) =>
+        {
+            var r = await GetOrderPaymentInfo(context, id);
+            return r;
+        }).WithDescription("获取订单支付信息")
+        .AllowAnonymous(); // 允许匿名访问
+
+    }
+
+    /// <summary>
+    /// 获取订单支付信息
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    static async Task<ApiRsp<OrderPayInfoModel?>> GetOrderPaymentInfo(
+        HttpContext context,
+        Guid id)
+    {
+        throw new NotImplementedException("TODO: 实现创建售后单逻辑");
+        await Task.CompletedTask;
+    }
 }

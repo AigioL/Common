@@ -16,11 +16,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IJobDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.IDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AuthMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Identitys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\JobRecordResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDelete.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDeleteExternalAccount.cs" />
@@ -33,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWalletChangeRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Jobs\Abstractions\BaseJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyAppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyUserWalletValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
@@ -53,5 +56,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\JsonWebTokenAuthorizationMiddlewareResultHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\UserManager2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAppVerCoreService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\JobService.cs" />
   </ItemGroup>
 </Project>

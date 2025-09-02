@@ -14,8 +14,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\AftersalesBillController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\OrderingController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\OrderStatusSubscribe.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\PaymentResultSubscribe.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\UserOrderController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
   </ItemGroup>
 </Project>
