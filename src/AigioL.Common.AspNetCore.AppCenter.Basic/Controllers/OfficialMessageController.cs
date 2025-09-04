@@ -1,8 +1,10 @@
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Controllers;
@@ -50,13 +52,14 @@ public static partial class OfficialMessageController
     {
         var appVer = await context.GetAppVerAsync();
         var cacheKey = $"{nameof(OfficialMessageController)}_message_{current}_{pageSize}_{appVer?.Version}_{clientPlatform}_{messageType}";
-
-        throw new NotImplementedException("TODO: OfficialMessageController.Get");
-        //return await memoryCache.GetOrCreateAsync($"{nameof(OfficialMessageController)}_message_{current}_{pageSize}_{appVer?.Id}_{clientPlatform}_{messageType}", async entry =>
-        //{
-        //    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(official_message_memory_timeout_minutes);
-        //    var r = await articleRepo.QueryAsync(appVer, clientPlatform, messageType, current, pageSize);
-        //    return r ?? new PagedModel<OfficialMessageItemModel>();
-        //});
+        var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
+        var result = await cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(official_message_memory_timeout_minutes);
+            var repo = context.RequestServices.GetRequiredService<IOfficialMessageRepository>();
+            var r = await repo.QueryAsync(appVer, clientPlatform, messageType, current, pageSize);
+            return r;
+        });
+        return result;
     }
 }

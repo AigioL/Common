@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -23,11 +24,19 @@ public static class AftersalesBillController
 
     }
 
+    /// <summary>
+    /// 创建售后单
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="m"></param>
+    /// <returns></returns>
     static async Task<ApiRsp<AftersalesBillDetailModel?>> CreateAftersalesBill(
         HttpContext context,
         AftersalesBillAddDto m)
     {
-        throw new NotImplementedException("TODO: 实现创建售后单逻辑");
-        await Task.CompletedTask;
+        var userId = context.GetUserIdThrowIfNull();
+        var repo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
+        var result = await repo.CreateAftersalesBill(m.OrderId, m.RefundReason, userId);
+        return result;
     }
 }

@@ -105,6 +105,7 @@ public static partial class ArticleController
         int current = IPagedModel.DefaultCurrent,
         int pageSize = IPagedModel.DefaultPageSize)
     {
+        // TODO: 获取文章列表
         var cacheKey = $"{nameof(ArticleController)}_List_{categoryId}_{current}_{pageSize}";
         throw new NotImplementedException();
     }
@@ -123,6 +124,7 @@ public static partial class ArticleController
         int current = IPagedModel.DefaultCurrent,
         int pageSize = IPagedModel.DefaultPageSize)
     {
+        // TODO: 获取指定排序的文章列表
         var cacheKey = $"{nameof(ArticleController)}_Order_{categoryId}_{orderBy}_{current}_{pageSize}";
         throw new NotImplementedException();
     }
@@ -135,6 +137,7 @@ public static partial class ArticleController
     static async Task<ApiRsp<ArticleModel?>> Info(
         Guid id)
     {
+        // TODO: 获取文章
         var cacheKey = $"{nameof(ArticleController)}_Info_{id}";
         throw new NotImplementedException();
     }

@@ -4,12 +4,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 
 public sealed partial record class OrderDetailModel
 {
-    public Guid Id { get; set; }
+    /// <summary>
+    /// 订单主键
+    /// </summary>
+    public required string Id { get; set; }
 
     /// <summary>
     /// 订单号
     /// </summary>
-    public string OrderNumber { get; set; } = string.Empty;
+    public string OrderNumber { get => Id; set => Id = value; } // 兼容旧数据结构
 
     /// <summary>
     /// 订单类型
@@ -61,7 +64,13 @@ public sealed partial record class OrderDetailModel
     /// </summary>
     public Guid BusinessId { get; set; }
 
-    public string? Remarks { get; set; }
+    /// <summary>
+    /// 订单备注
+    /// </summary>
+    public string? Note { get; set; }
+
+    /// <inheritdoc cref="Note"/> 
+    public string? Remarks { get => Note; set => Note = value; } // 兼容旧数据结构
 
     ///// <summary>
     ///// 订单支付组成

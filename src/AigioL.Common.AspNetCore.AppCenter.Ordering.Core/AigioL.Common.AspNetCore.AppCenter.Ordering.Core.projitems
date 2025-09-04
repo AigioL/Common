@@ -40,10 +40,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\CouponRestrictedUserType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CouponType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuditStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalLoginChannelWithNickName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GoodRechargeStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\NoticeStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderDetailModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderingMinimalApisJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\OrderItemInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderPayInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderType.cs" />

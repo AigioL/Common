@@ -36,9 +36,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\Abstractions\BaseJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDeviceId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyAppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyUserWalletValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ClientDistributionChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalLoginChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipLicenseFlags.cs" />

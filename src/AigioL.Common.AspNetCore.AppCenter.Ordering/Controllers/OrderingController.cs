@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
@@ -34,7 +35,8 @@ public static class OrderingController
         HttpContext context,
         Guid id)
     {
-        throw new NotImplementedException("TODO: 实现创建售后单逻辑");
-        await Task.CompletedTask;
+        var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
+        var result = await repo.GetOrderPaymentInfo(id);
+        return result;
     }
 }

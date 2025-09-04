@@ -1,4 +1,4 @@
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
+namespace AigioL.Common.AspNetCore.AppCenter.Models;
 
 /// <summary>
 /// 客户端分发渠道

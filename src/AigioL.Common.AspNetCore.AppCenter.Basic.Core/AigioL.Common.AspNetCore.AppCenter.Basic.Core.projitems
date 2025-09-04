@@ -36,9 +36,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificatePackable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateRawDataType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateValidateKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\AppVersionDownloadModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\AppVersionModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\AppVersionTauriModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\ClientDistributionChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\DeploymentMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\DownloadMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppVersions\UpdateChannelType.cs" />

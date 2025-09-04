@@ -74,6 +74,8 @@ public static partial class ImageController
             return Get<TAppSettings>(context);
         }
 
+        // TODO: 实现图片访问
+
         string? url;
         throw new NotImplementedException("TODO: 实现图片访问");
         await Task.CompletedTask;

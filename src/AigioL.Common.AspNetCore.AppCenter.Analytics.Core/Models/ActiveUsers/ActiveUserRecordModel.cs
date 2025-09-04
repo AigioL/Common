@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.Primitives.Models;
 using System.Runtime.InteropServices;
 
@@ -6,8 +7,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers;
 /// <summary>
 /// (匿名)活跃用户记录，用于统计分析以改进体验，详情见使用协议声明
 /// </summary>
-[global::MemoryPack.MemoryPackable(global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial class ActiveUserRecordModel : IExplicitHasValue
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
+public sealed partial class ActiveUserRecordModel : IExplicitHasValue, IDeviceId
 {
     [global::MemoryPack.MemoryPackOrder(0)]
     public ActiveUserAnonymousStatisticType Type { get; set; }

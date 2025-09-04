@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\KomaasharuPersonalized.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatistic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatisticPerDaySummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticCacheModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserRecordModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserStatisticsType.cs" />

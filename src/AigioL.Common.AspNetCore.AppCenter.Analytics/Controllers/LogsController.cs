@@ -43,6 +43,8 @@ public static class LogsController
     /// <returns></returns>
     static async Task<ApiRsp> PostAsync(HttpContext context, AnalysisLogContainerModel m)
     {
+        return "TODO: 实现日志处理逻辑";
+
         if (m == null || m.Logs == null || m.Logs.Count == 0)
         {
             return HttpStatusCode.BadRequest;
@@ -55,6 +57,7 @@ public static class LogsController
             return HttpStatusCode.BadRequest;
         }
 
+        // TODO: 目前 Windows 版 App Center SDK 不兼容 AOT 与裁剪
         throw new NotImplementedException("TODO: 实现日志处理逻辑");
         await Task.CompletedTask;
     }

@@ -1,8 +1,14 @@
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,6 +16,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Controllers;
 
 public static partial class VersionsController
 {
+    /// <summary>
+    /// 客户端版本数据内存中缓存过期时间 1 分钟
+    /// </summary>
+    const int versions_memory_timeout_minutes = 1;
+
     public static void MapBasicVersions(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "basic/versions")
@@ -27,22 +38,27 @@ public static partial class VersionsController
                 var clientPlatform = Tauri.GetClientPlatform(target, arch);
                 if (clientPlatform.HasValue)
                 {
-                    var r = await GetLatestVersionAsync(
-                        default!,
+                    var r = await CheckUpdate3_2(
+                        context,
+                        current_version,
                         clientPlatform.Value,
-                        null,
+                        0, 0, 0,
                         DeploymentMode.SCD,
                         false);
-                    if (r != null)
+                    if (r.Content != null)
                     {
-                        var r2 = r.ToTauri();
-                        return Results.Json(r2,
-                            AppVersionTauriModelJsonSerializerContext.Default.AppVersionTauriModel);
+                        var r2 = r.Content.ToTauri();
+                        if (r2 != null)
+                        {
+                            return Results.Json(r2,
+                                AppVersionTauriModelJsonSerializerContext.Default.AppVersionTauriModel);
+                        }
                     }
                 }
             }
             return Results.NoContent(); // 如果无可用更新，你的服务器应响应状态代码 204 无内容。
-        }).WithDescription(
+        })
+            .WithDescription(
 """
 检查更新（Tauri）
 https://tauri.org.cn/v1/guides/distribution/updater
@@ -50,6 +66,27 @@ https://tauri.org.cn/v1/guides/distribution/updater
             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent);
 
+        routeGroup.MapGet("{platform}/{osVersionMajor}/{osVersionMinor}/{osVersionBuild}/{deploymentMode=0}", async (HttpContext context,
+            [FromRoute] ClientPlatform platform,
+            [FromRoute] int osVersionMajor,
+            [FromRoute] int osVersionMinor,
+            [FromRoute] int osVersionBuild,
+            [FromRoute] DeploymentMode deploymentMode,
+            [FromQuery] bool includeBeta = false) =>
+        {
+            var r = await CheckUpdate3_2(
+                context,
+                null,
+                platform,
+                osVersionMajor,
+                osVersionMinor,
+                osVersionBuild,
+                deploymentMode,
+                includeBeta
+                );
+            return r;
+        })
+        .WithDescription("检查更新 v3.2");
     }
 
     /// <summary>
@@ -88,23 +125,85 @@ https://tauri.org.cn/v1/guides/distribution/updater
     }
 
     /// <summary>
-    /// 获取最新版本
+    /// 检查更新 v3.2
     /// </summary>
-    /// <param name="appVersion">当前应用版本信息</param>
-    /// <param name="platform">(单选)客户端平台</param>
-    /// <param name="osVersion">当前设备运行的操作系统版本号</param>
-    /// <param name="deploymentMode">应用部署模式</param>
-    /// <param name="includeBeta">是否接受 Beta 版本</param>
-    static async Task<AppVersionModel?> GetLatestVersionAsync(
-        string appVersion,
+    /// <param name="context"></param>
+    /// <param name="appVersion"></param>
+    /// <param name="platform"></param>
+    /// <param name="osVersionMajor"></param>
+    /// <param name="osVersionMinor"></param>
+    /// <param name="osVersionBuild"></param>
+    /// <param name="deploymentMode"></param>
+    /// <param name="includeBeta"></param>
+    /// <returns></returns>
+    static async Task<ApiRsp<AppVersionModel?>> CheckUpdate3_2(
+        HttpContext context,
+        string? appVersion,
         ClientPlatform platform,
-        Version? osVersion,
+        int osVersionMajor,
+        int osVersionMinor,
+        int osVersionBuild,
         DeploymentMode deploymentMode,
         bool includeBeta)
     {
-        // TODO: 实现获取最新版本逻辑
-        throw new NotImplementedException();
-        await Task.CompletedTask;
+        if (!Enum.IsDefined(platform))
+            return "Unknown device platform"; // 客户端平台必须是单选值
+        if (osVersionMajor < 0 || osVersionMinor < 0)
+            return "Unknown OSVersion"; // 操作系统版本必须是非负整数
+
+        IReadOnlyAppVer? appVer;
+        if (appVersion == null)
+        {
+            appVer = await context.GetAppVerAsync();
+        }
+        else
+        {
+            var appVerCoreService = context.RequestServices.GetRequiredService<IAppVerCoreService>();
+            appVer = await appVerCoreService.GetAsync(appVersion);
+        }
+
+        if (appVer == null)
+        {
+            return HttpStatusCode.NoContent;
+        }
+
+        var cacheKey = $"{nameof(VersionsController)}_CheckUpdateV3.1_{appVer.Version}_{platform}_{osVersionMajor}{osVersionMinor}{osVersionBuild}_{deploymentMode}";
+        var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
+        var result = await cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(versions_memory_timeout_minutes);
+
+            var osVersion = osVersionMajor == 0 && osVersionMinor == 0 && osVersionBuild == 0 ? null :
+                (osVersionBuild < 0 ?
+                    new Version(osVersionMajor, osVersionMinor) :
+                    new Version(osVersionMajor, osVersionMinor, osVersionBuild));
+
+            var repo = context.RequestServices.GetRequiredService<IAppVerBuildRepository>();
+
+            var latestVersion = await repo.GetLatestVersionAsync(appVer, platform, osVersion, deploymentMode, includeBeta);
+            if (latestVersion != null)
+            {
+                if (latestVersion.Version == appVer.Version)
+                {
+                    // 版本号相同返回空值
+                    return null;
+                }
+                try
+                {
+                    // 使用的版本号大于等于最新版本号，返回空值
+                    if (new Version(appVer.Version) >= new Version(latestVersion.Version))
+                    {
+                        return null;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            return latestVersion;
+        });
+        return result;
     }
 }
 
@@ -168,9 +267,24 @@ file static partial class Tauri
         return r;
     }
 
-    internal static AppVersionTauriModel ToTauri(this AppVersionModel m)
+    internal static AppVersionTauriModel? ToTauri(this AppVersionModel m, string? signature = null)
     {
-        throw new NotImplementedException("TODO: ");
+        if (m.HasValue())
+        {
+            var url = m.Downloads?.FirstOrDefault(static x => x.HasValue() && x.IncrementalUpdate == false)?.DownloadUrl;
+            if (url != null)
+            {
+                return new()
+                {
+                    Url = url,
+                    Version = m.Version,
+                    PublishTime = m.PublishTime,
+                    Signature = signature,
+                    Notes = m.ReleaseNote,
+                };
+            }
+        }
+
         return null;
     }
 }
