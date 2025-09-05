@@ -1,7 +1,10 @@
 using System.ComponentModel;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
+/// <summary>
+/// 商家扣款协议通知状态
+/// </summary>
 public enum NoticeStatus : byte
 {
     /// <summary>

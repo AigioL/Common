@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -110,7 +111,7 @@ public partial class MembershipBusinessOrder :
     /// </summary>
     [Required]
     [Comment("业务来源")]
-    public BusinessSource BusinessSource { get; set; }
+    public MembershipBusinessSource BusinessSource { get; set; }
 
     /// <summary>
     /// Key 激活记录 Id
