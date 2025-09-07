@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.KeyValuePairs;
+namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 
 /// <summary>
 /// 键值对表（值为字符串）

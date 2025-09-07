@@ -110,5 +110,30 @@ partial record class ApiRsp // Code 常量
     /// </summary>
     public const uint Code_UserNotFound = 1011;
 
+    /// <summary>
+    /// 必须使用安全传输模式
+    /// </summary>
+    public const uint RequiredSecurityKey = 1017;
+
+    /// <summary>
+    /// 空的数据库 App 版本号
+    /// </summary>
+    public const uint EmptyDbAppVersion = 1022;
+
+    /// <summary>
+    /// RSA 解密失败或 16 进制字符串格式不正确
+    /// </summary>
+    public const uint RSADecryptFail = 1023;
+
+    /// <summary>
+    /// AES Key 不能为 null
+    /// </summary>
+    public const uint AesKeyIsNull = 1024;
+
+    /// <summary>
+    /// 加密类型和接口指定类型不一致
+    /// </summary>
+    public const uint SecurityTypeInconsistent = 1029;
+
     #endregion
 }

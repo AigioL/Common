@@ -1,4 +1,7 @@
 using System.Buffers.Binary;
+using System.Buffers.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace System.Security.Cryptography;
 
@@ -296,6 +299,62 @@ public static partial class RSAUtils
         b = b[bytesWritten..];
         _.WriteBytes(b, buffer, parameters.Q, true);
     }
+
+    [Obsolete("use RSAParameters")]
+    public sealed class Parameters
+    {
+        [JsonPropertyName("z")]
+        public string? D { get; set; }
+
+        [JsonPropertyName("x")]
+        public string? DP { get; set; }
+
+        [JsonPropertyName("c")]
+        public string? DQ { get; set; }
+
+        [JsonPropertyName("v")]
+        public string? Exponent { get; set; }
+
+        [JsonPropertyName("b")]
+        public string? InverseQ { get; set; }
+
+        [JsonPropertyName("n")]
+        public string? Modulus { get; set; }
+
+        [JsonPropertyName("m")]
+        public string? P { get; set; }
+
+        [JsonPropertyName("a")]
+        public string? Q { get; set; }
+
+        public static JsonTypeInfo<Parameters> GetJsonTypeInfo() => ParametersJsonSerializerContext.Default.Parameters;
+
+        public static implicit operator RSAParameters(Parameters? rsaUtilsParameters)
+        {
+            ArgumentNullException.ThrowIfNull(rsaUtilsParameters);
+            return new()
+            {
+                D = rsaUtilsParameters.D != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.D) : null,
+                DP = rsaUtilsParameters.DP != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.DP) : null,
+                DQ = rsaUtilsParameters.DQ != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.DQ) : null,
+                Exponent = rsaUtilsParameters.Exponent != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.Exponent) : null,
+                InverseQ = rsaUtilsParameters.InverseQ != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.InverseQ) : null,
+                Modulus = rsaUtilsParameters.Modulus != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.Modulus) : null,
+                P = rsaUtilsParameters.P != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.P) : null,
+                Q = rsaUtilsParameters.Q != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.Q) : null,
+            };
+        }
+    }
+}
+
+[Obsolete("use RSAParameters")]
+[JsonSourceGenerationOptions(
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+    AllowTrailingCommas = true
+    )]
+[JsonSerializable(typeof(RSAUtils.Parameters))]
+sealed partial class ParametersJsonSerializerContext : JsonSerializerContext
+{
 }
 
 

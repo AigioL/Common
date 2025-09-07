@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\BasicConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppVerDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IArticleDbContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKeyValuePairsDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOfficialMessageDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ApiGateway\ServerCertificate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\ICloudFileInfo.cs" />
@@ -27,9 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Articles\ArticleVisitStatistic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\FileSystem\StaticResource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\FileSystem\StaticResourceUploadRecord.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePairs\BinKeyValuePair.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePairs\KeyValuePair.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePairs\NumberKeyValuePair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialCustomMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessageAppVerRelation.cs" />

@@ -1,4 +1,4 @@
-using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Diagnostics.CodeAnalysis;

@@ -91,11 +91,6 @@
 		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.4.1" />
 	</ItemGroup>
 
-	<!-- 👇 Razor -->
-	<ItemGroup>
-		<PackageVersion Include="RazorSlices" Version="0.9.5" />
-	</ItemGroup>
-
 	<!-- 👇 Quartz -->
 	<ItemGroup>
 		<PackageVersion Include="Quartz.AspNetCore" Version="3.15.0" />

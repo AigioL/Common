@@ -22,7 +22,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         ///   返回此类使用的缓存的 ResourceManager 实例。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         ///   使用此强类型资源类的所有资源查找执行重写。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 绑定 的本地化字符串。
         /// </summary>
-        internal static string Bind {
+        public static string Bind {
             get {
                 return ResourceManager.GetString("Bind", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 需要开启 JavaScript 才能浏览本站点。 的本地化字符串。
         /// </summary>
-        internal static string BodyNoScript {
+        public static string BodyNoScript {
             get {
                 return ResourceManager.GetString("BodyNoScript", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 很抱歉，您正在使用一个过时的浏览器。建议升级您的浏览器或使用 的本地化字符串。
         /// </summary>
-        internal static string BrowserIsSupported1 {
+        public static string BrowserIsSupported1 {
             get {
                 return ResourceManager.GetString("BrowserIsSupported1", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 等其他现代浏览器，以提高您的体验。 的本地化字符串。
         /// </summary>
-        internal static string BrowserIsSupported2 {
+        public static string BrowserIsSupported2 {
             get {
                 return ResourceManager.GetString("BrowserIsSupported2", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 点击此处重试 的本地化字符串。
         /// </summary>
-        internal static string ClickHereTryAgain {
+        public static string ClickHereTryAgain {
             get {
                 return ResourceManager.GetString("ClickHereTryAgain", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 #2196F3 的本地化字符串。
         /// </summary>
-        internal static string ColorPrimary {
+        public static string ColorPrimary {
             get {
                 return ResourceManager.GetString("ColorPrimary", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 点此复制 的本地化字符串。
         /// </summary>
-        internal static string CopyButton {
+        public static string CopyButton {
             get {
                 return ResourceManager.GetString("CopyButton", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 该浏览器不支持点击复制到剪贴板 的本地化字符串。
         /// </summary>
-        internal static string CopyNoSupport {
+        public static string CopyNoSupport {
             get {
                 return ResourceManager.GetString("CopyNoSupport", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 成功复制到剪贴板 的本地化字符串。
         /// </summary>
-        internal static string CopySuccess {
+        public static string CopySuccess {
             get {
                 return ResourceManager.GetString("CopySuccess", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 登录 的本地化字符串。
         /// </summary>
-        internal static string Login2 {
+        public static string Login2 {
             get {
                 return ResourceManager.GetString("Login2", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 登录 / 注册 的本地化字符串。
         /// </summary>
-        internal static string LoginAndRegister {
+        public static string LoginAndRegister {
             get {
                 return ResourceManager.GetString("LoginAndRegister", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 {0} {1}已完成，您可以关闭此窗口并返回至 {2}。 的本地化字符串。
         /// </summary>
-        internal static string LoginSuccessTip1___ {
+        public static string LoginSuccessTip1___ {
             get {
                 return ResourceManager.GetString("LoginSuccessTip1___", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 此浏览器窗口/标签页将会在 10 秒内尝试自动关闭，您也可以手动关闭。 的本地化字符串。
         /// </summary>
-        internal static string LoginSuccessTip2 {
+        public static string LoginSuccessTip2 {
             get {
                 return ResourceManager.GetString("LoginSuccessTip2", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 长时间未跳转？ 的本地化字符串。
         /// </summary>
-        internal static string LongTimeNoJump {
+        public static string LongTimeNoJump {
             get {
                 return ResourceManager.GetString("LongTimeNoJump", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 连接程序出错，请手动复制以下内容到程序点击手动登录。 的本地化字符串。
         /// </summary>
-        internal static string ManualCopyTip {
+        public static string ManualCopyTip {
             get {
                 return ResourceManager.GetString("ManualCopyTip", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 width=1024;height=768 的本地化字符串。
         /// </summary>
-        internal static string MetaMSApplicationWindow {
+        public static string MetaMSApplicationWindow {
             get {
                 return ResourceManager.GetString("MetaMSApplicationWindow", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 错误! 的本地化字符串。
         /// </summary>
-        internal static string ModelErrorTitle {
+        public static string ModelErrorTitle {
             get {
                 return ResourceManager.GetString("ModelErrorTitle", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 {0}成功! 的本地化字符串。
         /// </summary>
-        internal static string ModelSuccessTitle_ {
+        public static string ModelSuccessTitle_ {
             get {
                 return ResourceManager.GetString("ModelSuccessTitle_", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 请检查是否能正常访问 Steam 社区。 的本地化字符串。
         /// </summary>
-        internal static string PleaseCheckSteamCommunity {
+        public static string PleaseCheckSteamCommunity {
             get {
                 return ResourceManager.GetString("PleaseCheckSteamCommunity", resourceCulture);
             }
@@ -234,16 +234,25 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 请稍后… 的本地化字符串。
         /// </summary>
-        internal static string PleaseWait {
+        public static string PleaseWait {
             get {
                 return ResourceManager.GetString("PleaseWait", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   查找类似 目前 Steam 登录的请求过多请刷新页面重试或稍后再试 的本地化字符串。
+        /// </summary>
+        public static string SteamLoginException {
+            get {
+                return ResourceManager.GetString("SteamLoginException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 https://www.google.cn/chrome/browser/desktop 的本地化字符串。
         /// </summary>
-        internal static string Url_Chrome {
+        public static string Url_Chrome {
             get {
                 return ResourceManager.GetString("Url_Chrome", resourceCulture);
             }
@@ -252,7 +261,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 https://www.mozilla.org/firefox/browsers 的本地化字符串。
         /// </summary>
-        internal static string Url_Firefox {
+        public static string Url_Firefox {
             get {
                 return ResourceManager.GetString("Url_Firefox", resourceCulture);
             }
@@ -261,7 +270,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 https://www.microsoft.com/edge 的本地化字符串。
         /// </summary>
-        internal static string Url_MicrosoftEdge {
+        public static string Url_MicrosoftEdge {
             get {
                 return ResourceManager.GetString("Url_MicrosoftEdge", resourceCulture);
             }
@@ -270,7 +279,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         /// <summary>
         ///   查找类似 与程序的连接丢失，点击重试或重新在程序内点击快速登录。 的本地化字符串。
         /// </summary>
-        internal static string WebSocketLostTip {
+        public static string WebSocketLostTip {
             get {
                 return ResourceManager.GetString("WebSocketLostTip", resourceCulture);
             }

@@ -1,22 +1,24 @@
+using System;
+using System.Collections.Generic;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Shared;
 using AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Views;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Slices;
+namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 
 /// <summary>
 /// 登录检测页面模型类
 /// </summary>
-public sealed record class LoginDetectionModel
+public sealed partial record class LoginDetectionModel
 {
     /// <summary>
     /// 将模型类转换为 <see cref="IResult"/>
     /// </summary>
     /// <param name="statusCode"></param>
     /// <returns></returns>
-    public RazorSliceHttpResult<LoginDetectionModel> ToResult(int statusCode = StatusCodes.Status200OK)
+    public IResult ToResult(int statusCode = StatusCodes.Status200OK)
     {
-        var result = Results.Extensions.RazorSlice<LoginDetection, LoginDetectionModel>(this, statusCode);
+        var result = new LoginDetection(this, statusCode: statusCode);
         return result;
     }
 
@@ -27,7 +29,7 @@ public sealed record class LoginDetectionModel
         {
             if (string.IsNullOrWhiteSpace(field.HeadTitle))
             {
-                field.HeadTitle = $"{AppName} | {Resources.LoginAndRegister}";
+                field.SetSubHeadTitle(Resources.LoginAndRegister);
             }
             return field;
         }
@@ -52,7 +54,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 第三方登录渠道枚举名称
     /// </summary>
-    public required string Channel { get; init; }
+    public string? Channel { get; init; }
 
     /// <summary>
     /// 第三方登录渠道枚举整数值
@@ -90,7 +92,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 等其他现代浏览器，以提高您的体验。
     /// </summary>
-    public required string BrowserIsSupported2
+    public string BrowserIsSupported2
     {
         get => field ?? Resources.BrowserIsSupported2;
         init;
@@ -168,7 +170,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 传递登录成功的 JWT 值的 UrlScheme 协议，例如：{xyz}://login/{token}
     /// </summary>
-    public required string UrlSchemeLoginToken { get; init; }
+    public string? UrlSchemeLoginToken { get; init; }
 
     /// <summary>
     /// 是否为绑定第三方登录渠道
@@ -189,11 +191,9 @@ public sealed record class LoginDetectionModel
     /// </summary>
     public string LoginSuccessTip1
     {
-        get => field ?? string.Format(LoginSuccessTip1___, Channel, LoginOrBindText, AppName);
+        get => field ?? string.Format(LoginSuccessTip1___, Channel, LoginOrBindText, Layout.AppName);
         init;
     }
-
-    public required string AppName { get; init; }
 
     /// <summary>
     /// {0} {1}已完成，您可以关闭此窗口并返回至 {2}。
@@ -213,16 +213,10 @@ public sealed record class LoginDetectionModel
         set;
     }
 
-    public string ClickHereTryHtml
-    {
-        get => field ?? $"<div class='clickDiv' onclick='urlScheme()'>{ClickHereTryAgain}</div>";
-        init;
-    }
-
     /// <summary>
     /// 点击此处重试
     /// </summary>
-    public required string ClickHereTryAgain
+    public string ClickHereTryAgain
     {
         get => field ?? Resources.ClickHereTryAgain;
         set;
@@ -231,7 +225,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 与程序的连接丢失，点击重试或重新在程序内点击快速登录。
     /// </summary>
-    public required string WebSocketLostTip
+    public string WebSocketLostTip
     {
         get => field ?? Resources.WebSocketLostTip;
         set;
@@ -239,7 +233,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 请检查是否能正常访问 Steam 社区。
     /// </summary>
-    public required string PleaseCheckSteamCommunity
+    public string PleaseCheckSteamCommunity
     {
         get => field ?? Resources.PleaseCheckSteamCommunity;
         set;
@@ -248,7 +242,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 长时间未跳转？
     /// </summary>
-    public required string LongTimeNoJump
+    public string LongTimeNoJump
     {
         get => field ?? Resources.LongTimeNoJump;
         set;
@@ -257,7 +251,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 连接程序出错，请手动复制以下内容到程序点击手动登录。
     /// </summary>
-    public required string ManualCopyTip
+    public string ManualCopyTip
     {
         get => field ?? Resources.ManualCopyTip;
         set;
@@ -266,7 +260,7 @@ public sealed record class LoginDetectionModel
     /// <summary>
     /// 点此复制
     /// </summary>
-    public required string CopyButton
+    public string CopyButton
     {
         get => field ?? Resources.CopyButton;
         set;

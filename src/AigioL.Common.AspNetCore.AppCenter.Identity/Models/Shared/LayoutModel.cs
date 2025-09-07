@@ -1,12 +1,14 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Slices;
+namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Shared;
 
 /// <summary>
-/// 页面布局模型类
+/// Identity UI 的页面布局模型类
 /// </summary>
 public sealed record class LayoutModel
 {
+    public required string AppName { get; init; }
+
     /// <summary>
     /// html 的 lang
     /// </summary>
@@ -53,6 +55,12 @@ public sealed record class LayoutModel
     /// html 的 head title
     /// </summary>
     public string? HeadTitle { get; set; }
+
+    /// <summary>
+    /// 设置 html 的 head title（使用 <see cref="AppName"/> 加竖线设置子标题）
+    /// </summary>
+    /// <param name="title"></param>
+    public void SetSubHeadTitle(string title) => HeadTitle = $"{AppName} | {title}";
 
     /// <summary>
     /// html 的 body noscript

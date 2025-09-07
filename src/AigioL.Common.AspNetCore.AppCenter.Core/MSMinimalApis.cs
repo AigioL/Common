@@ -1,13 +1,16 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Security.Authentication;
 using System.Text.Json.Serialization.Metadata;
 
 namespace AigioL.Common.AspNetCore.AppCenter;
@@ -26,36 +29,109 @@ public static partial class MSMinimalApis
 
     public static readonly AuthorizeAttribute MSApiControllerBaseAuthorize = new() { AuthenticationSchemes = BearerScheme, };
 
-    public static SerializableImplType GetSerializableImplType(StringValues accept, out bool isSecurity)
+    static bool Equals(MediaType l, MediaType r) => l.Type == r.Type && l.SubType == r.SubType;
+
+    public static bool TryParse(
+        StringValues contentTypeOrAccept,
+        out SerializableImplType serializableImplType) => TryParse(contentTypeOrAccept, out var _,
+            out serializableImplType,
+            out var _,
+            out var _);
+
+    public static bool TryParse(
+        StringValues contentTypeOrAccept,
+        out bool isSecurity,
+        out SerializableImplType serializableImplType,
+        out ExchangeAlgorithmType algorithmType,
+        [NotNullWhen(true)] out string? responseContentType)
     {
-        isSecurity = false;
-        if (!StringValues.IsNullOrEmpty(accept))
+        if (!StringValues.IsNullOrEmpty(contentTypeOrAccept))
         {
-            foreach (var it in accept)
+            foreach (var it in contentTypeOrAccept)
             {
-                var span = it.AsSpan();
-                if (span.Equals(MediaTypeNames.MemoryPack, StringComparison.InvariantCultureIgnoreCase))
+                if (string.IsNullOrWhiteSpace(it))
                 {
-                    return SerializableImplType.MemoryPack;
+                    continue;
                 }
-                else if (span.Equals(MediaTypeNames.MemoryPackSecurity, StringComparison.InvariantCultureIgnoreCase))
+                var parsedContentType = new MediaType(it);
+                if (Equals(parsedContentType, new(MediaTypeNames.MemoryPack)))
+                {
+                    isSecurity = false;
+                    serializableImplType = SerializableImplType.MemoryPack;
+                    responseContentType = MediaTypeNames.MemoryPack;
+                }
+                else if (Equals(parsedContentType, new(MediaTypeNames.MemoryPackSecurity)))
                 {
                     isSecurity = true;
-                    return SerializableImplType.MemoryPack;
+                    serializableImplType = SerializableImplType.MemoryPack;
+                    algorithmType = ExchangeAlgorithmType.RsaKeyX;
+                    responseContentType = MediaTypeNames.MemoryPackSecurity;
                 }
-                else if (span.Equals(MediaTypeNames.JSON, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return SerializableImplType.SystemTextJson;
-                }
-                else if (span.Equals(MediaTypeNames.JSONSecurity, StringComparison.InvariantCultureIgnoreCase) || span.Equals("application/vnd.sapi+text", StringComparison.InvariantCultureIgnoreCase))
+                else if (Equals(parsedContentType, new(MediaTypeNames.MemoryPackSecurityECDiffieHellman)))
                 {
                     isSecurity = true;
-                    return SerializableImplType.SystemTextJson;
+                    serializableImplType = SerializableImplType.MemoryPack;
+                    algorithmType = ExchangeAlgorithmType.DiffieHellman;
+                    responseContentType = MediaTypeNames.MemoryPackSecurityECDiffieHellman;
+                }
+                //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePack)))
+                //{
+                //    isSecurity = false;
+                //    serializableImplType = SerializableImplType.MessagePack;
+                //}
+                //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePackSecurity)))
+                //{
+                //    isSecurity = true;
+                //    serializableImplType = SerializableImplType.MessagePack;
+                //    algorithmType = ExchangeAlgorithmType.RsaKeyX;
+                //}
+                //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePackSecurityECDiffieHellman)))
+                //{
+                //    isSecurity = true;
+                //    serializableImplType = SerializableImplType.MessagePack;
+                //    algorithmType = ExchangeAlgorithmType.DiffieHellman;
+                //}
+                else if (Equals(parsedContentType, new(MediaTypeNames.JSON)))
+                {
+                    isSecurity = false;
+                    serializableImplType = SerializableImplType.SystemTextJson;
+                    responseContentType = MediaTypeNames.JSON;
+                }
+                else if (Equals(parsedContentType, new(MediaTypeNames.JSONSecurity)))
+                {
+                    isSecurity = true;
+                    serializableImplType = SerializableImplType.SystemTextJson;
+                    algorithmType = ExchangeAlgorithmType.RsaKeyX;
+                    responseContentType = MediaTypeNames.JSONSecurity;
+                }
+                else if (Equals(parsedContentType, new(MediaTypeNames.JSONSecurityECDiffieHellman)))
+                {
+                    isSecurity = true;
+                    serializableImplType = SerializableImplType.SystemTextJson;
+                    algorithmType = ExchangeAlgorithmType.DiffieHellman;
+                    responseContentType = MediaTypeNames.JSONSecurityECDiffieHellman;
                 }
             }
         }
-        return SerializableImplType.SystemTextJson;
+        isSecurity = false;
+        serializableImplType = default;
+        algorithmType = default;
+        responseContentType = default;
+        return false;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task WriteApiRspAsync(
+        SerializableImplType serializableImplType,
+        HttpResponse response,
+        ApiRsp value,
+        CancellationToken cancellationToken = default)
+        => WriteApiRspAsync(
+            serializableImplType,
+            response,
+            value,
+            MSMinimalApisJsonSerializerContext.Default.ApiRsp,
+            cancellationToken);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task WriteApiRspAsync(
@@ -70,46 +146,48 @@ public static partial class MSMinimalApis
 
     public static async Task WriteApiRspAsync<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TValue>(
+        SerializableImplType serializableImplType,
         HttpResponse response,
         TValue value,
         JsonTypeInfo<TValue> jsonTypeInfo,
         CancellationToken cancellationToken = default)
         where TValue : ApiRsp
     {
-        var t = GetSerializableImplType(response.HttpContext.Request.Headers.Accept, out var isSecurity);
-        switch (t)
+        switch (serializableImplType)
         {
             case SerializableImplType.MemoryPack:
                 {
-                    if (isSecurity)
-                    {
-                        throw new NotImplementedException("TODO: MemoryPack+Security");
-                    }
-                    else
-                    {
-                        // https://github.com/Cysharp/MemoryPack/blob/1.21.4/src/MemoryPack.AspNetCoreMvcFormatter/MemoryPackOutputFormatter.cs#L55
-                        var writer = response.BodyWriter;
-                        MemoryPackSerializer.Serialize(typeof(TValue), writer, value);
-                        await writer.FlushAsync(cancellationToken);
-                    }
+                    // https://github.com/Cysharp/MemoryPack/blob/1.21.4/src/MemoryPack.AspNetCoreMvcFormatter/MemoryPackOutputFormatter.cs#L55
+                    var writer = response.BodyWriter;
+                    response.Headers.ContentType = MediaTypeNames.MemoryPack;
+                    MemoryPackSerializer.Serialize(typeof(TValue), writer, value);
+                    await writer.FlushAsync(cancellationToken);
                 }
                 break;
             case SerializableImplType.SystemTextJson:
             default:
                 {
-                    if (isSecurity)
-                    {
-                        throw new NotImplementedException("TODO: SystemTextJson+Security");
-                    }
-                    else
-                    {
-                        await response.WriteAsJsonAsync(value,
-                            jsonTypeInfo,
-                            cancellationToken: cancellationToken);
-                    }
+                    await response.WriteAsJsonAsync(value,
+                        jsonTypeInfo,
+                        cancellationToken: cancellationToken);
                 }
                 break;
         }
+    }
+
+    public static Task WriteApiRspAsync<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TValue>(
+        HttpResponse response,
+        TValue value,
+        JsonTypeInfo<TValue> jsonTypeInfo,
+        CancellationToken cancellationToken = default)
+        where TValue : ApiRsp
+    {
+        if (!TryParse(response.HttpContext.Request.Headers.Accept, out var serializableImplType))
+        {
+            serializableImplType = SerializableImplType.SystemTextJson;
+        }
+        return WriteApiRspAsync(serializableImplType, response, value, jsonTypeInfo, cancellationToken);
     }
 
     /// <summary>
@@ -117,50 +195,63 @@ public static partial class MSMinimalApis
     /// <para>https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/error-handling</para>
     /// </summary>
     /// <param name="app"></param>
+    /// <param name="handlerException">可重写异常处理，返回 <see langword="true"/> 中断 <see cref="ApiRsp"/> 格式的行为</param>
     /// <returns></returns>
-    public static IApplicationBuilder UseApiRspExceptionHandler(this IApplicationBuilder app) => app.UseExceptionHandler(exceptionHandlerApp =>
-    {
-        exceptionHandlerApp.Run(async context =>
+    public static IApplicationBuilder UseApiRspExceptionHandler(
+        this IApplicationBuilder app,
+        Func<HttpContext, Task<bool>>? handlerException = null)
+        => app.UseExceptionHandler(exceptionHandlerApp =>
         {
-            var path = context.GetExceptionHandlerPath(out var error);
-            ApiRsp apiRsp = new();
-            if (error != null)
+            exceptionHandlerApp.Run(async context =>
             {
-                apiRsp.SetException(error);
-            }
-            else
-            {
-                apiRsp.Code = StatusCodes.Status500InternalServerError;
-            }
-            apiRsp.Url = path;
-            var traceId = context.GetTraceId();
-            apiRsp.TraceId = traceId;
+                if (handlerException != null)
+                {
+                    var isReturn = await handlerException(context);
+                    if (isReturn)
+                    {
+                        return;
+                    }
+                }
 
-            context.Response.StatusCode = StatusCodes.Status200OK;
-            await WriteApiRspAsync(
-                context.Response,
-                apiRsp,
-                cancellationToken: context.RequestAborted);
-        });
-    }).UseStatusCodePages(statusCodePagesApp =>
-    {
-        statusCodePagesApp.Run(async context =>
+                var path = context.GetExceptionHandlerPath(out var error);
+                ApiRsp apiRsp = new();
+                if (error != null)
+                {
+                    apiRsp.SetException(error);
+                }
+                else
+                {
+                    apiRsp.Code = StatusCodes.Status500InternalServerError;
+                }
+                apiRsp.Url = path;
+                var traceId = context.GetTraceId();
+                apiRsp.TraceId = traceId;
+
+                context.Response.StatusCode = StatusCodes.Status200OK;
+                await WriteApiRspAsync(
+                    context.Response,
+                    apiRsp,
+                    cancellationToken: context.RequestAborted);
+            });
+        }).UseStatusCodePages(statusCodePagesApp =>
         {
-            var traceId = context.GetTraceId();
-            ApiRsp apiRsp = new()
+            statusCodePagesApp.Run(async context =>
             {
-                Code = unchecked((uint)context.Response.StatusCode),
-                Url = context.Request.Path,
-                TraceId = traceId,
-            };
+                var traceId = context.GetTraceId();
+                ApiRsp apiRsp = new()
+                {
+                    Code = unchecked((uint)context.Response.StatusCode),
+                    Url = context.Request.Path,
+                    TraceId = traceId,
+                };
 
-            context.Response.StatusCode = StatusCodes.Status200OK;
-            await WriteApiRspAsync(
-                context.Response,
-                apiRsp,
-                cancellationToken: context.RequestAborted);
+                context.Response.StatusCode = StatusCodes.Status200OK;
+                await WriteApiRspAsync(
+                    context.Response,
+                    apiRsp,
+                    cancellationToken: context.RequestAborted);
+            });
         });
-    });
 }
 
 /// <summary>
@@ -188,31 +279,4 @@ file sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider 
             document.Components.SecuritySchemes = requirements;
         }
     }
-}
-
-/// <summary>
-/// MIME 类型
-/// <para>https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/MIME_Types</para>
-/// </summary>
-file static partial class MediaTypeNames
-{
-    /// <summary>
-    /// application/json
-    /// </summary>
-    public const string JSON = "application/json";
-
-    /// <summary>
-    /// application/vnd.sapi+x-json
-    /// </summary>
-    public const string JSONSecurity = "application/vnd.sapi+x-json";
-
-    /// <summary>
-    /// application/x-memorypack
-    /// </summary>
-    public const string MemoryPack = "application/x-memorypack";
-
-    /// <summary>
-    /// application/vnd.sapi+x-memorypack
-    /// </summary>
-    public const string MemoryPackSecurity = "application/vnd.sapi+x-memorypack";
 }

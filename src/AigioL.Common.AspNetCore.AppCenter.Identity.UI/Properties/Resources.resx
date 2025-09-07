@@ -192,4 +192,7 @@
   <data name="LoginAndRegister" xml:space="preserve">
     <value>登录 / 注册</value>
   </data>
+  <data name="SteamLoginException" xml:space="preserve">
+    <value>目前 Steam 登录的请求过多请刷新页面重试或稍后再试</value>
+  </data>
 </root>

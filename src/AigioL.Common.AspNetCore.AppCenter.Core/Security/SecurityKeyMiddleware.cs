@@ -1,0 +1,343 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using Microsoft.IO;
+using System.Buffers.Text;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Security.Authentication;
+using System.Security.Cryptography;
+using System.Text.Json;
+using static AigioL.Common.AspNetCore.AppCenter.Security.S96bc5bd9;
+
+namespace AigioL.Common.AspNetCore.AppCenter.Security;
+
+/// <summary>
+/// SecurityKey 模式的中间件，通过客户端生成 AES 密钥并使用 RSA 公钥加密，再使用 AES 密钥加密请求和响应正文
+/// </summary>
+/// <typeparam name="TSecurityKeyOptions"></typeparam>
+public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TSecurityKeyOptions>
+    where TSecurityKeyOptions : class, ISecurityKeyOptions
+{
+    readonly RequestDelegate _next;
+    readonly TSecurityKeyOptions _options;
+    //readonly ILogger _logger;
+    readonly RecyclableMemoryStreamManager m = new();
+
+#pragma warning disable IDE0290 // 使用主构造函数
+    public SecurityKeyMiddleware(
+#pragma warning restore IDE0290 // 使用主构造函数
+        RequestDelegate next,
+        //ILoggerFactory loggerFactory,
+        IOptions<TSecurityKeyOptions> options)
+    {
+        _next = next;
+        _options = options.Value;
+        //_logger = loggerFactory.CreateLogger<SecurityKeyMiddleware>();
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    async Task EndHandleAsync(
+        HttpContext context,
+        SerializableImplType serializableImplType,
+        uint failCode)
+    {
+        var traceId = context.GetTraceId();
+        ApiRsp apiRsp = new()
+        {
+            Code = failCode,
+            Url = context.Request.Path,
+            TraceId = traceId,
+        };
+        await MSMinimalApis.WriteApiRspAsync(
+            serializableImplType,
+            context.Response,
+            apiRsp,
+            cancellationToken: context.RequestAborted);
+    }
+
+    /// <summary>
+    /// Executes the middleware.
+    /// </summary>
+    /// <param name="context">The <see cref="HttpContext"/> for the current request.</param>
+    /// <returns>A task that represents the execution of this middleware.</returns>
+    public async Task Invoke(HttpContext context)
+    {
+        (Stream originalBody, Aes aes, string? responseContentType)? t = null;
+
+        var endpoint = context.GetEndpoint();
+        if (endpoint != null)
+        {
+            var sk = endpoint.Metadata.OfType<RequiredSecurityKeyAttribute>().FirstOrDefault();
+            if (sk != null)
+            {
+                // 没有请求正文时允许不加密调用需要加密的接口，兼容性
+                var hasRequest = context.Request.ContentLength.HasValue &&
+                    context.Request.ContentLength.Value > 0;
+                StringValues contentTypeOrAccept = context.Request.ContentType;
+                if (StringValues.IsNullOrEmpty(contentTypeOrAccept))
+                {
+                    contentTypeOrAccept = context.Request.Headers.Accept;
+                }
+
+                if (!MSMinimalApis.TryParse(contentTypeOrAccept,
+                    out var isSecurity,
+                    out var serializableImplType,
+                    out var algorithmType,
+                    out var responseContentType))
+                {
+                    if (hasRequest)
+                    {
+                        await EndHandleAsync(context, serializableImplType,
+                            ApiRsp.RequiredSecurityKey);
+                        return;
+                    }
+                }
+
+                if (isSecurity)
+                {
+                    if (algorithmType != sk.AlgorithmType)
+                    {
+                        await EndHandleAsync(context, serializableImplType,
+                            ApiRsp.SecurityTypeInconsistent);
+                        return;
+                    }
+
+                    var code = await ReadAes(context, algorithmType, _options.ECDiffieHellmanPublicKey);
+                    if (code.HasValue)
+                    {
+                        if (hasRequest)
+                        {
+                            await EndHandleAsync(context, serializableImplType,
+                                code.Value);
+                            return;
+                        }
+                    }
+
+                    if (context.Items[ApiConstants.Headers_SecurityKey] is Aes aes)
+                    {
+                        if (hasRequest)
+                        {
+                            // 将请求正文替换为解密流
+                            context.Request.EnableBuffering();
+                            CryptoStream cryptoStream = new(context.Request.Body, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
+                            context.Response.RegisterForDispose(new DisposableSafeWrapper(context.Request.Body));
+                            context.Response.RegisterForDispose(cryptoStream);
+                            context.Request.Body = cryptoStream;
+                        }
+
+                        context.Response.RegisterForDispose(new DisposableSafeWrapper(context.Response.Body));
+                        t = (context.Response.Body, aes, responseContentType);
+
+                        // 替换响应正文为新的内存流
+                        var newResponseBody = m.GetStream();
+                        context.Response.RegisterForDispose(newResponseBody);
+                        context.Response.Body = newResponseBody;
+                    }
+                    else
+                    {
+                        await EndHandleAsync(context, serializableImplType,
+                            ApiRsp.AesKeyIsNull);
+                        return;
+                    }
+                }
+            }
+        }
+
+        await _next(context);
+
+        if (t.HasValue)
+        {
+            if (!string.IsNullOrWhiteSpace(t.Value.responseContentType))
+            {
+                context.Response.Headers.ContentType = t.Value.responseContentType;
+            }
+
+            // 将响应正文流写入缓冲区
+            using var body = context.Response.Body;
+            await body.FlushAsync(context.RequestAborted);
+
+            // 使用原始流创建加密流并写入
+            using CryptoStream cryptoStream = new(t.Value.originalBody, t.Value.aes.CreateEncryptor(), CryptoStreamMode.Write, true);
+            await body.CopyToAsync(cryptoStream, context.RequestAborted);
+            await cryptoStream.FlushFinalBlockAsync(context.RequestAborted);
+
+            // 恢复原始响应流
+            context.Response.Body = t.Value.originalBody;
+            await context.Response.Body.FlushAsync(context.RequestAborted);
+        }
+    }
+}
+
+file static class S96bc5bd9
+{
+    /// <summary>
+    /// 从 HTTP 上下文中读取 AES 密钥，并存入 <see cref="HttpContext.Items"/>
+    /// </summary>
+    /// <returns></returns>
+    internal static async Task<uint?> ReadAes(
+        HttpContext context,
+        ExchangeAlgorithmType algorithmType,
+        byte[]? publicKeyECDiffieHellman) => algorithmType switch
+        {
+            ExchangeAlgorithmType.RsaKeyX => await ReadResByRsaKeyX(context),
+            ExchangeAlgorithmType.DiffieHellman => ReadAesByDiffieHellman(context, publicKeyECDiffieHellman),
+            _ => ApiRsp.AesKeyIsNull,
+        };
+
+    /// <summary>
+    /// DiffieHellman 密钥交换解密形式
+    /// </summary>
+    /// <returns></returns>
+    static uint? ReadAesByDiffieHellman(HttpContext context, byte[]? publicKeyECDiffieHellman)
+    {
+        if (publicKeyECDiffieHellman == null || publicKeyECDiffieHellman.Length == 0)
+        {
+            return ApiRsp.AesKeyIsNull;
+        }
+
+        byte[]? iv = null;
+        var sk = context.Request.Headers[ApiConstants.Headers_SecurityKeyHex];
+        if (!StringValues.IsNullOrEmpty(sk))
+        {
+            try
+            {
+                // 此处键为 Hex，实际上使用 Base64 编码
+                iv = Convert.FromBase64String(sk!);
+            }
+            catch
+            {
+                return ApiRsp.RSADecryptFail;
+            }
+        }
+
+        if (iv == null || iv.Length == 0)
+        {
+            return ApiRsp.AesKeyIsNull;
+        }
+
+        var aes = Aes.Create();
+        aes.Key = publicKeyECDiffieHellman;
+        aes.IV = iv;
+        context.Items[ApiConstants.Headers_SecurityKey] = aes;
+        context.Response.RegisterForDispose(aes);
+        return null;
+    }
+
+    /// <summary>
+    /// RSA Key 解密形式
+    /// </summary>
+    /// <returns></returns>
+    static async Task<uint?> ReadResByRsaKeyX(HttpContext context)
+    {
+        var skIsHexOrB64U = false;
+        var sk = context.Request.Headers[ApiConstants.Headers_SecurityKey];
+        if (StringValues.IsNullOrEmpty(sk))
+        {
+            sk = context.Request.Headers[ApiConstants.Headers_SecurityKeyHex];
+            skIsHexOrB64U = true;
+        }
+        if (StringValues.IsNullOrEmpty(sk))
+        {
+            return ApiRsp.AesKeyIsNull;
+        }
+
+        var appVer = await context.GetAppVerAsync();
+        if (appVer == null)
+        {
+            return ApiRsp.EmptyDbAppVersion;
+        }
+
+        // 从数据库表版本号中读取 RSA 私钥
+        var rsaPrivateKey = appVer.PrivateKey;
+        if (string.IsNullOrWhiteSpace(rsaPrivateKey))
+        {
+            return ApiRsp.EmptyDbAppVersion;
+        }
+
+        RSAParameters rsaPara;
+        var rsaPrivateKeySpan = rsaPrivateKey.AsSpan();
+        if (rsaPrivateKeySpan.StartsWith('{'))
+        {
+#pragma warning disable CS0618 // 类型或成员已过时
+            rsaPara = JsonSerializer.Deserialize(rsaPrivateKeySpan, RSAUtils.Parameters.GetJsonTypeInfo());
+#pragma warning restore CS0618 // 类型或成员已过时
+        }
+        else
+        {
+            const string KEY_Stream = "Stream";
+            if (rsaPrivateKeySpan.StartsWith(KEY_Stream, StringComparison.InvariantCultureIgnoreCase))
+            {
+                rsaPrivateKeySpan = rsaPrivateKeySpan[KEY_Stream.Length..];
+                using var stream = new MemoryStream(Base64Url.DecodeFromChars(rsaPrivateKeySpan), false);
+                rsaPara = RSAUtils.ReadParameters(stream);
+            }
+            else
+            {
+                return ApiRsp.EmptyDbAppVersion;
+            }
+        }
+
+        byte[] cipher;
+        using var rsa = RSA.Create(rsaPara);
+        if (skIsHexOrB64U)
+        {
+            cipher = Convert.FromHexString(sk!);
+        }
+        else
+        {
+            cipher = Base64Url.DecodeFromChars(sk!);
+        }
+        var plain = rsa.Decrypt(cipher, DefaultPadding);
+        var aes = AESUtils.Create(plain);
+        if (aes == null)
+        {
+            return ApiRsp.AesKeyIsNull;
+        }
+
+        context.Items[ApiConstants.Headers_SecurityKey] = aes;
+        context.Response.RegisterForDispose(aes);
+        return null;
+    }
+
+    /// <summary>
+    /// 获取在特定操作系统上使用的默认加密填充模式，如果操作系统是 Android，则返回 <see cref="RSAEncryptionPadding.OaepSHA1"/>；否则返回 <see cref="RSAEncryptionPadding.OaepSHA256"/>
+    /// </summary>
+    public static RSAEncryptionPadding DefaultPadding
+#if NET5_0_OR_GREATER
+        => OperatingSystem.IsAndroid() ?
+            RSAEncryptionPadding.OaepSHA1 :
+#else
+        =>
+#endif
+            RSAEncryptionPadding.OaepSHA256;
+}
+
+file sealed class DisposableSafeWrapper : IDisposable
+{
+    IDisposable? disposable;
+
+#pragma warning disable IDE0290 // 使用主构造函数
+    public DisposableSafeWrapper(IDisposable disposable)
+#pragma warning restore IDE0290 // 使用主构造函数
+    {
+        this.disposable = disposable;
+    }
+
+    public void Dispose()
+    {
+        if (disposable != null)
+        {
+            try
+            {
+                disposable.Dispose();
+            }
+            catch
+            {
+            }
+        }
+        disposable = null;
+    }
+}

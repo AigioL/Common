@@ -12,17 +12,21 @@
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\ApiConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\MediaTypeNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IJobDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKeyValuePairsDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.IDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AuthMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Identitys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\JobRecordResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDelete.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDeleteExternalAccount.cs" />
@@ -35,6 +39,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWalletChangeRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\RoutingEndpointConventionBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityKeyBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\Abstractions\BaseJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDeviceId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyAppVer.cs" />
@@ -53,11 +59,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ViewLayoutModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.Redis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\JsonWebTokenAuthorizationMiddlewareResultHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKeyValuePairRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\KeyValuePairRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\UserManager2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\RequiredSecurityKeyAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\SecurityKeyMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\ISecurityKeyOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAppVerCoreService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\ILocalizationService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\JobService.cs" />
   </ItemGroup>
 </Project>

@@ -14,9 +14,18 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ErrorController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ExternalLoginController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\IdentityAccountController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\IdentityManageController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\IdentityWalletController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ManageController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\MembershipController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ViewExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\LoginDetection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\LoginDetectionModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Shared\LayoutModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\Shared\_Layout.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Models\Shared\" />
   </ItemGroup>
 </Project>
