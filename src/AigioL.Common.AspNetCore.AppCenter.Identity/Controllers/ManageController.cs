@@ -4,7 +4,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
 public static partial class ManageController
 {
-    public static void MapIdentityManage(
+    public static void MapIdentityManageV1(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "identity/v1/manage")
     {

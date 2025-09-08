@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.Primitives.Columns;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
@@ -6,7 +7,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 /// 登录或注册请求模型
 /// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class LoginOrRegisterRequest : IReadOnlySmsCode
+public sealed partial record class LoginOrRegisterRequestV1 : IDeviceId, IReadOnlySmsCode
 {
     /// <inheritdoc cref="IPhoneNumber.PhoneNumber"/>
     [global::MemoryPack.MemoryPackOrder(0)]
@@ -19,9 +20,16 @@ public sealed partial record class LoginOrRegisterRequest : IReadOnlySmsCode
     /// <inheritdoc cref="LoginChannel"/>
     [global::MemoryPack.MemoryPackOrder(2)]
     public LoginChannel Channel { get; set; }
-}
 
-#if DEBUG
-[Obsolete("use LoginOrRegisterRequest", true)]
-public sealed class LoginOrRegisterResponseCompat { }
-#endif
+    /// <inheritdoc/>
+    [global::MemoryPack.MemoryPackOrder(3)]
+    public Guid DeviceIdG { get; set; }
+
+    /// <inheritdoc/>
+    [global::MemoryPack.MemoryPackOrder(4)]
+    public string? DeviceIdR { get; set; }
+
+    /// <inheritdoc/>
+    [global::MemoryPack.MemoryPackOrder(5)]
+    public string? DeviceIdN { get; set; }
+}

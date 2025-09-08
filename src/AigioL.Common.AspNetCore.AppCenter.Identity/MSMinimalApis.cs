@@ -1,5 +1,4 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
-using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace AigioL.Common.AspNetCore.AppCenter;
@@ -14,8 +13,35 @@ public static partial class MSMinimalApis
         this IEndpointRouteBuilder b)
     {
         b.MapIdentityError();
-        b.MapIdentityExternalLogin();
+
+        #region V(-1) 版本的接口已经废弃，注册以兼容旧版本客户端 "api/[controller]/[action]"
+
+        b.MapIdentityAuthMessage();
         b.MapIdentityAccount();
-        b.MapIdentityManage();
+
+        #endregion
+
+        #region V0 版本的接口 "identity/[controller]"
+
+        b.MapIdentityExternalLoginV0();
+        b.MapIdentityVerificationCodesV0();
+
+        #endregion
+
+        #region V1 版本的接口 "identity/v1/[controller]"
+
+        b.MapIdentityExternalLoginV1();
+        b.MapIdentityAccountV1();
+        b.MapIdentityManageV1();
+        b.MapIdentityMembershipV1();
+        b.MapIdentityVerificationCodesV1();
+
+        #endregion
+
+        #region V2 版本的接口 "identity/v2/[controller]"
+
+        b.MapIdentityAccountV2();
+
+        #endregion
     }
 }

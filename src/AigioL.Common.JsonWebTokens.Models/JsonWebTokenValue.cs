@@ -51,3 +51,8 @@ public sealed partial record class JsonWebTokenValue : IExplicitHasValue
         return !string.IsNullOrEmpty(AccessToken);
     }
 }
+
+#if DEBUG
+[Obsolete("use JsonWebTokenValue", true)]
+public sealed record class JWTEntity { }
+#endif

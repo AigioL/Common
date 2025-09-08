@@ -17,6 +17,11 @@ public interface IPhoneNumber : IReadOnlyPhoneNumber
     const int RegionCodeDatabaseMaxLength = 8;
 
     /// <summary>
+    /// 默认国家或地区代码
+    /// </summary>
+    const string DefaultPhoneNumberRegionCode = "+86";
+
+    /// <summary>
     /// 代表一个隐藏字符，以保护用户隐私或防止信息泄露
     /// </summary>
     const char HideChar = '*';

@@ -6,4 +6,5 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 public enum CouponRestrictedUserType : byte
 {
     无 = 0,
+    会员 = 1,
 }

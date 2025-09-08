@@ -1,10 +1,12 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
+using AigioL.Common.Models;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
 public static partial class MembershipController
 {
-    public static void MapIdentityMembership(
+    public static void MapIdentityMembershipV1(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "identity/v1/membership")
     {
@@ -12,26 +14,27 @@ public static partial class MembershipController
             .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize)
             .WithRequiredSecurityKey();
 
-        //routeGroup.MapPost("loginorregister", async (HttpContext context,
-        //    [FromBody] LoginOrRegisterRequest request) =>
-        //{
-        //    var r = await LoginOrRegister(context, request);
-        //    return r;
-        //}).WithDescription("登录或注册账号");
+        routeGroup.MapGet("info", async (HttpContext context) =>
+        {
+            var r = await GetUserMembershipInfo(context);
+            return r;
+        }).WithDescription("获取会员信息");
     }
 
-    ///// <summary>
-    ///// 获取会员信息
-    ///// </summary>
-    ///// <returns></returns>
-    //[HttpGet("info")]
-    //public async Task<ApiRspImpl<MembershipInfo?>> GetUserMembershipInfo()
-    //{
-    //    var user = HttpContext.GetUserId();
-    //    if (user == null)
-    //        return ApiRspCode.Unauthorized;
+    /// <summary>
+    /// 获取会员信息
+    /// </summary>
+    /// <returns></returns>
+    static async Task<ApiRsp<MembershipInfoV1?>> GetUserMembershipInfo(
+        HttpContext context)
+    {
+        await Task.CompletedTask;
+        throw new NotImplementedException();
+        //var user = HttpContext.GetUserId();
+        //if (user == null)
+        //    return ApiRspCode.Unauthorized;
 
-    //    var membershipInfo = await GetCacheData(user.Value, connection, () => userMembershipRepository.GetUserMembershipAsync(user.Value));
-    //    return membershipInfo;
-    //}
+        //var membershipInfo = await GetCacheData(user.Value, connection, () => userMembershipRepository.GetUserMembershipAsync(user.Value));
+        //return membershipInfo;
+    }
 }

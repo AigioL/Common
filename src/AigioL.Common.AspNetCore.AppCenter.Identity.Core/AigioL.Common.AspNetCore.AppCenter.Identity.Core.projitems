@@ -9,7 +9,18 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Identity</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IdentityMinimalApisJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\LoginChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipInfoV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequestV2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequestV0.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendEmailCodeRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendEmailCodeRequestV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendSmsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendSmsRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponseV0.cs" />
   </ItemGroup>
 </Project>

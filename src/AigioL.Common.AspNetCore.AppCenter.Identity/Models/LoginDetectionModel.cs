@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Shared;
 using AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Views;

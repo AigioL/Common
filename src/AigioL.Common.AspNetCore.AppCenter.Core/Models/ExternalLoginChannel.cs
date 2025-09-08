@@ -1,7 +1,7 @@
 namespace AigioL.Common.AspNetCore.AppCenter.Models;
 
 /// <summary>
-/// 快速登录渠道
+/// 第三方外部登录渠道
 /// <list type="bullet">
 /// <item>AuthenticationController.ExternalLogin/ExternalLoginCallback</item>
 /// <item>UserManager.LoginSharedAsync</item>

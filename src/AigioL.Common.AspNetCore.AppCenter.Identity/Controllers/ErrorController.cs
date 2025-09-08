@@ -32,44 +32,7 @@ public static partial class ErrorController
         });
 
 #if DEBUG
-        b.MapGet("/test/id6/ex", async (HttpContext context) =>
-        {
-            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
-            {
-                Path = context.Request.Path.Value!,
-                Error = new ApplicationException("测试 AppException"),
-            };
-            var r = await Get(context, exceptionHandlerPathFeature);
-            return r;
-        }).AllowAnonymous();
-        b.MapGet("/test/id6/ex/steam", async (HttpContext context) =>
-        {
-            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
-            {
-                Path = ExternalLoginSteamPaths.Values.First(),
-            };
-            var r = await Get(context, exceptionHandlerPathFeature);
-            return r;
-        }).AllowAnonymous();
-        b.MapGet("/test/id6/ex/empty", async (HttpContext context) =>
-        {
-            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
-            {
-                Path = context.Request.Path.Value!,
-            };
-            var r = await Get(context, exceptionHandlerPathFeature);
-            return r;
-        }).AllowAnonymous();
-        b.MapGet("/test/id6/ex/file", async (HttpContext context) =>
-        {
-            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
-            {
-                Path = context.Request.Path.Value!,
-                Error = new FileNotFoundException(),
-            };
-            var r = await Get(context, exceptionHandlerPathFeature);
-            return r;
-        }).AllowAnonymous();
+        MapIdentityErrorTest(b);
 #endif
     }
 
@@ -189,3 +152,68 @@ file sealed class IdentityUIViewMetadata
     /// <inheritdoc cref="IdentityUIViewMetadata"/>
     public static readonly IdentityUIViewMetadata Instance = new();
 }
+
+#if DEBUG
+partial class ErrorController
+{
+    /// <summary>
+    /// 仅用于测试
+    /// </summary>
+    /// <param name="b"></param>
+    static void MapIdentityErrorTest(IEndpointRouteBuilder b)
+    {
+        b.MapGet("/test/id6/ex", async (HttpContext context) =>
+        {
+            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
+            {
+                Path = context.Request.Path.Value!,
+                Error = new ApplicationException("测试 AppException"),
+            };
+            var r = await Get(context, exceptionHandlerPathFeature);
+            return r;
+        }).AllowAnonymous();
+        b.MapGet("/test/id6/ex/steam", async (HttpContext context) =>
+        {
+            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
+            {
+                Path = ExternalLoginSteamPaths.Values.First(),
+            };
+            var r = await Get(context, exceptionHandlerPathFeature);
+            return r;
+        }).AllowAnonymous();
+        b.MapGet("/test/id6/ex/empty", async (HttpContext context) =>
+        {
+            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
+            {
+                Path = context.Request.Path.Value!,
+            };
+            var r = await Get(context, exceptionHandlerPathFeature);
+            return r;
+        }).AllowAnonymous();
+        b.MapGet("/test/id6/ex/file", async (HttpContext context) =>
+        {
+            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
+            {
+                Path = context.Request.Path.Value!,
+                Error = new FileNotFoundException(),
+            };
+            var r = await Get(context, exceptionHandlerPathFeature);
+            return r;
+        }).AllowAnonymous();
+        b.MapGet("/test/id6/ex/agg", async (HttpContext context) =>
+        {
+            var exceptionHandlerPathFeature = new ExceptionHandlerFeature
+            {
+                Path = context.Request.Path.Value!,
+                Error = new AggregateException(
+                    new ApplicationException(),
+                    new DirectoryNotFoundException(),
+                    new IOException(),
+                    new Exception()),
+            };
+            var r = await Get(context, exceptionHandlerPathFeature);
+            return r;
+        }).AllowAnonymous();
+    }
+}
+#endif

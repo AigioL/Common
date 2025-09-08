@@ -4,8 +4,8 @@ using AigioL.Common.Primitives.Columns;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
 
-[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class LoginOrRegisterResponse : IExplicitHasValue
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
+public sealed partial record class LoginOrRegisterResponseV0 : IExplicitHasValue
 {
     /// <inheritdoc cref="JsonWebTokenValue"/>
     [global::MemoryPack.MemoryPackOrder(0)]
@@ -15,7 +15,7 @@ public sealed partial record class LoginOrRegisterResponse : IExplicitHasValue
     /// 当前登录的用户信息
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(1)]
-    public int? User { get; set; }
+    public int? User { get; set; } // IdentityUserInfoModelCompat
 
     /// <summary>
     /// 当前操作是登录(<see langword="true"/>)还是注册(<see langword="false"/>)
@@ -46,6 +46,6 @@ public sealed partial record class LoginOrRegisterResponse : IExplicitHasValue
 }
 
 #if DEBUG
-[Obsolete("use LoginOrRegisterResponse", true)]
-public sealed class LoginOrRegisterResponseCompat { }
+[Obsolete("use LoginOrRegisterResponseV0", true)]
+public sealed class RcLoginOrRegisterResponseCompat { }
 #endif
