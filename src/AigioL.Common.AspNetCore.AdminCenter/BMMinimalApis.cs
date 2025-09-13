@@ -8,7 +8,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AdminCenter;
@@ -182,7 +182,9 @@ file sealed class UserManagerExtensions<
 {
     readonly TDbContext db;
 
+#pragma warning disable IDE0290 // 使用主构造函数
     public UserManagerExtensions(TDbContext db)
+#pragma warning restore IDE0290 // 使用主构造函数
     {
         this.db = db;
     }
@@ -190,7 +192,12 @@ file sealed class UserManagerExtensions<
     public Guid GetUserId(HttpContext ctx)
     {
         var userId = db.GetUserId(ctx);
-        ArgumentNullException.ThrowIfNull(userId);
+        if (!userId.HasValue)
+        {
+#pragma warning disable CA2208 // 正确实例化参数异常
+            throw new ArgumentNullException(nameof(userId));
+#pragma warning restore CA2208 // 正确实例化参数异常
+        }
         return userId.Value;
     }
 }
@@ -206,7 +213,11 @@ file sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider 
         var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
         if (authenticationSchemes.Any(authScheme => authScheme.Name == BMMinimalApis.BearerScheme))
         {
+#if NET10_0_OR_GREATER
+            var requirements = new Dictionary<string, IOpenApiSecurityScheme>
+#else
             var requirements = new Dictionary<string, OpenApiSecurityScheme>
+#endif
             {
                 [BMMinimalApis.BearerScheme] = new OpenApiSecurityScheme
                 {

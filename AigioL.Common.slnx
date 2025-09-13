@@ -58,6 +58,7 @@
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic.Core/AigioL.Common.AspNetCore.AppCenter.Basic.Core.shproj" Id="9a99af09-34a7-46b8-8345-095b02f846e1" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic/AigioL.Common.AspNetCore.AppCenter.Basic.shproj" Id="3b025ecf-b924-4625-9635-68b1c88e3cd3" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Core/AigioL.Common.AspNetCore.AppCenter.Core.shproj" Id="8c072252-eabc-401a-aa84-59b8b38eda49" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity.Core/AigioL.Common.AspNetCore.AppCenter.Identity.Core.shproj" Id="070b8d0d-9e6a-49ea-883e-5d9cb8d470f4" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity.UI/AigioL.Common.AspNetCore.AppCenter.Identity.UI.csproj" Id="6b5b1110-b7f7-4f3a-ba59-00c621df7d4d" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity/AigioL.Common.AspNetCore.AppCenter.Identity.shproj" Id="15ff553c-b7f2-4f92-8bae-eb489368c189" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering.Core/AigioL.Common.AspNetCore.AppCenter.Ordering.Core.shproj" Id="be46ad26-3ee2-445a-80f2-26bc29e7b545" />

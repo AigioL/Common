@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Primitives;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
@@ -265,7 +265,11 @@ file sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider 
         var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
         if (authenticationSchemes.Any(authScheme => authScheme.Name == MSMinimalApis.BearerScheme))
         {
+#if NET10_0_OR_GREATER
+            var requirements = new Dictionary<string, IOpenApiSecurityScheme>
+#else
             var requirements = new Dictionary<string, OpenApiSecurityScheme>
+#endif
             {
                 [MSMinimalApis.BearerScheme] = new OpenApiSecurityScheme
                 {

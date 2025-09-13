@@ -31,6 +31,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
 		<PackageReference Include="MemoryPack" />
+		<PackageReference Include="Aspire.StackExchange.Redis.DistributedCaching" />
 	</ItemGroup>
 
 	<ItemGroup Condition="$(DefineConstants.Contains('USE_IO_HASHING'))">

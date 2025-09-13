@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+		<DefineConstants>$(DefineConstants);INCLUDE_ORDERING</DefineConstants>
 	</PropertyGroup>
 
 	<!-- 👇 请求委托生成器 (RDG) https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/aot/request-delegate-generator/rdg -->
@@ -21,6 +22,7 @@
 
 	<Import Project="..\AigioL.Common.AspNetCore.Helpers.ProgramMain\AigioL.Common.AspNetCore.Helpers.ProgramMain.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AdminCenter\AigioL.Common.AspNetCore.AdminCenter.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.AspNetCore.AdminCenter.Entities\AigioL.Common.AspNetCore.AdminCenter.Entities.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Analytics\AigioL.Common.AspNetCore.AppCenter.Analytics.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Analytics.Core\AigioL.Common.AspNetCore.AppCenter.Analytics.Core.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Basic\AigioL.Common.AspNetCore.AppCenter.Basic.projitems" Label="Shared" />
@@ -28,7 +30,6 @@
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Core\AigioL.Common.AspNetCore.AppCenter.Core.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Ordering\AigioL.Common.AspNetCore.AppCenter.Ordering.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Ordering.Core\AigioL.Common.AspNetCore.AppCenter.Ordering.Core.projitems" Label="Shared" />
-	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Payment\AigioL.Common.AspNetCore.AppCenter.Payment.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
 
 </Project>
