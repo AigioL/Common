@@ -3,7 +3,7 @@
 	<!-- 👇 当前项目依赖的版本号配置 -->
 	<PropertyGroup>
 		<!--👇 首选 .NET 版本号 -->
-		<DotNet_Version>9.0</DotNet_Version>
+		<DotNet_Version>10.0</DotNet_Version>
 		<!--👇 Win10/11 SDK 版本，值不可小于 10.0.x -->
 		<WinSDK_Version>10.0.19041.0</WinSDK_Version>
 	</PropertyGroup>
