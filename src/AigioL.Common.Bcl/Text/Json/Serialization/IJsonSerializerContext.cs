@@ -4,6 +4,8 @@ namespace System.Text.Json.Serialization;
 
 public interface IJsonSerializerContext
 {
+    const string TypeDiscriminatorPropertyName = "$tag";
+
     /// <summary>
     /// 返回 Json 源生成的 <see cref="JsonSerializerContext"/> 默认实例
     /// </summary>
