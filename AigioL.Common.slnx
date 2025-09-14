@@ -45,6 +45,7 @@
     <Project Path="src/AigioL.Common.Windows.Win32.NativeLibraryE/AigioL.Common.Windows.Win32.NativeLibraryE.shproj" Id="b1933abe-1634-4cbf-86e3-8f2a53ae1252" />
     <Project Path="src/AigioL.Common.Windows.Win32.RegisterHotKey/AigioL.Common.Windows.Win32.RegisterHotKey.shproj" Id="c3c8526d-e029-4c04-ba12-bed1d4a2b8a9" />
     <Project Path="src/AigioL.Common.Windows.Win32.SetWindowsHookEx/AigioL.Common.Windows.Win32.SetWindowsHookEx.shproj" Id="a883709a-ed64-40c9-9db5-c418da234d60" />
+    <Project Path="src/AigioL.Common.Windows.Win32.System.ClrHosting/AigioL.Common.Windows.Win32.System.ClrHosting.shproj" Id="6e3d2f18-85d8-48b4-b636-6a5ffcfc503f" />
     <Project Path="src/AigioL.Common.Windows.Win32.System.Threading.MessageLoop/AigioL.Common.Windows.Win32.System.Threading.MessageLoop.shproj" Id="5ba03b40-b43e-4df5-ae77-a65dfc7d79c7" />
   </Folder>
   <Folder Name="/2.Libraries/AspNetCore/">

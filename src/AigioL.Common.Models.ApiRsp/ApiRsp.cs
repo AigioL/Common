@@ -1,4 +1,4 @@
-#if !DISABLE_MP2
+#if !DISABLE_MP2 && !NETFRAMEWORK
 using MemoryPack;
 #endif
 using System.Net;
@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace AigioL.Common.Models;
 
-#if !DISABLE_MP2
+#if !DISABLE_MP2 && !NETFRAMEWORK
 //#if MP2_GENERATE_TS
 //[global::MemoryPack.GenerateTypeScript] 已手动修改生成代码
 //#endif
@@ -60,7 +60,7 @@ public partial record class ApiRsp
     }
 }
 
-#if !DISABLE_MP2
+#if !DISABLE_MP2 && !NETFRAMEWORK
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Sequential)]
 #endif
 public sealed partial record class ApiRsp<TContent> : ApiRsp

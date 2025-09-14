@@ -2,10 +2,15 @@ using System.Text.Encodings.Web;
 
 namespace System.Text.Json.Serialization;
 
-public interface IJsonSerializerContext
+#if !NETFRAMEWORK
+public partial interface IJsonSerializerContext
+#else
+public static partial class IJsonSerializerContext
+#endif
 {
-    const string TypeDiscriminatorPropertyName = "$tag";
+    public const string TypeDiscriminatorPropertyName = "$tag";
 
+#if !NETFRAMEWORK
     /// <summary>
     /// 返回 Json 源生成的 <see cref="JsonSerializerContext"/> 默认实例
     /// </summary>
@@ -58,6 +63,7 @@ public interface IJsonSerializerContext
 #pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
         }
     }
+#endif
 
     public static void SetDefaultOptions(JsonSerializerOptions o)
     {
