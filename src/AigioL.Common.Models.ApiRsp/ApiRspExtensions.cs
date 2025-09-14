@@ -5,6 +5,8 @@ namespace AigioL.Common.Models;
 
 public static partial class ApiRspExtensions
 {
+    public static Func<Exception, uint>? GetCodeByExceptionDelegate { private get; set; }
+
     public static void SetException(this ApiRsp apiRsp, Exception ex)
     {
         var allMsg = ex.GetAllMessage();
@@ -14,7 +16,8 @@ public static partial class ApiRspExtensions
         }
         else
         {
-            apiRsp.Code = unchecked((uint)HttpStatusCode.InternalServerError);
+            var d = GetCodeByExceptionDelegate;
+            apiRsp.Code = d != null ? d(ex) : unchecked((uint)HttpStatusCode.InternalServerError);
         }
         apiRsp.Message = allMsg;
     }
