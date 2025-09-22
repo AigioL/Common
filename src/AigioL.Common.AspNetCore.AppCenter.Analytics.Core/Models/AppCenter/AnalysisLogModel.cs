@@ -9,9 +9,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Models.AppCenter;
 [JsonDerivedType(typeof(AnalysisStartServiceLogModel), typeDiscriminator: AnalysisStartServiceLogModel.JsonIdentifier)]
 public abstract record class AnalysisLogModel
 {
-    [JsonPropertyName("type")]
-    public required string Type { get; set; }
-
     /// <summary>
     /// Gets or sets log timestamp, example: '2017-03-13T18:05:42Z'.
     /// </summary>
