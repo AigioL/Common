@@ -32,7 +32,7 @@
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.14.0" />
 		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
 	</ItemGroup>
 	<!-- 👇 可回收内存流 -->
 	<ItemGroup>
@@ -43,11 +43,11 @@
 		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.0-rc.1.25451.107" />
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0-rc.1.25451.107" />
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="9.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.9" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0-rc.1" />
-    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.4.2" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.9" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="9.0.9" />
+		<PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.9" />
+		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0-rc.1" />
+		<PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.4.2" />
 	</ItemGroup>
 	<!-- 👇 序列化 -->
 	<ItemGroup>
@@ -73,9 +73,9 @@
 	</ItemGroup>
 	<!-- 👇 Redis -->
 	<ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="9.4.2" />
-    <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.4.2" />
-    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.4.2" />
+		<PackageVersion Include="Aspire.Hosting.Redis" Version="9.4.2" />
+		<PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.4.2" />
+		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.4.2" />
 	</ItemGroup>
 	<!-- 👇 Quartz -->
 	<ItemGroup>
@@ -83,7 +83,7 @@
 	</ItemGroup>
 	<!-- 👇 Json -->
 	<ItemGroup>
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageVersion Include="System.Text.Json" Version="10.0.0-rc.1.25451.107" />
 	</ItemGroup>
 	<!-- 👇 Payment -->
@@ -94,17 +94,17 @@
 	</ItemGroup>
 	<!-- 👇 Aspire -->
 	<ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.4.2" />
-    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.4.2" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.9.0" />
-    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.4.2" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
-    <PackageVersion Include="Aspire.Hosting.Testing" Version="9.4.2" />
-    <PackageVersion Include="Aspire.Hosting.Docker" Version="9.4.1-preview.1.25408.4" />
+		<PackageVersion Include="Aspire.Hosting.AppHost" Version="9.4.2" />
+		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.4.2" />
+		<PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.9.0" />
+		<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.4.2" />
+		<PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.12.0" />
+		<PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
+		<PackageVersion Include="Aspire.Hosting.Testing" Version="9.4.2" />
+		<PackageVersion Include="Aspire.Hosting.Docker" Version="9.4.1-preview.1.25408.4" />
 	</ItemGroup>
 	<!-- 👇 Docker -->
 	<ItemGroup>
