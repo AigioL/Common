@@ -14,6 +14,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ApiConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.Functions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\MediaTypeNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppDbContextBase.cs" />

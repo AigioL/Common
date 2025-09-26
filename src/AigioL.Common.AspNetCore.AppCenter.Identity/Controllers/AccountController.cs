@@ -24,7 +24,7 @@ public static partial class AccountController
             .AllowAnonymous()
             .WithRequiredSecurityKey();
 
-        // [HttpPost]
+        // [HttpPost]-
         // Task<ApiRspImpl<LoginOrRegisterResponseCompat?>> LoginOrRegister(
         // [FromBody] LoginOrRegisterRequestCompat request)
         routeGroup.MapPost("LoginOrRegister", [Obsolete] async (HttpContext context,

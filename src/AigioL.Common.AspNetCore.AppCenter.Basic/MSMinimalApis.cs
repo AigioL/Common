@@ -1,5 +1,12 @@
 using AigioL.Common.AspNetCore.AppCenter.Basic.Controllers;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Repositories;
+using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
@@ -22,5 +29,18 @@ public static partial class MSMinimalApis
         b.MapBasicServerCertificateValidate();
         b.MapBasicImage<TAppSettings>();
         b.MapBasicVersions();
+    }
+
+    public static IServiceCollection AddBasicRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext, IArticleDbContext, IOfficialMessageDbContext
+    {
+        services.TryAddScoped<IArticleCategoryRepository, ArticleCategoryRepository<TDbContext>>();
+        services.TryAddScoped<IArticleRepository, ArticleRepository<TDbContext>>();
+        services.TryAddScoped<IKeyValuePairRepository, KeyValuePairRepository<TDbContext>>();
+        services.TryAddScoped<IStaticResourceRepository, StaticResourceRepository<TDbContext>>();
+        services.TryAddScoped<IOfficialMessageRepository, OfficialMessageRepository<TDbContext>>();
+        return services;
     }
 }

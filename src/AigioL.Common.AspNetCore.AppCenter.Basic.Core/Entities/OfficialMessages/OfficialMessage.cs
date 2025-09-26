@@ -1,9 +1,11 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,7 +16,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.OfficialMessages;
 /// </summary>
 [Index(nameof(CreationTime), IsDescending = new[] { true })]
 [Table(nameof(OfficialMessage) + "s")]
-public class OfficialMessage :
+[EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
+public partial class OfficialMessage :
     TenantBaseEntity<Guid>,
     INEWSEQUENTIALID,
     ITitle
@@ -67,4 +70,33 @@ public class OfficialMessage :
     /// </summary>
     [Comment("过期时间")]
     public DateTimeOffset? ExpireTime { get; set; }
+
+    /// <summary>
+    /// 指定客户端版本关联实体
+    /// </summary>
+    public virtual List<OfficialMessageAppVerRelation> TargetAppVerRelations { get; set; } = null!;
+
+    /// <summary>
+    /// 指定客户端版本
+    /// </summary>
+    public virtual List<AppVer> TargetAppVers { get; set; } = null!;
+
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<OfficialMessage>
+    {
+        public override void Configure(EntityTypeBuilder<OfficialMessage> builder)
+        {
+            base.Configure(builder);
+
+            builder
+                .HasMany(u => u.TargetAppVers)
+                .WithMany()
+                .UsingEntity<OfficialMessageAppVerRelation>(
+                    r => r.HasOne<AppVer>()
+                        .WithMany()
+                        .HasForeignKey(a => a.AppVerId),
+                    l => l.HasOne<OfficialMessage>()
+                        .WithMany(a => a.TargetAppVerRelations)
+                        .HasForeignKey(a => a.OfficialMessageId));
+        }
+    }
 }

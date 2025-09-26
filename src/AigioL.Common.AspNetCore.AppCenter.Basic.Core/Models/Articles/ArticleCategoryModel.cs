@@ -19,6 +19,13 @@ public partial record class ArticleCategoryModel
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
+    /// 父级 Id
+    /// </summary>
+    [global::System.Text.Json.Serialization.JsonIgnore]
+    [global::MemoryPack.MemoryPackIgnore]
+    public Guid? ParentId { get; set; }
+
+    /// <summary>
     /// 最后一个 MessagePack 序列化 下标，继承自此类，新增需要序列化的字段/属性，标记此值+1，+2
     /// </summary>
     protected const int LastMKeyIndex = 1;

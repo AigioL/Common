@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models;
 
 #region ArticleController
-[JsonSerializable(typeof(ApiRsp<List<ArticleCategoryTreeModel>?>))]
+[JsonSerializable(typeof(ApiRsp<ArticleCategoryTreeModel[]?>))]
 [JsonSerializable(typeof(ApiRsp<PagedModel<ArticleItemModel>?>))]
 [JsonSerializable(typeof(ApiRsp<ArticleModel?>))]
 #endregion

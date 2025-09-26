@@ -24,5 +24,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOfficialMessageRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IStaticResourceRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleCategoryRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\OfficialMessageRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\StaticResourceRepository.cs" />
   </ItemGroup>
 </Project>

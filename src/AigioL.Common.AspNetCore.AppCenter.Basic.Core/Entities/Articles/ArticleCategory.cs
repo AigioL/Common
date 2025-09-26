@@ -55,7 +55,7 @@ public partial class ArticleCategory :
     /// <summary>
     /// 子级
     /// </summary>
-    public List<ArticleCategory>? Children { get; set; }
+    public virtual List<ArticleCategory> Children { get; set; } = null!;
 
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<ArticleCategory>
     {
@@ -86,13 +86,13 @@ public partial class ArticleCategory :
         int depth = 1,
         int maxDepth = 4)
     {
-        var destination = new ArticleCategoryTreeModel()
+        dynamic destination = new
         {
             Id = articles.Id,
             Name = articles.Name,
             Child = depth <= maxDepth ? articles.Children?.Select(item => MapToTreeDTO(item, depth + 1)).ToList() : null
         };
-        return destination;
+        return default!;
     }
 #endif
 }

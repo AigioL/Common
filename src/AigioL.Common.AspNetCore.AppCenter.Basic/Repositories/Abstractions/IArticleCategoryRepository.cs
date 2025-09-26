@@ -1,8 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.Articles;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Articles;
-using AigioL.Common.Models;
-using AigioL.Common.Primitives.Models;
-using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
@@ -79,5 +76,10 @@ partial interface IArticleCategoryRepository // 管理后台
 
 partial interface IArticleCategoryRepository // 微服务
 {
-    Task<List<ArticleCategoryTreeModel>?> QueryCategoryTreeAsync();
+    /// <summary>
+    /// 查询文章分类嵌套模型
+    /// </summary>
+    /// <param name="maxDepth">最大深度</param>
+    /// <returns></returns>
+    Task<ArticleCategoryTreeModel[]> QueryCategoryTreeAsync(short maxDepth = 4);
 }

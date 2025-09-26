@@ -8,7 +8,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.OfficialMessages;
 /// </summary>
 [PrimaryKey(nameof(OfficialMessageId), nameof(AppVerId))]
 [Table(nameof(OfficialMessageAppVerRelation) + "s")]
-public class OfficialMessageAppVerRelation
+public partial class OfficialMessageAppVerRelation
 {
     /// <summary>
     /// 官方消息 Id

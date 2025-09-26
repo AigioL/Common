@@ -23,7 +23,7 @@ public partial class Article :
     /// 分类 Id
     /// </summary>
     [Comment("分类 Id")]
-    public Guid CategoryId { get; set; }
+    public Guid? CategoryId { get; set; }
 
     /// <inheritdoc/>
     [StringLength(MaxLengths.Max_ArticleTitle)]
@@ -74,7 +74,7 @@ public partial class Article :
     /// <summary>
     /// 文章分类
     /// </summary>
-    public virtual ArticleCategory Category { get; set; } = null!;
+    public virtual ArticleCategory? Category { get; set; }
 
     /// <summary>
     /// 文章标签关系

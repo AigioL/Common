@@ -52,7 +52,7 @@ public partial class ArticleItemModel
     /// 文章标签
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(7)]
-    public List<ArticleTagModel> Tags { get; set; } = [];
+    public ArticleTagModel[] Tags { get; set; } = [];
 
     /// <summary>
     /// 文章分类

@@ -38,7 +38,7 @@ public partial class ArticleModel
     /// <summary>
     /// 标签列表
     /// </summary>
-    public List<ArticleTagModel> Tags { get; set; } = [];
+    public ArticleTagModel[] Tags { get; set; } = [];
 
     /// <summary>
     /// 文章创建时间

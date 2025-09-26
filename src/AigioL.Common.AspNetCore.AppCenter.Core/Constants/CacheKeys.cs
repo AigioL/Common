@@ -5,6 +5,13 @@ namespace AigioL.Common.AspNetCore.AppCenter.Constants;
 /// </summary>
 public static partial class CacheKeys
 {
+    #region DB index
+
+    /// <summary>
+    /// Redis HashIncrement 使用的 DB index
+    /// </summary>
+    public const int RedisHashIncrementDb = 1;
+
     /// <summary>
     /// Redis 活跃用户使用的 DB index
     /// </summary>
@@ -15,6 +22,17 @@ public static partial class CacheKeys
     /// </summary>
     public const int RedisHashDataDb = 5;
 
+    #endregion
+
+    #region HashKey
 
     public const string IdentityUserIsBanMapHashKey = "IdentityUserIsBanMapHashKey";
+
+    /// <summary>
+    /// 文章浏览量 HashKey
+    /// </summary>
+    public const string ArticleViewHashKey =
+        "ArticleViewHashKey";
+
+    #endregion
 }

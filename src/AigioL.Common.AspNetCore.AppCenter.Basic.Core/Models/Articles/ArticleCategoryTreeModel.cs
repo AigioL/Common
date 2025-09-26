@@ -10,5 +10,5 @@ public partial record class ArticleCategoryTreeModel : ArticleCategoryModel
     /// 文章分类子节点
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(LastMKeyIndex + 1)]
-    public List<ArticleCategoryTreeModel>? Child { get; set; }
+    public ArticleCategoryTreeModel[]? Child { get; set; }
 }

@@ -20,12 +20,17 @@ public static partial class CustomerServiceController
         {
             var r = await ToCustomerService(context);
             return r;
-        });
+        }).WithDescription("获取客服链接地址");
     }
 
     static readonly TimeSpan CustomerServiceUrlKeyExpiration = TimeSpan.FromMinutes(10);
     const bool useJwtUserIdOrUserId = true;
 
+    /// <summary>
+    /// 获取客服链接地址
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
     static async Task<ApiRsp<string?>> ToCustomerService(HttpContext context)
     {
         var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
