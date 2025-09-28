@@ -12,6 +12,10 @@
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.V%28-1%29.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.V0.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.V1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.V2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\AuthMessageController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ErrorController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ExternalLoginController.cs" />

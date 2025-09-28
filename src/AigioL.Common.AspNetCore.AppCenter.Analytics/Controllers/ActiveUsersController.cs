@@ -80,10 +80,8 @@ public static class ActiveUsersController
             return HttpStatusCode.BadRequest;
         }
 
-        var connection = context.RequestServices
-            .GetRequiredService<IConnectionMultiplexer>();
-        var contains = await ContainsAsync(
-                connection, deviceId, model.Platform);
+        var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
+        var contains = await ContainsAsync(connection, deviceId, model.Platform);
         if (contains)
         {
             return HttpStatusCode.OK;

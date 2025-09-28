@@ -6,6 +6,7 @@ using Microsoft.Extensions.Primitives;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -377,6 +378,32 @@ public static partial class HttpContextExtensions
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DateTimeOffset[]? GetQueryDateTimeRange(this HttpContext context, string key, int? fixedLength = 2) => context.Request.GetQueryDateTimeRange(key, fixedLength);
+
+    /// <summary>
+    /// 获取客户端 IP 地址
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="ipAddress"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool GetRemoteIpAddress(this HttpContext context, [NotNullWhen(true)] out string? ipAddress)
+    {
+        ipAddress = context.Connection.RemoteIpAddress?.ToString();
+        if (!string.IsNullOrWhiteSpace(ipAddress) &&
+            !string.Equals("localhost", ipAddress, StringComparison.InvariantCultureIgnoreCase))
+        {
+            if (IPAddress.TryParse(ipAddress, out var address))
+            {
+                // 如果部署模式为网关后转发时获取值为 127.0.0.1 则反向代理配置错误
+                if (!IPAddress.IsLoopback(address))
+                {
+                    // 客户端地址不能是 localhost 或 127.0.0.1
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
 
 file static partial class DateTimeParseHelper

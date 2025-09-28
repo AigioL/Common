@@ -14,8 +14,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 [JsonSerializable(typeof(SendEmailCodeRequestV1))]
 #endregion
 #region AccountController
-[JsonSerializable(typeof(LoginOrRegisterRequest))]
-[JsonSerializable(typeof(ApiRsp<LoginOrRegisterResponse?>))]
+[JsonSerializable(typeof(LoginOrRegisterRequest_V_1))]
+[JsonSerializable(typeof(ApiRsp<LoginOrRegisterResponse_V_1?>))]
 #endregion
 #region ManageController
 #endregion

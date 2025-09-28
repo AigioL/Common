@@ -51,9 +51,9 @@ public partial class AppVer :
     public required string ReleaseNote { get; set; }
 
     /// <summary>
-    /// 是否Beta版本
+    /// 是否 Beta 版本
     /// </summary>
-    [Comment("是否Beta版本")]
+    [Comment("是否 Beta 版本")]
     public bool BetaVersion { get; set; }
 
     /// <inheritdoc/>

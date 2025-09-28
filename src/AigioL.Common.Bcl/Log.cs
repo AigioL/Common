@@ -7,7 +7,7 @@ namespace System;
 /// 日志
 /// <para>编译时日志记录源生成：https://learn.microsoft.com/zh-cn/dotnet/core/extensions/logger-message-generator</para>
 /// </summary>
-static partial class Log
+public static partial class Log
 {
     /// <inheritdoc cref="ILoggerFactory"/>
     public static ILoggerFactory Factory

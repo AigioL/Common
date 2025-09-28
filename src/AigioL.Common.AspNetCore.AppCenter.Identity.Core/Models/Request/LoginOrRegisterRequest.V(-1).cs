@@ -3,10 +3,10 @@ using AigioL.Common.Primitives.Columns;
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 
 /// <summary>
-/// 登录或注册请求模型
+/// 登录或注册请求模型（版本 -1）
 /// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class LoginOrRegisterRequest : IReadOnlySmsCode
+public sealed partial record class LoginOrRegisterRequest_V_1 : IReadOnlySmsCode
 {
     /// <inheritdoc cref="IPhoneNumber.PhoneNumber"/>
     [global::MemoryPack.MemoryPackOrder(0)]
@@ -22,6 +22,6 @@ public sealed partial record class LoginOrRegisterRequest : IReadOnlySmsCode
 }
 
 #if DEBUG
-[Obsolete("use LoginOrRegisterRequest", true)]
-public sealed class LoginOrRegisterResponseCompat { }
+[Obsolete("use LoginOrRegisterRequest_V_1", true)]
+public sealed class LoginOrRegisterRequestCompat { }
 #endif

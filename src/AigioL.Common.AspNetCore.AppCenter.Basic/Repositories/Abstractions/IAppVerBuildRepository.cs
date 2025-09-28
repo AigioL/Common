@@ -7,7 +7,11 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 
-public interface IAppVerBuildRepository : IRepository<AppVerBuild, Guid>, IEFRepository
+public partial interface IAppVerBuildRepository : IRepository<AppVerBuild, Guid>, IEFRepository
+{
+}
+
+partial interface IAppVerBuildRepository
 {
     /// <summary>
     /// 获取最新版本

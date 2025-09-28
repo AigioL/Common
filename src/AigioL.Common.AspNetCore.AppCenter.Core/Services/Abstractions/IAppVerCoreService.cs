@@ -16,8 +16,9 @@ public interface IAppVerCoreService
     /// 根据版本号字符串获取 App 版本信息，如果不存在则生成一个空的实现接口，且 <see cref="IReadOnlyAppVer.Version"/> 值为传入参数
     /// </summary>
     /// <param name="appVersion"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<IReadOnlyAppVer> GetAsync(string appVersion);
+    Task<IReadOnlyAppVer?> GetAsync(string appVersion, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 根据主键查找 App 版本信息

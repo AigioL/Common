@@ -34,5 +34,7 @@ public static partial class CacheKeys
     public const string ArticleViewHashKey =
         "ArticleViewHashKey";
 
+    public const string AppVersionHashKey = "AppVersionHashKey"; // 版本使用改缓存 Key 为 ID Last 最新与全部版本缓存 后台编辑时添加或编辑该缓存数据
+
     #endregion
 }

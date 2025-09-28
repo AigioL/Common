@@ -10,8 +10,8 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using KeyValuePair = AigioL.Common.AspNetCore.AppCenter.Entities.KeyValuePair;
 using static AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions.IKeyValuePairRepository;
+using KeyValuePair = AigioL.Common.AspNetCore.AppCenter.Entities.KeyValuePair;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Repositories;
 

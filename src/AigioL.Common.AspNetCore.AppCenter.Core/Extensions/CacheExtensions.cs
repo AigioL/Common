@@ -1,5 +1,6 @@
 using MemoryPack;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.Extensions.Caching.Distributed;
@@ -66,6 +67,88 @@ public static partial class CacheExtensions
         /// <inheritdoc cref="global::Microsoft.Extensions.Caching.Memory.ICacheEntry.SlidingExpiration"/>
         TimeSpan? SlidingExpiration { get; set; }
     }
+
+    /// <summary>
+    /// 异步从缓存中获取指定键的值
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static async Task<T?> GetV2Async<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        this IDistributedCache cache,
+        string key,
+        CancellationToken cancellationToken = default) where T : notnull
+    {
+        T? value = default;
+        var bytes = await cache.GetAsync(key, cancellationToken);
+        if (bytes != null)
+        {
+            try
+            {
+                value = MemoryPackSerializer.Deserialize<T>(bytes);
+            }
+            catch
+            {
+                // 反序列化失败，视作缓存数据无效
+                try
+                {
+                    var logger = Log.CreateLogger(nameof(CacheExtensions));
+                    var tType = typeof(T);
+                    var typeName = tType.FullName ?? tType.Name;
+                    LogErrorByGetV2Async(logger, typeName);
+                }
+                catch
+                {
+                }
+            }
+        }
+        return value;
+    }
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "异步从缓存中获取指定键的值时出错，类型：{typeName}")]
+    private static partial void LogErrorByGetV2Async(ILogger logger, string typeName);
+
+    /// <summary>
+    /// 异步将指定键和值添加到缓存中，并指定缓存选项
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static async Task SetV2Async<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        this IDistributedCache cache,
+        string key,
+        T value,
+        DistributedCacheEntryOptions options,
+        CancellationToken cancellationToken = default) where T : notnull
+    {
+        var bytes = MemoryPackSerializer.Serialize(value);
+        await cache.SetAsync(key, bytes, options, cancellationToken);
+    }
+
+    /// <summary>
+    /// 异步指定键和值添加到缓存中，并设置相对于当前时间的绝对过期时间
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task SetV2Async<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        this IDistributedCache cache,
+        string key,
+        T value,
+        TimeSpan absoluteExpirationRelativeToNow,
+        CancellationToken cancellationToken = default) where T : notnull
+        => cache.SetV2Async(key, value, new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow,
+        }, cancellationToken);
+
+    /// <summary>
+    /// 异步将指定键和值添加到分布式缓存中，并设置过期时间
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task SetV2Async<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        this IDistributedCache cache,
+        string key,
+        T value,
+        int minutes,
+        CancellationToken cancellationToken = default) where T : notnull
+        => cache.SetV2Async(key, value, TimeSpan.FromMinutes(minutes), cancellationToken);
 }
 
 file sealed class CacheEntryCompatImpl : DistributedCacheEntryOptions, CacheExtensions.ICacheEntryCompat, IDisposable

@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Models;
@@ -8,72 +9,12 @@ using AigioL.Common.Primitives.Columns;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
 public static partial class AccountController
 {
-    public static void MapIdentityAccount(
-        this IEndpointRouteBuilder b,
-        [StringSyntax("Route")] string pattern = "api/Account")
-    {
-        // ApiService.Identity.Controllers;
-        // [Route("api/[controller]/[action]")]
-        // class AccountController
-        var routeGroup = b.MapGroup(pattern)
-            .AllowAnonymous()
-            .WithRequiredSecurityKey();
-
-        // [HttpPost]-
-        // Task<ApiRspImpl<LoginOrRegisterResponseCompat?>> LoginOrRegister(
-        // [FromBody] LoginOrRegisterRequestCompat request)
-        routeGroup.MapPost("LoginOrRegister", [Obsolete] async (HttpContext context,
-            [FromBody] LoginOrRegisterRequest request) =>
-        {
-            var r = await LoginOrRegister(context,
-                request.PhoneNumber, null,
-                request.SmsCode, request.Channel, null);
-            return r;
-        }).WithDescription("【Obsolete】登录或注册账号 V(-1)");
-        routeGroup.MapGet("RefreshToken/{refresh_token}", [Obsolete] async (HttpContext context,
-            [FromRoute] string refresh_token) =>
-        {
-            var r = await RefreshToken(context,
-                refresh_token);
-            return r;
-        }).WithDescription("【Obsolete】刷新 JWT V(-1)");
-    }
-
-    public static void MapIdentityAccountV0(
-        this IEndpointRouteBuilder b,
-        [StringSyntax("Route")] string pattern = "identity/account")
-    {
-        // ApiService.Identity.Controllers;
-        // [Route("identity/account")]
-        // class IdentityAccountController
-        var routeGroup = b.MapGroup(pattern)
-            .AllowAnonymous()
-            .WithRequiredSecurityKey();
-
-        // [HttpPost("loginorregister")]
-        // Task<ApiRspImpl<RcLoginOrRegisterResponseCompat?>> LoginOrRegister(
-        // [FromBody] LoginOrRegisterRequest request)
-        routeGroup.MapPost("loginorregister", [Obsolete] async (HttpContext context,
-            [FromBody] LoginOrRegisterRequestV1 request) =>
-        {
-            var deviceId = request.GetDeviceId();
-            var r = await LoginOrRegister(context,
-                request.PhoneNumber, null,
-                request.SmsCode, request.Channel, deviceId);
-            return r;
-        }).WithDescription("【Obsolete】登录或注册账号 V0");
-
-        // validateRegisterEmail
-        // resetPassword
-        // registerByEmail
-        // loginByPassword
-        // refreshtoken
-    }
 
     public static void MapIdentityAccountV1(
         this IEndpointRouteBuilder b,
@@ -126,10 +67,14 @@ public static partial class AccountController
 
     internal const int MaxIpAccessFailedCount = 12;
 
+    internal static string GetIpCacheKey(string ip) => $"AC_MS_LoginOrRegister_Ip_[{ip}]";
+
+    internal static TimeSpan GetLockoutEnd() => TimeSpan.FromMinutes(7);
+
     /// <summary>
     /// 登录或注册账号，如要支持密码登录，需使用 <see cref="SignInManager{TUser}"/> 提供纪录失败次数与锁定用户
     /// </summary>
-    static async Task<ApiRsp<LoginOrRegisterResponse?>> LoginOrRegister(
+    static async Task<ApiRsp<LoginOrRegisterResponse_V_1?>> LoginOrRegister(
         HttpContext context,
         string? phoneNumber,
         string? phoneNumberRegionCode,
@@ -168,13 +113,22 @@ public static partial class AccountController
     /// <summary>
     /// 刷新 JWT
     /// </summary>
-    static async Task<ApiRsp<JsonWebTokenValue?>> RefreshToken(
+    static async Task<ApiRsp<JsonWebTokenValue?>> RefreshTokenAsync(
         HttpContext context,
-        string refresh_token,
-        string? deviceId = null)
+        string? refresh_token,
+        string? deviceId)
     {
-        await Task.CompletedTask;
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(refresh_token))
+            return HttpStatusCode.Unauthorized;
+
+        var platform = context.GetDevicePlatform();
+        var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+        var newToken = await userManager.RefreshTokenAsync(platform, deviceId, refresh_token);
+        if (newToken == null)
+        {
+            return HttpStatusCode.Unauthorized;
+        }
+        return newToken;
     }
 }
 
