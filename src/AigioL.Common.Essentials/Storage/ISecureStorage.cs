@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace AigioL.Essentials.Storage;
+namespace AigioL.Common.Essentials.Storage;
 
 /// <summary>
 /// SecureStorage API 有助于安全地存储简单的键/值对

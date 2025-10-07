@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
 namespace AigioL.Common.UnitTest;
@@ -44,9 +43,9 @@ sealed class Program
         currentBuild = Version.Parse(currentVersion).Build.ToString();
 
         ServiceCollection services = new();
-        services.AddEssentialStorage(
-            pkgName, currentVersion, currentBuild,
-            appDataDirectory);
+        services.AddEssential(
+            pkgName, default, currentVersion,
+            currentBuild, appDataDirectory);
 
         serviceProvider = services.BuildServiceProvider();
 

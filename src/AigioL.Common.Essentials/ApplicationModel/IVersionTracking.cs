@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 
-namespace AigioL.Essentials.ApplicationModel;
+namespace AigioL.Common.Essentials.ApplicationModel;
 
 /// <summary>
 /// VersionTracking API 提供了一种在设备上跟踪应用版本的简单方法

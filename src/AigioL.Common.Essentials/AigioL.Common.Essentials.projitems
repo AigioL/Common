@@ -3,10 +3,10 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>ba706dc7-a370-44d4-80b4-d886110d24ea</SharedGUID>
+    <SharedGUID>1dcaa278-148a-479e-b1d1-135476b32fdb</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>AigioL.Essentials</Import_RootNamespace>
+    <Import_RootNamespace>AigioL.Common.Essentials</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ApplicationModel\Implementation\VersionTrackingImplementation.cs" />

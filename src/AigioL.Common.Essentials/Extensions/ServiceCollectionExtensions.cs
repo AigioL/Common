@@ -1,27 +1,29 @@
-using AigioL.Essentials.ApplicationModel;
-using AigioL.Essentials.ApplicationModel.Implementation;
-using AigioL.Essentials.Storage;
-using AigioL.Essentials.Storage.Implementation;
+using AigioL.Common.Essentials.ApplicationModel;
+using AigioL.Common.Essentials.ApplicationModel.Implementation;
+using AigioL.Common.Essentials.Storage;
+using AigioL.Common.Essentials.Storage.Implementation;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddEssentialStorage(
+    public static IServiceCollection AddEssential(
         this IServiceCollection services,
         string packageName,
+        string? keySecureStorage,
         string versionString,
         string buildString,
         string appDataDirectory,
-        bool isCurrentUserOrLocalMachine = false)
+        bool isSecureStorageCurrentUserOrLocalMachine = false)
     {
         var preferences = new UnpackagedPreferencesImplementation(appDataDirectory);
         var secureStorage = new UnpackagedSecureStorageImplementation(
             preferences,
+            keySecureStorage,
             packageName,
             appDataDirectory,
-            isCurrentUserOrLocalMachine);
+            isSecureStorageCurrentUserOrLocalMachine);
         var versionTracking = new VersionTrackingImplementation(
             preferences,
             packageName,

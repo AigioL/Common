@@ -1,5 +1,5 @@
-using AigioL.Essentials.ApplicationModel;
-using AigioL.Essentials.Storage;
+using AigioL.Common.Essentials.ApplicationModel;
+using AigioL.Common.Essentials.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 using System.Reflection;

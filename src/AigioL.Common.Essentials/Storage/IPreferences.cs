@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace AigioL.Essentials.Storage;
+namespace AigioL.Common.Essentials.Storage;
 
 /// <summary>
 /// 首选项 API 有助于将应用程序首选项存储在键/值存储中

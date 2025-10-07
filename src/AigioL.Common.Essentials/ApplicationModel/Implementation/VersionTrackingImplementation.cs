@@ -1,8 +1,8 @@
-using AigioL.Essentials.Storage;
+using AigioL.Common.Essentials.Storage;
 using System.Collections.Immutable;
 using System.Text;
 
-namespace AigioL.Essentials.ApplicationModel.Implementation;
+namespace AigioL.Common.Essentials.ApplicationModel.Implementation;
 
 /// <summary>
 /// https://github.com/dotnet/maui/blob/10.0.0-rc.1.25424.2/src/Essentials/src/VersionTracking/VersionTracking.shared.cs#L198

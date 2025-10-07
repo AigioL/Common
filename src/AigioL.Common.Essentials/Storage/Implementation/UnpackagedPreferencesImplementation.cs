@@ -3,15 +3,11 @@ using MemoryPack.Compression;
 using Microsoft.IO;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
-using System.Text;
 using PreferencesDictionary = System.Collections.Concurrent.ConcurrentDictionary<string, System.Collections.Concurrent.ConcurrentDictionary<string, byte[]>>;
 using ShareNameDictionary = System.Collections.Concurrent.ConcurrentDictionary<string, byte[]>;
 
-namespace AigioL.Essentials.Storage.Implementation;
+namespace AigioL.Common.Essentials.Storage.Implementation;
 
 /// <summary>
 /// https://github.com/dotnet/maui/blob/10.0.0-rc.1.25424.2/src/Essentials/src/Preferences/Preferences.windows.cs#L148

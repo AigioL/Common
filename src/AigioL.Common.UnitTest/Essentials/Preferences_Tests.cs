@@ -1,4 +1,4 @@
-using AigioL.Essentials.Storage;
+using AigioL.Common.Essentials.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
 

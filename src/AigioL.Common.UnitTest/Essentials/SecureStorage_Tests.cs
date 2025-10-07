@@ -1,7 +1,6 @@
-using AigioL.Essentials.Storage;
+using AigioL.Common.Essentials.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace AigioL.Common.UnitTest.Essentials;
 
@@ -209,16 +208,41 @@ partial class SecureStorage_Tests // https://github.com/dotnet/maui/blob/10.0.0-
     ]
     public async Task Set_Get_Async_MultipleTimes()
     {
+        const int count = 100;
         Console.WriteLine(Environment.ProcessPath);
 
-        await Parallel.ForEachAsync(Enumerable.Range(0, 100), async (i, _) =>
+        await Parallel.ForEachAsync(Enumerable.Range(0, count), async (i, _) =>
             await SecureStorage.SetAsync(i.ToString(), i.ToString())
         );
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < count; i++)
         {
             var v = await SecureStorage.GetAsync<string>(i.ToString());
             Assert.Equal(i.ToString(), v);
+        }
+    }
+
+    [Fact
+#if MACCATALYST
+        (Skip = "Need to configure entitlements.")
+#endif
+    //#if WINDOWS
+    //        (Skip = "IOException on unpackaged: The process cannot access the file...")
+    //#endif
+    ]
+    public async Task Set_Get_Sync_MultipleTimes()
+    {
+        const int count = 100;
+        Console.WriteLine(Environment.ProcessPath);
+
+        for (int i = 0; i < count; i++)
+        {
+            var key = $"key3{i}";
+            var value = $"value3{i}";
+            await SecureStorage.SetAsync(key, value);
+
+            var v = await SecureStorage.GetAsync<string>(key);
+            Assert.Equal(value, v);
         }
     }
 
@@ -246,5 +270,31 @@ partial class SecureStorage_Tests // https://github.com/dotnet/maui/blob/10.0.0-
             fetched = await SecureStorage.GetAsync<string>(key);
             Assert.Null(fetched);
         });
+    }
+
+    [Fact
+#if MACCATALYST
+        (Skip = "Need to configure entitlements.")
+#endif
+    //#if WINDOWS
+    //        (Skip = "IOException on unpackaged: The process cannot access the file...")
+    //#endif
+    ]
+    public async Task Set_Get_Remove_Sync_MultipleTimes()
+    {
+        Console.WriteLine(Environment.ProcessPath);
+
+        for (int i = 0; i < 100; i++)
+        {
+            var key = $"key2{i}";
+            var value = $"value2{i}";
+            await SecureStorage.SetAsync(key, value);
+
+            var fetched = await SecureStorage.GetAsync<string>(key);
+            Assert.Equal(value, fetched);
+            SecureStorage.Remove(key);
+            fetched = await SecureStorage.GetAsync<string>(key);
+            Assert.Null(fetched);
+        }
     }
 }

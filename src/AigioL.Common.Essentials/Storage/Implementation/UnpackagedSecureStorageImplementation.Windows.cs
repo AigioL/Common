@@ -6,12 +6,13 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography;
 using Windows.Security.Cryptography.DataProtection;
 
-namespace AigioL.Essentials.Storage.Implementation;
+namespace AigioL.Common.Essentials.Storage.Implementation;
 
 partial class UnpackagedSecureStorageImplementation
 {
     readonly Lazy<bool> lazyUseWinRTDataProtectionProvider;
     readonly DataProtectionScope dataProtectionScope;
+    readonly Lazy<byte[]> lazyEntropy;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     bool UseWinRTDataProtectionProvider() => lazyUseWinRTDataProtectionProvider.Value;
@@ -24,18 +25,9 @@ partial class UnpackagedSecureStorageImplementation
         return buffer.ToArray();
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    byte[] GetEntropy()
-    {
-        var optionalEntropyU8 = "AigioL.Essentials.Storage.ProtectedData"u8;
-        var r = GC.AllocateUninitializedArray<byte>(optionalEntropyU8.Length, false);
-        optionalEntropyU8.CopyTo(r);
-        return r;
-    }
-
     Task<byte[]> UnprotectByCrypt32Async(byte[] data)
     {
-        var optionalEntropy = GetEntropy();
+        var optionalEntropy = lazyEntropy.Value;
         try
         {
             var buffer = ProtectedData.Unprotect(data, optionalEntropy, dataProtectionScope);
@@ -61,7 +53,7 @@ partial class UnpackagedSecureStorageImplementation
 
     Task<byte[]> ProtectByCrypt32Async(byte[] data)
     {
-        var optionalEntropy = GetEntropy();
+        var optionalEntropy = lazyEntropy.Value;
         try
         {
             var buffer = ProtectedData.Protect(data, optionalEntropy, dataProtectionScope);
