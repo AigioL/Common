@@ -23,7 +23,7 @@ public static partial class RSAUtils
         int len;
         Span<byte> buffer = stackalloc byte[sizeof(int)];
 
-        len = _.ReadInt32(s, buffer, true);
+        len = F7f482c3.ReadInt32(s, buffer, true);
         byte[]? d;
         if (len > 0)
         {
@@ -35,7 +35,7 @@ public static partial class RSAUtils
             d = null;
         }
 
-        len = _.ReadInt32(s, buffer, false);
+        len = F7f482c3.ReadInt32(s, buffer, false);
         byte[]? dp;
         if (len > 0)
         {
@@ -47,7 +47,7 @@ public static partial class RSAUtils
             dp = null;
         }
 
-        len = _.ReadInt32(s, buffer, false);
+        len = F7f482c3.ReadInt32(s, buffer, false);
         byte[]? dq;
         if (len > 0)
         {
@@ -59,7 +59,7 @@ public static partial class RSAUtils
             dq = null;
         }
 
-        len = _.ReadInt32(s, buffer, true);
+        len = F7f482c3.ReadInt32(s, buffer, true);
         byte[]? exponent;
         if (len > 0)
         {
@@ -71,7 +71,7 @@ public static partial class RSAUtils
             exponent = null;
         }
 
-        len = _.ReadInt32(s, buffer, false);
+        len = F7f482c3.ReadInt32(s, buffer, false);
         byte[]? inverseQ;
         if (len > 0)
         {
@@ -83,7 +83,7 @@ public static partial class RSAUtils
             inverseQ = null;
         }
 
-        len = _.ReadInt32(s, buffer, false);
+        len = F7f482c3.ReadInt32(s, buffer, false);
         byte[]? modulus;
         if (len > 0)
         {
@@ -95,7 +95,7 @@ public static partial class RSAUtils
             modulus = null;
         }
 
-        len = _.ReadInt32(s, buffer, false);
+        len = F7f482c3.ReadInt32(s, buffer, false);
         byte[]? p;
         if (len > 0)
         {
@@ -107,7 +107,7 @@ public static partial class RSAUtils
             p = null;
         }
 
-        len = _.ReadInt32(s, buffer, true);
+        len = F7f482c3.ReadInt32(s, buffer, true);
         byte[]? q;
         if (len > 0)
         {
@@ -138,7 +138,7 @@ public static partial class RSAUtils
         int len;
         int start = 0;
 
-        len = _.ReadInt32(b, ref start, true);
+        len = F7f482c3.ReadInt32(b, ref start, true);
         byte[]? d;
         if (len > 0)
         {
@@ -150,7 +150,7 @@ public static partial class RSAUtils
             d = null;
         }
 
-        len = _.ReadInt32(b, ref start, false);
+        len = F7f482c3.ReadInt32(b, ref start, false);
         byte[]? dp;
         if (len > 0)
         {
@@ -162,7 +162,7 @@ public static partial class RSAUtils
             dp = null;
         }
 
-        len = _.ReadInt32(b, ref start, false);
+        len = F7f482c3.ReadInt32(b, ref start, false);
         byte[]? dq;
         if (len > 0)
         {
@@ -174,7 +174,7 @@ public static partial class RSAUtils
             dq = null;
         }
 
-        len = _.ReadInt32(b, ref start, true);
+        len = F7f482c3.ReadInt32(b, ref start, true);
         byte[]? exponent;
         if (len > 0)
         {
@@ -186,7 +186,7 @@ public static partial class RSAUtils
             exponent = null;
         }
 
-        len = _.ReadInt32(b, ref start, false);
+        len = F7f482c3.ReadInt32(b, ref start, false);
         byte[]? inverseQ;
         if (len > 0)
         {
@@ -198,7 +198,7 @@ public static partial class RSAUtils
             inverseQ = null;
         }
 
-        len = _.ReadInt32(b, ref start, false);
+        len = F7f482c3.ReadInt32(b, ref start, false);
         byte[]? modulus;
         if (len > 0)
         {
@@ -210,7 +210,7 @@ public static partial class RSAUtils
             modulus = null;
         }
 
-        len = _.ReadInt32(b, ref start, false);
+        len = F7f482c3.ReadInt32(b, ref start, false);
         byte[]? p;
         if (len > 0)
         {
@@ -222,7 +222,7 @@ public static partial class RSAUtils
             p = null;
         }
 
-        len = _.ReadInt32(b, ref start, true);
+        len = F7f482c3.ReadInt32(b, ref start, true);
         byte[]? q;
         if (len > 0)
         {
@@ -266,14 +266,14 @@ public static partial class RSAUtils
     {
         Span<byte> buffer = stackalloc byte[sizeof(int)];
 
-        _.WriteBytes(s, buffer, parameters.D, true);
-        _.WriteBytes(s, buffer, parameters.DP, false);
-        _.WriteBytes(s, buffer, parameters.DQ, false);
-        _.WriteBytes(s, buffer, parameters.Exponent, true);
-        _.WriteBytes(s, buffer, parameters.InverseQ, false);
-        _.WriteBytes(s, buffer, parameters.Modulus, false);
-        _.WriteBytes(s, buffer, parameters.P, false);
-        _.WriteBytes(s, buffer, parameters.Q, true);
+        F7f482c3.WriteBytes(s, buffer, parameters.D, true);
+        F7f482c3.WriteBytes(s, buffer, parameters.DP, false);
+        F7f482c3.WriteBytes(s, buffer, parameters.DQ, false);
+        F7f482c3.WriteBytes(s, buffer, parameters.Exponent, true);
+        F7f482c3.WriteBytes(s, buffer, parameters.InverseQ, false);
+        F7f482c3.WriteBytes(s, buffer, parameters.Modulus, false);
+        F7f482c3.WriteBytes(s, buffer, parameters.P, false);
+        F7f482c3.WriteBytes(s, buffer, parameters.Q, true);
 
         s.Flush();
     }
@@ -283,21 +283,21 @@ public static partial class RSAUtils
         int bytesWritten;
         Span<byte> buffer = stackalloc byte[sizeof(int)];
 
-        bytesWritten = _.WriteBytes(b, buffer, parameters.D, true);
+        bytesWritten = F7f482c3.WriteBytes(b, buffer, parameters.D, true);
         b = b[bytesWritten..];
-        bytesWritten = _.WriteBytes(b, buffer, parameters.DP, false);
+        bytesWritten = F7f482c3.WriteBytes(b, buffer, parameters.DP, false);
         b = b[bytesWritten..];
-        bytesWritten = _.WriteBytes(b, buffer, parameters.DQ, false);
+        bytesWritten = F7f482c3.WriteBytes(b, buffer, parameters.DQ, false);
         b = b[bytesWritten..];
-        bytesWritten = _.WriteBytes(b, buffer, parameters.Exponent, true);
+        bytesWritten = F7f482c3.WriteBytes(b, buffer, parameters.Exponent, true);
         b = b[bytesWritten..];
-        bytesWritten = _.WriteBytes(b, buffer, parameters.InverseQ, false);
+        bytesWritten = F7f482c3.WriteBytes(b, buffer, parameters.InverseQ, false);
         b = b[bytesWritten..];
-        bytesWritten = _.WriteBytes(b, buffer, parameters.Modulus, false);
+        bytesWritten = F7f482c3.WriteBytes(b, buffer, parameters.Modulus, false);
         b = b[bytesWritten..];
-        bytesWritten = _.WriteBytes(b, buffer, parameters.P, false);
+        bytesWritten = F7f482c3.WriteBytes(b, buffer, parameters.P, false);
         b = b[bytesWritten..];
-        _.WriteBytes(b, buffer, parameters.Q, true);
+        F7f482c3.WriteBytes(b, buffer, parameters.Q, true);
     }
 
     [Obsolete("use RSAParameters")]
@@ -358,7 +358,7 @@ sealed partial class ParametersJsonSerializerContext : JsonSerializerContext
 }
 
 
-static class _
+static class F7f482c3
 {
     /// <summary>
     /// 从流中读取一个 <see cref="int"/>

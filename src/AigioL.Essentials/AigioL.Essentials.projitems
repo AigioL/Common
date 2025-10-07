@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>ba706dc7-a370-44d4-80b4-d886110d24ea</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Essentials</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ApplicationModel\Implementation\VersionTrackingImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ApplicationModel\IVersionTracking.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Storage\Implementation\UnpackagedPreferencesImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Storage\Implementation\UnpackagedSecureStorageImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Storage\Implementation\UnpackagedSecureStorageImplementation.Windows.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Storage\IPreferences.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Storage\ISecureStorage.cs" />
+  </ItemGroup>
+</Project>

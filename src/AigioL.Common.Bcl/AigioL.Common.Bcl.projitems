@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeAsyncDisposable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeDisposable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\InteropServices\ArchitectureFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Runtime\Serialization\IBinarySerialize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\X509Certificates\X509CertificateExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SerializableImplType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShortGuid.cs" />

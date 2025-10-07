@@ -15,6 +15,7 @@
 				<!--<PackageReference Include="System.Management" />-->
 				<PackageReference Include="WmiLight" />
 				<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
+				<PackageReference Include="System.Security.Cryptography.ProtectedData" />
 			</ItemGroup>
 		</When>
 	</Choose>
@@ -65,5 +66,6 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Entities\AigioL.Common.JsonWebTokens.Entities.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Models\AigioL.Common.JsonWebTokens.Models.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Services\AigioL.Common.JsonWebTokens.Services.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Essentials\AigioL.Essentials.projitems" Label="Shared" />
 
 </Project>

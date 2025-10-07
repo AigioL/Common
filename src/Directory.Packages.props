@@ -4,6 +4,7 @@
 		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.205" />
 		<PackageVersion Include="System.Management" Version="9.0.8" />
 		<PackageVersion Include="WmiLight" Version="6.14.0" />
+		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.0-rc.1.25451.107" />
 	</ItemGroup>
 	<!-- 👇 WinUI3 -->
 	<ItemGroup>

@@ -66,16 +66,16 @@ public static partial class AESUtils
                 {
                     var aes = Aes.Create();
                     aes.KeySize = 128;
-                    aes.Key = bytes.AsSpan(0, 16).ToArray();
-                    aes.IV = bytes.AsSpan(16, 16).ToArray();
+                    aes.IV = bytes.AsSpan(0, 16).ToArray();
+                    aes.Key = bytes.AsSpan(16, 16).ToArray();
                     return aes;
                 }
             case 34:
                 {
                     var aes = Aes.Create();
                     aes.KeySize = 128;
-                    aes.Key = bytes.AsSpan(2, 16).ToArray();
-                    aes.IV = bytes.AsSpan(18, 16).ToArray();
+                    aes.IV = bytes.AsSpan(2, 16).ToArray();
+                    aes.Key = bytes.AsSpan(18, 16).ToArray();
                     (var mode, var padding) = unchecked((Flags)BitConverter.ToUInt16(bytes.AsSpan(0, 2)));
                     aes.Mode = mode;
                     aes.Padding = padding;
@@ -85,16 +85,16 @@ public static partial class AESUtils
                 {
                     var aes = Aes.Create();
                     aes.KeySize = 192;
-                    aes.Key = bytes.AsSpan(0, 16).ToArray();
-                    aes.IV = bytes.AsSpan(16, 24).ToArray();
+                    aes.IV = bytes.AsSpan(0, 16).ToArray();
+                    aes.Key = bytes.AsSpan(16, 24).ToArray();
                     return aes;
                 }
             case 42:
                 {
                     var aes = Aes.Create();
                     aes.KeySize = 192;
-                    aes.Key = bytes.AsSpan(2, 16).ToArray();
-                    aes.IV = bytes.AsSpan(18, 24).ToArray();
+                    aes.IV = bytes.AsSpan(2, 16).ToArray();
+                    aes.Key = bytes.AsSpan(18, 24).ToArray();
                     (var mode, var padding) = unchecked((Flags)BitConverter.ToUInt16(bytes.AsSpan(0, 2)));
                     aes.Mode = mode;
                     aes.Padding = padding;
@@ -104,16 +104,16 @@ public static partial class AESUtils
                 {
                     var aes = Aes.Create();
                     aes.KeySize = 256;
-                    aes.Key = bytes.AsSpan(0, 16).ToArray();
-                    aes.IV = bytes.AsSpan(16, 32).ToArray();
+                    aes.IV = bytes.AsSpan(0, 16).ToArray();
+                    aes.Key = bytes.AsSpan(16, 32).ToArray();
                     return aes;
                 }
             case 50:
                 {
                     var aes = Aes.Create();
                     aes.KeySize = 256;
-                    aes.Key = bytes.AsSpan(2, 16).ToArray();
-                    aes.IV = bytes.AsSpan(16, 32).ToArray();
+                    aes.IV = bytes.AsSpan(2, 16).ToArray();
+                    aes.Key = bytes.AsSpan(16, 32).ToArray();
                     (var mode, var padding) = unchecked((Flags)BitConverter.ToUInt16(bytes.AsSpan(0, 2)));
                     aes.Mode = mode;
                     aes.Padding = padding;
