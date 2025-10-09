@@ -79,5 +79,5 @@ public interface IVersionTracking
     ///// <summary>
     ///// 开始跟踪版本信息
     ///// </summary>
-    //void Track(); 无需显示调用
+    //void Track(); 无需显式调用
 }

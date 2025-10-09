@@ -19,15 +19,15 @@ public static partial class LogInit
     /// <summary>
     /// 使用日志源名称初始化日志工厂与提供程序
     /// </summary>
-    public static void InitLog(string? sourceName = null) => _.InitLog(sourceName);
+    public static void InitLog(string? sourceName = null) => _8b7542f7.InitLog(sourceName);
 
     /// <summary>
     /// 设置或获取全局日志级别
     /// </summary>
     public static LogLevel LogLevel
     {
-        get => _.GetLogLevel();
-        set => _.SetLogLevel(value);
+        get => _8b7542f7.GetLogLevel();
+        set => _8b7542f7.SetLogLevel(value);
     }
 
 #if WINDOWS
@@ -36,8 +36,8 @@ public static partial class LogInit
     /// </summary>
     public static LogLevel? LogLevelEventLog
     {
-        get => _.GetLogLevelEventLog();
-        set => _.SetLogLevelEventLog(value);
+        get => _8b7542f7.GetLogLevelEventLog();
+        set => _8b7542f7.SetLogLevelEventLog(value);
     }
 #endif
 }
@@ -115,7 +115,7 @@ file class SimpleOptionsMonitor<[DynamicallyAccessedMembers(DynamicallyAccessedM
     }
 }
 
-file static partial class _
+file static partial class _8b7542f7
 {
     static SimpleOptionsMonitor<LoggerFilterOptions>? filterOptionsMonitor;
 
@@ -128,10 +128,10 @@ file static partial class _
         filterOptionsMonitor = new(filterOptions);
         ILoggerProvider[] providers = [
 #if DEBUG || USE_LOGGING_CONSOLE
-            _.AddConsole(),
+            AddConsole(),
 #endif
 #if WINDOWS
-            _.AddEventLog(sourceName),
+            AddEventLog(sourceName),
 #endif
         ];
         var factory = new LoggerFactory(providers, filterOptionsMonitor);
@@ -139,7 +139,7 @@ file static partial class _
     }
 }
 
-file static partial class _ // 全局日志等级
+file static partial class _8b7542f7 // 全局日志等级
 {
     static LogLevel logLevelConst = LogLevel.
 #if DEBUG
@@ -179,7 +179,7 @@ file static partial class _ // 全局日志等级
 }
 
 #if DEBUG || USE_LOGGING_CONSOLE
-file static partial class _ // 控制台日志
+file static partial class _8b7542f7 // 控制台日志
 {
     /// <summary>
     /// 添加控制台日志记录提供程序
@@ -200,7 +200,7 @@ file static partial class _ // 控制台日志
 #endif
 
 #if WINDOWS
-file static partial class _ // Windows 事件日志
+file static partial class _8b7542f7 // Windows 事件日志
 {
     static LogLevel? logLevelEventLog =
 #if DEBUG

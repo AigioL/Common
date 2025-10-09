@@ -194,7 +194,7 @@ sealed partial class UnpackagedSecureStorageImplementation : ISecureStorage
         {
             return Task.FromResult<byte[]?>(null);
         }
-        return UnprotectAsync(value)!;
+        return TryUnprotectAsync(value);
     }
 
     public async Task<T?> GetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(string key, T? defaultValue = default)
@@ -268,6 +268,20 @@ sealed partial class UnpackagedSecureStorageImplementation : ISecureStorage
     {
         _secureStorage.Clear();
         Save();
+    }
+
+    async Task<byte[]?> TryUnprotectAsync(byte[] data)
+    {
+        try
+        {
+            var r = await UnprotectAsync(data);
+            return r;
+        }
+        catch
+        {
+            // 忽略解密失败
+            return null;
+        }
     }
 
     Task<byte[]> UnprotectAsync(byte[] data)
