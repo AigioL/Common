@@ -26,4 +26,34 @@ public static partial class StringExtensions
     public static bool IsHttpUrl([NotNullWhen(true)] this string? str, bool httpsOnly = false) => str != null &&
         (str.StartsWith(Prefix_HTTPS, StringComparison.OrdinalIgnoreCase) ||
               (!httpsOnly && str.StartsWith(Prefix_HTTP, StringComparison.InvariantCultureIgnoreCase)));
+
+    /// <summary>
+    /// 判断字符串是否为邮箱地址
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsEmail(this string? str)
+    {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return false;
+        }
+
+        // https://github.com/dotnet/runtime/blob/v10.0.0-rc.1.25451.107/src/libraries/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/EmailAddressAttribute.cs#L18
+
+        if (str.AsSpan().ContainsAny('\r', '\n'))
+        {
+            return false;
+        }
+
+        // only return true if there is only 1 '@' character
+        // and it is neither the first nor the last character
+        int index = str.IndexOf('@');
+
+        return
+            index > 0 &&
+            index != str.Length - 1 &&
+            index == str.LastIndexOf('@');
+    }
 }

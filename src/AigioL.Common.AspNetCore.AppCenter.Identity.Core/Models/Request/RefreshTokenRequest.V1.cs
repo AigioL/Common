@@ -3,11 +3,10 @@ using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 
 /// <summary>
-/// 刷新 JWT 请求（版本 0）
+/// 刷新 JWT 请求（版本 1）使用 VersionTolerant 以支持向后兼容
 /// </summary>
-[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-[Obsolete("use RefreshTokenRequestV1")]
-public sealed partial record class RefreshTokenRequestV0 : IDeviceId
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
+public sealed partial record class RefreshTokenRequestV1 : IDeviceId
 {
     /// <summary>
     /// 刷新 Token
@@ -27,8 +26,3 @@ public sealed partial record class RefreshTokenRequestV0 : IDeviceId
     [global::MemoryPack.MemoryPackOrder(3)]
     public string? DeviceIdN { get; set; }
 }
-
-#if DEBUG
-[Obsolete("use RefreshTokenRequestV0", true)]
-public sealed class RefreshTokenRequest { }
-#endif

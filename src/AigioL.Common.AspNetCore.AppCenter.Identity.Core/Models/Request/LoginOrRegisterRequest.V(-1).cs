@@ -6,7 +6,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 /// 登录或注册请求模型（版本 -1）
 /// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class LoginOrRegisterRequest_V_1 : IReadOnlySmsCode
+[Obsolete("use LoginOrRegisterRequestV2")]
+public sealed partial record class LoginOrRegisterRequestV_1 : IReadOnlySmsCode
 {
     /// <inheritdoc cref="IPhoneNumber.PhoneNumber"/>
     [global::MemoryPack.MemoryPackOrder(0)]
@@ -18,10 +19,10 @@ public sealed partial record class LoginOrRegisterRequest_V_1 : IReadOnlySmsCode
 
     /// <inheritdoc cref="LoginChannel"/>
     [global::MemoryPack.MemoryPackOrder(2)]
-    public LoginChannel Channel { get; set; }
+    public LoginChannel Channel { get; set; } = LoginChannel.Client;
 }
 
 #if DEBUG
-[Obsolete("use LoginOrRegisterRequest_V_1", true)]
+[Obsolete("use LoginOrRegisterRequestV_1", true)]
 public sealed class LoginOrRegisterRequestCompat { }
 #endif

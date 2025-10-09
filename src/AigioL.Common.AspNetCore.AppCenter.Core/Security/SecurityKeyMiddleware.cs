@@ -42,12 +42,12 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
     async Task EndHandleAsync(
         HttpContext context,
         SerializableImplType serializableImplType,
-        uint failCode)
+        ApiRspCode failCode)
     {
         var traceId = context.GetTraceId();
         ApiRsp apiRsp = new()
         {
-            Code = failCode,
+            Code = unchecked((uint)failCode),
             Url = context.Request.Path,
             TraceId = traceId,
         };
@@ -91,7 +91,7 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
                     if (hasRequest)
                     {
                         await EndHandleAsync(context, serializableImplType,
-                            ApiRsp.RequiredSecurityKey);
+                            ApiRspCode.RequiredSecurityKey);
                         return;
                     }
                 }
@@ -101,11 +101,11 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
                     if (algorithmType != sk.AlgorithmType)
                     {
                         await EndHandleAsync(context, serializableImplType,
-                            ApiRsp.SecurityTypeInconsistent);
+                            ApiRspCode.SecurityTypeInconsistent);
                         return;
                     }
 
-                    var code = await ReadAes(context, algorithmType, _options.ECDiffieHellmanPublicKey);
+                    var code = await ReadAes(context, algorithmType, _options);
                     if (code.HasValue)
                     {
                         if (hasRequest)
@@ -139,7 +139,7 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
                     else
                     {
                         await EndHandleAsync(context, serializableImplType,
-                            ApiRsp.AesKeyIsNull);
+                            ApiRspCode.AesKeyIsNull);
                         return;
                     }
                 }
@@ -177,25 +177,22 @@ file static class S96bc5bd9
     /// 从 HTTP 上下文中读取 AES 密钥，并存入 <see cref="HttpContext.Items"/>
     /// </summary>
     /// <returns></returns>
-    internal static async Task<uint?> ReadAes(
+    internal static async Task<ApiRspCode?> ReadAes(
         HttpContext context,
-        ExchangeAlgorithmType algorithmType,
-        byte[]? publicKeyECDiffieHellman) => algorithmType switch
+        SecurityKeyAlgorithmType algorithmType,
+        ISecurityKeyOptions? o) => algorithmType switch
         {
-            ExchangeAlgorithmType.RsaKeyX => await ReadResByRsaKeyX(context),
-            ExchangeAlgorithmType.DiffieHellman => ReadAesByDiffieHellman(context, publicKeyECDiffieHellman),
-            _ => ApiRsp.AesKeyIsNull,
+            SecurityKeyAlgorithmType.RSAWithRandomAes => await ReadAesByRSAWithRandomAes(context),
+            SecurityKeyAlgorithmType.ECDHSharedKeyWithRandomIV => ReadAesByECDHSharedKeyWithRandomIV(context, o),
+            _ => ApiRspCode.AesKeyIsNull,
         };
 
-    /// <summary>
-    /// DiffieHellman 密钥交换解密形式
-    /// </summary>
-    /// <returns></returns>
-    static uint? ReadAesByDiffieHellman(HttpContext context, byte[]? publicKeyECDiffieHellman)
+    static ApiRspCode? ReadAesByECDHSharedKeyWithRandomIV(HttpContext context, ISecurityKeyOptions? o)
     {
-        if (publicKeyECDiffieHellman == null || publicKeyECDiffieHellman.Length == 0)
+        var aesKey = o?.ECDH_SharedKey;
+        if (aesKey == null || aesKey.Length == 0)
         {
-            return ApiRsp.AesKeyIsNull;
+            return ApiRspCode.AesKeyIsNull;
         }
 
         byte[]? iv = null;
@@ -209,28 +206,24 @@ file static class S96bc5bd9
             }
             catch
             {
-                return ApiRsp.RSADecryptFail;
+                return ApiRspCode.RSADecryptFail;
             }
         }
 
         if (iv == null || iv.Length == 0)
         {
-            return ApiRsp.AesKeyIsNull;
+            return ApiRspCode.AesKeyIsNull;
         }
 
         var aes = Aes.Create();
-        aes.Key = publicKeyECDiffieHellman;
+        aes.Key = aesKey;
         aes.IV = iv;
         context.Items[ApiConstants.Headers_SecurityKey] = aes;
         context.Response.RegisterForDispose(aes);
         return null;
     }
 
-    /// <summary>
-    /// RSA Key 解密形式
-    /// </summary>
-    /// <returns></returns>
-    static async Task<uint?> ReadResByRsaKeyX(HttpContext context)
+    static async Task<ApiRspCode?> ReadAesByRSAWithRandomAes(HttpContext context)
     {
         var skIsHexOrB64U = false;
         var sk = context.Request.Headers[ApiConstants.Headers_SecurityKey];
@@ -241,20 +234,20 @@ file static class S96bc5bd9
         }
         if (StringValues.IsNullOrEmpty(sk))
         {
-            return ApiRsp.AesKeyIsNull;
+            return ApiRspCode.AesKeyIsNull;
         }
 
         var appVer = await context.GetAppVerAsync();
         if (appVer == null)
         {
-            return ApiRsp.EmptyDbAppVersion;
+            return ApiRspCode.EmptyDbAppVersion;
         }
 
         // 从数据库表版本号中读取 RSA 私钥
         var rsaPrivateKey = appVer.PrivateKey;
         if (string.IsNullOrWhiteSpace(rsaPrivateKey))
         {
-            return ApiRsp.EmptyDbAppVersion;
+            return ApiRspCode.EmptyDbAppVersion;
         }
 
         RSAParameters rsaPara;
@@ -276,7 +269,7 @@ file static class S96bc5bd9
             }
             else
             {
-                return ApiRsp.EmptyDbAppVersion;
+                return ApiRspCode.EmptyDbAppVersion;
             }
         }
 
@@ -294,7 +287,7 @@ file static class S96bc5bd9
         var aes = AESUtils.Create(plain);
         if (aes == null)
         {
-            return ApiRsp.AesKeyIsNull;
+            return ApiRspCode.AesKeyIsNull;
         }
 
         context.Items[ApiConstants.Headers_SecurityKey] = aes;

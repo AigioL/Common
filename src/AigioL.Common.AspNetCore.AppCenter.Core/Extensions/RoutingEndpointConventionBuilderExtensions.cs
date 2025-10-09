@@ -17,7 +17,7 @@ public static partial class RoutingEndpointConventionBuilderExtensions
     /// <param name="algorithmType"></param>
     /// <returns></returns>
     public static TBuilder WithRequiredSecurityKey<TBuilder>(this TBuilder builder,
-        ExchangeAlgorithmType algorithmType = RequiredSecurityKeyAttribute.DefaultAlgorithmType)
+        SecurityKeyAlgorithmType algorithmType = RequiredSecurityKeyAttribute.DefaultAlgorithmType)
         where TBuilder : IEndpointConventionBuilder
         => builder.WithMetadata(new RequiredSecurityKeyAttribute(algorithmType));
 }

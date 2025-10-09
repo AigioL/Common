@@ -12,11 +12,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\IdentityMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\LoginChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipInfoV1.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\AccountLoginRequestV0.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequestV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequest.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequest.V%28-1%29.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequestV2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequest.V2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.V0.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.V1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RegisterByEmailRequestV0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ResetPasswordRequestV0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendEmailCodeRequest.cs" />
@@ -26,7 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequestV0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.V%28-1%29.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponseV0.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IJsonWebTokenUserManager.cs" />
   </ItemGroup>

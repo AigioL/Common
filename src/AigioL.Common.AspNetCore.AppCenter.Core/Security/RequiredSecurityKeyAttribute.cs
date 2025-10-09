@@ -8,11 +8,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Security;
 /// <param name="algorithmType"></param>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
 public sealed partial class RequiredSecurityKeyAttribute(
-    ExchangeAlgorithmType algorithmType = RequiredSecurityKeyAttribute.DefaultAlgorithmType) :
+    SecurityKeyAlgorithmType algorithmType = RequiredSecurityKeyAttribute.DefaultAlgorithmType) :
     Attribute
 {
-    /// <see cref="ExchangeAlgorithmType"/>
-    public ExchangeAlgorithmType AlgorithmType { get; } = algorithmType;
+    /// <see cref="SecurityKeyAlgorithmType"/>
+    public SecurityKeyAlgorithmType AlgorithmType { get; } = algorithmType;
 
-    public const ExchangeAlgorithmType DefaultAlgorithmType = ExchangeAlgorithmType.RsaKeyX;
+    public const SecurityKeyAlgorithmType DefaultAlgorithmType = SecurityKeyAlgorithmType.RSAWithRandomAes;
 }

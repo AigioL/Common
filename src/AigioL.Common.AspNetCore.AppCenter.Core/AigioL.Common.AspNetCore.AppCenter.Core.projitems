@@ -69,6 +69,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\KeyValuePairRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\UserManager2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\RequiredSecurityKeyAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Security\SecurityKeyAlgorithmType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\SecurityKeyMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\ISecurityKeyOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAppVerCoreService.cs" />

@@ -4,12 +4,12 @@ using AigioL.Common.Primitives.Columns;
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 
 /// <summary>
-/// 登录或注册请求模型
+/// 登录或注册请求模型（版本 2）使用 VersionTolerant 以支持向后兼容
 /// </summary>
-[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class LoginOrRegisterRequestV1 : IDeviceId, IReadOnlySmsCode
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
+public sealed partial record class LoginOrRegisterRequestV2 : IDeviceId, IReadOnlyPhoneNumber, IReadOnlySmsCode
 {
-    /// <inheritdoc cref="IPhoneNumber.PhoneNumber"/>
+    /// <inheritdoc/>
     [global::MemoryPack.MemoryPackOrder(0)]
     public string? PhoneNumber { get; set; }
 
@@ -32,4 +32,8 @@ public sealed partial record class LoginOrRegisterRequestV1 : IDeviceId, IReadOn
     /// <inheritdoc/>
     [global::MemoryPack.MemoryPackOrder(5)]
     public string? DeviceIdN { get; set; }
+
+    /// <inheritdoc/>
+    [global::MemoryPack.MemoryPackOrder(6)]
+    public string? PhoneNumberRegionCode { get; set; }
 }

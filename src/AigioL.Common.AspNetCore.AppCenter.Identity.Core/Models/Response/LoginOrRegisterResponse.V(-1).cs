@@ -8,7 +8,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
 /// 登录或注册响应模型（版本 -1）
 /// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class LoginOrRegisterResponse_V_1 : IExplicitHasValue
+[Obsolete("use LoginOrRegisterResponseV1")]
+public sealed partial record class LoginOrRegisterResponseV_1 : IExplicitHasValue
 {
     /// <inheritdoc cref="JsonWebTokenValue"/>
     [global::MemoryPack.MemoryPackOrder(0)]
@@ -18,7 +19,7 @@ public sealed partial record class LoginOrRegisterResponse_V_1 : IExplicitHasVal
     /// 当前登录的用户信息
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(1)]
-    public UserInfoModel_V_1? User { get; set; }
+    public UserInfoModelV_1? User { get; set; }
 
     /// <summary>
     /// 当前操作是登录(<see langword="true"/>)还是注册(<see langword="false"/>)
@@ -49,6 +50,6 @@ public sealed partial record class LoginOrRegisterResponse_V_1 : IExplicitHasVal
 }
 
 #if DEBUG
-[Obsolete("use LoginOrRegisterResponse_V_1", true)]
+[Obsolete("use LoginOrRegisterResponseV_1", true)]
 public sealed class LoginOrRegisterResponseCompat { }
 #endif

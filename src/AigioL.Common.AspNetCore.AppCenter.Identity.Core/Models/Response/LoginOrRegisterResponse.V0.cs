@@ -4,6 +4,9 @@ using AigioL.Common.Primitives.Columns;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
 
+/// <summary>
+/// 登录或注册响应模型（版本 0）使用 VersionTolerant 以支持向后兼容
+/// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
 public sealed partial record class LoginOrRegisterResponseV0 : IExplicitHasValue
 {
@@ -15,7 +18,7 @@ public sealed partial record class LoginOrRegisterResponseV0 : IExplicitHasValue
     /// 当前登录的用户信息
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(1)]
-    public int? User { get; set; } // IdentityUserInfoModelCompat
+    public UserInfoModelV0? User { get; set; }
 
     /// <summary>
     /// 当前操作是登录(<see langword="true"/>)还是注册(<see langword="false"/>)
@@ -48,4 +51,7 @@ public sealed partial record class LoginOrRegisterResponseV0 : IExplicitHasValue
 #if DEBUG
 [Obsolete("use LoginOrRegisterResponseV0", true)]
 public sealed class RcLoginOrRegisterResponseCompat { }
+
+[Obsolete("use LoginOrRegisterResponseV0", true)]
+public sealed class LoginOrRegisterResponse { }
 #endif

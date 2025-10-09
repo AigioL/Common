@@ -40,5 +40,5 @@ public static partial class SecurityKeyBuilderExtensions
 
 file sealed class DefaultSecurityKeyOptions : ISecurityKeyOptions
 {
-    public byte[]? ECDiffieHellmanPublicKey { get; set; }
+    public byte[]? ECDH_SharedKey { get; set; }
 }

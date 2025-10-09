@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ApiRsp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Abstractions\ApiRspCodeException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ApiRspCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ApiRspExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

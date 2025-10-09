@@ -1,11 +1,14 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Security;
 using AigioL.Common.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.OpenApi;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi;
 using System.Diagnostics.CodeAnalysis;
@@ -42,7 +45,7 @@ public static partial class MSMinimalApis
         StringValues contentTypeOrAccept,
         out bool isSecurity,
         out SerializableImplType serializableImplType,
-        out ExchangeAlgorithmType algorithmType,
+        out SecurityKeyAlgorithmType algorithmType,
         [NotNullWhen(true)] out string? responseContentType)
     {
         if (!StringValues.IsNullOrEmpty(contentTypeOrAccept))
@@ -64,14 +67,14 @@ public static partial class MSMinimalApis
                 {
                     isSecurity = true;
                     serializableImplType = SerializableImplType.MemoryPack;
-                    algorithmType = ExchangeAlgorithmType.RsaKeyX;
+                    algorithmType = SecurityKeyAlgorithmType.RSAWithRandomAes;
                     responseContentType = MediaTypeNames.MemoryPackSecurity;
                 }
                 else if (Equals(parsedContentType, new(MediaTypeNames.MemoryPackSecurityECDiffieHellman)))
                 {
                     isSecurity = true;
                     serializableImplType = SerializableImplType.MemoryPack;
-                    algorithmType = ExchangeAlgorithmType.DiffieHellman;
+                    algorithmType = SecurityKeyAlgorithmType.ECDHSharedKeyWithRandomIV;
                     responseContentType = MediaTypeNames.MemoryPackSecurityECDiffieHellman;
                 }
                 //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePack)))
@@ -83,13 +86,13 @@ public static partial class MSMinimalApis
                 //{
                 //    isSecurity = true;
                 //    serializableImplType = SerializableImplType.MessagePack;
-                //    algorithmType = ExchangeAlgorithmType.RsaKeyX;
+                //    algorithmType = SecurityKeyAlgorithmType.RsaKeyX;
                 //}
                 //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePackSecurityECDiffieHellman)))
                 //{
                 //    isSecurity = true;
                 //    serializableImplType = SerializableImplType.MessagePack;
-                //    algorithmType = ExchangeAlgorithmType.DiffieHellman;
+                //    algorithmType = SecurityKeyAlgorithmType.DiffieHellman;
                 //}
                 else if (Equals(parsedContentType, new(MediaTypeNames.JSON)))
                 {
@@ -101,14 +104,14 @@ public static partial class MSMinimalApis
                 {
                     isSecurity = true;
                     serializableImplType = SerializableImplType.SystemTextJson;
-                    algorithmType = ExchangeAlgorithmType.RsaKeyX;
+                    algorithmType = SecurityKeyAlgorithmType.RSAWithRandomAes;
                     responseContentType = MediaTypeNames.JSONSecurity;
                 }
                 else if (Equals(parsedContentType, new(MediaTypeNames.JSONSecurityECDiffieHellman)))
                 {
                     isSecurity = true;
                     serializableImplType = SerializableImplType.SystemTextJson;
-                    algorithmType = ExchangeAlgorithmType.DiffieHellman;
+                    algorithmType = SecurityKeyAlgorithmType.ECDHSharedKeyWithRandomIV;
                     responseContentType = MediaTypeNames.JSONSecurityECDiffieHellman;
                 }
             }
@@ -252,6 +255,14 @@ public static partial class MSMinimalApis
                     cancellationToken: context.RequestAborted);
             });
         });
+
+    public static IServiceCollection AddApiRspProblemDetails(this IServiceCollection services, Action<ProblemDetailsOptions>? configure = null)
+    {
+        // https://github.com/dotnet/aspnetcore/blob/v10.0.0-rc.1.25451.107/src/Http/Http.Extensions/src/ProblemDetailsServiceCollectionExtensions.cs#L42
+        services.Add(ServiceDescriptor.Singleton<IProblemDetailsWriter, ApiRspProblemDetailsWriter>());
+        services.AddProblemDetails(configure);
+        return services;
+    }
 }
 
 /// <summary>
@@ -282,5 +293,55 @@ file sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider 
             document.Components ??= new OpenApiComponents();
             document.Components.SecuritySchemes = requirements;
         }
+    }
+}
+
+/// <summary>
+/// https://github.com/dotnet/aspnetcore/blob/v10.0.0-rc.1.25451.107/src/Http/Http.Extensions/src/DefaultProblemDetailsWriter.cs
+/// </summary>
+file sealed class ApiRspProblemDetailsWriter : IProblemDetailsWriter
+{
+    public bool CanWrite(ProblemDetailsContext context)
+    {
+        return true;
+    }
+
+    public async ValueTask WriteAsync(ProblemDetailsContext context)
+    {
+        var httpContext = context.HttpContext;
+        var traceId = httpContext.GetTraceId();
+
+        int status;
+        string? errorMessage = null;
+        if (context.ProblemDetails is HttpValidationProblemDetails httpValidationProblemDetails)
+        {
+            // https://github.com/dotnet/aspnetcore/blob/v10.0.0-rc.1.25451.107/src/Http/Routing/src/ValidationEndpointFilterFactory.cs#L99
+            status = StatusCodes.Status400BadRequest;
+            errorMessage = httpValidationProblemDetails.Errors.Values
+                .SelectMany(static x => x)
+                .Where(static x => !string.IsNullOrWhiteSpace(x))
+                .FirstOrDefault(); // 取第一个错误消息
+        }
+        else if (context.ProblemDetails.Status.HasValue)
+        {
+            status = context.ProblemDetails.Status.Value;
+        }
+        else
+        {
+            status = httpContext.Response.StatusCode;
+        }
+
+        ApiRsp apiRsp = new()
+        {
+            Code = unchecked((uint)status),
+            Url = httpContext.Request.Path,
+            TraceId = traceId,
+            Message = errorMessage,
+        };
+        httpContext.Response.StatusCode = StatusCodes.Status200OK;
+        await MSMinimalApis.WriteApiRspAsync(
+            httpContext.Response,
+            apiRsp,
+            cancellationToken: httpContext.RequestAborted);
     }
 }

@@ -25,20 +25,20 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
 {
     readonly AuthorizationMiddlewareResultHandler defaultHandler = new();
 
-    static async Task Fail(HttpContext context, uint failCode)
+    static async Task Fail(HttpContext context, ApiRspCode failCode)
     {
         const int statusCode = StatusCodes.Status401Unauthorized;
 
         context.Items[KEY_FAIL_CODE] = failCode;
         var message = failCode switch
         {
-            ApiRsp.Code_UserDeviceIsNotTrust => UserIsBanErrorMessage,
+            ApiRspCode.UserDeviceIsNotTrust => UserIsBanErrorMessage,
             _ => string.Format(AuthorizationFailErrorMessage_, failCode),
         };
         var traceId = context.GetTraceId();
         ApiRsp apiRsp = new()
         {
-            Code = failCode,
+            Code = unchecked((uint)failCode),
             Url = context.Request.Path,
             TraceId = traceId,
             Message = message,
@@ -70,7 +70,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         AuthorizationPolicy policy,
         PolicyAuthorizationResult authorizeResult,
         bool hasAllowAnonymous,
-        uint failCode)
+        ApiRspCode failCode)
     {
         if (hasAllowAnonymous)
         {
@@ -96,7 +96,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         if (StringValues.IsNullOrEmpty(authHeaderValue))
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
-                ApiRsp.Code_MissingAuthHeader);
+                ApiRspCode.MissingAuthorizationHeader);
             return;
         }
 
@@ -104,7 +104,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         if (!string.Equals(MSMinimalApis.BearerScheme, authHeader.Scheme, StringComparison.InvariantCultureIgnoreCase))
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
-                ApiRsp.Code_SchemeNotCorrect);
+                ApiRspCode.AuthSchemeNotCorrect);
         }
 
         var nameId = context.User.FindFirst(ClaimTypes.NameIdentifier);
@@ -112,7 +112,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         if (!ShortGuid.TryParse(jwtIdStr, out Guid jwtId) || jwtId == default)
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
-                ApiRsp.Code_UserNotFound);
+                ApiRspCode.UserNotFound);
             return;
         }
 
@@ -145,13 +145,13 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         if (!isTrustMap.HasValue)
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
-                ApiRsp.Code_UserNotFound);
+                ApiRspCode.UserNotFound);
             return;
         }
         if (!isTrustMap.Value.UserDeviceIsTrust)
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
-                ApiRsp.Code_UserDeviceIsNotTrust);
+                ApiRspCode.UserDeviceIsNotTrust);
             return;
         }
 

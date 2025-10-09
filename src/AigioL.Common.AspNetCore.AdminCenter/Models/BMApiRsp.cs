@@ -1,6 +1,7 @@
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Collections.Immutable;
 using System.Net;
 using System.Text.Json.Serialization;
 
@@ -21,26 +22,22 @@ public partial record class BMApiRsp
     /// </summary>
     public uint Code { get; set; }
 
-    string[]? messages;
-
     /// <summary>
     /// 附加消息
     /// </summary>
     public string[] Messages
     {
-        get => messages ?? [];
-        set => messages = value;
+        get => field ?? [];
+        set => field = value;
     }
-
-    KeyValuePair<string, string[]?>[]? modelState;
 
     /// <summary>
     /// 请求模型验证状态字典
     /// </summary>
-    public KeyValuePair<string, string[]?>[] ModelState
+    public IDictionary<string, string[]> ModelState
     {
-        get => modelState ?? [];
-        set => modelState = value;
+        get => field ?? ImmutableDictionary<string, string[]>.Empty;
+        set => field = value;
     }
 
     /// <summary>
@@ -77,8 +74,17 @@ public partial record class BMApiRsp
         else
         {
             apiRsp.SetIsSuccess(false);
-            apiRsp.messages = [.. modelState.Values.SelectMany(static x => x.Errors.Select(static x => x.ErrorMessage ?? string.Empty))];
-            apiRsp.modelState = [.. modelState.Select(static x => new KeyValuePair<string, string[]?>(x.Key, x.Value == null ? null : [.. x.Value.Errors.Select(static e => e.ErrorMessage ?? string.Empty)]))];
+
+            string[] errorMessages = [.. modelState.Values
+                .SelectMany(static x => x.Errors)
+                .Select(static x=>x.ErrorMessage)
+                .Where(static x => !string.IsNullOrWhiteSpace(x))];
+            IDictionary<string, string[]> modelState2 = modelState
+                .ToDictionary(
+                    static x => x.Key,
+                    static x => x.Value == null ? [] : x.Value.Errors.Select(static x => x.ErrorMessage).ToArray());
+            apiRsp.Messages = errorMessages;
+            apiRsp.ModelState = modelState2;
         }
     }
 
