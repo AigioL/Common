@@ -30,7 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Columns\ITitle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IUpdateTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\MaxLengths.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IDoNothingEntityGuid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\INEWSEQUENTIALID.cs" />
@@ -39,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientPlatform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DeviceIdiom.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DevicePlatform2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DeviceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Gender.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\GenderEnumExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PagedModel.cs" />

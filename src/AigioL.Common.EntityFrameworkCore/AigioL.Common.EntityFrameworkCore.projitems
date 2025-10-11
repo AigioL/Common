@@ -9,6 +9,7 @@
     <Import_RootNamespace>AigioL.Common.EntityFrameworkCore</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\Entity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DbContextExtensions.UpdateModifiedTrackerEntriesTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EntityPropertyBuilderExtensions.cs" />

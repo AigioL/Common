@@ -1,7 +1,7 @@
 namespace AigioL.Common.JsonWebTokens.Models;
 
 /// <summary>
-/// JsonWebToken 值
+/// Json Web Token 值
 /// </summary>
 #if ENABLE_MP
 [global::MessagePack.MessagePackObject]

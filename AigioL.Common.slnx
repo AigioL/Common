@@ -68,6 +68,7 @@
   </Folder>
   <Folder Name="/2.Libraries/JsonWebTokens/">
     <Project Path="src/AigioL.Common.JsonWebTokens.Entities/AigioL.Common.JsonWebTokens.Entities.shproj" Id="26839620-b9b9-4fbe-b03b-a92d5a034e8e" />
+    <Project Path="src/AigioL.Common.JsonWebTokens.Models.Dtos/AigioL.Common.JsonWebTokens.Models.Dtos.shproj" Id="7ad8e0e7-211c-485b-a83f-bf5d35d67681" />
     <Project Path="src/AigioL.Common.JsonWebTokens.Models/AigioL.Common.JsonWebTokens.Models.shproj" Id="2deca514-57a3-414f-9715-c37c4a7d8b5c" />
     <Project Path="src/AigioL.Common.JsonWebTokens.Services/AigioL.Common.JsonWebTokens.Services.shproj" Id="fe10fe98-b87c-4ee5-a793-ac0c22fd3bc0" />
   </Folder>

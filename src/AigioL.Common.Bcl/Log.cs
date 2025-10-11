@@ -10,7 +10,7 @@ namespace System;
 public static partial class Log
 {
     /// <inheritdoc cref="ILoggerFactory"/>
-    public static ILoggerFactory Factory
+    public static ILoggerFactory Factory // 不可更改此属性类型！
     {
         get
         {
