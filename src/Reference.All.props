@@ -21,6 +21,7 @@
 	</Choose>
 
 	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
 		<PackageReference Include="NLog" />
 		<PackageReference Include="NLog.Web.AspNetCore" />
@@ -65,6 +66,7 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.SmsSender.Services\AigioL.Common.SmsSender.Services.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Entities\AigioL.Common.JsonWebTokens.Entities.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Models\AigioL.Common.JsonWebTokens.Models.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Models.Dtos\AigioL.Common.JsonWebTokens.Models.Dtos.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Services\AigioL.Common.JsonWebTokens.Services.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Essentials\AigioL.Common.Essentials.projitems" Label="Shared" />
 

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Sdk Name="Aspire.AppHost.Sdk" Version="9.5.0" />
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net$(DotNet_Version)</TargetFramework>
+		<UserSecretsId>5955c4f0-c3b4-46f7-a78a-54a72b804b5d</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AigioL.Common.AspireApp1.ApiService\AigioL.Common.AspireApp1.ApiService.csproj" />
+		<ProjectReference Include="..\AigioL.Common.AspireApp1.Web\AigioL.Common.AspireApp1.Web.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Aspire.Hosting.AppHost" />
+		<PackageReference Include="Aspire.Hosting.Redis" />
+		<PackageReference Include="Aspire.Hosting.PostgreSQL" />
+		<PackageReference Include="Aspire.Hosting.Docker" />
+	</ItemGroup>
+
+</Project>
