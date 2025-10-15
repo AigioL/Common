@@ -18,13 +18,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.V1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RegisterByEmailRequestV0.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ResetPasswordRequestV0.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ResetPasswordRequest.V0.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ResetPasswordRequestV2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendEmailCodeRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendEmailCodeRequestV1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendSmsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendSmsRequestV1.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequestV0.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequestV1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequest.V0.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequest.V2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.V%28-1%29.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.cs" />

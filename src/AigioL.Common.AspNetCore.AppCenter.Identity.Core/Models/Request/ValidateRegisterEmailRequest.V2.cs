@@ -1,7 +1,7 @@
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial class ValidateRegisterEmailRequestV1
+public sealed partial class ValidateRegisterEmailRequestV2
 {
     /// <summary>
     /// 邮箱地址

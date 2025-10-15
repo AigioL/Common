@@ -329,9 +329,9 @@ public static partial class AccountController
         string? phoneNumber,
         string? phoneNumberRegionCode,
         string? email,
-        string smsCode,
-        string pwd,
-        string pwd2)
+        string? smsCode,
+        string? pwd,
+        string? pwd2)
     {
         // 参数校验
         if (string.IsNullOrWhiteSpace(smsCode) || string.IsNullOrWhiteSpace(pwd) || pwd != pwd2)
