@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+	</PropertyGroup>
+	
+	<Import Project="$(MSBuildThisFileDirectory)..\OpenAPI.Sdk.props" />
+
+</Project>

@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <TargetFrameworks>net10.0;net9.0;net8.0;netstandard2.0;netstandard2.1;net462</TargetFrameworks>
+    <!--<TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>-->
+  </PropertyGroup>
+  <Choose>
+    <When Condition="( $(TargetFramework.StartsWith('netstandard')) OR $(TargetFramework.StartsWith('net4')) )">
+      <ItemGroup>
+        <PackageReference Include="System.Text.Json" />
+        <PackageReference Include="Microsoft.Bcl.Memory" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="( $(TargetFramework.StartsWith('netstandard1')) OR $(TargetFramework.StartsWith('netstandard2.0')) OR $(TargetFramework.StartsWith('net4')) )">
+      <ItemGroup>
+        <PackageReference Include="Microsoft.Bcl.Memory" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
+  </ItemGroup>
+</Project>

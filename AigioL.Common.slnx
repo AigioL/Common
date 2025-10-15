@@ -12,6 +12,7 @@
     <File Path="src/Directory.Build.props" />
     <File Path="src/Directory.Build.targets" />
     <File Path="src/Directory.Packages.props" />
+    <File Path="src/OpenAPI.Sdk.props" />
     <File Path="src/Path.Submodule.props" />
     <File Path="src/Reference.All.props" />
     <File Path="src/TFM_NETX_ALL.props" />
@@ -29,14 +30,11 @@
     <Project Path="src/AigioL.Common.Bcl/AigioL.Common.Bcl.shproj" Id="86dfc3a4-0f30-40f0-af39-6e76e46d78f1" />
     <Project Path="src/AigioL.Common.EntityFrameworkCore/AigioL.Common.EntityFrameworkCore.shproj" Id="a39bde5d-77a9-4136-a88e-0e2d2b0701d0" />
     <Project Path="src/AigioL.Common.Essentials/AigioL.Common.Essentials.shproj" Id="1dcaa278-148a-479e-b1d1-135476b32fdb" />
-    <Project Path="src/AigioL.Common.FeishuOApi.Sdk/AigioL.Common.FeishuOApi.Sdk.shproj" Id="8b693671-817b-4e46-b1df-0f81623e3eb1" />
     <Project Path="src/AigioL.Common.Models.ApiRsp/AigioL.Common.Models.ApiRsp.shproj" Id="d9eafcce-1041-489d-a46b-27adc768a916" />
     <Project Path="src/AigioL.Common.Primitives/AigioL.Common.Primitives.shproj" Id="2fc56f9c-d2f9-4e05-b21b-179dc776d471" />
     <Project Path="src/AigioL.Common.ProjectUtils/AigioL.Common.ProjectUtils.shproj" Id="13633681-22dd-4032-aa2c-8c789f0a1962" />
     <Project Path="src/AigioL.Common.Repositories.EntityFrameworkCore/AigioL.Common.Repositories.EntityFrameworkCore.shproj" Id="c07f1f94-4eca-426b-a7a0-80a7d6c5d220" />
     <Project Path="src/AigioL.Common.Repositories/AigioL.Common.Repositories.shproj" Id="fba610e0-548c-44e9-bb4e-fa609800796a" />
-    <Project Path="src/AigioL.Common.SmsSender.Models/AigioL.Common.SmsSender.Models.shproj" Id="f7a3e2fa-2830-4eb6-b797-a1a80d93f85e" />
-    <Project Path="src/AigioL.Common.SmsSender.Services/AigioL.Common.SmsSender.Services.shproj" Id="5238362e-d36a-430f-a92e-b9b841cd5981" />
     <Project Path="src/AigioL.Common.System.IOPath.FileSystem/AigioL.Common.System.IOPath.FileSystem.shproj" Id="31e68277-e8bf-4a35-bbbd-b520cc2ed821" />
     <Project Path="src/AigioL.Common.System.Management.NetworkInformation/AigioL.Common.System.Management.NetworkInformation.shproj" Id="44bfa2e3-668d-424e-ac76-792ffde32bd4" />
     <Project Path="src/AigioL.Common.System.Security.Cryptography.Aes/AigioL.Common.System.Security.Cryptography.Aes.shproj" Id="bafc6195-e7f9-4e81-b1ec-0d1de60d5fdc" />
@@ -71,6 +69,19 @@
     <Project Path="src/AigioL.Common.JsonWebTokens.Models.Dtos/AigioL.Common.JsonWebTokens.Models.Dtos.shproj" Id="7ad8e0e7-211c-485b-a83f-bf5d35d67681" />
     <Project Path="src/AigioL.Common.JsonWebTokens.Models/AigioL.Common.JsonWebTokens.Models.shproj" Id="2deca514-57a3-414f-9715-c37c4a7d8b5c" />
     <Project Path="src/AigioL.Common.JsonWebTokens.Services/AigioL.Common.JsonWebTokens.Services.shproj" Id="fe10fe98-b87c-4ee5-a793-ac0c22fd3bc0" />
+  </Folder>
+  <Folder Name="/2.Libraries/OpenAPI.Sdk/">
+    <Project Path="src/AigioL.Common.SmsSender.Models/AigioL.Common.SmsSender.Models.shproj" Id="f7a3e2fa-2830-4eb6-b797-a1a80d93f85e" />
+    <Project Path="src/AigioL.Common.SmsSender.Services/AigioL.Common.SmsSender.Services.shproj" Id="5238362e-d36a-430f-a92e-b9b841cd5981" />
+  </Folder>
+  <Folder Name="/2.Libraries/OpenAPI.Sdk/Feishu/">
+    <Project Path="src/AigioL.Common.FeishuOApi.Sdk/AigioL.Common.FeishuOApi.Sdk.shproj" Id="8b693671-817b-4e46-b1df-0f81623e3eb1" />
+  </Folder>
+  <Folder Name="/2.Libraries/OpenAPI.Sdk/NetEase/">
+    <Project Path="src/AigioL.Common.NetEase.Sdk.IM/AigioL.Common.NetEase.Sdk.IM.csproj" Id="116987ce-1e94-444f-bed0-a6a0388957ea" />
+  </Folder>
+  <Folder Name="/2.Libraries/OpenAPI.Sdk/TencentCloud/">
+    <Project Path="src/AigioL.Common.TencentCloud.Sdk.IM/AigioL.Common.TencentCloud.Sdk.IM.csproj" Id="8376fc65-e1c4-4cd3-8c9c-05cda1cc7c9b" />
   </Folder>
   <Folder Name="/3.EntryPoint/">
     <Project Path="src/AigioL.Common.ConsoleApp1/AigioL.Common.ConsoleApp1.csproj" Id="79183e06-3987-4668-b026-7ed9253ada3b" />
