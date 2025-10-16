@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
@@ -59,27 +60,35 @@ static partial class AccountController
             return r;
         }).WithDescription("【废弃】重置密码 V0");
         routeGroup.MapPost("registerByEmail", [Obsolete] async (HttpContext context,
-            [FromBody] ResetPasswordRequestV0 request) =>
+            [FromBody] RegisterByEmailRequestV0 request) =>
         {
-            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
+            var deviceId = request.GetDeviceId();
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AccountController));
             var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+            var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
+            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
             var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
-            var r = await ResetPassword(context, authMessageRecordRepo, userManager,
-                smsSender, request.Type, request.PhoneNumber,
-                null, request.Email, request.OTPCode,
-                request.Password, request.Password2);
+            var r = await RegisterByEmail(logger,
+                userManager,
+                db,
+                authMessageRecordRepo,
+                smsSender,
+                request.Email,
+                request.Password,
+                request.Code,
+                deviceId,
+                (userManager, user, isLoginOrRegister) => userManager.LoginSharedV0Async(user, isLoginOrRegister, deviceId));
             return r;
         }).WithDescription("【废弃】邮箱注册账号 V0");
         routeGroup.MapPost("loginByPassword", [Obsolete] async (HttpContext context,
-            [FromBody] ResetPasswordRequestV0 request) =>
+            [FromBody] AccountLoginRequestV0 request) =>
         {
-            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
-            var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
-            var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
-            var r = await ResetPassword(context, authMessageRecordRepo, userManager,
-                smsSender, request.Type, request.PhoneNumber,
-                null, request.Email, request.OTPCode,
-                request.Password, request.Password2);
+            var deviceId = request.GetDeviceId();
+            var r = await LoginByPassword(
+                context,
+                request.Account,
+                request.Password,
+                (userManager, user, isLoginOrRegister) => userManager.LoginSharedV0Async(user, isLoginOrRegister, deviceId));
             return r;
         }).WithDescription("【废弃】密码登录账号 V0");
     }

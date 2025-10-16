@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
@@ -58,12 +59,36 @@ static partial class AccountController
             return r;
         }).WithDescription("重置密码 V2");
         routeGroup.MapPost("registerByEmail", async (HttpContext context,
-            [FromBody] ResetPasswordRequestV2 request) =>
+            [FromBody] RegisterByEmailRequestV2 request) =>
         {
+            var deviceId = request.GetDeviceId();
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AccountController));
+            var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+            var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
+            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
+            var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
+            var r = await RegisterByEmail(logger,
+                userManager,
+                db,
+                authMessageRecordRepo,
+                smsSender,
+                request.Email,
+                request.Password,
+                request.Code,
+                deviceId,
+                (userManager, user, isLoginOrRegister) => userManager.LoginSharedV0Async(user, isLoginOrRegister, deviceId));
+            return r;
         }).WithDescription("邮箱注册账号 V2");
         routeGroup.MapPost("loginByPassword", async (HttpContext context,
-            [FromBody] ResetPasswordRequestV2 request) =>
+            [FromBody] AccountLoginRequestV2 request) =>
         {
+            var deviceId = request.GetDeviceId();
+            var r = await LoginByPassword(
+                context,
+                request.Account,
+                request.Password,
+                (userManager, user, isLoginOrRegister) => userManager.LoginSharedV0Async(user, isLoginOrRegister, deviceId));
+            return r;
         }).WithDescription("密码登录账号 V2");
 #if DEBUG
         routeGroup.MapGet("test/ex", async (HttpContext context) =>

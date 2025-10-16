@@ -3,10 +3,10 @@ using AigioL.Common.AspNetCore.AppCenter.Models;
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 
 /// <summary>
-/// 发送邮箱验证码请求
+/// 发送邮箱验证码请求（版本 1）
 /// </summary>
-[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class SendEmailCodeRequest
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
+public sealed partial record class SendEmailCodeRequestV1
 {
     /// <summary>
     /// 邮箱地址

@@ -18,10 +18,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.V2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\AuthMessageController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ErrorController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ExternalLoginController.V1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ExternalLoginController.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ExternalLoginController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\ManageController.V1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ManageController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\MembershipController.V2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\MembershipController.V1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\MembershipController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.V1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ViewExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />

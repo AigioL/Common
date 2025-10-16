@@ -19,7 +19,7 @@ public sealed partial class ResetPasswordRequestV0
     public string? PhoneNumber { get; set; }
 
     /// <summary>
-    /// 邮件地址
+    /// 邮箱地址
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(2)]
     public string? Email { get; set; }

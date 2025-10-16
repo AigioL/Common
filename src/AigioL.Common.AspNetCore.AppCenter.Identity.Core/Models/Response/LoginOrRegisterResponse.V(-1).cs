@@ -8,7 +8,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
 /// 登录或注册响应模型（版本 -1）
 /// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Explicit)]
-[Obsolete("use LoginOrRegisterResponseV1")]
+[Obsolete("use LoginOrRegisterResponseV0")]
 public sealed partial record class LoginOrRegisterResponseV_1 : IExplicitHasValue
 {
     /// <inheritdoc cref="JsonWebTokenValue"/>

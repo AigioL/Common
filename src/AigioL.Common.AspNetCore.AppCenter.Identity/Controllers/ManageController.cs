@@ -1,39 +1,22 @@
-using System.Diagnostics.CodeAnalysis;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
+using AigioL.Common.Models;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
 public static partial class ManageController
 {
-    public static void MapIdentityManageV1(
-        this IEndpointRouteBuilder b,
-        [StringSyntax("Route")] string pattern = "identity/v1/manage")
+    static async Task<ApiRsp<UserInfoModelV0?>> RefreshUserInfo(
+        HttpContext context)
     {
-        var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize)
-            .WithRequiredSecurityKey();
+        var user = context.GetUserId();
+        if (user == null)
+            return ApiRspCode.Unauthorized;
 
-        //routeGroup.MapPost("loginorregister", async (HttpContext context,
-        //    [FromBody] LoginOrRegisterRequest request) =>
-        //{
-        //    var r = await LoginOrRegister(context, request);
-        //    return r;
-        //}).WithDescription("登录或注册账号");
+        var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+        var userInfoDTO = await userManager.GetUserInfoCacheV1Async();
+        return userInfoDTO;
     }
-
-    ///// <summary>
-    ///// 刷新用户信息
-    ///// </summary>
-    ///// <returns></returns>
-    //[HttpGet("refreshuserinfo"), HttpPost("refreshuserinfo")]
-    //public async Task<ApiRspImpl<UserInfoModel?>> RefreshUserInfo()
-    //{
-    //    var user = HttpContext.GetUserId();
-    //    if (user == null)
-    //        return ApiRspCode.Unauthorized;
-
-    //    var userInfoDTO = await userManager.GetUserInfoCacheAsync_v1();
-    //    return userInfoDTO;
-    //}
 
     //[HttpPost("changebindemail")]
     //public async Task<ApiRspImpl> BindEmail([FromBody] EmailConfirmRequest request)

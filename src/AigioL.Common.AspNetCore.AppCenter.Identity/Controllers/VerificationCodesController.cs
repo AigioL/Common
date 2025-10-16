@@ -9,50 +9,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
 public static partial class VerificationCodesController
 {
-    public static void MapIdentityVerificationCodesV0(
-        this IEndpointRouteBuilder b,
-        [StringSyntax("Route")] string pattern = "identity/vcodes")
-    {
-        var routeGroup = b.MapGroup(pattern)
-            .AllowAnonymous()
-            .WithRequiredSecurityKey();
-
-        routeGroup.MapPost("sms", [Obsolete] async (HttpContext context,
-            [FromBody] SendSmsRequest request) =>
-        {
-            var r = await SendSms(context, request.PhoneNumber, null, request.Type);
-            return r;
-        }).WithDescription("【Obsolete】发送短信验证码 V0");
-        routeGroup.MapPost("email", [Obsolete] async (HttpContext context,
-            [FromBody] SendEmailCodeRequest request) =>
-        {
-            var r = await SendEmailOtp(context, request.Email, request.Type);
-            return r;
-        }).WithDescription("【Obsolete】发送邮件验证码 V0");
-    }
-
-    public static void MapIdentityVerificationCodesV1(
-        this IEndpointRouteBuilder b,
-        [StringSyntax("Route")] string pattern = "identity/v1/vcodes")
-    {
-        var routeGroup = b.MapGroup(pattern)
-            .AllowAnonymous()
-            .WithRequiredSecurityKey();
-
-        routeGroup.MapPost("sms", async (HttpContext context,
-            [FromBody] SendSmsRequestV1 request) =>
-        {
-            var r = await SendSms(context, request.PhoneNumber, request.PhoneNumberRegionCode, request.Type);
-            return r;
-        }).WithDescription("发送短信验证码 V1");
-        routeGroup.MapPost("email", async (HttpContext context,
-            [FromBody] SendEmailCodeRequestV1 request) =>
-        {
-            var r = await SendEmailOtp(context, request.Email, request.Type);
-            return r;
-        }).WithDescription("发送邮件验证码 V1");
-    }
-
     /// <summary>
     /// 发送短信验证码
     /// 需要传入接收人手机号码以及用途(类型)

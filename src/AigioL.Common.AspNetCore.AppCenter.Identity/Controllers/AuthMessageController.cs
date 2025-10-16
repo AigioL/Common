@@ -8,6 +8,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 [Obsolete("use VerificationCodesController")]
 public static partial class AuthMessageController
 {
+    [Obsolete("use MapIdentityVerificationCodesV1")]
     public static void MapIdentityAuthMessage(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "api/AuthMessage")
@@ -17,7 +18,7 @@ public static partial class AuthMessageController
             .WithRequiredSecurityKey();
 
         routeGroup.MapPost("SendSms", [Obsolete] async (HttpContext context,
-            [FromBody] SendSmsRequest request) =>
+            [FromBody] SendSmsRequestV0 request) =>
         {
             var r = await SendSms(context, request.PhoneNumber, null, request.Type);
             return r;

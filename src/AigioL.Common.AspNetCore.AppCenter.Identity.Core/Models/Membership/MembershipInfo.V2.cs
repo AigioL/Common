@@ -3,7 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Models;
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial record class MembershipInfoV1
+public sealed partial record class MembershipInfoV2
 {
     /// <summary>
     /// 是否是会员

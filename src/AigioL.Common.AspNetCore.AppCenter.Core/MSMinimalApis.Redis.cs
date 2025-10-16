@@ -347,4 +347,9 @@ file sealed class LazyConnectionMultiplexer(string redisConnStr) : IConnectionMu
     {
         @this.Value.WaitAll(tasks);
     }
+
+    public IServer GetServer(RedisKey key, object? asyncState, CommandFlags flags)
+    {
+        return @this.Value.GetServer(key, asyncState, flags);
+    }
 }
