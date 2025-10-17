@@ -149,7 +149,7 @@ static partial class MaxLengths // 业务相关字段
     public const int Max_ChangeReason = 600;
 
     /// <summary>
-    /// IP 地址最大长度，通常 IPv6 的最大长度为 45，但可能有多个 IP 地址使用分号分割，例如 HTTP_X_FORWARDED_FOR
+    /// IP 地址最大长度，通常 IPv6 的最大长度为 46，但可能有多个 IP 地址使用分号分割，例如 HTTP_X_FORWARDED_FOR
     /// </summary>
     public const int Max_IPAddress = 540;
 

@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SerializableImplType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShortGuid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Text\Json\Serialization\IJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Text\Json\Serialization\UnsafeRawJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\AsyncGate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Threading\IRequestAbortedProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThrowHelper.cs" />
