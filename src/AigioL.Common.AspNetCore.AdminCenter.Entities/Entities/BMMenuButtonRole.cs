@@ -41,7 +41,7 @@ public partial class BMMenuButtonRole :
     /// 控制器名称
     /// </summary>
     [Required]
-    [StringLength(MaxLengths.BMControllerNameMaxLength)]
+    [StringLength(MaxLengths.BMControllerName)]
     [Comment("控制器名称")]
     public required string ControllerName { get; set; }
 

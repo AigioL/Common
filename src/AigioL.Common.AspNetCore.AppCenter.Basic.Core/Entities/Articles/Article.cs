@@ -26,7 +26,7 @@ public partial class Article :
     public Guid? CategoryId { get; set; }
 
     /// <inheritdoc/>
-    [StringLength(MaxLengths.Max_ArticleTitle)]
+    [StringLength(MaxLengths.ArticleTitle)]
     [Required]
     [Comment("标题")]
     public required string Title { get; set; }

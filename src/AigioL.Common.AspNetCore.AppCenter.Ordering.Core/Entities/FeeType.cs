@@ -23,7 +23,7 @@ public partial class FeeType :
     /// 费用类型名称
     /// </summary>
     [Required]
-    [StringLength(MaxLengths.Max_CouponName)]
+    [StringLength(MaxLengths.CouponName)]
     [Comment("费用类型名称")]
     public required string Name { get; set; }
 

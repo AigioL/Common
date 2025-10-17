@@ -29,7 +29,7 @@ public partial class ArticleCategory :
     /// <summary>
     /// 分类名
     /// </summary>
-    [StringLength(MaxLengths.Max_ArticleCategoryName)]
+    [StringLength(MaxLengths.ArticleCategoryName)]
     [Required]
     [Comment("分类名")]
     public required string Name { get; set; }

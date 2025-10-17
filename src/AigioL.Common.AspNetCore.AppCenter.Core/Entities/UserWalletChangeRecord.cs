@@ -60,7 +60,7 @@ public partial class UserWalletChangeRecord :
     /// <summary>
     /// 变更原因
     /// </summary>
-    [StringLength(MaxLengths.Max_ChangeReason)]
+    [StringLength(MaxLengths.ChangeReason)]
     [Comment("变更原因")]
     public string? Reason { get; set; }
 

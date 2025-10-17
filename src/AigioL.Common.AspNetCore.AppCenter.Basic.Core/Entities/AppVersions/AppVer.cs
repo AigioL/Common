@@ -32,7 +32,7 @@ public partial class AppVer :
     /// 版本号
     /// </summary>
     [Required]
-    [StringLength(MaxLengths.Max_Version)]
+    [StringLength(MaxLengths.Version)]
     [Comment("版本号")]
     public required string Version { get; set; }
 
@@ -40,7 +40,7 @@ public partial class AppVer :
     /// 版本信息
     /// </summary>
     [Comment("版本信息")]
-    [StringLength(MaxLengths.Max_InformationalVersion)]
+    [StringLength(MaxLengths.InformationalVersion)]
     public string? InformationalVersion { get; set; }
 
     /// <summary>

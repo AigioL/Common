@@ -98,7 +98,12 @@ public static partial class MaxLengths
     /// <summary>
     /// 哈希密码最大长度
     /// </summary>
-    public const int Max_PasswordHash = 256;
+    public const int PasswordHash = 256;
+
+    /// <summary>
+    /// <see cref="global::System.Guid"/> 的字符串格式最大长度
+    /// </summary>
+    public const int Guid = 38;
 }
 
 static partial class MaxLengths // 业务相关字段
@@ -106,17 +111,17 @@ static partial class MaxLengths // 业务相关字段
     /// <summary>
     /// 客户端用户昵称最大长度
     /// </summary>
-    public const int Max_CUserNickName = 36;
+    public const int CUserNickName = 36;
 
     /// <summary>
     /// 客户端用户个性签名最大长度
     /// </summary>
-    public const int Max_CUserPersonalizedSignature = 100;
+    public const int CUserPersonalizedSignature = 100;
 
     /// <summary>
     /// 客户端用户设备名称最大长度
     /// </summary>
-    public const int Max_CUserDeviceName = 100;
+    public const int CUserDeviceName = 100;
 
     /// <summary>
     /// 设备 Id，版本代号为 R
@@ -126,71 +131,74 @@ static partial class MaxLengths // 业务相关字段
     /// <summary>
     /// SHA1 算法的哈希 Hex 字符串长度
     /// </summary>
-    public const int Max_SHA1 = 40;
+    public const int SHA1 = 40;
 
     /// <summary>
     /// SHA256 算法的哈希 Hex 字符串长度
     /// </summary>
-    public const int Max_SHA256 = 64;
+    public const int SHA256 = 64;
 
     /// <summary>
     /// SHA384 算法的哈希 Hex 字符串长度
     /// </summary>
-    public const int Max_SHA384 = 96;
+    public const int SHA384 = 96;
 
     /// <summary>
     /// 设备 Id 最大长度
     /// </summary>
-    public const int Max_DeviceId = ShortGuid.StringLength + DeviceIdR + Max_SHA256;
+    public const int DeviceId = ShortGuid.StringLength + DeviceIdR + SHA256;
 
     /// <summary>
     /// 变更原因最大长度
     /// </summary>
-    public const int Max_ChangeReason = 600;
+    public const int ChangeReason = 600;
 
     /// <summary>
     /// IP 地址最大长度，通常 IPv6 的最大长度为 46，但可能有多个 IP 地址使用分号分割，例如 HTTP_X_FORWARDED_FOR
     /// </summary>
-    public const int Max_IPAddress = 540;
+    public const int IPAddress = 540;
 
     /// <summary>
     /// 版本号最大长度
     /// </summary>
-    public const int Max_Version = 23;
+    public const int Version = 23;
 
     /// <summary>
     /// 版本信息最大长度
     /// </summary>
-    public const int Max_InformationalVersion = 32;
+    public const int InformationalVersion = 32;
 
     /// <summary>
     /// 人类最长寿命(岁)
     /// </summary>
-    public const int HumanMaxAge = 122;
+    public const int HumanAge = 122;
 
     /// <summary>
     /// 文件名称最大长度
     /// </summary>
-    public const int Max_FileName = 260;
+    public const int FileName = 260;
 
     /// <summary>
     /// 文章标题最大长度
     /// </summary>
-    public const int Max_ArticleTitle = 200;
+    public const int ArticleTitle = 200;
 
-    public const int Max_ArticleCategoryName = 300;
+    public const int ArticleCategoryName = 300;
 
-    public const int Max_ArticleTagName = 30;
+    public const int ArticleTagName = 30;
 
     /// <summary>
     /// 优惠劵名称最大长度
     /// </summary>
-    public const int Max_CouponName = 120;
+    public const int CouponName = 120;
 
-    public const int Max_OrderId = 64;
+    /// <summary>
+    /// 订单号最大长度
+    /// </summary>
+    public const int OrderId = 64;
 
     /// <summary>
     /// 控制器名称最大长度限制
     /// </summary>
-    public const int BMControllerNameMaxLength = 128;
+    public const int BMControllerName = 128;
 }

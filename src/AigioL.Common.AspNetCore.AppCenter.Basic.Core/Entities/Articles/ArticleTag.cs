@@ -21,7 +21,7 @@ public partial class ArticleTag :
     /// <summary>
     /// 标签名
     /// </summary>
-    [StringLength(MaxLengths.Max_ArticleTagName)]
+    [StringLength(MaxLengths.ArticleTagName)]
     [Required]
     [Comment("标签名")]
     public required string Name { get; set; }

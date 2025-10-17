@@ -97,7 +97,7 @@ https://tauri.org.cn/v1/guides/distribution/updater
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static bool IsVersionString(ReadOnlySpan<char> s)
     {
-        if (s.Length != 0 && s.Length < MaxLengths.Max_Version)
+        if (s.Length != 0 && s.Length < MaxLengths.Version)
         {
             if (char.ToLowerInvariant(s[0]) == 'v')
             {

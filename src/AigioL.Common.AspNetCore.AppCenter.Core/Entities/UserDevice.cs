@@ -30,21 +30,21 @@ public partial class UserDevice :
     /// 设备名称
     /// </summary>
     [Comment("设备名称")]
-    [StringLength(MaxLengths.Max_CUserDeviceName)]
+    [StringLength(MaxLengths.CUserDeviceName)]
     public string? DeviceName { get; set; }
 
     /// <summary>
     /// 设备唯一识别码
     /// </summary>
     [Comment("设备唯一识别码")]
-    [StringLength(MaxLengths.Max_DeviceId)]
+    [StringLength(MaxLengths.DeviceId)]
     public string? DeviceId { get; set; }
 
     /// <summary>
     /// 网卡 MAC 地址哈希值
     /// </summary>
     [Comment("网卡 MAC 地址哈希值")]
-    [StringLength(MaxLengths.Max_SHA384)]
+    [StringLength(MaxLengths.SHA384)]
     public string? MacAddressHash { get; set; }
 
     /// <summary>

@@ -63,7 +63,7 @@ public partial class MembershipBusinessOrder :
     /// 订单 Id
     /// </summary>
     [Required]
-    [StringLength(MaxLengths.Max_OrderId)]
+    [StringLength(MaxLengths.OrderId)]
     [Comment("订单 Id")]
     public required string OrderId { get; set; }
 

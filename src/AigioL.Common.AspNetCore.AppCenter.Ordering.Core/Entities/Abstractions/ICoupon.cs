@@ -10,7 +10,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Abstractions;
 public interface ICoupon
 {
     /// <summary>
-    /// 优惠劵名称，最大长度不能超过 <see cref="MaxLengths.Max_CouponName"/>
+    /// 优惠劵名称，最大长度不能超过 <see cref="MaxLengths.CouponName"/>
     /// </summary>
     string Name { get; set; }
 

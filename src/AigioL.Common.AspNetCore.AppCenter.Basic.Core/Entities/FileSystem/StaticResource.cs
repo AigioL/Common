@@ -23,18 +23,18 @@ public partial class StaticResource :
     #region CloudFileInfo
 
     /// <inheritdoc/>
-    [StringLength(MaxLengths.Max_FileName)]
+    [StringLength(MaxLengths.FileName)]
     [Comment("文件名")]
     public string? FileName { get; set; }
 
     /// <summary>
     /// 文件指纹 SHA256
     /// </summary>
-    [StringLength(MaxLengths.Max_SHA256 + 3, MinimumLength = MaxLengths.Max_SHA256)]
+    [StringLength(MaxLengths.SHA256 + 3, MinimumLength = MaxLengths.SHA256)]
     public string? SHA256 { get; set; }
 
     /// <inheritdoc/>
-    [StringLength(MaxLengths.Max_SHA384 + 3, MinimumLength = MaxLengths.Max_SHA384)]
+    [StringLength(MaxLengths.SHA384 + 3, MinimumLength = MaxLengths.SHA384)]
     public string? SHA384 { get; set; }
 
     /// <inheritdoc/>

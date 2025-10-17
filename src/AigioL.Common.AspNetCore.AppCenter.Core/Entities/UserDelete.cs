@@ -65,7 +65,7 @@ public partial class UserDelete :
     public string? Email { get; set; }
 
     [Comment("昵称")]
-    [StringLength(MaxLengths.Max_CUserNickName)]
+    [StringLength(MaxLengths.CUserNickName)]
     public string? NickName { get; set; }
 
     /// <summary>
@@ -78,7 +78,7 @@ public partial class UserDelete :
     /// 个性签名
     /// </summary>
     [Comment("个性签名")]
-    [StringLength(MaxLengths.Max_CUserPersonalizedSignature)]
+    [StringLength(MaxLengths.CUserPersonalizedSignature)]
     public string? PersonalizedSignature { get; set; }
 
     /// <summary>

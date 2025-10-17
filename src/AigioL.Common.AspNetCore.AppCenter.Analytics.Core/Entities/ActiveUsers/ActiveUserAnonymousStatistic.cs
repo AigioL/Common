@@ -31,7 +31,7 @@ public partial class ActiveUserAnonymousStatistic :
     /// </summary>
     [Required]
     [Comment("IP 地址")]
-    [StringLength(MaxLengths.Max_IPAddress)]
+    [StringLength(MaxLengths.IPAddress)]
     public required string IPAddress { get; set; }
 
     /// <summary>
@@ -59,7 +59,7 @@ public partial class ActiveUserAnonymousStatistic :
     public required string OSVersion { get; set; }
 
     [Comment("App 版本号")]
-    [StringLength(MaxLengths.Max_Version)]
+    [StringLength(MaxLengths.Version)]
     public string? AppVersion { get; set; }
 
     //public virtual AppVer? AppVersionInfo { get; set; }
@@ -120,7 +120,7 @@ public partial class ActiveUserAnonymousStatistic :
     /// 设备 Id
     /// </summary>
     [Comment("设备 Id")]
-    [StringLength(MaxLengths.Max_DeviceId)]
+    [StringLength(MaxLengths.DeviceId)]
     public string? DeviceId { get; set; }
 
     /// <summary>

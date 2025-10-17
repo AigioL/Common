@@ -42,7 +42,7 @@ public partial class AuthMessageRecord :
     /// <inheritdoc/>
     [Required]
     [Comment("IP 地址")]
-    [StringLength(MaxLengths.Max_IPAddress)]
+    [StringLength(MaxLengths.IPAddress)]
     public required string IPAddress { get; set; }
 
     #region 提供商内容

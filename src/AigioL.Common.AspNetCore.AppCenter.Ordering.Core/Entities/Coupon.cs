@@ -23,7 +23,7 @@ public partial class Coupon :
 {
     [Required]
     [Comment("优惠劵名称")]
-    [StringLength(MaxLengths.Max_CouponName)]
+    [StringLength(MaxLengths.CouponName)]
     public required string Name { get; set; }
 
     [Comment("优惠劵类型")]
@@ -53,7 +53,7 @@ public partial class Coupon :
     /// 限定费用类型名称
     /// </summary>
     [Comment("限定费用类型名称")]
-    [StringLength(MaxLengths.Max_CouponName)]
+    [StringLength(MaxLengths.CouponName)]
     public string? RestrictedFeeTypeName { get; set; }
 
     /// <summary>

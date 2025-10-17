@@ -46,7 +46,7 @@ public partial class ActiveUserOSSummary :
     /// </summary>
     [Required]
     [Comment("系统版本")]
-    [StringLength(MaxLengths.Max_Version)]
+    [StringLength(MaxLengths.Version)]
     public required string OSVersion { get; set; }
 
     public int OSVersionNumber { get; set; }

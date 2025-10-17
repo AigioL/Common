@@ -158,7 +158,7 @@ partial class AppVerCoreService<TDbContext> // 内部函数
         }
         else if (appVersionValue != null)
         {
-            if (appVersionValue.Length <= MaxLengths.Max_Version && Version.TryParse(appVersionValue, out var appVersionValue_))
+            if (appVersionValue.Length <= MaxLengths.Version && Version.TryParse(appVersionValue, out var appVersionValue_))
             {
                 var cacheData = await redisdb.HashGetAsync(CacheKeys.AppVersionHashKey, appVersionValue);
                 if (cacheData.HasValue)

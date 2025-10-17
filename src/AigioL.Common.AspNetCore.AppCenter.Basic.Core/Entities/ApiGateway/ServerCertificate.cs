@@ -70,14 +70,14 @@ public partial class ServerCertificate :
     /// <summary>
     /// SHA256
     /// </summary>
-    [StringLength(MaxLengths.Max_SHA256)]
+    [StringLength(MaxLengths.SHA256)]
     [Comment("SHA256")]
     public string? SHA256 { get; set; }
 
     /// <summary>
     /// SHA1
     /// </summary>
-    [StringLength(MaxLengths.Max_SHA1)]
+    [StringLength(MaxLengths.SHA1)]
     [Comment("SHA1")]
     public string? SHA1 { get; set; }
 

@@ -24,7 +24,7 @@ public partial class Order :
     /// <summary>
     /// 订单号
     /// </summary>
-    [StringLength(MaxLengths.Max_OrderId)]
+    [StringLength(MaxLengths.OrderId)]
     [Comment("订单号")]
     public required override string Id { get; set; }
 

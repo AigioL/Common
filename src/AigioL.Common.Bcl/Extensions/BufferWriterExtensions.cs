@@ -11,7 +11,7 @@ public static partial class BufferWriterExtensions
     /// <summary>
     /// https://github.com/dotnet/runtime/blob/v9.0.8/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
     /// </summary>
-    const int StackallocByteThreshold = 256;
+    public const int StackallocByteThreshold = 256;
 
     public static void Write(this IBufferWriter<byte> writer, bool value, bool isLower = false)
     {

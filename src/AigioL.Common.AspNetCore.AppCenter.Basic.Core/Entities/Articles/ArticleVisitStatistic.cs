@@ -32,7 +32,7 @@ public partial class ArticleVisitStatistic :
     public string? SourceUrl { get; set; }
 
     /// <inheritdoc/>
-    [StringLength(MaxLengths.Max_IPAddress)]
+    [StringLength(MaxLengths.IPAddress)]
     [Required]
     [Comment("IP 地址")]
     public required string IPAddress { get; set; }

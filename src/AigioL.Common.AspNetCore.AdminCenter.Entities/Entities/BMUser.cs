@@ -57,7 +57,7 @@ public partial class BMUser :
     /// 密码哈希
     /// </summary>
     [Comment("密码哈希")]
-    [StringLength(MaxLengths.Max_PasswordHash)]
+    [StringLength(MaxLengths.PasswordHash)]
     public override string? PasswordHash { get; set; }
 
     /// <summary>

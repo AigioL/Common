@@ -54,7 +54,7 @@ public partial class User :
     /// 密码哈希
     /// </summary>
     [Comment("密码哈希")]
-    [StringLength(MaxLengths.Max_PasswordHash)]
+    [StringLength(MaxLengths.PasswordHash)]
     public override string? PasswordHash { get; set; }
 
     /// <summary>
@@ -99,7 +99,7 @@ public partial class User :
     /// <summary>
     /// 昵称
     /// </summary>
-    [StringLength(MaxLengths.Max_CUserNickName)]
+    [StringLength(MaxLengths.CUserNickName)]
     [Comment("昵称")]
     public string? NickName { get; set; }
 
@@ -107,7 +107,7 @@ public partial class User :
     /// 个性签名
     /// </summary>
     [Comment("个性签名")]
-    [StringLength(MaxLengths.Max_CUserPersonalizedSignature)]
+    [StringLength(MaxLengths.CUserPersonalizedSignature)]
     public string? PersonalizedSignature { get; set; }
 
     ///// <summary>

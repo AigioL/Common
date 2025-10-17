@@ -49,7 +49,7 @@ public partial class KomaasharuPersonalized :
     /// 适合最大年龄
     /// </summary>
     [Comment("适合最大年龄")]
-    public byte SuitableMaxAge { get; set; } = MaxLengths.HumanMaxAge;
+    public byte SuitableMaxAge { get; set; } = MaxLengths.HumanAge;
 
     /// <summary>
     /// 适合性别
