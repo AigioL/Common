@@ -10,22 +10,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="Properties\Resources.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Resources.resx</DependentUpon>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
 		<EmbeddedResource Include="..\..\res\i18n\IdentityUI\Resources.resx">
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 			<LinkBase>Properties</LinkBase>
+			<CustomToolNamespace>AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties</CustomToolNamespace>
 		</EmbeddedResource>
 		<EmbeddedResource Include="..\..\res\i18n\IdentityUI\Resources.*.resx">
 			<LinkBase>Properties</LinkBase>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\res\i18n\IdentityUI\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+			<LinkBase>Properties</LinkBase>
+		</Compile>
 	</ItemGroup>
 
 </Project>
