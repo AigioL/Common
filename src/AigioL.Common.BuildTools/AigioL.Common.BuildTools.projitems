@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9e2ef71b-0fb8-4b45-af29-0c294675a8a8</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.BuildTools</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Abstractions\ICommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\IServerPublishCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExitApplicationException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProgramHelper.ConsoleWriteInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProgramHelper.cs" />
+  </ItemGroup>
+</Project>

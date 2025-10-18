@@ -95,7 +95,9 @@
     <Project Path="src/AigioL.Common.AspireApp1.Tests/AigioL.Common.AspireApp1.Tests.csproj" />
     <Project Path="src/AigioL.Common.AspireApp1.Web/AigioL.Common.AspireApp1.Web.csproj" />
   </Folder>
-  <Folder Name="/4.Tools/" />
+  <Folder Name="/4.Tools/">
+    <Project Path="src/AigioL.Common.BuildTools/AigioL.Common.BuildTools.shproj" Id="9e2ef71b-0fb8-4b45-af29-0c294675a8a8" />
+  </Folder>
   <Folder Name="/5.UnitTest/">
     <Project Path="src/AigioL.Common.UnitTest/AigioL.Common.UnitTest.csproj" Id="3f280b00-5410-426a-9cdd-108de7d8e45a" />
   </Folder>

@@ -106,6 +106,8 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.12.0" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="9.5.1" />
     <PackageVersion Include="Aspire.Hosting.Docker" Version="9.5.1-preview.1.25502.11" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="9.8.0" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="9.8.0" />
   </ItemGroup>
   <!-- 👇 Docker -->
   <ItemGroup>
@@ -119,5 +121,9 @@
   <!-- 👇 Bcl Compat -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.0-rc.2.25502.107" />
+  </ItemGroup>
+  <!-- 👇 CommandLine -->
+  <ItemGroup>
+    <PackageVersion Include="System.CommandLine" Version="2.0.0-rc.2.25502.107" />
   </ItemGroup>
 </Project>
