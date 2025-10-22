@@ -111,7 +111,7 @@
   </ItemGroup>
   <!-- 👇 Docker -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
+    <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
   </ItemGroup>
   <!-- 👇 Identity -->
   <ItemGroup>
@@ -125,5 +125,9 @@
   <!-- 👇 CommandLine -->
   <ItemGroup>
     <PackageVersion Include="System.CommandLine" Version="2.0.0-rc.2.25502.107" />
+  </ItemGroup>
+  <!-- 👇 ReverseProxy -->
+  <ItemGroup>
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 </Project>

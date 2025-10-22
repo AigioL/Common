@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>bb5339c8-0ab7-4b32-bd60-4a8004d4deae</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.AspNetCore.ApiGateway</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IApiGatewayDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\ApiGatewayDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ServerCertificate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\WebRootPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\YarpReverseProxyConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGatewayMinimalApisJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\YarpReverseProxyConfigModel.cs" />
+  </ItemGroup>
+</Project>

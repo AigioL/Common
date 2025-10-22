@@ -50,6 +50,8 @@
   <Folder Name="/2.Libraries/AspNetCore/">
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.Entities/AigioL.Common.AspNetCore.AdminCenter.Entities.shproj" Id="e6c5f93e-333f-41c9-8e27-e0046d5ce19c" />
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter/AigioL.Common.AspNetCore.AdminCenter.shproj" Id="66c06857-99f9-4aa4-9504-e2f1070aa7ae" />
+    <Project Path="src/AigioL.Common.AspNetCore.ApiGateway.Core/AigioL.Common.AspNetCore.ApiGateway.Core.shproj" Id="bb5339c8-0ab7-4b32-bd60-4a8004d4deae" />
+    <Project Path="src/AigioL.Common.AspNetCore.ApiGateway/AigioL.Common.AspNetCore.ApiGateway.shproj" Id="b3f85f86-61ed-4d3b-8d6f-780b1ad07a60" />
     <Project Path="src/AigioL.Common.AspNetCore.Helpers.ProgramMain/AigioL.Common.AspNetCore.Helpers.ProgramMain.shproj" Id="276306f9-8c73-4b7a-a517-e7a502cd5f2b" />
   </Folder>
   <Folder Name="/2.Libraries/AspNetCore/AppCenter/">
