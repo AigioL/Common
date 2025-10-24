@@ -63,6 +63,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ViewLayoutModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.PostgreSQL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.Redis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\JsonWebTokenAuthorizationMiddlewareResultHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKeyValuePairRepository.cs" />
