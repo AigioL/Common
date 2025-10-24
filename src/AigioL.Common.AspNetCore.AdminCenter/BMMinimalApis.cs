@@ -11,6 +11,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+#if NET10_0_OR_GREATER
+#else
+using Microsoft.OpenApi.Models;
+#endif
 
 namespace AigioL.Common.AspNetCore.AdminCenter;
 

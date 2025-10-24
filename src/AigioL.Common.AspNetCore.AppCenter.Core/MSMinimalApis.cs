@@ -15,6 +15,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Text.Json.Serialization.Metadata;
+#if NET10_0_OR_GREATER
+#else
+using Microsoft.OpenApi.Models;
+#endif
 
 namespace AigioL.Common.AspNetCore.AppCenter;
 
@@ -264,6 +268,20 @@ public static partial class MSMinimalApis
         return services;
     }
 }
+
+#if NET10_0_OR_GREATER
+#else
+public static class ValidationServiceCollectionExtensions
+{
+    [Obsolete("在 < .NET 10 中不可用，https://learn.microsoft.com/zh-cn/dotnet/core/extensions/options-validation-generator")]
+    public static IServiceCollection AddValidation(
+        this IServiceCollection services)
+    {
+        // 仅支持 .NET 10+
+        return services;
+    }
+}
+#endif
 
 /// <summary>
 /// https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/openapi/customize-openapi#use-document-transformers
