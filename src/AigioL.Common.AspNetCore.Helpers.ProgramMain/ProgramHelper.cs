@@ -12,6 +12,7 @@ using NLog.Config;
 using NLog.Targets;
 using NLog.Web;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using NLogLevel = NLog.LogLevel;
@@ -269,22 +270,37 @@ public static partial class ProgramHelper
 
     #endregion https://github.com/NLog/NLog/wiki/File-target
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static void CreateDirectory(string dirPath)
     {
-        if (File.Exists(dirPath))
+        try
         {
-            File.Delete(dirPath);
+            // 如果路径存在且是文件，则删除它
+            if (File.Exists(dirPath))
+            {
+                File.Delete(dirPath);
+            }
         }
+        catch
+        {
+        }
+
         var dirInfo = Directory.CreateDirectory(dirPath);
         if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD())
         {
-            dirInfo.UnixFileMode =
-                UnixFileMode.UserRead |
-                UnixFileMode.UserWrite |
-                UnixFileMode.GroupRead |
-                UnixFileMode.GroupWrite |
-                UnixFileMode.OtherRead |
-                UnixFileMode.OtherWrite;
+            try
+            {
+                dirInfo.UnixFileMode =
+                    UnixFileMode.UserRead |
+                    UnixFileMode.UserWrite |
+                    UnixFileMode.GroupRead |
+                    UnixFileMode.GroupWrite |
+                    UnixFileMode.OtherRead |
+                    UnixFileMode.OtherWrite;
+            }
+            catch
+            {
+            }
         }
     }
 
