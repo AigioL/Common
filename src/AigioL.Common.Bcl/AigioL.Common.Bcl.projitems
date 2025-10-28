@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IExplicitHasValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Log.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Net\IPAddress2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)nil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeAsyncDisposable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeDisposable.cs" />

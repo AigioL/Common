@@ -1,4 +1,7 @@
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.JsonWebTokens.Models.Abstractions;
+using System.Net;
+using System.Text.Json.Serialization;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 
@@ -6,7 +9,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 /// 管理后台的配置项，使用 UserSecrets 存储值
 /// <para>https://learn.microsoft.com/zh-cn/aspnet/core/security/app-secrets</para>
 /// </summary>
-public class BMAppSettings : JsonWebTokenOptions
+public partial class BMAppSettings : JsonWebTokenOptions
 {
     /// <summary>
     /// 用于创建一个默认管理员账号的用户名
@@ -27,33 +30,16 @@ public class BMAppSettings : JsonWebTokenOptions
     /// 管理后台的 RSA 私钥
     /// </summary>
     public virtual byte[]? AdminRSAPrivateKey { get; set; }
+}
 
-    public const int DefaultAccessExpirationFromDays = 31;
-    public const int DefaultRefreshExpirationFromDays = 62;
+partial class BMAppSettings : INotUseForwardedHeaders
+{
+    /// <inheritdoc/>
+    public bool NotUseForwardedHeaders { get; set; }
 
-    public override TimeSpan AccessExpiration
-    {
-        get
-        {
-            if (field == default)
-            {
-                return TimeSpan.FromDays(DefaultAccessExpirationFromDays);
-            }
-            return field;
-        }
-        set => field = value;
-    }
+    /// <inheritdoc/>
+    public string? ForwardedHeadersKnownProxies { get; set; }
 
-    public override TimeSpan RefreshExpiration
-    {
-        get
-        {
-            if (field == default)
-            {
-                return TimeSpan.FromDays(DefaultRefreshExpirationFromDays);
-            }
-            return field;
-        }
-        set => field = value;
-    }
+    /// <inheritdoc/>
+    public virtual IPAddress[] GetForwardedHeadersKnownProxies() => INotUseForwardedHeaders.GetForwardedHeadersKnownProxies(ForwardedHeadersKnownProxies);
 }

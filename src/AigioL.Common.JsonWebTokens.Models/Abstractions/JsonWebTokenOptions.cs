@@ -12,31 +12,62 @@ public abstract class JsonWebTokenOptions : IJsonWebTokenOptions
     string? audience;
     string? secretAlgorithm;
 
+    /// <inheritdoc/>
     public string SecretKey
     {
         get => secretKey ?? throw new InvalidOperationException("SecretKey is not set.");
         set => secretKey = value;
     }
 
+    /// <inheritdoc/>
     public string SecretAlgorithm
     {
         get => string.IsNullOrWhiteSpace(secretAlgorithm) ? SecurityAlgorithms.HmacSha384Signature : secretAlgorithm;
         set => secretAlgorithm = value;
     }
 
+    /// <inheritdoc/>
     public string Issuer
     {
         get => issuer ?? throw new InvalidOperationException("Issuer is not set.");
         set => issuer = value;
     }
 
+    /// <inheritdoc/>
     public string Audience
     {
         get => audience ?? throw new InvalidOperationException("Audience is not set.");
         set => audience = value;
     }
 
-    public virtual TimeSpan AccessExpiration { get; set; }
+    public const int DefaultAccessExpirationFromDays = 31;
+    public const int DefaultRefreshExpirationFromDays = 62;
 
-    public virtual TimeSpan RefreshExpiration { get; set; }
+    /// <inheritdoc/>
+    public virtual TimeSpan AccessExpiration
+    {
+        get
+        {
+            if (field == default)
+            {
+                return TimeSpan.FromDays(DefaultAccessExpirationFromDays);
+            }
+            return field;
+        }
+        set => field = value;
+    }
+
+    /// <inheritdoc/>
+    public virtual TimeSpan RefreshExpiration
+    {
+        get
+        {
+            if (field == default)
+            {
+                return TimeSpan.FromDays(DefaultRefreshExpirationFromDays);
+            }
+            return field;
+        }
+        set => field = value;
+    }
 }

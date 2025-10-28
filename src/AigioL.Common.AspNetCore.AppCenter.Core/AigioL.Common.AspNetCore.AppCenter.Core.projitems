@@ -43,8 +43,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.GetValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\RoutingEndpointConventionBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityKeyBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.UseForwardedHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\Abstractions\BaseJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDeviceId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\INotUseForwardedHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyAppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyUserWalletValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />

@@ -1,3 +1,5 @@
+using Microsoft.Win32;
+using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -44,7 +46,7 @@ static partial class ProgramHelper
         Version = version;
     }
 
-    public static void ConsoleWriteInfo(string? projectName = default)
+    public static void ConsoleWriteInfo(string? projectName = default, bool isDevelopment = true)
     {
         if (!string.IsNullOrWhiteSpace(projectName))
             ProjectName = projectName;
@@ -65,7 +67,7 @@ static partial class ProgramHelper
                 {
                     callingAssembly = Assembly.GetCallingAssembly();
                 }
-                catch
+                catch (Exception)
                 {
                 }
                 CalcVersion(callingAssembly);
@@ -83,14 +85,14 @@ static partial class ProgramHelper
 
         #region 当前运行的计算机 CPU 显示名称
 
-        //if (!string.IsNullOrEmpty(CentralProcessorName))
-        //{
-        //    Console.Write("CentralProcessorName: ");
-        //    Console.Write(CentralProcessorName);
-        //    Console.Write(" x");
-        //    Console.Write(Environment.ProcessorCount);
-        //    Console.Write('\n');
-        //}
+        if (!string.IsNullOrEmpty(CentralProcessorName))
+        {
+            Console.Write("CentralProcessorName: ");
+            Console.Write(CentralProcessorName);
+            Console.Write(" x");
+            Console.Write(Environment.ProcessorCount);
+            Console.Write('\n');
+        }
 
         #endregion
 
@@ -110,73 +112,76 @@ static partial class ProgramHelper
 
         #region ShowInfo
 
-        Console.Write("BaseDirectory: ");
-        Console.Write(AppContext.BaseDirectory);
-        Console.Write('\n');
+        if (isDevelopment)
+        {
+            Console.Write("BaseDirectory: ");
+            Console.Write(AppContext.BaseDirectory);
+            Console.Write('\n');
 
-        Console.Write("OSArchitecture: ");
-        Console.Write(RuntimeInformation.OSArchitecture);
-        Console.Write('\n');
+            Console.Write("OSArchitecture: ");
+            Console.Write(RuntimeInformation.OSArchitecture);
+            Console.Write('\n');
 
-        Console.Write("ProcessArchitecture: ");
-        Console.Write(RuntimeInformation.ProcessArchitecture);
-        Console.Write('\n');
+            Console.Write("ProcessArchitecture: ");
+            Console.Write(RuntimeInformation.ProcessArchitecture);
+            Console.Write('\n');
 
-        Console.Write("ProcessId: ");
-        Console.Write(Environment.ProcessId);
-        Console.Write('\n');
+            Console.Write("ProcessId: ");
+            Console.Write(Environment.ProcessId);
+            Console.Write('\n');
 
-        Console.Write("ProcessorCount: ");
-        Console.Write(Environment.ProcessorCount);
-        Console.Write('\n');
+            Console.Write("ProcessorCount: ");
+            Console.Write(Environment.ProcessorCount);
+            Console.Write('\n');
 
-        Console.Write("CurrentManagedThreadId: ");
-        Console.Write(Environment.CurrentManagedThreadId);
-        Console.Write('\n');
+            Console.Write("CurrentManagedThreadId: ");
+            Console.Write(Environment.CurrentManagedThreadId);
+            Console.Write('\n');
 
-        Console.Write("RuntimeVersion: ");
-        Console.Write(Environment.Version);
-        Console.Write('\n');
+            Console.Write("RuntimeVersion: ");
+            Console.Write(Environment.Version);
+            Console.Write('\n');
 
-        Console.Write("OSVersion: ");
-        Console.Write(Environment.OSVersion.Version);
-        Console.Write('\n');
+            Console.Write("OSVersion: ");
+            Console.Write(Environment.OSVersion.Version);
+            Console.Write('\n');
 
-        Console.Write("OSVersionString: ");
-        Console.Write(Environment.OSVersion.VersionString);
-        Console.Write('\n');
+            Console.Write("OSVersionString: ");
+            Console.Write(Environment.OSVersion.VersionString);
+            Console.Write('\n');
 
-        Console.Write("UserInteractive: ");
-        Console.Write(Environment.UserInteractive);
-        Console.Write('\n');
+            Console.Write("UserInteractive: ");
+            Console.Write(Environment.UserInteractive);
+            Console.Write('\n');
 
-        Console.Write("MachineName: ");
-        Console.Write(Environment.MachineName);
-        Console.Write('\n');
+            Console.Write("MachineName: ");
+            Console.Write(Environment.MachineName);
+            Console.Write('\n');
 
-        Console.Write("UserName: ");
-        Console.Write(Environment.UserName);
-        Console.Write('\n');
+            Console.Write("UserName: ");
+            Console.Write(Environment.UserName);
+            Console.Write('\n');
 
-        Console.Write("UserDomainName: ");
-        Console.Write(Environment.UserDomainName);
-        Console.Write('\n');
+            Console.Write("UserDomainName: ");
+            Console.Write(Environment.UserDomainName);
+            Console.Write('\n');
 
-        Console.Write("IsPrivilegedProcess: ");
-        Console.Write(Environment.IsPrivilegedProcess);
-        Console.Write('\n');
+            Console.Write("IsPrivilegedProcess: ");
+            Console.Write(Environment.IsPrivilegedProcess);
+            Console.Write('\n');
 
-        Console.Write("Is64BitOperatingSystem: ");
-        Console.Write(Environment.Is64BitOperatingSystem);
-        Console.Write('\n');
+            Console.Write("Is64BitOperatingSystem: ");
+            Console.Write(Environment.Is64BitOperatingSystem);
+            Console.Write('\n');
 
-        Console.Write("Is64BitProcess: ");
-        Console.Write(Environment.Is64BitProcess);
-        Console.Write('\n');
+            Console.Write("Is64BitProcess: ");
+            Console.Write(Environment.Is64BitProcess);
+            Console.Write('\n');
 
-        Console.Write("SystemPageSize: ");
-        Console.Write(Environment.SystemPageSize);
-        Console.Write('\n');
+            Console.Write("SystemPageSize: ");
+            Console.Write(Environment.SystemPageSize);
+            Console.Write('\n');
+        }
 
         Console.Write("IsDynamicCodeCompiled: ");
         Console.Write(RuntimeFeature.IsDynamicCodeCompiled);
@@ -206,4 +211,78 @@ static partial class ProgramHelper
             Console.Write(s);
         }
     }
+
+    /// <summary>
+    /// 获取当前运行的计算机 CPU 显示名称
+    /// </summary>
+    public static string CentralProcessorName => mCentralProcessorName.Value;
+
+    static readonly Lazy<string> mCentralProcessorName = new(() =>
+    {
+        try
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                using var registryKey = Registry.LocalMachine.OpenSubKey(
+                    @"HARDWARE\DESCRIPTION\System\CentralProcessor\0\");
+                return registryKey?.GetValue("ProcessorNameString")?.ToString()?.Trim() ?? string.Empty;
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                const string filePath = "/proc/cpuinfo";
+                try
+                {
+                    foreach (var line in File.ReadLines(filePath))
+                    {
+                        if (!string.IsNullOrWhiteSpace(line))
+                        {
+                            var lineS = line.AsSpan().Trim();
+                            var array = lineS.Split(':');
+                            int i = 0;
+                            bool isModelNameFound = false;
+                            while (array.MoveNext())
+                            {
+                                var it = lineS[array.Current].Trim();
+                                if (isModelNameFound && i > 0 && it.IsEmpty == false)
+                                {
+                                    return it.ToString();
+                                }
+                                if (it.Equals("model name", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    isModelNameFound = true;
+                                }
+                                i++;
+                            }
+                        }
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                }
+                catch (DirectoryNotFoundException)
+                {
+                }
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                using var p = new Process();
+                p.StartInfo.FileName = "/bin/bash";
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.RedirectStandardInput = true;
+                p.StartInfo.UseShellExecute = false;
+                p.Start();
+                p.StandardInput.WriteLine("sysctl -n machdep.cpu.brand_string");
+                p.StandardInput.Close();
+                var result = p.StandardOutput.ReadToEnd().Trim();
+                p.StandardOutput.Close();
+                p.WaitForExit();
+                p.Close();
+                return result;
+            }
+        }
+        catch
+        {
+        }
+        return string.Empty;
+    }, LazyThreadSafetyMode.ExecutionAndPublication);
 }

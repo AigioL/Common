@@ -47,7 +47,6 @@ public static partial class ProgramHelper
        delegate* managed<WebApplicationBuilder, void> configureServices = default,
        delegate* managed<WebApplication, void> configure = default,
        WebApplicationBuilder? builder = default,
-       bool? consoleWriteInfo = null,
        Assembly? callingAssembly = null,
        Encoding? outputEncoding = null,
        long archiveAboveSize = archiveAboveSize,
@@ -69,7 +68,12 @@ public static partial class ProgramHelper
                                 .RegisterNLogWeb()
                                 .LoadConfiguration(InitNLogConfig(archiveAboveSize, maxArchiveFiles, maxArchiveDays))
                                 .GetCurrentClassLogger();
-        bool isDevelopment = false;
+        bool isDevelopment =
+#if DEBUG
+            true;
+#else
+            false;
+#endif
         try
         {
             // https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-6
@@ -99,10 +103,7 @@ public static partial class ProgramHelper
             Console.OutputEncoding = outputEncoding ?? Encoding.Unicode; // 使用 UTF16 编码输出控制台文字
             CalcVersion(callingAssembly);
 
-            if (!consoleWriteInfo.HasValue)
-                consoleWriteInfo = isDevelopment;
-            if (consoleWriteInfo.Value)
-                ConsoleWriteInfo(projectName);
+            ConsoleWriteInfo(projectName, isDevelopment);
 
             app.Run();
         }
@@ -281,7 +282,7 @@ public static partial class ProgramHelper
                 File.Delete(dirPath);
             }
         }
-        catch
+        catch (Exception)
         {
         }
 
@@ -298,7 +299,7 @@ public static partial class ProgramHelper
                     UnixFileMode.OtherRead |
                     UnixFileMode.OtherWrite;
             }
-            catch
+            catch (Exception)
             {
             }
         }
