@@ -1,6 +1,7 @@
 using AigioL.Common.BuildTools.Commands.Abstractions;
 using System.CommandLine;
 using System.Diagnostics;
+using System.Reflection;
 using static AigioL.Common.BuildTools.ProgramHelper;
 
 namespace AigioL.Common.BuildTools.Commands;
@@ -8,7 +9,7 @@ namespace AigioL.Common.BuildTools.Commands;
 /// <summary>
 /// 服务端微服务容器发布命令
 /// </summary>
-public interface IServerPublishCommand : ICommand
+public partial interface IServerPublishCommand : ICommand
 {
     /// <summary>
     /// 命令名
@@ -127,9 +128,26 @@ public interface IServerPublishCommand : ICommand
 
     private static async Task HandlerCore(string? push_name, string? input, string? push_domain, bool push_only, string? tag_ver, string? config, CancellationToken cancellationToken)
     {
+        var thisType = typeof(IServerPublishCommand);
+        if (string.IsNullOrWhiteSpace(push_domain))
+        {
+            push_domain = thisType.GetField("DefaultPushDomain", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null)?.ToString();
+        }
+        if (string.IsNullOrWhiteSpace(push_name))
+        {
+            push_name = thisType.GetField("DefaultPushName", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null)?.ToString();
+        }
+        string[] ignoreProjects = [];
+        if (thisType.GetField("IgnoreProjects", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null) is string[] ignoreProjects2)
+        {
+            ignoreProjects = ignoreProjects2;
+        }
+
         config = GetConfig(config);
         var projPath = ROOT_ProjPath;
-        var projects = GetServerPublishProjects().ToArray();
+        var projects = GetServerPublishProjects()
+            .Where(x => !ignoreProjects.Contains(x.ProjectName))
+            .ToArray();
         if (projects == null || projects.Length == 0)
         {
             Console.WriteLine("错误：未配置发布项目");
