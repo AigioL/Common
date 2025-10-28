@@ -29,6 +29,7 @@ partial class MSMinimalApis
         string? connectionString = null;
 
         // 调用 Aspire 的扩展方法，添加 Redis 客户端和分布式缓存服务
+        // https://learn.microsoft.com/zh-cn/aspnet/core/performance/caching/distributed?view=aspnetcore-10.0
         builder.AddRedisDistributedCache(connectionName, ConfigureSettings, configureOptions);
 
         // 通过委托获取连接字符串
@@ -47,6 +48,9 @@ partial class MSMinimalApis
         {
             options.InstanceName = instanceName;
         });
+
+        // 添加内存中缓存 https://learn.microsoft.com/zh-cn/aspnet/core/performance/caching/memory?view=aspnetcore-10.0
+        builder.Services.AddMemoryCache();
     }
 }
 

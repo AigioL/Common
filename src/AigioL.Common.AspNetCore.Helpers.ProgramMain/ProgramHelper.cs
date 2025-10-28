@@ -13,6 +13,8 @@ using NLog.Targets;
 using NLog.Web;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Text.Json.Nodes;
 using NLogLevel = NLog.LogLevel;
@@ -271,6 +273,13 @@ public static partial class ProgramHelper
 
     #endregion https://github.com/NLog/NLog/wiki/File-target
 
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+    [LibraryImport("libc", EntryPoint = "chmod", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    [SupportedOSPlatform("FreeBSD")]
+    [SupportedOSPlatform("Linux")]
+    [SupportedOSPlatform("MacOS")]
+    private static partial int Chmod(string path, int mode);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static void CreateDirectory(string dirPath)
     {
@@ -291,13 +300,14 @@ public static partial class ProgramHelper
         {
             try
             {
-                dirInfo.UnixFileMode =
+                const UnixFileMode mode =
                     UnixFileMode.UserRead |
                     UnixFileMode.UserWrite |
                     UnixFileMode.GroupRead |
                     UnixFileMode.GroupWrite |
                     UnixFileMode.OtherRead |
                     UnixFileMode.OtherWrite;
+                Chmod(dirInfo.FullName, unchecked((int)mode));
             }
             catch (Exception)
             {
