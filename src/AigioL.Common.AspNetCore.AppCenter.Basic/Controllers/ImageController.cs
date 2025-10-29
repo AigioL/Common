@@ -14,7 +14,7 @@ public static partial class ImageController
     public static void MapBasicImage<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
         this IEndpointRouteBuilder b,
-        [StringSyntax("Route")] string pattern = "api/image")
+        [StringSyntax("Route")] string pattern = "basic/image")
         where TAppSettings : class, IAppSettings
     {
         var routeGroup = b.MapGroup(pattern)
