@@ -1,9 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
-using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
-using AigioL.Common.Models;
 using Microsoft.AspNetCore.Identity;
-using Quartz;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -57,7 +55,7 @@ public abstract partial class JobService<
     JobService(
         logger,
         dbContext,
-        feishuApiClient)
+        feishuApiClient), IJob
     where TDbContext : IJobDbContext
     where TJobService : JobService<TDbContext, TJobService>
 {
@@ -187,6 +185,21 @@ public abstract partial class JobService<
         return result;
     }
 
+    /// <inheritdoc/>
+    public virtual Task Execute(IJobExecutionContext context)
+    {
+        return ExecuteAsync(context, context.CancellationToken);
+    }
+
+    /// <summary>
+    /// 创建 Job 服务实例
+    /// </summary>
+    public static TJobService CreateInstance(IServiceProvider serviceProvider)
+    {
+        var s = JobActivatorCache.CreateInstance(serviceProvider, typeof(TJobService));
+        return (TJobService)s!;
+    }
+
 #if DEBUG
     void OutputDebugInfo()
     {
@@ -210,4 +223,16 @@ public abstract partial class JobService<
             """, GetType().Name, jobDbType.Name, @dbInterface);
     }
 #endif
+}
+
+file static class JobActivatorCache // https://github.com/quartznet/quartznet/blob/main/src/Quartz/Simpl/JobActivatorCache.cs
+{
+    static readonly ConcurrentDictionary<Type, ObjectFactory> activatorCache = new();
+    static readonly Func<Type, ObjectFactory> createFactory = type => ActivatorUtilities.CreateFactory(type, Type.EmptyTypes);
+
+    internal static object CreateInstance(IServiceProvider serviceProvider, Type jobType)
+    {
+        var factory = activatorCache.GetOrAdd(jobType, createFactory);
+        return factory(serviceProvider, null);
+    }
 }

@@ -9,7 +9,6 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Jobs\Abstractions\BaseJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\JobService.cs" />
   </ItemGroup>
 </Project>
