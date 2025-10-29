@@ -12,6 +12,7 @@
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FeishuApiOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IFeishuApiClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\FeishuApiClient.cs" />

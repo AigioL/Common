@@ -49,7 +49,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddProblemDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.UseForwardedHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValidationServiceCollectionExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Jobs\Abstractions\BaseJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDeviceId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\INotUseForwardedHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyAppVer.cs" />
@@ -80,6 +79,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Security\ISecurityKeyOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAppVerCoreService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\ILocalizationService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\JobService.cs" />
   </ItemGroup>
 </Project>

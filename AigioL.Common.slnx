@@ -59,6 +59,7 @@
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics/AigioL.Common.AspNetCore.AppCenter.Analytics.shproj" Id="4741fdd2-d3e8-43a7-a068-03d0f9859292" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic.Core/AigioL.Common.AspNetCore.AppCenter.Basic.Core.shproj" Id="9a99af09-34a7-46b8-8345-095b02f846e1" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic/AigioL.Common.AspNetCore.AppCenter.Basic.shproj" Id="3b025ecf-b924-4625-9635-68b1c88e3cd3" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Core.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Core.JobScheduler.shproj" Id="bf6e035e-b848-4db5-9829-2efc76ad1d08" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Core/AigioL.Common.AspNetCore.AppCenter.Core.shproj" Id="8c072252-eabc-401a-aa84-59b8b38eda49" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity.Core/AigioL.Common.AspNetCore.AppCenter.Identity.Core.shproj" Id="070b8d0d-9e6a-49ea-883e-5d9cb8d470f4" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity.UI/AigioL.Common.AspNetCore.AppCenter.Identity.UI.csproj" Id="6b5b1110-b7f7-4f3a-ba59-00c621df7d4d" />

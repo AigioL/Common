@@ -1,4 +1,3 @@
-#if INCLUDE_QUARTZ
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
@@ -215,4 +214,3 @@ public abstract partial class JobService<
     }
 #endif
 }
-#endif

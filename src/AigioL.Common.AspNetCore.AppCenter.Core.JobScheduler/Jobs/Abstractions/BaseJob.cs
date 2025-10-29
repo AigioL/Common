@@ -1,4 +1,3 @@
-#if INCLUDE_QUARTZ
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using Quartz;
@@ -24,4 +23,3 @@ public abstract class BaseJob<
         return jobService.ExecuteAsync(context, context.CancellationToken);
     }
 }
-#endif
