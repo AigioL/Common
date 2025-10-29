@@ -13,7 +13,7 @@ public static class AftersalesBillController
         [StringSyntax("Route")] string pattern = "ordering/aftersalesbill")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] AftersalesBillAddDto m) =>

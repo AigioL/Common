@@ -84,10 +84,10 @@ public static partial class BMLoginController
         var rsaParameters = RSAUtils.ReadParameters(rsaPrivateKey);
         using var rsa = RSA.Create(rsaParameters);
 
-        var userName = BMMinimalApis.DecryptAC(rsa, args[0]);
-        var password = BMMinimalApis.DecryptAC(rsa, args[1]);
-        var twoFactorCode = args.Length >= 3 ? BMMinimalApis.DecryptAC(rsa, args[2]) : null;
-        var twoFactorRecoveryCode = args.Length >= 4 ? BMMinimalApis.DecryptAC(rsa, args[3]) : null;
+        var userName = rsa.BMDecrypt(args[0]);
+        var password = rsa.BMDecrypt(args[1]);
+        var twoFactorCode = args.Length >= 3 ? rsa.BMDecrypt(args[2]) : null;
+        var twoFactorRecoveryCode = args.Length >= 4 ? rsa.BMDecrypt(args[3]) : null;
 
         // https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Identity/Core/src/IdentityApiEndpointRouteBuilderExtensions.cs#L90
         var signInManager = context.RequestServices.GetRequiredService<SignInManager<TUser>>();

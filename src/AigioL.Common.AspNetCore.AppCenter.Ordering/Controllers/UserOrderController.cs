@@ -17,7 +17,7 @@ public static class UserOrderController
         [StringSyntax("Route")] string pattern = "ordering/userorder")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("{id}", async (HttpContext context,
             [FromRoute] Guid id) =>

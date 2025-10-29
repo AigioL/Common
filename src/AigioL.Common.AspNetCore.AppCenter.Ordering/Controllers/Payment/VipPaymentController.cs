@@ -12,7 +12,7 @@ public static class VipPaymentController
         [StringSyntax("Route")] string pattern = "payment/vip")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("PayLink", async (HttpContext context,
             [FromQuery] Guid goodId) =>

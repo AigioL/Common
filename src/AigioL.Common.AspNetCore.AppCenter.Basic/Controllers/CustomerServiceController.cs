@@ -14,7 +14,7 @@ public static partial class CustomerServiceController
         [StringSyntax("Route")] string pattern = "basic/customer/service")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("", async (HttpContext context) =>
         {

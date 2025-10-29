@@ -51,10 +51,9 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
             Url = context.Request.Path,
             TraceId = traceId,
         };
-        await MSMinimalApis.WriteApiRspAsync(
+        await apiRsp.WriteAsync(
             serializableImplType,
             context.Response,
-            apiRsp,
             cancellationToken: context.RequestAborted);
     }
 

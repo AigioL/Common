@@ -9,6 +9,7 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Identity</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IdentityMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\LoginChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipInfo.V1.cs" />
@@ -34,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.V%28-1%29.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAuthMessageRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IJsonWebTokenUserManager.cs" />
   </ItemGroup>
 </Project>

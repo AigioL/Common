@@ -19,7 +19,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\InfoController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\BMDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IBMDbContextBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApiRspExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthorizationEndpointConventionBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionHandlerExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\OpenApiOptionsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\RSAExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.MapGetRSADemoHtml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddProblemDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddACRepositories.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMButtonModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMRoleModel.cs" />
@@ -32,7 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMApiRspExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMApiRsp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMInitSystemRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BMMinimalApis.Decrypt.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Users\BMChangePasswordRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Users\BMUserInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Users\AddBMUserModel.cs" />

@@ -11,7 +11,7 @@ public static partial class MembershipController
         [StringSyntax("Route")] string pattern = "identity/v1/membership")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize)
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize)
             .WithRequiredSecurityKey();
 
         routeGroup.MapGet("info", async (HttpContext context) =>

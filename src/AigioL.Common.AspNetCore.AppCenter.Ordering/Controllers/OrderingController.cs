@@ -13,7 +13,7 @@ public static class OrderingController
         [StringSyntax("Route")] string pattern = "ordering")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("{id}", async (HttpContext context,
             [FromRoute] Guid id) =>

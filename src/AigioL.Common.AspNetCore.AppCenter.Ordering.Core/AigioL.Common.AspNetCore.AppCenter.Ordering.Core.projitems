@@ -32,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Summaries\OrderAmountQtySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\TransferOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserCouponInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillAddDto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillDetailModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementModel.cs" />
@@ -66,6 +67,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\TransferStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAftersalesBillRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IMerchantDeductionAgreementRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOrderRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAliPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IUnSignAgreementServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IWeChatPayServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

@@ -3,9 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace AigioL.Common.AspNetCore.AppCenter;
+#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
+namespace Microsoft.Extensions.DependencyInjection;
 
-partial class MSMinimalApis
+public static partial class EntityFrameworkServiceCollectionExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IServiceCollection AddDbContext2<[

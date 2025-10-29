@@ -44,9 +44,8 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
             Message = message,
         };
         context.Response.StatusCode = statusCode;
-        await MSMinimalApis.WriteApiRspAsync(
+        await apiRsp.WriteAsync(
             context.Response,
-            apiRsp,
             cancellationToken: context.RequestAborted);
     }
 

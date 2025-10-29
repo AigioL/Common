@@ -12,7 +12,7 @@ public static class MembershipController
         [StringSyntax("Route")] string pattern = "payment/membership")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("goods", async (HttpContext context) =>
         {

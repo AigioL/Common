@@ -21,8 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IJobDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKeyValuePairsDbContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\AppDbContext.IDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AuthMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Identitys.cs" />
@@ -38,12 +36,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserRefreshJsonWebToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWallet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWalletChangeRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApiRspExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AspireRedisDistributedCacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CacheExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EntityFrameworkServiceCollectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ExceptionHandlerExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.GetValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\OpenApiOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\RoutingEndpointConventionBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityKeyBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddProblemDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.UseForwardedHeaders.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValidationServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\Abstractions\BaseJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDeviceId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\INotUseForwardedHeaders.cs" />
@@ -65,8 +70,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ViewLayoutModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.PostgreSQL.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.Redis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\JsonWebTokenAuthorizationMiddlewareResultHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKeyValuePairRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\KeyValuePairRepository.cs" />

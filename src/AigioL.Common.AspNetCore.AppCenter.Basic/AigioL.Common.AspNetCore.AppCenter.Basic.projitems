@@ -18,18 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\OfficialMessageController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ServerCertificateController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VersionsController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IAppSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerBuildRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOfficialMessageRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IStaticResourceRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\AppVerBuildRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleCategoryRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\OfficialMessageRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\StaticResourceRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\AppVerCoreService.cs" />
   </ItemGroup>
 </Project>

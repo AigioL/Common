@@ -9,7 +9,7 @@ public static partial class ManageController
         [StringSyntax("Route")] string pattern = "identity/v1/manage")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize)
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize)
             .WithRequiredSecurityKey();
 
         routeGroup.MapPost("refreshuserinfo", async (HttpContext context) =>

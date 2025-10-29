@@ -23,12 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\TestController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\UserOrderController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\VipPaymentController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAftersalesBillRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IMerchantDeductionAgreementRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOrderRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAliPayServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IUnSignAgreementServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IWeChatPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
   </ItemGroup>
 </Project>

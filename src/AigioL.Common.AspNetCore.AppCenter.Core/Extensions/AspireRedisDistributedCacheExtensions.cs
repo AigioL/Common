@@ -7,24 +7,21 @@ using StackExchange.Redis.Profiling;
 using System.Net;
 using System.Reflection;
 
-namespace AigioL.Common.AspNetCore.AppCenter;
+#pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
+namespace Microsoft.Extensions.Hosting;
 
-partial class MSMinimalApis
+public static partial class AspireRedisDistributedCacheExtensions
 {
     /// <summary>
     /// 添加由 Redis 实现的分布式缓存
     /// </summary>
-    /// <param name="builder"></param>
-    /// <param name="connectionName"></param>
-    /// <param name="instanceName"></param>
-    /// <param name="configureSettings"></param>
-    /// <param name="configureOptions"></param>
     public static void AddRedisDistributedCacheV2(
         this IHostApplicationBuilder builder,
         string connectionName,
         string instanceName = "AigioL_Common_DistributedCache",
         Action<StackExchangeRedisSettings>? configureSettings = null,
-        Action<ConfigurationOptions>? configureOptions = null)
+        Action<ConfigurationOptions>? configureOptions = null,
+        bool addMemoryCache = true)
     {
         string? connectionString = null;
 
@@ -49,10 +46,14 @@ partial class MSMinimalApis
             options.InstanceName = instanceName;
         });
 
-        // 添加内存中缓存 https://learn.microsoft.com/zh-cn/aspnet/core/performance/caching/memory?view=aspnetcore-10.0
-        builder.Services.AddMemoryCache();
+        if (addMemoryCache)
+        {
+            // 添加内存中缓存 https://learn.microsoft.com/zh-cn/aspnet/core/performance/caching/memory?view=aspnetcore-10.0
+            builder.Services.AddMemoryCache();
+        }
     }
 }
+
 
 file sealed class LazyConnectionMultiplexer(string redisConnStr) : IConnectionMultiplexer
 {

@@ -14,6 +14,9 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ActiveUsersController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\LogsController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
   </ItemGroup>
 </Project>

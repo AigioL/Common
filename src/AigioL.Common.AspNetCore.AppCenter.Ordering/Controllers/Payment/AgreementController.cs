@@ -16,7 +16,7 @@ public static class AgreementController
         [StringSyntax("Route")] string pattern = "payment/agreements")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("short/url/{id}", async (HttpContext context,
             [FromRoute] string id) =>

@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialCustomMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessageAppVerRelation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificatePackable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateRawDataType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateValidateKey.cs" />
@@ -48,6 +49,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FileSystem\CloudFileType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageItemModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerBuildRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOfficialMessageRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IStaticResourceRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\AppVerBuildRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleCategoryRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\OfficialMessageRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\StaticResourceRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\AppVerCoreService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\" />

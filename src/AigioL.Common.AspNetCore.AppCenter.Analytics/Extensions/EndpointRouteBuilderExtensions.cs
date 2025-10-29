@@ -2,9 +2,9 @@ using AigioL.Common.AspNetCore.AppCenter.Analytics.Controllers;
 using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
-namespace AigioL.Common.AspNetCore.AppCenter;
+namespace Microsoft.AspNetCore.Builder;
 
-public static partial class MSMinimalApis
+public static partial class EndpointRouteBuilderExtensions
 {
     /// <summary>
     /// 注册分析服务的最小 API 路由

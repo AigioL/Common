@@ -26,7 +26,7 @@ public enum KomaasharuType
     Embedded = 8,
 
     /// <summary>
-    /// 桌面端主页 Banner 图
+    /// 主页
     /// </summary>
-    DeskTopHomeBanner = 16,
+    HomePage = 16,
 }

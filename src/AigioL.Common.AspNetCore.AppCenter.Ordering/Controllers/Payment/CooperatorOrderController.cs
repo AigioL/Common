@@ -9,7 +9,7 @@ public static class CooperatorOrderController
         [StringSyntax("Route")] string pattern = "payment/cooperatororder")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         // TODO: [ServiceFilter(typeof(CooperatorFilterAttribute))]
     }

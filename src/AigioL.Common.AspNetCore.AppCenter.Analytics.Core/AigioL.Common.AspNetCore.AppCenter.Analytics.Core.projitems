@@ -61,9 +61,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisPageLogModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisStartServiceLogModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisStartSessionLogModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuOrientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\Summaries\StatisticsKomaasharuResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKomaasharuRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\" />

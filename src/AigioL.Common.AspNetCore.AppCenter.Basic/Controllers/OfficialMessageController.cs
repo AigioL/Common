@@ -16,7 +16,7 @@ public static partial class OfficialMessageController
         [StringSyntax("Route")] string pattern = "basic/officialmessage")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.MSApiControllerBaseAuthorize);
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("message", async (HttpContext context,
             [FromQuery] ClientPlatform? clientPlatform,

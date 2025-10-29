@@ -30,9 +30,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.V1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.V0.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VerificationCodesController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ViewExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MSMinimalApis.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAuthMessageRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\LoginDetection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\LoginDetectionModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shared\LayoutModel.cs" />

@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Security.Cryptography;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 
@@ -25,10 +24,7 @@ public static partial class BMUsersController
     public static void MapBMUsers<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/users") where TUser : BMUser, new()
     {
         var routeGroup = b.MapGroup(pattern)
-        .RequireAuthorization(new AuthorizeAttribute()
-        {
-            AuthenticationSchemes = BMMinimalApis.BearerScheme,
-        })
+        .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
         .WithDescription("管理后台的用户管理");
 
         routeGroup.MapGet("", async (HttpContext context, [FromQuery] int current = IPagedModel.DefaultCurrent, [FromQuery] int pageSize = IPagedModel.DefaultPageSize, [FromQuery] string? userName = null, [FromQuery] string? nickName = null, [FromQuery] string? name = null) =>

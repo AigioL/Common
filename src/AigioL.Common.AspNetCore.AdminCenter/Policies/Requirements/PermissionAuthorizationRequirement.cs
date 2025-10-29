@@ -1,4 +1,3 @@
-using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using Microsoft.AspNetCore.Authorization;
 
