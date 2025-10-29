@@ -123,26 +123,22 @@ public abstract partial class JobService<
     /// <summary>
     /// 当作业计划（JobScheduler）执行完成时
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="creationTime"></param>
-    /// <param name="result"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     protected virtual async Task OnCompletedAsync(
         IJobExecutionContext? context,
-        long creationTime,
+        DateTimeOffset creationTime,
+        long timestamp,
         ApiRsp result,
         CancellationToken cancellationToken)
     {
         var jobName = JobName;
         JobRecordResult jobRecordResult = new()
         {
-            CreationTime = new(creationTime, TimeSpan.Zero),
+            CreationTime = creationTime,
             Name = jobName,
             Code = result.Code,
             Message = result.Message,
             IsAutomatic = context != null,
-            Elapsed = Stopwatch.GetElapsedTime(creationTime),
+            Elapsed = Stopwatch.GetElapsedTime(timestamp),
         };
         jobRecordResult.CompletedTime = jobRecordResult.CreationTime.Add(jobRecordResult.Elapsed);
 
@@ -173,7 +169,8 @@ public abstract partial class JobService<
         IJobExecutionContext? context,
         CancellationToken cancellationToken)
     {
-        var now = Stopwatch.GetTimestamp();
+        var timestamp = Stopwatch.GetTimestamp();
+        var now = DateTimeOffset.Now;
         ApiRsp result;
         try
         {
@@ -186,7 +183,7 @@ public abstract partial class JobService<
         {
             result = ex;
         }
-        await OnCompletedAsync(context, now, result, cancellationToken);
+        await OnCompletedAsync(context, now, timestamp, result, cancellationToken);
         return result;
     }
 
