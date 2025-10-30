@@ -79,7 +79,7 @@ public static partial class WebApiCompatDevicePlatformEnumExtensions
     /// </summary>
     /// <param name="devicePlatform"></param>
     /// <returns></returns>
-    public static WebApiCompatDevicePlatform ToSppWebApiCompat(this DevicePlatform2 devicePlatform) => devicePlatform switch
+    public static WebApiCompatDevicePlatform ToWebApiCompat(this DevicePlatform2 devicePlatform) => devicePlatform switch
     {
         DevicePlatform2.UWP => WebApiCompatDevicePlatform.UWP,
         DevicePlatform2.WindowsDesktopBridge or

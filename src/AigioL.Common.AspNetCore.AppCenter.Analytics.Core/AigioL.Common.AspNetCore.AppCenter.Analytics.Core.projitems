@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\KomaasharuPersonalized.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatistic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatisticPerDaySummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticCacheModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserRecordModel.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\Summaries\StatisticsKomaasharuResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKomaasharuRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\KomaasharuRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\" />
