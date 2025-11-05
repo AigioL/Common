@@ -103,6 +103,41 @@ public static partial class CacheExtensions
         return value;
     }
 
+    /// <summary>
+    /// 异步从缓存中获取指定键的值
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static async Task<(byte[]? bytes, T? t)> GetV2WithBinaryAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        this IDistributedCache cache,
+        string key,
+        CancellationToken cancellationToken = default) where T : notnull
+    {
+        T? value = default;
+        var bytes = await cache.GetAsync(key, cancellationToken);
+        if (bytes != null)
+        {
+            try
+            {
+                value = MemoryPackSerializer.Deserialize<T>(bytes);
+            }
+            catch
+            {
+                // 反序列化失败，视作缓存数据无效
+                try
+                {
+                    var logger = Log.CreateLogger(nameof(CacheExtensions));
+                    var tType = typeof(T);
+                    var typeName = tType.FullName ?? tType.Name;
+                    LogErrorByGetV2Async(logger, typeName);
+                }
+                catch
+                {
+                }
+            }
+        }
+        return (bytes, value);
+    }
+
     [LoggerMessage(
         Level = LogLevel.Error,
         Message = "异步从缓存中获取指定键的值时出错，类型：{typeName}")]
