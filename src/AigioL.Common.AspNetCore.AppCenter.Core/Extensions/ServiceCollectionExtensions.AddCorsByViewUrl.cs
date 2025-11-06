@@ -22,6 +22,7 @@ public static partial class ServiceCollectionExtensions
                     options.AddDefaultPolicy(
                         builder => builder.WithOrigins(origins).AllowCredentials().AllowAnyMethod().AllowAnyHeader());
                 });
+                services.AddSingleton(new UseCors());
             }
         }
     }
@@ -32,11 +33,28 @@ public static partial class ServiceCollectionExtensions
     public static IApplicationBuilder UseCors<TAppSettings>(this IApplicationBuilder builder, TAppSettings appSettings)
        where TAppSettings : class, IViewsUrl
     {
-        var useCors = IViewsUrl.UseCors(builder.ApplicationServices);
-        if (useCors)
+        if (!string.IsNullOrWhiteSpace(appSettings.ViewsUrl))
         {
-            builder.UseCors();
+            var s = builder.ApplicationServices.GetService<UseCors>();
+            var useCors = s != null;
+            if (useCors)
+            {
+                var logger = builder.ApplicationServices.GetService<ILoggerFactory>()?.CreateLogger(nameof(IViewsUrl));
+                if (logger != null)
+                {
+                    LogCorsOrigins(logger, appSettings.ViewsUrl);
+                }
+                builder.UseCors();
+            }
         }
         return builder;
     }
+
+
+    [LoggerMessage(
+        Level = LogLevel.Critical,
+        Message = "已配置允许跨域访问的 Web UI 地址：{origins}")]
+    private static partial void LogCorsOrigins(ILogger logger, string? origins);
 }
+
+file sealed class UseCors();

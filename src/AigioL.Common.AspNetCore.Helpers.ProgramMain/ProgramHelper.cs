@@ -50,7 +50,7 @@ public static partial class ProgramHelper
        delegate* managed<WebApplication, void> configure = default,
        WebApplicationBuilder? builder = default,
        Assembly? callingAssembly = null,
-       Encoding? outputEncoding = null,
+       //Encoding? outputEncoding = null,
        long archiveAboveSize = archiveAboveSize,
        int maxArchiveFiles = maxArchiveFiles,
        int maxArchiveDays = maxArchiveDays)
@@ -78,6 +78,11 @@ public static partial class ProgramHelper
 #endif
         try
         {
+            //Console.OutputEncoding = outputEncoding ?? Encoding.Unicode; // 使用 UTF16 编码输出控制台文字
+            CalcVersion(callingAssembly);
+
+            ConsoleWriteInfo(projectName, isDevelopment);
+
             // https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-6
             logger.Debug("init main");
             builder ??= WebApplication.CreateSlimBuilder(args);
@@ -101,11 +106,6 @@ public static partial class ProgramHelper
                 configure(app);
                 configure = default;
             }
-
-            Console.OutputEncoding = outputEncoding ?? Encoding.Unicode; // 使用 UTF16 编码输出控制台文字
-            CalcVersion(callingAssembly);
-
-            ConsoleWriteInfo(projectName, isDevelopment);
 
             app.Run();
         }
