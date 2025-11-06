@@ -344,6 +344,21 @@ public static partial class RSAUtils
                 Q = rsaUtilsParameters.Q != null ? Base64Url.DecodeFromChars(rsaUtilsParameters.Q) : null,
             };
         }
+
+        public static implicit operator Parameters(RSAParameters parameters)
+        {
+            return new()
+            {
+                D = parameters.D == null ? null : Base64Url.EncodeToString(parameters.D),
+                DP = parameters.DP == null ? null : Base64Url.EncodeToString(parameters.DP),
+                DQ = parameters.DQ == null ? null : Base64Url.EncodeToString(parameters.DQ),
+                Exponent = parameters.Exponent == null ? null : Base64Url.EncodeToString(parameters.Exponent),
+                InverseQ = parameters.InverseQ == null ? null : Base64Url.EncodeToString(parameters.InverseQ),
+                Modulus = parameters.Modulus == null ? null : Base64Url.EncodeToString(parameters.Modulus),
+                P = parameters.P == null ? null : Base64Url.EncodeToString(parameters.P),
+                Q = parameters.Q == null ? null : Base64Url.EncodeToString(parameters.Q),
+            };
+        }
     }
 }
 
