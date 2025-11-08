@@ -45,7 +45,9 @@ public static partial class ErrorController
     {
         object? error;
         var path = exceptionHandlerPathFeature.Path;
-        if (ExternalLoginSteamPaths.Values.Contains(path, StringComparer.InvariantCultureIgnoreCase))
+        if (path != null && path.Contains("steam", StringComparison.InvariantCultureIgnoreCase) && (
+            path.Contains("sign", StringComparison.InvariantCultureIgnoreCase) ||
+            path.Contains("externallogin", StringComparison.InvariantCultureIgnoreCase)))
         {
             error = R.SteamLoginException;
         }
@@ -135,16 +137,6 @@ public static partial class ErrorController
     }
 }
 
-file static class ExternalLoginSteamPaths
-{
-    internal static readonly string[] Values =
-    [
-        "/signin-steam",
-        "/externallogin/steam",
-        "/externallogindetection/steam",
-    ];
-}
-
 /// <summary>
 /// 表示该终结点会返回 Identity UI 页面的元数据类型
 /// </summary>
@@ -179,7 +171,7 @@ partial class ErrorController
         {
             var exceptionHandlerPathFeature = new ExceptionHandlerFeature
             {
-                Path = ExternalLoginSteamPaths.Values.First(),
+                Path = "/signin-steam",
             };
             var r = await Get(context, exceptionHandlerPathFeature);
             return r;
