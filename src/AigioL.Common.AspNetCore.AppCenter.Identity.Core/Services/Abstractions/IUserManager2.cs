@@ -20,9 +20,9 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
     //Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 获取用户信息，优先从缓存中取（版本 1）
+    /// 获取用户信息，优先从缓存中取
     /// </summary>
-    Task<UserInfoModel?> GetUserInfoCacheV1Async(bool isOpenId = false);
+    Task<UserInfoModel?> GetUserInfoCacheAsync(bool isOpenId = false);
 
     /// <summary>
     /// 进行登录生成凭证返回
@@ -31,6 +31,8 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
         User user,
         bool isLoginOrRegister,
         string? deviceId);
+
+    Task UnbundleAccountAsync(User user, ExternalLoginChannel channel);
 }
 
 partial interface IUserManager2 // 创建用户

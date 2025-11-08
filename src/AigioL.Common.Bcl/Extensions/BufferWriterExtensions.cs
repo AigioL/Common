@@ -145,6 +145,9 @@ public static partial class BufferWriterExtensions
         }
     }
 
+    /// <summary>
+    /// 将字符串按 HTML 编码后写入缓冲区
+    /// </summary>
     public static void WriteHtmlEncodedText(this IBufferWriter<byte> writer, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -155,6 +158,9 @@ public static partial class BufferWriterExtensions
         writer.WriteHtmlEncodedText(value.AsSpan());
     }
 
+    /// <summary>
+    /// 将字符 Span 按 HTML 编码后写入缓冲区
+    /// </summary>
     public static void WriteHtmlEncodedText(this IBufferWriter<byte> writer, ReadOnlySpan<char> value)
     {
         if (value.IsEmpty)
@@ -184,6 +190,9 @@ public static partial class BufferWriterExtensions
         }
     }
 
+    /// <summary>
+    /// 将 utf8 字节按 HTML 编码后写入缓冲区
+    /// </summary>
     public static void WriteHtmlEncodedText(this IBufferWriter<byte> writer, ReadOnlySpan<byte> value)
     {
         if (value.IsEmpty)
@@ -255,6 +264,9 @@ public static partial class BufferWriterExtensions
         }
     }
 
+    /// <summary>
+    /// 将字符串按 URL 编码后写入缓冲区
+    /// </summary>
     public static void WriteUrlEncodedText(this IBufferWriter<byte> writer, string? value)
     {
         if (string.IsNullOrEmpty(value))
@@ -265,6 +277,9 @@ public static partial class BufferWriterExtensions
         writer.WriteUrlEncodedText(value.AsSpan());
     }
 
+    /// <summary>
+    /// 将字符 Span 按 URL 编码后写入缓冲区
+    /// </summary>
     public static void WriteUrlEncodedText(this IBufferWriter<byte> writer, ReadOnlySpan<char> value)
     {
         if (value.IsEmpty)
@@ -294,6 +309,9 @@ public static partial class BufferWriterExtensions
         }
     }
 
+    /// <summary>
+    /// 将 utf8 字节按 URL 编码后写入缓冲区
+    /// </summary>
     public static void WriteUrlEncodedText(this IBufferWriter<byte> writer, ReadOnlySpan<byte> value)
     {
         if (value.IsEmpty)
@@ -365,8 +383,14 @@ public static partial class BufferWriterExtensions
         }
     }
 
+    /// <summary>
+    /// 将字符串按行拆分，去除每行首尾空白字符后写入缓冲区
+    /// </summary>
     public static void WriteRemoveNewLineTrim(this IBufferWriter<byte> writer, ReadOnlySpan<byte> value) => writer.WriteRemoveNewLineTrimCore(value, false);
 
+    /// <summary>
+    /// 将字符串按行拆分，去除每行首尾空白字符后写入缓冲区，保留换行符
+    /// </summary>
     public static void WriteAllLineTrim(this IBufferWriter<byte> writer, ReadOnlySpan<byte> value) => writer.WriteRemoveNewLineTrimCore(value, true);
 
     static void WriteRemoveNewLineTrimCore(this IBufferWriter<byte> writer, ReadOnlySpan<byte> value, bool keepNewLine = false)
@@ -390,6 +414,9 @@ public static partial class BufferWriterExtensions
         }
     }
 
+    /// <summary>
+    /// 获取字符串通过 JSON 编码后的 UTF8 字节 Span 切片
+    /// </summary>
     public static ReadOnlySpan<byte> GetJsonEncodedUtf8Bytes(this string? value, JavaScriptEncoder? encoder = null)
     {
         if (string.IsNullOrEmpty(value))
@@ -399,6 +426,9 @@ public static partial class BufferWriterExtensions
         return JsonEncodedText.Encode(value.AsSpan(), encoder).EncodedUtf8Bytes;
     }
 
+    /// <summary>
+    /// 将字符串通过 JSON 编码后写入缓冲区
+    /// </summary>
     public static void WriteJsonEncodedText(this IBufferWriter<byte> writer, string? value, JavaScriptEncoder? encoder = null)
     {
         if (string.IsNullOrEmpty(value))

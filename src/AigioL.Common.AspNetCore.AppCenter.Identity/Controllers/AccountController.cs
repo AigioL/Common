@@ -137,7 +137,7 @@ public static partial class AccountController
 
         if (!context.GetRemoteIpAddress(out var ip))
         {
-            return "未知的 IP 地址";
+            return R.未知的IP地址;
         }
 
         var ipCacheKey = GetIpCacheKey(ip);
@@ -251,7 +251,7 @@ public static partial class AccountController
             if (user.Id == default) // 默认值 Id 保留给客服账号
             {
                 await transaction.CommitAsync(cancellationToken);
-                return "无法登录客服账户";
+                return R.无法登录客服账户;
             }
             return await LoginSharedAsync(true);
         }
@@ -368,7 +368,7 @@ public static partial class AccountController
 
         if (!context.GetRemoteIpAddress(out var ip))
         {
-            return "未知的 IP 地址";
+            return R.未知的IP地址;
         }
 
         var ipCacheKey = GetIpCacheKey(ip);
@@ -383,7 +383,7 @@ public static partial class AccountController
         var exists = await userManager.ExistsEmailAsync(email, context.RequestAborted);
         if (exists)
         {
-            return "该邮箱已被其它用户使用";
+            return R.该邮箱已被其它用户使用;
         }
         return HttpStatusCode.OK;
     }
@@ -440,7 +440,7 @@ public static partial class AccountController
 
         if (!context.GetRemoteIpAddress(out var ip))
         {
-            return "未知的 IP 地址";
+            return R.未知的IP地址;
         }
 
         var ipCacheKey = GetIpCacheKey(ip);
@@ -459,7 +459,7 @@ public static partial class AccountController
                 {
                     if (string.IsNullOrWhiteSpace(phoneNumber))
                     {
-                        return "请填写手机号码";
+                        return R.请填写手机号码;
                     }
                     var error = await CheckAuthMessageAsync(
                         authMessageRecordRepo, smsSender, phoneNumber,
@@ -476,7 +476,7 @@ public static partial class AccountController
                 {
                     if (string.IsNullOrWhiteSpace(email))
                     {
-                        return "请填写邮箱";
+                        return R.请填写邮箱;
                     }
                     if (!email.IsEmail())
                     {
@@ -494,12 +494,12 @@ public static partial class AccountController
                 }
                 break;
             default:
-                return "验证方式错误";
+                return R.验证方式错误;
         }
 
         if (user == null)
         {
-            return "用户不存在";
+            return R.用户不存在;
         }
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
         var result = await userManager.ResetPasswordAsync(user, token, pwd);
@@ -539,7 +539,7 @@ public static partial class AccountController
         var exists = await userManager.ExistsEmailAsync(email, cancellationToken);
         if (exists)
         {
-            return "该邮箱已被其它用户使用";
+            return R.该邮箱已被其它用户使用;
         }
 
         // https://docs.microsoft.com/zh-cn/ef/core/saving/transactions
@@ -596,7 +596,7 @@ public static partial class AccountController
     {
         if (!context.GetRemoteIpAddress(out var ip))
         {
-            return "未知的 IP 地址";
+            return R.未知的IP地址;
         }
 
         var ipCacheKey = GetIpCacheKey(ip);
@@ -648,12 +648,12 @@ public static partial class AccountController
         var user = await userManager.FindByAccountAsync(account);
         if (user == null)
         {
-            return "账号或密码错误";
+            return R.账号或密码错误;
         }
         var checkPassword = await userManager.CheckPasswordAsync(user, password);
         if (!checkPassword)
         {
-            return "账号或密码错误";
+            return R.账号或密码错误;
         }
 
         // https://docs.microsoft.com/zh-cn/ef/core/saving/transactions

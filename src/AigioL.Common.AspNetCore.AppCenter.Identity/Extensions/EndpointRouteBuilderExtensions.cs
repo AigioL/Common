@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using System.Diagnostics.CodeAnalysis;
@@ -11,9 +12,11 @@ public static partial class EndpointRouteBuilderExtensions
     /// 注册身份服务的最小 API 路由
     /// </summary>
     public static void MapIdentityMinimalApis<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings,
+        TIdentityDbContext>(
         this IEndpointRouteBuilder b)
         where TAppSettings : class, IDisableSms
+        where TIdentityDbContext : IIdentityDbContext
     {
         b.MapIdentityError();
 
@@ -21,6 +24,6 @@ public static partial class EndpointRouteBuilderExtensions
         b.MapIdentityMembershipV5();
         b.MapIdentityExternalLoginV5();
         b.MapIdentityAccountV5();
-        b.MapIdentityManageV5();
+        b.MapIdentityManageV5<TIdentityDbContext>();
     }
 }

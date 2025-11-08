@@ -94,7 +94,7 @@ public static partial class ErrorController
         context.Response.Headers.Pragma = "no-cache";
     }
 
-    const string ContentTypeHtml = "text/html; charset=utf-8";
+    const string ContentTypeHtml = "text/htmll; charset=utf-8";
 
     /// <summary>
     /// 标注终结点元数据，表示该终结点会返回 Identity UI 页面
@@ -165,7 +165,7 @@ partial class ErrorController
     /// <param name="b"></param>
     static void MapIdentityErrorTest(IEndpointRouteBuilder b)
     {
-        b.MapGet("/test/id6/ex", async (HttpContext context) =>
+        b.MapGet("/identity/test/html/ex", async (HttpContext context) =>
         {
             var exceptionHandlerPathFeature = new ExceptionHandlerFeature
             {
@@ -175,7 +175,7 @@ partial class ErrorController
             var r = await Get(context, exceptionHandlerPathFeature);
             return r;
         }).AllowAnonymous();
-        b.MapGet("/test/id6/ex/steam", async (HttpContext context) =>
+        b.MapGet("/identity/test/html/ex/steam", async (HttpContext context) =>
         {
             var exceptionHandlerPathFeature = new ExceptionHandlerFeature
             {
@@ -184,7 +184,7 @@ partial class ErrorController
             var r = await Get(context, exceptionHandlerPathFeature);
             return r;
         }).AllowAnonymous();
-        b.MapGet("/test/id6/ex/empty", async (HttpContext context) =>
+        b.MapGet("/identity/test/html/ex/empty", async (HttpContext context) =>
         {
             var exceptionHandlerPathFeature = new ExceptionHandlerFeature
             {
@@ -193,7 +193,7 @@ partial class ErrorController
             var r = await Get(context, exceptionHandlerPathFeature);
             return r;
         }).AllowAnonymous();
-        b.MapGet("/test/id6/ex/file", async (HttpContext context) =>
+        b.MapGet("/identity/test/html/ex/file", async (HttpContext context) =>
         {
             var exceptionHandlerPathFeature = new ExceptionHandlerFeature
             {
@@ -203,7 +203,7 @@ partial class ErrorController
             var r = await Get(context, exceptionHandlerPathFeature);
             return r;
         }).AllowAnonymous();
-        b.MapGet("/test/id6/ex/agg", async (HttpContext context) =>
+        b.MapGet("/identity/test/html/ex/agg", async (HttpContext context) =>
         {
             var exceptionHandlerPathFeature = new ExceptionHandlerFeature
             {

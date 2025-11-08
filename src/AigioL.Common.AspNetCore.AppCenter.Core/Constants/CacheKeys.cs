@@ -18,9 +18,19 @@ public static partial class CacheKeys
     public const int RedisActiveUserDb = 2;
 
     /// <summary>
+    /// Redis 锁使用的 DB index
+    /// </summary>
+    public const int RedisLockDb = 3;
+
+    /// <summary>
     /// Redis 储存 Hash 类型数据 的 DB index
     /// </summary>
     public const int RedisHashDataDb = 5;
+
+    /// <summary>
+    /// Redis 消息队列的 DB index 用户 OpenId
+    /// </summary>
+    public const int RedisMessagingDb = 0; // InitQ 只支持默认 Db
 
     #endregion
 
@@ -35,6 +45,19 @@ public static partial class CacheKeys
         "ArticleViewHashKey";
 
     public const string AppVersionHashKey = "AppVersionHashKey"; // 版本使用改缓存 Key 为 ID Last 最新与全部版本缓存 后台编辑时添加或编辑该缓存数据
+
+    /// <summary>
+    /// 缓存用户信息，减少数据库查询，在编辑、删除时清理该数据
+    /// </summary>
+
+    public const string IdentityUserInfoDataHashV1Key = "IdentityUserInfoDataHashKey_v1";
+
+    /// <summary>
+    /// UserJsonWebToken
+    /// </summary>
+    public const string IdentityUserJsonWebTokenInfoHashKey = "IdentityUserJsonWebTokenInfoHashKey";
+
+    public const string IdentityUserExternalAccountsHashKey = "IdentityUserExternalAccountsHashKey";
 
     #endregion
 }

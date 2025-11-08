@@ -1,7 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
-using AigioL.Common.AspNetCore.Helpers.ProgramMain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System.Diagnostics.CodeAnalysis;

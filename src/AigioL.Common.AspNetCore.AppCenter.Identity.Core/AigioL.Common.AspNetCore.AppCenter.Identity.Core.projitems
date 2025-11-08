@@ -24,6 +24,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAuthMessageRecordRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IClockInRecordRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IUserDeleteRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IUserMembershipRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IIdentityUserManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IUserManager2.cs" />
   </ItemGroup>

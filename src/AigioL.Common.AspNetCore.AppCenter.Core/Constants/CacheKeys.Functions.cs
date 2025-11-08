@@ -17,4 +17,14 @@ static partial class CacheKeys
         var dbConnection = connection.GetDatabase(RedisHashIncrementDb, cancellationToken);
         await dbConnection.HashIncrementAsync(ArticleViewHashKey, idString);
     }
+
+    /// <summary>
+    /// 获取用户会员信息缓存 Key
+    /// </summary>
+    public static string GetUserMembershipCacheKey(Guid userId) => $"UserMembership:{userId}";
+
+    /// <summary>
+    /// 获取用户会员信息缓存锁 Key
+    /// </summary>
+    public static string GetUserMembershipCacheLockKey(Guid userId) => $"UserMembershipLock:{userId}";
 }

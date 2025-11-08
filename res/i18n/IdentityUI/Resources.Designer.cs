@@ -331,6 +331,33 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 操作太频繁，请稍后再试 的本地化字符串。
+        /// </summary>
+        public static string 操作太频繁请稍后再试 {
+            get {
+                return ResourceManager.GetString("操作太频繁请稍后再试", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 无法登录客服账户 的本地化字符串。
+        /// </summary>
+        public static string 无法登录客服账户 {
+            get {
+                return ResourceManager.GetString("无法登录客服账户", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未知的 IP 地址 的本地化字符串。
+        /// </summary>
+        public static string 未知的IP地址 {
+            get {
+                return ResourceManager.GetString("未知的IP地址", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 用户不存在 的本地化字符串。
         /// </summary>
         public static string 用户不存在 {
@@ -376,11 +403,56 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 该邮箱已被其它用户使用 的本地化字符串。
+        /// </summary>
+        public static string 该邮箱已被其它用户使用 {
+            get {
+                return ResourceManager.GetString("该邮箱已被其它用户使用", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请填写手机号码 的本地化字符串。
+        /// </summary>
+        public static string 请填写手机号码 {
+            get {
+                return ResourceManager.GetString("请填写手机号码", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请填写邮箱 的本地化字符串。
+        /// </summary>
+        public static string 请填写邮箱 {
+            get {
+                return ResourceManager.GetString("请填写邮箱", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 请输入正确的手机号码哦 的本地化字符串。
         /// </summary>
         public static string 请输入正确的手机号码哦 {
             get {
                 return ResourceManager.GetString("请输入正确的手机号码哦", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 账号或密码错误 的本地化字符串。
+        /// </summary>
+        public static string 账号或密码错误 {
+            get {
+                return ResourceManager.GetString("账号或密码错误", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 验证方式错误 的本地化字符串。
+        /// </summary>
+        public static string 验证方式错误 {
+            get {
+                return ResourceManager.GetString("验证方式错误", resourceCulture);
             }
         }
         
