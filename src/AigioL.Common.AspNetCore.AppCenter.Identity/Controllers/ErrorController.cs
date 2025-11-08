@@ -7,6 +7,9 @@ using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
+/// <summary>
+/// MVC 错误页面，固定路由 /Error
+/// </summary>
 public static partial class ErrorController
 {
     public static void MapIdentityError(

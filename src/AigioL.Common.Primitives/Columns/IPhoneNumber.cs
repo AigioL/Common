@@ -27,6 +27,11 @@ public interface IPhoneNumber : IReadOnlyPhoneNumber
     const char HideChar = '*';
 
     /// <summary>
+    /// Android 模拟器默认电话号码，硬编码屏蔽此号
+    /// </summary>
+    const string SimulatorDefaultValue = "15555218135";
+
+    /// <summary>
     /// 手机号码隐藏中间四位数字
     /// <para>实现逻辑：字符串大于等于 7 时，将下标 3~6 替换为隐藏字符</para>
     /// </summary>

@@ -48,6 +48,20 @@ public partial record class ApiRsp
 
     public static implicit operator ApiRsp(string message) => new() { Message = message };
 
+    static ApiRsp Create(ApiRspCode code, string message)
+    {
+        ApiRsp r = new()
+        {
+            Code = unchecked((uint)code),
+            Message = message
+        };
+        return r;
+    }
+
+    public static implicit operator ApiRsp((ApiRspCode code, string message) t) => Create(t.code, t.message);
+
+    public static implicit operator ApiRsp((string message, ApiRspCode code) t) => Create(t.code, t.message);
+
     public static implicit operator ApiRsp(Exception exception)
     {
         ApiRsp result = new();
@@ -81,6 +95,20 @@ public sealed partial record class ApiRsp<TContent> : ApiRsp
     public static implicit operator ApiRsp<TContent>(ApiRspCode code) => new() { Code = unchecked((uint)code) };
 
     public static implicit operator ApiRsp<TContent>(string message) => new() { Message = message };
+
+    static ApiRsp<TContent> Create(ApiRspCode code, string message)
+    {
+        ApiRsp<TContent> r = new()
+        {
+            Code = unchecked((uint)code),
+            Message = message
+        };
+        return r;
+    }
+
+    public static implicit operator ApiRsp<TContent>((ApiRspCode code, string message) t) => Create(t.code, t.message);
+
+    public static implicit operator ApiRsp<TContent>((string message, ApiRspCode code) t) => Create(t.code, t.message);
 
     public static implicit operator ApiRsp<TContent>(Exception exception)
     {

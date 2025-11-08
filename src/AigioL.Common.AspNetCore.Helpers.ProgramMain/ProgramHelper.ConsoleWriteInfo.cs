@@ -1,5 +1,6 @@
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,6 +16,21 @@ static partial class ProgramHelper
     /// 当前 Program 的项目名称
     /// </summary>
     public static string ProjectName { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// 当前 Program 的项目唯一标识符，例如 Analytics、Identity
+    /// </summary>
+    public static string ProjectId { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// <see cref="ProjectId"/> 的小写形式
+    /// </summary>
+    public static string ProjectIdLower { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// 当前项目是否为作业计划程序（JobScheduler）
+    /// </summary>
+    public static bool IsJobScheduler { get; private set; }
 
     /// <summary>
     /// 当前 Program 版本号
@@ -46,10 +62,44 @@ static partial class ProgramHelper
         Version = version;
     }
 
+    static void SetProject(string? projectName = default)
+    {
+        if (string.IsNullOrWhiteSpace(ProjectName))
+        {
+            if (!string.IsNullOrWhiteSpace(projectName))
+            {
+                ProjectName = projectName;
+            }
+        }
+        if (string.IsNullOrWhiteSpace(ProjectId))
+        {
+            if (!string.IsNullOrWhiteSpace(projectName))
+            {
+                var projectNameSpan = projectName.AsSpan();
+                const string endsWith_JobScheduler = ".JobScheduler";
+                if (projectNameSpan.EndsWith(endsWith_JobScheduler, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    IsJobScheduler = true;
+                    projectNameSpan = projectNameSpan[..^endsWith_JobScheduler.Length];
+                }
+                var projectNameSpanSplitDian = projectNameSpan.Split('.');
+                Range? lastRange = null;
+                while (projectNameSpanSplitDian.MoveNext())
+                {
+                    lastRange = projectNameSpanSplitDian.Current;
+                }
+                if (lastRange.HasValue)
+                {
+                    ProjectId = new(projectNameSpan[lastRange.Value]);
+                    ProjectIdLower = ProjectId.ToLowerInvariant();
+                }
+            }
+        }
+    }
+
     public static void ConsoleWriteInfo(string? projectName = default, bool isDevelopment = true)
     {
-        if (!string.IsNullOrWhiteSpace(projectName))
-            ProjectName = projectName;
+        SetProject(projectName);
 
         #region 项目代号和版本信息
 
@@ -210,6 +260,20 @@ static partial class ProgramHelper
         {
             Console.Write(s);
         }
+    }
+
+    /// <summary>
+    /// 将路由字符串中的 {projId} 替换为当前的 <see cref="ProjectIdLower"/>
+    /// </summary>
+    public static string GetEndpointPattern([StringSyntax("Route")] string pattern)
+    {
+        var projId = ProjectIdLower;
+        if (string.IsNullOrWhiteSpace(projId))
+        {
+            projId = "api";
+        }
+        var r = pattern.Replace("{projId}", projId);
+        return r;
     }
 
     /// <summary>

@@ -1,14 +1,8 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
@@ -22,8 +16,12 @@ namespace AigioL.Common.AspNetCore.Helpers.ProgramMain.Controllers.Infrastructur
 
 public static partial class InfoController
 {
-    public static void MapGetInfo(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "api/info")
+    public static void MapGetInfo(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "{projId}/info")
     {
+        pattern = ProgramHelper.GetEndpointPattern(pattern);
+
         b.MapGet(pattern, async (HttpContext context) =>
         {
             var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();

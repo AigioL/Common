@@ -286,11 +286,101 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 验证码获取次数达到今日上限了哦，明天再试试吧 的本地化字符串。
+        /// </summary>
+        public static string 当前手机号今日发送短信数量超过最大上限 {
+            get {
+                return ResourceManager.GetString("当前手机号今日发送短信数量超过最大上限", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 操作有点频繁哦，{0}分钟以后再试试吧 的本地化字符串。
+        /// </summary>
+        public static string 当前手机号发送短信过于频繁_ {
+            get {
+                return ResourceManager.GetString("当前手机号发送短信过于频繁_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前手机号码不存在 的本地化字符串。
+        /// </summary>
+        public static string 当前手机号码不存在 {
+            get {
+                return ResourceManager.GetString("当前手机号码不存在", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 这个手机号已经被使用了哦 的本地化字符串。
+        /// </summary>
+        public static string 手机号码已存在 {
+            get {
+                return ResourceManager.GetString("手机号码已存在", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 这个手机号已经被注册了哦 的本地化字符串。
+        /// </summary>
+        public static string 手机号码已存在_注册 {
+            get {
+                return ResourceManager.GetString("手机号码已存在_注册", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 用户不存在 的本地化字符串。
+        /// </summary>
+        public static string 用户不存在 {
+            get {
+                return ResourceManager.GetString("用户不存在", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 短信服务已停用 的本地化字符串。
+        /// </summary>
+        public static string 短信服务已停用 {
+            get {
+                return ResourceManager.GetString("短信服务已停用", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 短信服务已停用，请使用快速登录进行登录或注册 的本地化字符串。
+        /// </summary>
+        public static string 短信服务已停用_登录或注册 {
+            get {
+                return ResourceManager.GetString("短信服务已停用_登录或注册", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 服务端错误 5001 - 短信服务 的本地化字符串。
+        /// </summary>
+        public static string 短信服务故障 {
+            get {
+                return ResourceManager.GetString("短信服务故障", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 短信验证码不正确 的本地化字符串。
         /// </summary>
         public static string 短信验证码不正确 {
             get {
                 return ResourceManager.GetString("短信验证码不正确", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入正确的手机号码哦 的本地化字符串。
+        /// </summary>
+        public static string 请输入正确的手机号码哦 {
+            get {
+                return ResourceManager.GetString("请输入正确的手机号码哦", resourceCulture);
             }
         }
         

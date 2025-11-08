@@ -55,8 +55,7 @@ public static partial class ProgramHelper
        int maxArchiveFiles = maxArchiveFiles,
        int maxArchiveDays = maxArchiveDays)
     {
-        if (!string.IsNullOrWhiteSpace(projectName))
-            ProjectName = projectName;
+        SetProject(projectName);
 
         try
         {

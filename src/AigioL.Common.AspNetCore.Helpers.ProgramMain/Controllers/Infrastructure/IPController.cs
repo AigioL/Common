@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Sockets;
 
@@ -16,8 +13,12 @@ public static class IPController
     /// </summary>
     /// <param name="b"></param>
     /// <param name="pattern"></param>
-    public static void MapGetIpV6(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "api/ip/v6")
+    public static void MapGetIpV6(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "{projId}/ip/v6")
     {
+        pattern = ProgramHelper.GetEndpointPattern(pattern);
+
         b.MapGet(pattern, (HttpContext context) =>
         {
             var ip = context.Connection.RemoteIpAddress;
@@ -34,8 +35,12 @@ public static class IPController
     /// </summary>
     /// <param name="b"></param>
     /// <param name="pattern"></param>
-    public static void MapGetIpVal(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "api/ip/val")
+    public static void MapGetIpVal(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "{projId}/ip/val")
     {
+        pattern = ProgramHelper.GetEndpointPattern(pattern);
+
         b.MapGet(pattern, (HttpContext context) =>
         {
             var ip = context.Connection.RemoteIpAddress;

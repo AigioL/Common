@@ -10,9 +10,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 /// <summary>
 /// 作业计划（JobScheduler）服务基类
 /// </summary>
-/// <param name="logger"></param>
-/// <param name="dbContext"></param>
-/// <param name="feishuApiClient"></param>
 public abstract partial class JobService(
     ILogger logger,
     IJobDbContext dbContext,
@@ -36,19 +33,33 @@ public abstract partial class JobService(
         Level = LogLevel.Error,
         Message = "job fail, jobName: {jobName}, time: {time}, code: {code}, message: {message}")]
     protected static partial void LogOnHandleFail(ILogger logger, string jobName, string time, uint code, string? message);
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message =
+"""
+**************************************************
+
+JobService is executing ...
+
+    ImpService: {serviceName}
+
+    DbContext: {dbCtxName}
+    Interfaces:
+        {dbCtx}
+
+**************************************************
+""")]
+    protected static partial void LogOutputDebugInfo(ILogger logger, string? serviceName, string? dbCtxName, string? dbCtx);
 }
 
 /// <summary>
 /// 作业计划（JobScheduler）服务泛型基类
 /// </summary>
-/// <typeparam name="TDbContext"></typeparam>
-/// <typeparam name="TJobService"></typeparam>
-/// <param name="logger"></param>
-/// <param name="dbContext"></param>
-/// <param name="feishuApiClient"></param>
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
 public abstract partial class JobService<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TDbContext,
-    TJobService>(
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TJobService>(
         ILogger<TJobService> logger,
         TDbContext dbContext,
         IFeishuApiClient feishuApiClient) :
@@ -94,9 +105,6 @@ public abstract partial class JobService<
     /// <summary>
     /// 作业计划（JobScheduler）的业务逻辑执行入口，由子类重写实现
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     protected abstract Task<ApiRsp> HandleAsync(
         IJobExecutionContext? context,
         CancellationToken cancellationToken);
@@ -104,10 +112,6 @@ public abstract partial class JobService<
     /// <summary>
     /// 作业计划（JobScheduler）的通知
     /// </summary>
-    /// <param name="jobName"></param>
-    /// <param name="jobRecordResult"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     protected virtual async Task OnNotificationAsync(
         string jobName,
         JobRecordResult jobRecordResult,
@@ -143,11 +147,13 @@ public abstract partial class JobService<
         var isSuccess = result.IsSuccess();
         if (!isSuccess)
         {
+#pragma warning disable CA1873 // 避免进行可能成本高昂的日志记录
             LogOnHandleFail(logger,
                 jobName,
                 jobRecordResult.CreationTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
                 jobRecordResult.Code,
                 jobRecordResult.Message);
+#pragma warning restore CA1873 // 避免进行可能成本高昂的日志记录
         }
 
         if (Notification)
@@ -205,22 +211,11 @@ public abstract partial class JobService<
     {
         var jobDbType = typeof(TDbContext);
 
-        string @dbInterface =
-            string.Join(",\n \t\t", jobDbType.GetInterfaces().Select(x => x.Name));
+        var @dbInterface = string.Join(",\n \t\t", jobDbType.GetInterfaces().Select(x => x.Name));
 
-        logger.LogDebug("""
-            **************************************************
-
-            JobService is executing ...
-
-                ImpService: {service}
-
-                DbContext: {dbCtxName}
-                Interfaces:
-                    {dbCtx}
-
-            **************************************************
-            """, GetType().Name, jobDbType.Name, @dbInterface);
+#pragma warning disable CA1873 // 避免进行可能成本高昂的日志记录
+        LogOutputDebugInfo(logger, GetType().Name, jobDbType.Name, @dbInterface);
+#pragma warning restore CA1873 // 避免进行可能成本高昂的日志记录
     }
 #endif
 }
@@ -230,8 +225,11 @@ file static class JobActivatorCache // https://github.com/quartznet/quartznet/bl
     static readonly ConcurrentDictionary<Type, ObjectFactory> activatorCache = new();
     static readonly Func<Type, ObjectFactory> createFactory = type => ActivatorUtilities.CreateFactory(type, Type.EmptyTypes);
 
-    internal static object CreateInstance(IServiceProvider serviceProvider, Type jobType)
+    internal static object CreateInstance(
+        IServiceProvider serviceProvider,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type jobType)
     {
+        // job 服务无需添加进服务集合，通过反射动态创建，需要公开的单一构造函数，且构造函数参数会从服务集合中解析
         var factory = activatorCache.GetOrAdd(jobType, createFactory);
         return factory(serviceProvider, null);
     }

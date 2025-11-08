@@ -1,19 +1,104 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
+/// <summary>
+/// 登录后用户管理终结点
+/// </summary>
 public static partial class ManageController
 {
-    static async Task<ApiRsp<UserInfoModelV0?>> RefreshUserInfo(
+    public static void MapIdentityManageV5(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "identity/v5/manage")
+    {
+        var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize)
+            .WithRequiredSecurityKey();
+
+        routeGroup.MapPost("refreshuserinfo", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("刷新用户信息");
+        routeGroup.MapGet("refreshuserinfo", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("刷新用户信息");
+        // changebindemail
+        routeGroup.MapPost("changebindphonenumber", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("换绑手机（安全验证）V1");
+        routeGroup.MapPut("changebindphonenumber", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("绑定新手机号");
+        routeGroup.MapDelete("deleteaccount", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("注销（删除）账号");
+        routeGroup.MapPost("clockin", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("每日签到");
+        routeGroup.MapGet("clockinrecords", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("获取每日签到记录");
+        routeGroup.MapPost("bindphonenumber", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("绑定手机号");
+        routeGroup.MapPost("setPassword", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("设置账号密码");
+        routeGroup.MapPost("edituserprofile", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("编辑个人资料");
+        routeGroup.MapGet("signout", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("退出登录（登出）V1");
+        routeGroup.MapDelete("unbundleaccount/{channel}", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("解绑账号");
+        routeGroup.MapPost("sendbindemail", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("发送绑定邮箱邮件");
+        routeGroup.MapPost("bindemail", async (HttpContext context) =>
+        {
+            var r = await RefreshUserInfo(context);
+            return r;
+        }).WithDescription("绑定邮箱");
+    }
+
+    static async Task<ApiRsp<UserInfoModel?>> RefreshUserInfo(
         HttpContext context)
     {
         var user = context.GetUserId();
         if (user == null)
             return ApiRspCode.Unauthorized;
 
-        var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+        var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
         var userInfoDTO = await userManager.GetUserInfoCacheV1Async();
         return userInfoDTO;
     }

@@ -52,7 +52,7 @@ public partial class AuthMessageRecord :
     /// </summary>
     [Required]
     [Comment("第三方下发渠道的显示名称")]
-    public required string Channel { get; set; }
+    public string Channel { get; set; } = string.Empty;
 
     /// <summary>
     /// 第三方提供商返回的内容

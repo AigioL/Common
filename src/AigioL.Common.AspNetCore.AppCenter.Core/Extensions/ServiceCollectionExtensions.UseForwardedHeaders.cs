@@ -7,8 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static partial class ServiceCollectionExtensions
 {
     /// <inheritdoc cref="ForwardedHeadersExtensions.UseForwardedHeaders(IApplicationBuilder, ForwardedHeadersOptions)"/>
-    public static IApplicationBuilder UseForwardedHeaders<TAppSettings>(this IApplicationBuilder builder, TAppSettings appSettings)
-        where TAppSettings : class, INotUseForwardedHeaders
+    public static IApplicationBuilder UseForwardedHeaders(this IApplicationBuilder builder, INotUseForwardedHeaders appSettings)
     {
         if (!appSettings.NotUseForwardedHeaders)
         {

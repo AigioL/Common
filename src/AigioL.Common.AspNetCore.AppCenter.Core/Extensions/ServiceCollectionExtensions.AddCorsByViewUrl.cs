@@ -30,8 +30,7 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// 配置允许跨域的中间件
     /// </summary>
-    public static IApplicationBuilder UseCors<TAppSettings>(this IApplicationBuilder builder, TAppSettings appSettings)
-       where TAppSettings : class, IViewsUrl
+    public static IApplicationBuilder UseCors(this IApplicationBuilder builder, IViewsUrl appSettings)
     {
         if (!string.IsNullOrWhiteSpace(appSettings.ViewsUrl))
         {
@@ -39,11 +38,11 @@ public static partial class ServiceCollectionExtensions
             var useCors = s != null;
             if (useCors)
             {
-                var logger = builder.ApplicationServices.GetService<ILoggerFactory>()?.CreateLogger(nameof(IViewsUrl));
-                if (logger != null)
-                {
-                    LogCorsOrigins(logger, appSettings.ViewsUrl);
-                }
+                //var logger = builder.ApplicationServices.GetService<ILoggerFactory>()?.CreateLogger(nameof(IViewsUrl));
+                //if (logger != null)
+                //{
+                //    LogCorsOrigins(logger, appSettings.ViewsUrl);
+                //}
                 builder.UseCors();
             }
         }
@@ -51,10 +50,10 @@ public static partial class ServiceCollectionExtensions
     }
 
 
-    [LoggerMessage(
-        Level = LogLevel.Critical,
-        Message = "已配置允许跨域访问的 Web UI 地址：{origins}")]
-    private static partial void LogCorsOrigins(ILogger logger, string? origins);
+    //[LoggerMessage(
+    //    Level = LogLevel.Critical,
+    //    Message = "已配置允许跨域访问的 Web UI 地址：{origins}")]
+    //private static partial void LogCorsOrigins(ILogger logger, string? origins);
 }
 
 file sealed class UseCors();

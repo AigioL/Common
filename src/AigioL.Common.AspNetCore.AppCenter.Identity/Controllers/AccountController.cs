@@ -1,21 +1,28 @@
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.SmsSender.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
+/// <summary>
+/// 无登录状态匿名的账号相关终结点
+/// </summary>
 public static partial class AccountController
 {
     internal const int MaxIpAccessFailedCount = 12;
@@ -23,6 +30,93 @@ public static partial class AccountController
     internal static string GetIpCacheKey(string ip) => $"AC_MS_LoginOrRegister_Ip_[{ip}]";
 
     internal static TimeSpan GetLockoutEnd() => TimeSpan.FromMinutes(7);
+
+    public static void MapIdentityAccountV5(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "identity/v5/account")
+    {
+        var routeGroup = b.MapGroup(pattern)
+            .AllowAnonymous()
+            .WithRequiredSecurityKey();
+
+        routeGroup.MapPost("loginorregister", async (HttpContext context,
+            [FromBody] LoginOrRegisterRequest request) =>
+        {
+            var deviceId = request.GetDeviceId();
+            var r = await LoginOrRegister(context,
+                request.PhoneNumber,
+                request.PhoneNumberRegionCode,
+                request.SmsCode,
+                request.Channel,
+                deviceId,
+                (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
+            return r;
+        }).WithDescription("登录或注册账号");
+        routeGroup.MapPost("refreshtoken", async (HttpContext context,
+            [FromBody] RefreshTokenRequest request) =>
+        {
+            var deviceId = request.GetDeviceId();
+            var r = await RefreshTokenAsync(context, request.RefreshToken, deviceId);
+            return r;
+        }).WithDescription("刷新 JWT");
+        routeGroup.MapPost("validateRegisterEmail", async (HttpContext context,
+            [FromBody] ValidateRegisterEmailRequest request) =>
+        {
+            var r = await ValidateRegisterEmail(context, request.Email);
+            return r;
+        }).WithDescription("验证注册邮箱账号");
+        routeGroup.MapPost("resetPassword", async (HttpContext context,
+            [FromBody] ResetPasswordRequest request) =>
+        {
+            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
+            var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
+            var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
+            var r = await ResetPassword(context, authMessageRecordRepo, userManager,
+                smsSender, request.Type, request.PhoneNumber,
+                request.PhoneNumberRegionCode, request.Email, request.OTPCode,
+                request.Password, request.Password2);
+            return r;
+        }).WithDescription("重置密码");
+        routeGroup.MapPost("registerByEmail", async (HttpContext context,
+            [FromBody] RegisterByEmailRequest request) =>
+        {
+            var deviceId = request.GetDeviceId();
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AccountController));
+            var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
+            var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
+            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
+            var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
+            var r = await RegisterByEmail(logger,
+                userManager,
+                db,
+                authMessageRecordRepo,
+                smsSender,
+                request.Email,
+                request.Password,
+                request.Code,
+                deviceId,
+                (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
+            return r;
+        }).WithDescription("邮箱注册账号");
+        routeGroup.MapPost("loginByPassword", async (HttpContext context,
+            [FromBody] AccountLoginRequest request) =>
+        {
+            var deviceId = request.GetDeviceId();
+            var r = await LoginByPassword(
+                context,
+                request.Account,
+                request.Password,
+                (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
+            return r;
+        }).WithDescription("密码登录账号");
+#if DEBUG
+        routeGroup.MapGet("test/ex", async (HttpContext context) =>
+        {
+            await Task.Delay(10, context.RequestAborted);
+            throw new ApplicationException("测试 WithRequiredSecurityKey 的异常页面");
+        }).WithIdentityUIView();
+#endif
+    }
 
     /// <summary>
     /// 登录或注册账号，如要支持密码登录，需使用 <see cref="SignInManager{TUser}"/> 提供纪录失败次数与锁定用户
@@ -34,7 +128,7 @@ public static partial class AccountController
         string? smsCode,
         LoginChannel loginChannel,
         string? deviceId,
-        Func<IJsonWebTokenUserManager, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
     {
         if (string.IsNullOrWhiteSpace(phoneNumberRegionCode))
         {
@@ -55,7 +149,7 @@ public static partial class AccountController
         }
 
         var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AccountController));
-        var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+        var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
         var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
         var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
         var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
@@ -83,14 +177,14 @@ public static partial class AccountController
 
     static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginOrRegisterCore<TLoginOrRegisterResponse>(
         ILogger logger,
-        IJsonWebTokenUserManager userManager,
+        IUserManager2 userManager,
         IIdentityDbContext db,
         IAuthMessageRecordRepository authMessageRecordRepo,
         ISmsSender smsSender,
         string? phoneNumber,
         string? phoneNumberRegionCode,
         string? smsCode,
-        Func<IJsonWebTokenUserManager, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
         CancellationToken cancellationToken = default)
     {
         if (phoneNumber == null)
@@ -250,7 +344,7 @@ public static partial class AccountController
         }
 
         var platform = context.GetDevicePlatform();
-        var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+        var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
         var newToken = await userManager.RefreshTokenAsync(platform, deviceId, refresh_token);
         if (newToken == null)
         {
@@ -285,7 +379,7 @@ public static partial class AccountController
             return HttpStatusCode.TooManyRequests;
         }
 
-        var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+        var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
         var exists = await userManager.ExistsEmailAsync(email, context.RequestAborted);
         if (exists)
         {
@@ -323,7 +417,7 @@ public static partial class AccountController
     static async Task<ApiRsp> ResetPassword(
         HttpContext context,
         IAuthMessageRecordRepository authMessageRecordRepo,
-        IJsonWebTokenUserManager userManager,
+        IUserManager2 userManager,
         ISmsSender smsSender,
         AuthMessageType type,
         string? phoneNumber,
@@ -423,7 +517,7 @@ public static partial class AccountController
     /// </summary>
     static async Task<ApiRsp<TLoginOrRegisterResponse?>> RegisterByEmail<TLoginOrRegisterResponse>(
         ILogger logger,
-        IJsonWebTokenUserManager userManager,
+        IUserManager2 userManager,
         IIdentityDbContext db,
         IAuthMessageRecordRepository authMessageRecordRepo,
         ISmsSender smsSender,
@@ -431,7 +525,7 @@ public static partial class AccountController
         string? password,
         string? code,
         string? deviceId,
-        Func<IJsonWebTokenUserManager, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
         CancellationToken cancellationToken = default) where TLoginOrRegisterResponse : class
     {
         if (string.IsNullOrEmpty(email) ||
@@ -498,7 +592,7 @@ public static partial class AccountController
         HttpContext context,
         string? account,
         string? password,
-        Func<IJsonWebTokenUserManager, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
     {
         if (!context.GetRemoteIpAddress(out var ip))
         {
@@ -513,7 +607,7 @@ public static partial class AccountController
             return HttpStatusCode.TooManyRequests;
         }
 
-        var userManager = context.RequestServices.GetRequiredService<IJsonWebTokenUserManager>();
+        var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
         var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
         var result = await LoginByPasswordCore(
             userManager, db, account,
@@ -535,11 +629,11 @@ public static partial class AccountController
     }
 
     static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginByPasswordCore<TLoginOrRegisterResponse>(
-        IJsonWebTokenUserManager userManager,
+        IUserManager2 userManager,
         IIdentityDbContext db,
         string? account,
         string? password,
-        Func<IJsonWebTokenUserManager, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
         CancellationToken cancellationToken = default)
     {
         if (account == null)
@@ -574,7 +668,7 @@ public static partial class AccountController
     }
 }
 
-file static class B9490399
-{
+//file static class B9490399
+//{
 
-}
+//}

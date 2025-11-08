@@ -22,15 +22,4 @@ public partial interface IViewsUrl
             return [.. viewsUrl.Split([',', ';', '|', '，', '；'], StringSplitOptions.RemoveEmptyEntries).Where(x => x.IsHttpUrl())];
         }
     }
-
-    /// <summary>
-    /// 是否使用跨域访问，调用了 AddCors
-    /// </summary>
-    /// <param name="serviceProvider"></param>
-    /// <returns></returns>
-    static bool UseCors(IServiceProvider serviceProvider)
-    {
-        var s = serviceProvider.GetServices<ICorsService>();
-        return s != null;
-    }
 }

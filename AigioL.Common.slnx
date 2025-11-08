@@ -56,8 +56,10 @@
   </Folder>
   <Folder Name="/2.Libraries/AspNetCore/AppCenter/">
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics.Core/AigioL.Common.AspNetCore.AppCenter.Analytics.Core.shproj" Id="dff7c2b6-ce45-4ba7-b4d5-0d07fd760843" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Analytics.JobScheduler.shproj" Id="5f7d9445-265c-4167-afcd-e90182101582" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics/AigioL.Common.AspNetCore.AppCenter.Analytics.shproj" Id="4741fdd2-d3e8-43a7-a068-03d0f9859292" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic.Core/AigioL.Common.AspNetCore.AppCenter.Basic.Core.shproj" Id="9a99af09-34a7-46b8-8345-095b02f846e1" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Basic.JobScheduler.shproj" Id="4782b0e6-0af5-4354-815d-ec27fafbbac2" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Basic/AigioL.Common.AspNetCore.AppCenter.Basic.shproj" Id="3b025ecf-b924-4625-9635-68b1c88e3cd3" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Core.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Core.JobScheduler.shproj" Id="bf6e035e-b848-4db5-9829-2efc76ad1d08" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Core/AigioL.Common.AspNetCore.AppCenter.Core.shproj" Id="8c072252-eabc-401a-aa84-59b8b38eda49" />
@@ -65,7 +67,9 @@
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity.UI/AigioL.Common.AspNetCore.AppCenter.Identity.UI.csproj" Id="6b5b1110-b7f7-4f3a-ba59-00c621df7d4d" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Identity/AigioL.Common.AspNetCore.AppCenter.Identity.shproj" Id="15ff553c-b7f2-4f92-8bae-eb489368c189" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering.Core/AigioL.Common.AspNetCore.AppCenter.Ordering.Core.shproj" Id="be46ad26-3ee2-445a-80f2-26bc29e7b545" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Ordering.JobScheduler.shproj" Id="cf9886f0-052e-44b5-9081-0a8ec661fe61" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering/AigioL.Common.AspNetCore.AppCenter.Ordering.shproj" Id="050a2e79-a588-44b3-87b4-4c32d5af4414" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Payment.JobScheduler.shproj" Id="d51747da-fec9-4a8b-b018-5b0e2e355a94" />
   </Folder>
   <Folder Name="/2.Libraries/JsonWebTokens/">
     <Project Path="src/AigioL.Common.JsonWebTokens.Entities/AigioL.Common.JsonWebTokens.Entities.shproj" Id="26839620-b9b9-4fbe-b03b-a92d5a034e8e" />

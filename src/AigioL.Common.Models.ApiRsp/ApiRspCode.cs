@@ -289,9 +289,19 @@ public enum ApiRspCode : uint
     /// </summary>
     SecurityTypeInconsistent = 1029,
 
+    /// <summary>
+    /// 用户被封禁或锁定
+    /// </summary>
+    UserIsBanOrLock = 1091,
+
     #endregion
 
     #region 错误状态码 5000~5999
+
+    /// <summary>
+    /// 短信服务故障
+    /// </summary>
+    SMSServerError = 5001,
 
     #endregion
 }

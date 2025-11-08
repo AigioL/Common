@@ -1,7 +1,10 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.Helpers.ProgramMain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.D3b96193;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorController;
@@ -13,6 +16,40 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 /// </summary>
 public static partial class ExternalLoginController
 {
+    public static void MapIdentityExternalLoginV5(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "identity/v5/externallogin")
+    {
+        var routeGroup = b.MapGroup(pattern)
+            .AllowAnonymous();
+
+        routeGroup.MapGet("start/{channel?}", async (HttpContext context,
+            [FromRoute] ExternalLoginChannel channel = ExternalLoginChannel.Steam) =>
+        {
+            var r = await ExternalLogin(context, channel);
+            return r;
+        }).WithIdentityUIView();
+        routeGroup.MapGet("{channel?}", async (HttpContext context,
+            [FromRoute] ExternalLoginChannel channel = ExternalLoginChannel.Steam) =>
+        {
+            var r = await ExternalLoginDetectionAsync(context, channel);
+            return r;
+        }).WithIdentityUIView();
+        routeGroup.MapGet("callback", async (HttpContext context) =>
+        {
+            var r = await Callback(context);
+            return r;
+        }).WithIdentityUIView();
+
+#if DEBUG
+        routeGroup.MapGet("test/ex", async (HttpContext context) =>
+        {
+            await Task.Delay(10, context.RequestAborted);
+            throw new ApplicationException("测试 WithIdentityUIView 的异常页面");
+        }).WithIdentityUIView();
+#endif
+    }
+
     /// <summary>
     /// 第三方外部登录接口（开始首步骤）
     /// </summary>

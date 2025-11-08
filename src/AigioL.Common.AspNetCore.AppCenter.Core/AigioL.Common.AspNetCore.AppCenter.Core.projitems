@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.Functions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\MediaTypeNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\SMSConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAppDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValidationServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\AppSettingsBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDeviceId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDisableSms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\INotUseForwardedHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyAppVer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IReadOnlyUserWalletValue.cs" />
