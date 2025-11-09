@@ -249,4 +249,13 @@
     <value>短信验证码不正确</value>
     <comment>用户输入的验证码校验不通过</comment>
   </data>
+  <data name="手机号码已存在_换绑手机" xml:space="preserve">
+    <value>这个手机号已经被绑定了哦</value>
+  </data>
+  <data name="新手机号不能与旧手机号一样" xml:space="preserve">
+    <value>新手机号不能与旧手机号一样</value>
+  </data>
+  <data name="验证码不正确" xml:space="preserve">
+    <value>验证码不正确</value>
+  </data>
 </root>

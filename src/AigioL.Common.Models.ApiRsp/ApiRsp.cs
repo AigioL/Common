@@ -71,7 +71,13 @@ public partial record class ApiRsp
 
     public static ApiRsp<TContent> Create<TContent>(TContent content)
     {
-        var result = new ApiRsp<TContent> { Content = content };
+        var result = new ApiRsp<TContent> { Content = content, };
+        return result;
+    }
+
+    public static ApiRsp<TContent> Ok<TContent>(TContent content)
+    {
+        var result = new ApiRsp<TContent> { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
         return result;
     }
 }

@@ -1,5 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -58,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Bind" xml:space="preserve">
-    <value>バインド</value>
-  </data>
   <data name="BodyNoScript" xml:space="preserve">
     <value>このサイトを閲覧するにはJavaScriptが必要です。</value>
   </data>
@@ -70,41 +126,23 @@
   <data name="BrowserIsSupported2" xml:space="preserve">
     <value>などの他のモダンブラウザを使用して体験を向上させることをお勧めします。</value>
   </data>
-  <data name="ClickHereTryAgain" xml:space="preserve">
-    <value>ここをクリックして再試行</value>
-  </data>
   <data name="ColorPrimary" xml:space="preserve">
     <value>#2196F3</value>
   </data>
-  <data name="CopyButton" xml:space="preserve">
-    <value>クリックしてコピー</value>
-  </data>
-  <data name="CopyNoSupport" xml:space="preserve">
-    <value>このブラウザはクリックでクリップボードにコピーすることをサポートしていません</value>
-  </data>
-  <data name="CopySuccess" xml:space="preserve">
-    <value>クリップボードに正常にコピーしました</value>
-  </data>
-  <data name="Login2" xml:space="preserve">
-    <value>ログイン</value>
-  </data>
-  <data name="LoginAndRegister" xml:space="preserve">
-    <value>ログイン / 登録</value>
-  </data>
-  <data name="LoginSuccessTip1___" xml:space="preserve">
-    <value>{0} {1}が完了しました。このウィンドウを閉じて{2}に戻ることができます。</value>
-  </data>
-  <data name="LoginSuccessTip2" xml:space="preserve">
-    <value>このブラウザウィンドウ/タブは10秒以内に自動的に閉じられます。手動で閉じることもできます。</value>
-  </data>
-  <data name="LongTimeNoJump" xml:space="preserve">
-    <value>長時間リダイレクトされませんか？</value>
-  </data>
-  <data name="ManualCopyTip" xml:space="preserve">
-    <value>アプリとの接続エラーです。以下の内容を手動でアプリにコピーして、手動ログインをクリックしてください。</value>
-  </data>
   <data name="MetaMSApplicationWindow" xml:space="preserve">
     <value>width=1024;height=768</value>
+  </data>
+  <data name="PleaseWait" xml:space="preserve">
+    <value>しばらくお待ちください...</value>
+  </data>
+  <data name="Url_Firefox" xml:space="preserve">
+    <value>https://www.mozilla.org/firefox/browsers</value>
+  </data>
+  <data name="Url_Chrome" xml:space="preserve">
+    <value>https://www.google.com/chrome/browser/desktop</value>
+  </data>
+  <data name="Url_MicrosoftEdge" xml:space="preserve">
+    <value>https://www.microsoft.com/edge</value>
   </data>
   <data name="ModelErrorTitle" xml:space="preserve">
     <value>エラー！</value>
@@ -112,76 +150,97 @@
   <data name="ModelSuccessTitle_" xml:space="preserve">
     <value>{0}成功！</value>
   </data>
-  <data name="PleaseCheckSteamCommunity" xml:space="preserve">
-    <value>Steamコミュニティに正常にアクセスできるかご確認ください。</value>
+  <data name="CopySuccess" xml:space="preserve">
+    <value>クリップボードに正常にコピーしました</value>
   </data>
-  <data name="PleaseWait" xml:space="preserve">
-    <value>しばらくお待ちください...</value>
+  <data name="CopyNoSupport" xml:space="preserve">
+    <value>このブラウザはクリックでクリップボードにコピーすることをサポートしていません</value>
   </data>
-  <data name="SteamLoginException" xml:space="preserve">
-    <value>現在Steamログインのリクエストが多すぎます。ページを更新して再試行するか、しばらく経ってから再試行してください</value>
+  <data name="Bind" xml:space="preserve">
+    <value>バインド</value>
   </data>
-  <data name="Url_Chrome" xml:space="preserve">
-    <value>https://www.google.com/chrome/browser/desktop</value>
+  <data name="Login2" xml:space="preserve">
+    <value>ログイン</value>
   </data>
-  <data name="Url_Firefox" xml:space="preserve">
-    <value>https://www.mozilla.org/firefox/browsers</value>
+  <data name="LoginSuccessTip1___" xml:space="preserve">
+    <value>{0} {1}が完了しました。このウィンドウを閉じて{2}に戻ることができます。</value>
   </data>
-  <data name="Url_MicrosoftEdge" xml:space="preserve">
-    <value>https://www.microsoft.com/edge</value>
+  <data name="LoginSuccessTip2" xml:space="preserve">
+    <value>このブラウザウィンドウ/タブは10秒以内に自動的に閉じられます。手動で閉じることもできます。</value>
+  </data>
+  <data name="ClickHereTryAgain" xml:space="preserve">
+    <value>ここをクリックして再試行</value>
   </data>
   <data name="WebSocketLostTip" xml:space="preserve">
     <value>アプリとの接続が失われました。再試行をクリックするか、アプリ内でクイックログインを再度クリックしてください。</value>
   </data>
-  <data name="当前手机号今日发送短信数量超过最大上限" xml:space="preserve">
-    <value>この電話番号の本日のSMS送信数が上限に達しました。明日再度お試しください</value>
+  <data name="PleaseCheckSteamCommunity" xml:space="preserve">
+    <value>Steamコミュニティに正常にアクセスできるかご確認ください。</value>
   </data>
-  <data name="当前手机号发送短信过于频繁_" xml:space="preserve">
-    <value>SMS送信が頻繁すぎます。{0}分後に再度お試しください</value>
+  <data name="LongTimeNoJump" xml:space="preserve">
+    <value>長時間リダイレクトされませんか？</value>
   </data>
-  <data name="当前手机号码不存在" xml:space="preserve">
-    <value>現在の電話番号は存在しません</value>
+  <data name="ManualCopyTip" xml:space="preserve">
+    <value>アプリとの接続エラーです。以下の内容を手動でアプリにコピーして、手動ログインをクリックしてください。</value>
   </data>
-  <data name="手机号码已存在" xml:space="preserve">
-    <value>この電話番号は既に使用されています</value>
+  <data name="CopyButton" xml:space="preserve">
+    <value>クリックしてコピー</value>
   </data>
-  <data name="手机号码已存在_注册" xml:space="preserve">
-    <value>この電話番号は既に登録されています</value>
+  <data name="LoginAndRegister" xml:space="preserve">
+    <value>ログイン / 登録</value>
   </data>
-  <data name="操作太频繁请稍后再试" xml:space="preserve">
-    <value>操作が頻繁すぎます。しばらく経ってから再試行してください</value>
+  <data name="SteamLoginException" xml:space="preserve">
+    <value>現在Steamログインのリクエストが多すぎます。ページを更新して再試行するか、しばらく経ってから再試行してください</value>
   </data>
-  <data name="无法登录客服账户" xml:space="preserve">
-    <value>カスタマーサービスアカウントにログインできません</value>
-  </data>
-  <data name="未知的IP地址" xml:space="preserve">
-    <value>不明なIPアドレス</value>
-  </data>
-  <data name="用户不存在" xml:space="preserve">
-    <value>ユーザーが存在しません</value>
-  </data>
-  <data name="短信服务已停用" xml:space="preserve">
-    <value>SMSサービスは停止されています</value>
+  <data name="验证码已过期或不存在" xml:space="preserve">
+    <value>認証コードの有効期限が切れているか、存在しません</value>
   </data>
   <data name="短信服务已停用_登录或注册" xml:space="preserve">
     <value>SMSサービスは停止されています。クイックログインを使用してログインまたは登録してください</value>
   </data>
+  <data name="短信服务已停用" xml:space="preserve">
+    <value>SMSサービスは停止されています</value>
+  </data>
+  <data name="当前手机号码不存在" xml:space="preserve">
+    <value>現在の電話番号は存在しません</value>
+  </data>
+  <data name="手机号码已存在_注册" xml:space="preserve">
+    <value>この電話番号は既に登録されています</value>
+  </data>
+  <data name="手机号码已存在" xml:space="preserve">
+    <value>この電話番号は既に使用されています</value>
+  </data>
+  <data name="用户不存在" xml:space="preserve">
+    <value>ユーザーが存在しません</value>
+  </data>
+  <data name="当前手机号发送短信过于频繁_" xml:space="preserve">
+    <value>SMS送信が頻繁すぎます。{0}分後に再度お試しください</value>
+  </data>
+  <data name="当前手机号今日发送短信数量超过最大上限" xml:space="preserve">
+    <value>この電話番号の本日のSMS送信数が上限に達しました。明日再度お試しください</value>
+  </data>
   <data name="短信服务故障" xml:space="preserve">
     <value>サーバーエラー 5001 - SMSサービス</value>
   </data>
-  <data name="短信验证码不正确" xml:space="preserve">
-    <value>SMS認証コードが正しくありません</value>
+  <data name="未知的IP地址" xml:space="preserve">
+    <value>不明なIPアドレス</value>
+  </data>
+  <data name="无法登录客服账户" xml:space="preserve">
+    <value>カスタマーサービスアカウントにログインできません</value>
   </data>
   <data name="该邮箱已被其它用户使用" xml:space="preserve">
     <value>このメールアドレスは他のユーザーによって使用されています</value>
   </data>
-  <data name="账号或密码错误" xml:space="preserve">
-    <value>アカウントまたはパスワードが間違っています</value>
-  </data>
   <data name="验证方式错误" xml:space="preserve">
     <value>認証方法が間違っています</value>
   </data>
-  <data name="验证码已过期或不存在" xml:space="preserve">
-    <value>認証コードの有効期限が切れているか、存在しません</value>
+  <data name="账号或密码错误" xml:space="preserve">
+    <value>アカウントまたはパスワードが間違っています</value>
+  </data>
+  <data name="操作太频繁请稍后再试" xml:space="preserve">
+    <value>操作が頻繁すぎます。しばらく経ってから再試行してください</value>
+  </data>
+  <data name="短信验证码不正确" xml:space="preserve">
+    <value>SMS認証コードが正しくありません</value>
   </data>
 </root>

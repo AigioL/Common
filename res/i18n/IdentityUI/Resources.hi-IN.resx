@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,193 +59,193 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="BodyNoScript" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BodyNoScript" xml:space="preserve">
     <value>इस साइट को ब्राउज़ करने के लिए JavaScript आवश्यक है।</value>
     <comment>html का body noscript</comment>
   </data>
-	<data name="BrowserIsSupported1" xml:space="preserve">
+  <data name="BrowserIsSupported1" xml:space="preserve">
     <value>क्षमा करें, आप एक पुराना ब्राउज़र उपयोग कर रहे हैं। कृपया अपना ब्राउज़र अपडेट करें या</value>
   </data>
-	<data name="BrowserIsSupported2" xml:space="preserve">
+  <data name="BrowserIsSupported2" xml:space="preserve">
     <value>या अन्य आधुनिक ब्राउज़र का उपयोग करके अपने अनुभव को बेहतर बनाएं।</value>
   </data>
-	<data name="ColorPrimary" xml:space="preserve">
+  <data name="ColorPrimary" xml:space="preserve">
     <value>#2196F3</value>
     <comment>मुख्य रंग</comment>
   </data>
-	<data name="MetaMSApplicationWindow" xml:space="preserve">
+  <data name="MetaMSApplicationWindow" xml:space="preserve">
     <value>width=1024;height=768</value>
     <comment>html का meta msapplication-window</comment>
   </data>
-	<data name="PleaseWait" xml:space="preserve">
+  <data name="PleaseWait" xml:space="preserve">
     <value>कृपया प्रतीक्षा करें...</value>
   </data>
-	<data name="Url_Firefox" xml:space="preserve">
+  <data name="Url_Firefox" xml:space="preserve">
     <value>https://www.mozilla.org/firefox/browsers</value>
   </data>
-	<data name="Url_Chrome" xml:space="preserve">
+  <data name="Url_Chrome" xml:space="preserve">
     <value>https://www.google.com/chrome/browser/desktop</value>
   </data>
-	<data name="Url_MicrosoftEdge" xml:space="preserve">
+  <data name="Url_MicrosoftEdge" xml:space="preserve">
     <value>https://www.microsoft.com/edge</value>
   </data>
-	<data name="ModelErrorTitle" xml:space="preserve">
+  <data name="ModelErrorTitle" xml:space="preserve">
     <value>त्रुटि!</value>
   </data>
-	<data name="ModelSuccessTitle_" xml:space="preserve">
+  <data name="ModelSuccessTitle_" xml:space="preserve">
     <value>{0} सफल!</value>
   </data>
-	<data name="CopySuccess" xml:space="preserve">
+  <data name="CopySuccess" xml:space="preserve">
     <value>क्लिपबोर्ड में सफलतापूर्वक कॉपी किया गया</value>
   </data>
-	<data name="CopyNoSupport" xml:space="preserve">
+  <data name="CopyNoSupport" xml:space="preserve">
     <value>यह ब्राउज़र एक क्लिक में क्लिपबोर्ड में कॉपी करने का समर्थन नहीं करता</value>
   </data>
-	<data name="Bind" xml:space="preserve">
+  <data name="Bind" xml:space="preserve">
     <value>बाइंड करें</value>
   </data>
-	<data name="Login2" xml:space="preserve">
+  <data name="Login2" xml:space="preserve">
     <value>लॉगिन</value>
   </data>
-	<data name="LoginSuccessTip1___" xml:space="preserve">
+  <data name="LoginSuccessTip1___" xml:space="preserve">
     <value>{0} {1} पूरा हो गया है, आप इस विंडो को बंद करके {2} पर वापस जा सकते हैं।</value>
   </data>
-	<data name="LoginSuccessTip2" xml:space="preserve">
+  <data name="LoginSuccessTip2" xml:space="preserve">
     <value>यह ब्राउज़र विंडो/टैब 10 सेकंड के भीतर अपने आप बंद होने का प्रयास करेगा, या आप इसे मैन्युअल रूप से बंद कर सकते हैं।</value>
   </data>
-	<data name="ClickHereTryAgain" xml:space="preserve">
+  <data name="ClickHereTryAgain" xml:space="preserve">
     <value>फिर से कोशिश करने के लिए यहाँ क्लिक करें</value>
   </data>
-	<data name="WebSocketLostTip" xml:space="preserve">
+  <data name="WebSocketLostTip" xml:space="preserve">
     <value>एप्लिकेशन से कनेक्शन खो गया है, पुनः प्रयास पर क्लिक करें या एप्लिकेशन में तुरंत लॉगिन पर फिर से क्लिक करें।</value>
   </data>
-	<data name="PleaseCheckSteamCommunity" xml:space="preserve">
+  <data name="PleaseCheckSteamCommunity" xml:space="preserve">
     <value>कृपया जांचें कि क्या आप Steam Community तक सामान्य रूप से पहुंच सकते हैं।</value>
   </data>
-	<data name="LongTimeNoJump" xml:space="preserve">
+  <data name="LongTimeNoJump" xml:space="preserve">
     <value>लंबे समय से कोई रीडायरेक्ट नहीं?</value>
   </data>
-	<data name="ManualCopyTip" xml:space="preserve">
+  <data name="ManualCopyTip" xml:space="preserve">
     <value>एप्लिकेशन कनेक्शन त्रुटि, कृपया निम्नलिखित सामग्री को मैन्युअल रूप से एप्लिकेशन में कॉपी करें और मैन्युअल लॉगिन पर क्लिक करें।</value>
   </data>
-	<data name="CopyButton" xml:space="preserve">
+  <data name="CopyButton" xml:space="preserve">
     <value>कॉपी करने के लिए क्लिक करें</value>
   </data>
-	<data name="LoginAndRegister" xml:space="preserve">
+  <data name="LoginAndRegister" xml:space="preserve">
     <value>लॉगिन / रजिस्टर</value>
   </data>
-	<data name="SteamLoginException" xml:space="preserve">
+  <data name="SteamLoginException" xml:space="preserve">
     <value>वर्तमान में Steam लॉगिन अनुरोध बहुत अधिक हैं। कृपया पृष्ठ को रीफ्रेश करके पुनः प्रयास करें या बाद में फिर से कोशिश करें</value>
   </data>
-	<data name="验证码已过期或不存在" xml:space="preserve">
+  <data name="验证码已过期或不存在" xml:space="preserve">
     <value>सत्यापन कोड गलत है या समाप्त हो गया है</value>
   </data>
-	<data name="短信服务已停用_登录或注册" xml:space="preserve">
+  <data name="短信服务已停用_登录或注册" xml:space="preserve">
     <value>SMS सेवा बंद कर दी गई है, कृपया लॉगिन या रजिस्टर करने के लिए त्वरित लॉगिन का उपयोग करें</value>
   </data>
-	<data name="短信服务已停用" xml:space="preserve">
+  <data name="短信服务已停用" xml:space="preserve">
     <value>SMS सेवा बंद कर दी गई है</value>
   </data>
-	<data name="当前手机号码不存在" xml:space="preserve">
+  <data name="当前手机号码不存在" xml:space="preserve">
     <value>वर्तमान मोबाइल नंबर मौजूद नहीं है</value>
   </data>
-	<data name="手机号码已存在_注册" xml:space="preserve">
+  <data name="手机号码已存在_注册" xml:space="preserve">
     <value>यह मोबाइल नंबर पहले से ही रजिस्टर किया गया है</value>
   </data>
-	<data name="手机号码已存在" xml:space="preserve">
+  <data name="手机号码已存在" xml:space="preserve">
     <value>यह मोबाइल नंबर पहले से ही उपयोग में है</value>
   </data>
-	<data name="用户不存在" xml:space="preserve">
+  <data name="用户不存在" xml:space="preserve">
     <value>उपयोगकर्ता मौजूद नहीं है</value>
     <comment>आमतौर पर गलत UserId मान के कारण</comment>
   </data>
-	<data name="当前手机号发送短信过于频繁_" xml:space="preserve">
+  <data name="当前手机号发送短信过于频繁_" xml:space="preserve">
     <value>ऑपरेशन थोड़ा बार-बार है, कृपया {0} मिनट बाद पुनः प्रयास करें</value>
   </data>
-	<data name="当前手机号今日发送短信数量超过最大上限" xml:space="preserve">
+  <data name="当前手机号今日发送短信数量超过最大上限" xml:space="preserve">
     <value>आज सत्यापन कोड अनुरोध की सीमा पहुंच गई है, कृपया कल पुनः प्रयास करें</value>
   </data>
-	<data name="短信服务故障" xml:space="preserve">
+  <data name="短信服务故障" xml:space="preserve">
     <value>सर्वर त्रुटि 5001 - SMS सेवा</value>
   </data>
-	<data name="未知的IP地址" xml:space="preserve">
+  <data name="未知的IP地址" xml:space="preserve">
     <value>अज्ञात IP पता</value>
     <comment>रिवर्स प्रॉक्सी स्रोत IP हेडर कॉन्फ़िगरेशन जांचें</comment>
   </data>
-	<data name="无法登录客服账户" xml:space="preserve">
+  <data name="无法登录客服账户" xml:space="preserve">
     <value>ग्राहक सेवा खाते में लॉगिन नहीं कर सकते</value>
   </data>
-	<data name="该邮箱已被其它用户使用" xml:space="preserve">
+  <data name="该邮箱已被其它用户使用" xml:space="preserve">
     <value>यह ईमेल पता दूसरे उपयोगकर्ता द्वारा उपयोग किया जा रहा है</value>
   </data>
-	<data name="验证方式错误" xml:space="preserve">
+  <data name="验证方式错误" xml:space="preserve">
     <value>सत्यापन विधि त्रुटि</value>
   </data>
-	<data name="账号或密码错误" xml:space="preserve">
+  <data name="账号或密码错误" xml:space="preserve">
     <value>खाता या पासवर्ड गलत है</value>
   </data>
-	<data name="操作太频繁请稍后再试" xml:space="preserve">
+  <data name="操作太频繁请稍后再试" xml:space="preserve">
     <value>ऑपरेशन बहुत बार-बार है, कृपया बाद में पुनः प्रयास करें</value>
   </data>
-	<data name="短信验证码不正确" xml:space="preserve">
+  <data name="短信验证码不正确" xml:space="preserve">
     <value>SMS सत्यापन कोड गलत है</value>
     <comment>उपयोगकर्ता द्वारा दर्ज सत्यापन कोड सत्यापन असफल</comment>
   </data>

@@ -6,11 +6,16 @@ using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Models;
+using AigioL.Common.Primitives.Columns;
+using AigioL.Common.SmsSender.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
+using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.AccountController;
+using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
+using RModelValid = AigioL.Common.AspNetCore.AppCenter.Properties.ModelValidationErrors;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
@@ -63,28 +68,43 @@ public static partial class ManageController
 
         #endregion
 
-        #region 换绑手机（安全验证）/绑定新手机号
+        #region 换绑手机（安全验证）/换绑手机（绑定新手机号）/绑定手机号（首次绑定）
 
         routeGroup.MapPost("changebindphonenumber", async (HttpContext context,
             [FromBody] ChangePhoneNumberValidationRequest request) =>
         {
-            var r = await RefreshUserInfoAsync(context);
+            var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
+            var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
+            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
+            var db = context.RequestServices.GetRequiredService<TIdentityDbContext>();
+            var r = await ChangeBindPhoneNumberCoreAsync(
+                smsSender, userManager, authMessageRecordRepo,
+                db, request, ResultOkString);
             return r;
         }).WithDescription("换绑手机（安全验证）");
         routeGroup.MapPut("changebindphonenumber", async (HttpContext context,
             [FromBody] ChangePhoneNumberNewRequest request) =>
         {
-            var r = await RefreshUserInfoAsync(context);
+            var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
+            var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
+            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
+            var db = context.RequestServices.GetRequiredService<TIdentityDbContext>();
+            var r = await ChangeBindPhoneNumberCoreAsync(
+                smsSender, userManager, authMessageRecordRepo,
+                db, request);
             return r;
         }).WithDescription("换绑手机（绑定新手机号）");
+        routeGroup.MapPost("bindphonenumber", async (HttpContext context,
+            [FromBody] BindPhoneNumberRequest request) =>
+        {
+            var r = await RefreshUserInfoAsync(context);
+            return r;
+        }).WithDescription("绑定手机号（首次绑定）");
 
         #endregion
 
-        routeGroup.MapDelete("deleteaccount", async (HttpContext context) =>
-        {
-            var r = await DeleteAccountCoreAsync<TIdentityDbContext>(context);
-            return r;
-        }).WithDescription("注销（删除）账号");
+        #region 签到
+
         routeGroup.MapPost("clockin", async (HttpContext context) =>
         {
             ApiRsp r = "TODO: 待完成";
@@ -95,12 +115,14 @@ public static partial class ManageController
             ApiRsp r = "TODO: 待完成";
             return r;
         }).WithDescription("获取每日签到记录");
-        routeGroup.MapPost("bindphonenumber", async (HttpContext context,
-            [FromBody] BindPhoneNumberRequest request) =>
+
+        #endregion
+
+        routeGroup.MapDelete("deleteaccount", async (HttpContext context) =>
         {
-            var r = await RefreshUserInfoAsync(context);
+            var r = await DeleteAccountCoreAsync<TIdentityDbContext>(context);
             return r;
-        }).WithDescription("绑定手机号");
+        }).WithDescription("注销（删除）账号");
         routeGroup.MapPost("setPassword", async (HttpContext context,
             [FromBody] SetPasswordRequest request) =>
         {
@@ -202,6 +224,161 @@ public static partial class ManageController
         await userDeleteRepo.DeleteAccountAsync(userId);
 
         return true;
+    }
+
+    static ApiRsp<string?> ResultOkString(string? val) => ApiRsp.Ok(val);
+
+    /// <summary>
+    /// 换绑手机（安全验证）
+    /// </summary>
+    static async Task<ApiRsp<T?>> ChangeBindPhoneNumberCoreAsync<T>(
+        ISmsSender smsSender,
+        IUserManager2 userManager,
+        IAuthMessageRecordRepository authMessageRecordRepo,
+        IIdentityDbContext db,
+        ChangePhoneNumberValidationRequest request,
+        Func<string, ApiRsp<T?>> resultOk)
+    {
+        if (request.PhoneNumber == null)
+        {
+            return ApiRspCode.RequestModelValidateFail;
+        }
+        if (request.SmsCode == null)
+        {
+            return ApiRspCode.RequestModelValidateFail;
+        }
+
+        if (request.PhoneNumber == IPhoneNumber.SimulatorDefaultValue)
+        {
+            return RModelValid.请输入正确的手机号码哦;
+        }
+
+        var findUser = await userManager.FindByPhoneNumberAsync(request.PhoneNumber, request.PhoneNumberRegionCode);
+        if (findUser != null)
+        {
+            return R.手机号码已存在_换绑手机;
+        }
+
+        var user = await userManager.GetUserAsync();
+        if (user == null)
+        {
+            return ApiRspCode.Unauthorized;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+        {
+            return R.当前手机号码不存在;
+        }
+
+        if (request.PhoneNumber == user.PhoneNumber)
+        {
+            return R.新手机号不能与旧手机号一样;
+        }
+
+        // https://docs.microsoft.com/zh-cn/ef/core/saving/transactions
+        using var transaction = await db.GetDatabase().BeginTransactionAsync();
+
+        var record = await authMessageRecordRepo.CheckAuthMessageAsync(
+            smsSender,
+            user.PhoneNumber,
+            user.PhoneNumberRegionCode,
+            request.SmsCode,
+            SmsCodeType.ChangePhoneNumberValidation);
+
+        if (record == null || record.Abandoned)
+        {
+            await transaction.CommitAsync();
+            return R.验证码已过期或不存在;
+        }
+
+        if (!record.CheckSuccess)
+        {
+            await transaction.CommitAsync();
+            return R.验证码不正确;
+        }
+
+        var code = await userManager.GenerateChangePhoneNumberTokenAsync(user, request.PhoneNumber);
+        await transaction.CommitAsync();
+
+        var r = resultOk(code);
+        return r;
+    }
+
+    /// <summary>
+    /// 绑定新手机号
+    /// </summary>
+    static async Task<ApiRsp> ChangeBindPhoneNumberCoreAsync(
+        ISmsSender smsSender,
+        IUserManager2 userManager,
+        IAuthMessageRecordRepository authMessageRecordRepo,
+        IIdentityDbContext db,
+        ChangePhoneNumberNewRequest request)
+    {
+        if (request.PhoneNumber == null)
+        {
+            return ApiRspCode.RequestModelValidateFail;
+        }
+        if (request.SmsCode == null)
+        {
+            return ApiRspCode.RequestModelValidateFail;
+        }
+
+        if (request.PhoneNumber == IPhoneNumber.SimulatorDefaultValue)
+        {
+            return RModelValid.请输入正确的手机号码哦;
+        }
+
+        if (request.Code == null)
+        {
+            // 没有通过当前手机号验证
+            return "Code is invalid.";
+        }
+
+        var user = await userManager.GetUserAsync();
+        if (user == null) return ApiRspCode.Unauthorized;
+
+        if (request.PhoneNumber == user.PhoneNumber)
+        {
+            // 新手机号不能与旧手机号一样
+            return "new phone number cannot be the same as the old phone number.";
+        }
+
+        // https://docs.microsoft.com/zh-cn/ef/core/saving/transactions
+        using var transaction = await db.GetDatabase().BeginTransactionAsync();
+
+        var record = await authMessageRecordRepo.CheckAuthMessageAsync(
+            smsSender,
+            request.PhoneNumber,
+            request.PhoneNumberRegionCode,
+            request.SmsCode,
+            SmsCodeType.ChangePhoneNumberNew);
+
+        if (record == null || record.Abandoned)
+        {
+            await transaction.CommitAsync();
+            return R.验证码已过期或不存在;
+        }
+
+        if (!record.CheckSuccess)
+        {
+            await transaction.CommitAsync();
+            return R.验证码不正确;
+        }
+
+        var result = await userManager.ChangePhoneNumberAsync(user, request.PhoneNumber, request.Code);
+        if (result.Succeeded)
+        {
+            await transaction.CommitAsync();
+            var userInfo = await userManager.GetUserInfoCacheAsync();
+            if (userInfo is not null)
+            {
+                userInfo.PhoneNumber = user.PhoneNumber;
+                await userManager.RefreshUserInfoCacheAsync(userInfo);
+            }
+            return true;
+        }
+
+        return Fail(result);
     }
 
     /// <summary>

@@ -189,9 +189,13 @@ public static partial class AccountController
         CancellationToken cancellationToken = default)
     {
         if (phoneNumber == null)
+        {
             return ApiRspCode.RequestModelValidateFail;
+        }
         if (smsCode == null)
+        {
             return ApiRspCode.RequestModelValidateFail;
+        }
 
         var user = await userManager.FindByPhoneNumberAsync(phoneNumber, phoneNumberRegionCode);
 

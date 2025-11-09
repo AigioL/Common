@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Primitives.Models;
 using Microsoft.AspNetCore.Identity;
@@ -90,4 +91,6 @@ partial interface IIdentityUserManager<TUser> // 自定义方法
     /// 刷新缓存的用户信息
     /// </summary>
     Task RefreshUserInfoCacheAsync(TUser user);
+
+    Task RefreshUserInfoCacheAsync(UserInfoModel user);
 }

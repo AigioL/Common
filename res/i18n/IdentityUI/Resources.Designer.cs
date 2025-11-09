@@ -322,6 +322,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 这个手机号已经被绑定了哦 的本地化字符串。
+        /// </summary>
+        public static string 手机号码已存在_换绑手机 {
+            get {
+                return ResourceManager.GetString("手机号码已存在_换绑手机", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 这个手机号已经被注册了哦 的本地化字符串。
         /// </summary>
         public static string 手机号码已存在_注册 {
@@ -336,6 +345,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         public static string 操作太频繁请稍后再试 {
             get {
                 return ResourceManager.GetString("操作太频繁请稍后再试", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 新手机号不能与旧手机号一样 的本地化字符串。
+        /// </summary>
+        public static string 新手机号不能与旧手机号一样 {
+            get {
+                return ResourceManager.GetString("新手机号不能与旧手机号一样", resourceCulture);
             }
         }
         
@@ -426,6 +444,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         public static string 验证方式错误 {
             get {
                 return ResourceManager.GetString("验证方式错误", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 验证码不正确 的本地化字符串。
+        /// </summary>
+        public static string 验证码不正确 {
+            get {
+                return ResourceManager.GetString("验证码不正确", resourceCulture);
             }
         }
         
