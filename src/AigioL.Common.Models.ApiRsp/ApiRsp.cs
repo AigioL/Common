@@ -92,7 +92,7 @@ public sealed partial record class ApiRsp<TContent> : ApiRsp
     /// </summary>
     public TContent? Content { get; set; }
 
-    public static implicit operator ApiRsp<TContent>(TContent content) => new() { Content = content };
+    public static implicit operator ApiRsp<TContent>(TContent content) => new() { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
 
     public static implicit operator ApiRsp<TContent>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 
