@@ -1,7 +1,7 @@
 namespace AigioL.Common.AspNetCore.AppCenter.Models;
 
 /// <summary>
-/// 第三方外部登录渠道
+/// 第三方外部平台登录渠道，例如 Steam、WeChat、QQ、Alipay 等
 /// <list type="bullet">
 /// <item>AuthenticationController.ExternalLogin/ExternalLoginCallback</item>
 /// <item>UserManager.LoginSharedAsync</item>

@@ -11,7 +11,7 @@ using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorContro
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
 /// <summary>
-/// 第三方外部登录终结点
+/// 第三方外部账号登录终结点
 /// </summary>
 public static partial class ExternalLoginController
 {

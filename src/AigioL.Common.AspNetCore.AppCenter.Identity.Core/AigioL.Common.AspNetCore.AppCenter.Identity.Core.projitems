@@ -14,12 +14,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\LoginChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\AccountLoginRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\BindPhoneNumberRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ChangePhoneNumberNewRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ChangePhoneNumberValidationRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\EditUserProfileRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RegisterByEmailRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ResetPasswordRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendEmailCodeRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendSmsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SetPasswordRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.cs" />

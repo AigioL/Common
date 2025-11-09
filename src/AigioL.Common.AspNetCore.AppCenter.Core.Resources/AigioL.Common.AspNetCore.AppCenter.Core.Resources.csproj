@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+		<RootNamespace>AigioL.Common.AspNetCore.AppCenter</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="..\..\res\i18n\Core\ModelValidationErrors.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>ModelValidationErrors.Designer.cs</LastGenOutput>
+			<LinkBase>Properties</LinkBase>
+			<CustomToolNamespace>AigioL.Common.AspNetCore.AppCenter.Properties</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Include="..\..\res\i18n\Core\ModelValidationErrors.*.resx">
+			<LinkBase>Properties</LinkBase>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\res\i18n\Core\ModelValidationErrors.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>ModelValidationErrors.resx</DependentUpon>
+			<LinkBase>Properties</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+</Project>

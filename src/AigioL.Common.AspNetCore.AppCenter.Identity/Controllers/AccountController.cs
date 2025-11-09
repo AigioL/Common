@@ -17,6 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
+using RModelValid = AigioL.Common.AspNetCore.AppCenter.Properties.ModelValidationErrors;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
@@ -459,7 +460,7 @@ public static partial class AccountController
                 {
                     if (string.IsNullOrWhiteSpace(phoneNumber))
                     {
-                        return R.请填写手机号码;
+                        return RModelValid.请填写手机号码;
                     }
                     var error = await CheckAuthMessageAsync(
                         authMessageRecordRepo, smsSender, phoneNumber,
@@ -476,7 +477,7 @@ public static partial class AccountController
                 {
                     if (string.IsNullOrWhiteSpace(email))
                     {
-                        return R.请填写邮箱;
+                        return RModelValid.请填写邮箱;
                     }
                     if (!email.IsEmail())
                     {

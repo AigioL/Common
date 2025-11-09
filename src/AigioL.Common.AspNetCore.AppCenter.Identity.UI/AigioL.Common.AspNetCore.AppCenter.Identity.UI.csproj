@@ -2,12 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
-		<AddRazorSupportForMvc>true</AddRazorSupportForMvc>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include="..\..\res\i18n\IdentityUI\Resources.resx">

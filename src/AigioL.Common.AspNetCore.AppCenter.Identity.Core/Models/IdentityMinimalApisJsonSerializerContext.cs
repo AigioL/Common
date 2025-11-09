@@ -14,14 +14,22 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 [JsonSerializable(typeof(SendEmailCodeRequest))]
 #endregion
 #region AccountController
+[JsonSerializable(typeof(LoginOrRegisterRequest))]
 [JsonSerializable(typeof(ApiRsp<LoginOrRegisterResponse?>))]
-[JsonSerializable(typeof(ApiRsp<JsonWebTokenValue?>))]
 [JsonSerializable(typeof(RefreshTokenRequest))]
+[JsonSerializable(typeof(ApiRsp<JsonWebTokenValue?>))]
 [JsonSerializable(typeof(ValidateRegisterEmailRequest))]
 [JsonSerializable(typeof(ResetPasswordRequest))]
+[JsonSerializable(typeof(RegisterByEmailRequest))]
 [JsonSerializable(typeof(AccountLoginRequest))]
 #endregion
 #region ManageController
+[JsonSerializable(typeof(ApiRsp<UserInfoModel?>))]
+[JsonSerializable(typeof(ChangePhoneNumberValidationRequest))]
+[JsonSerializable(typeof(ChangePhoneNumberNewRequest))]
+[JsonSerializable(typeof(BindPhoneNumberRequest))]
+[JsonSerializable(typeof(SetPasswordRequest))]
+[JsonSerializable(typeof(EditUserProfileRequest))]
 #endregion
 #region MembershipController
 [JsonSerializable(typeof(ApiRsp<MembershipInfo?>))]

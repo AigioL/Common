@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityKeyBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddCorsByViewUrl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddProblemDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.ConfigureRequestLocalizationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.UseForwardedHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValidationServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\AppSettingsBase.cs" />

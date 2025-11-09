@@ -11,7 +11,8 @@ using AigioL.Common.SmsSender.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
-using Strings = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
+using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
+using RModelValid = AigioL.Common.AspNetCore.AppCenter.Properties.ModelValidationErrors;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
@@ -95,8 +96,8 @@ public static partial class VerificationCodesController
             return (ApiRspCode.SMSServerError, type switch
             {
                 SmsCodeType.Login or SmsCodeType.Register or SmsCodeType.LoginOrRegister
-                    => Strings.短信服务已停用_登录或注册,
-                _ => Strings.短信服务已停用,
+                    => R.短信服务已停用_登录或注册,
+                _ => R.短信服务已停用,
             });
         }
 
@@ -126,7 +127,7 @@ public static partial class VerificationCodesController
         if (verify_phoneNumber)
         {
             if (phoneNumber == IPhoneNumber.SimulatorDefaultValue)
-                return Strings.请输入正确的手机号码哦;
+                return RModelValid.请输入正确的手机号码哦;
         }
 
         // 换绑手机号时，手机号填写 PhoneNumberHelper.SimulatorDefaultValue 固定值
@@ -176,7 +177,7 @@ public static partial class VerificationCodesController
             {
                 if (string.IsNullOrWhiteSpace(user.PhoneNumber))
                 {
-                    return Strings.当前手机号码不存在;
+                    return R.当前手机号码不存在;
                 }
                 phoneNumber = user.PhoneNumber;
             }
@@ -225,15 +226,15 @@ public static partial class VerificationCodesController
                 {
                     return type switch
                     {
-                        SmsCodeType.Register => Strings.手机号码已存在_注册,
-                        _ => Strings.手机号码已存在,
+                        SmsCodeType.Register => R.手机号码已存在_注册,
+                        _ => R.手机号码已存在,
                     };
                 }
                 else
                 {
                     if (isMustDuplicatePhoneNumber) // 找不到用户
                     {
-                        return Strings.用户不存在;
+                        return R.用户不存在;
                     }
                 }
             }
@@ -267,14 +268,14 @@ public static partial class VerificationCodesController
             var now = DateTimeOffset.Now;
             if (adds >= now)
             {
-                return Strings.当前手机号发送短信过于频繁_.Format(Math.Ceiling(TimeSpan.FromSeconds(SMSConstants.SmsSendTooFrequently).TotalMinutes));
+                return R.当前手机号发送短信过于频繁_.Format(Math.Ceiling(TimeSpan.FromSeconds(SMSConstants.SmsSendTooFrequently).TotalMinutes));
             }
             else
             {
                 var isMaxSendSmsDay = await authMessageRecordRepo.IsMaxSendSmsDay(phoneNumber, phoneNumberRegionCode);
                 if (isMaxSendSmsDay)
                 {
-                    return Strings.当前手机号今日发送短信数量超过最大上限;
+                    return R.当前手机号今日发送短信数量超过最大上限;
                 }
             }
         }
@@ -336,7 +337,7 @@ public static partial class VerificationCodesController
                 record.Id,
                 record.SendResultRecord);
 #pragma warning restore CA1873 // 避免进行可能成本高昂的日志记录
-            return (ApiRspCode.SMSServerError, Strings.短信服务故障);
+            return (ApiRspCode.SMSServerError, R.短信服务故障);
         }
         else
         {

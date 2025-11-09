@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
@@ -64,16 +65,18 @@ public static partial class ManageController
 
         #region 换绑手机（安全验证）/绑定新手机号
 
-        routeGroup.MapPost("changebindphonenumber", async (HttpContext context) =>
+        routeGroup.MapPost("changebindphonenumber", async (HttpContext context,
+            [FromBody] ChangePhoneNumberValidationRequest request) =>
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
-        }).WithDescription("换绑手机（安全验证）V1");
-        routeGroup.MapPut("changebindphonenumber", async (HttpContext context) =>
+        }).WithDescription("换绑手机（安全验证）");
+        routeGroup.MapPut("changebindphonenumber", async (HttpContext context,
+            [FromBody] ChangePhoneNumberNewRequest request) =>
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
-        }).WithDescription("绑定新手机号");
+        }).WithDescription("换绑手机（绑定新手机号）");
 
         #endregion
 
@@ -92,17 +95,20 @@ public static partial class ManageController
             ApiRsp r = "TODO: 待完成";
             return r;
         }).WithDescription("获取每日签到记录");
-        routeGroup.MapPost("bindphonenumber", async (HttpContext context) =>
+        routeGroup.MapPost("bindphonenumber", async (HttpContext context,
+            [FromBody] BindPhoneNumberRequest request) =>
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
         }).WithDescription("绑定手机号");
-        routeGroup.MapPost("setPassword", async (HttpContext context) =>
+        routeGroup.MapPost("setPassword", async (HttpContext context,
+            [FromBody] SetPasswordRequest request) =>
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
         }).WithDescription("设置账号密码");
-        routeGroup.MapPost("edituserprofile", async (HttpContext context) =>
+        routeGroup.MapPost("edituserprofile", async (HttpContext context,
+            [FromBody] EditUserProfileRequest request) =>
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
@@ -111,7 +117,7 @@ public static partial class ManageController
         {
             var r = await SignOutCoreAsync<TIdentityDbContext>(context);
             return r;
-        }).WithDescription("退出登录（登出）");
+        }).WithDescription("退出登录（登出）账号");
         routeGroup.MapDelete("unbundleaccount/{channel}", async (HttpContext context,
             [FromRoute] string channel) =>
         {
@@ -126,7 +132,7 @@ public static partial class ManageController
                 r = ApiRspCode.NotFound;
             }
             return r;
-        }).WithDescription("解绑账号");
+        }).WithDescription("解绑账号的第三方外部平台，例如 Steam、WeChat、QQ、Alipay 等");
     }
 
     static async Task<ApiRsp<UserInfoModel?>> RefreshUserInfoAsync(
@@ -142,71 +148,6 @@ public static partial class ManageController
         var userInfoDTO = await userManager.GetUserInfoCacheAsync();
         return userInfoDTO;
     }
-
-    //#region 换绑手机（安全验证）/绑定新手机号
-
-    ///// <inheritdoc cref="ChangeBindPhoneNumberCoreAsync(ISmsSender, IJWTUserManagerV2C, IAuthMessageRecordRepository, IIdentityDbContext, ChangePhoneNumberValidationRequest)"/>
-    //[HttpPost("changebindphonenumber")]
-    //public Task<ApiRspImpl<string?>> ChangeBindPhoneNumber([FromBody] ChangePhoneNumberValidationRequest request)
-    //    => ChangeBindPhoneNumberCoreAsync(smsSender, userManager,
-    //        authMessageRecordRepo, db, request);
-
-    ///// <inheritdoc cref="ChangeBindPhoneNumberCoreAsync(ISmsSender, IJWTUserManagerV2C, IAuthMessageRecordRepository, IIdentityDbContext, ChangePhoneNumberValidationRequest)"/>
-    //[HttpPut("changebindphonenumber")]
-    //public Task<ApiRspImpl> ChangeBindPhoneNumber([FromBody] ChangePhoneNumberNewRequest request)
-    //     => ChangeBindPhoneNumberCoreAsync(smsSender, userManager,
-    //        authMessageRecordRepo, db, request);
-
-    //#endregion
-
-    ///// <inheritdoc cref="DeleteAccountCoreAsync(ControllerBase, IIdentityDbContext, IUserCancelRepository,IDistributedCache,IConnectionMultiplexer)"/>
-    //[HttpDelete("deleteaccount")]
-    //public Task<ApiRspImpl> DeleteAccount()
-    //    => DeleteAccountCoreAsync(this, db, userCancelRepo, cache, connection);
-
-    ///// <inheritdoc cref="ClockInCoreAsync(IJWTUserManagerV2C, IIdentityDbContext, IClockInRecordRepository, ClockInRequest,IConnectionMultiplexer)"/>
-    //[HttpPost("clockin")]
-    //public Task<ApiRspImpl<ClockInResponse?>> ClockIn([FromBody] ClockInRequest request)
-    //    => ClockInCoreAsync(userManager, db, clockInRecordRepo, request, connection);
-
-    ///// <inheritdoc cref="ClockInLogsCoreAsync(IJWTUserManagerV2C, IClockInRecordRepository, DateTimeOffset?)"/>
-    //[HttpGet("clockinrecords")]
-    //public Task<ApiRspImpl<DateTimeOffset[]?>> ClockInLogs([FromQuery] DateTimeOffset? time)
-    //    => ClockInLogsCoreAsync(userManager, clockInRecordRepo, time);
-
-    ///// <inheritdoc cref="BindPhoneNumberCoreAsync(ISmsSender, IJWTUserManagerV2C, IIdentityDbContext, IAuthMessageRecordRepository, BindPhoneNumberRequest)"/>
-    //[HttpPost("bindphonenumber")]
-    //public Task<ApiRspImpl> BindPhoneNumber([FromBody] BindPhoneNumberRequest request)
-    //    => BindPhoneNumberCoreAsync(smsSender, userManager, db,
-    //        authMessageRecordRepo, request);
-
-    //[HttpPost("setPassword")]
-    //public Task<ApiRspImpl> SetPassword([FromBody] SetPasswordRequest request)
-    //    => SetPasswordCoreAsync(smsSender, userManager, db, authMessageRecordRepo, request);
-
-    ///// <inheritdoc cref="EditUserProfileCoreAsync(ControllerBase, IJWTUserManagerV2C, IIdentityDbContext, EditUserProfileRequest)"/>
-    //[HttpPost("edituserprofile")]
-    //public Task<ApiRspImpl> EditUserProfile([FromBody] EditUserProfileRequest request)
-    //    => EditUserProfileCoreAsync(this, userManager, db, request);
-
-    ///// <inheritdoc cref="SignOutCoreAsync(ControllerBase, IIdentityDbContext,IDistributedCache,IConnectionMultiplexer)"/>
-    //[HttpGet("signout")]
-    //public new Task<ApiRspImpl> SignOut()
-    //    => SignOutCoreAsync(this, db, cache, connection);
-
-    ///// <inheritdoc cref="UnbundleAccountCoreAsync(IJWTUserManagerV2C, ExternalLoginChannel)"/>
-    //[HttpDelete("unbundleaccount/{channel}")]
-    //public Task<ApiRspImpl> UnbundleAccount([FromRoute] ExternalLoginChannel channel)
-    //    => UnbundleAccountCoreAsync(userManager, channel);
-
-    //[HttpPost("sendbindemail")]
-    //public Task<ApiRspImpl> SendBindEmail([FromBody] BindEmailRequest request) =>
-    //    SendBindEmailCoreAsync(smsSender, userManager, authMessageRecordRepo, cache, connection, request.Email, request.SmsCode, request.IsSms);
-
-    //[AllowAnonymous]
-    //[HttpPost("bindemail")]
-    //public Task<ApiRspImpl> BindEmail([FromBody] EmailConfirmRequest request)
-    //    => BindEmailCoreAsync(userManager, cache, request.UserId, request.Token, request.NewEmail);
 
     static async Task<ApiRsp> DeleteAccountCoreAsync<TIdentityDbContext>(
         HttpContext context)

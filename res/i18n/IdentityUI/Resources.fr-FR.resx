@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
+	<!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,138 +59,191 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="BodyNoScript" xml:space="preserve">
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="BodyNoScript" xml:space="preserve">
     <value>JavaScript est requis pour naviguer sur ce site.</value>
   </data>
-  <data name="BrowserIsSupported1" xml:space="preserve">
+	<data name="BrowserIsSupported1" xml:space="preserve">
     <value>Désolé, vous utilisez un navigateur obsolète. Veuillez mettre à jour votre navigateur ou utiliser</value>
   </data>
-  <data name="BrowserIsSupported2" xml:space="preserve">
+	<data name="BrowserIsSupported2" xml:space="preserve">
     <value>ou d'autres navigateurs modernes pour améliorer votre expérience.</value>
   </data>
-  <data name="ColorPrimary" xml:space="preserve">
+	<data name="ColorPrimary" xml:space="preserve">
     <value>#2196F3</value>
   </data>
-  <data name="MetaMSApplicationWindow" xml:space="preserve">
+	<data name="MetaMSApplicationWindow" xml:space="preserve">
     <value>width=1024;height=768</value>
   </data>
-  <data name="PleaseWait" xml:space="preserve">
+	<data name="PleaseWait" xml:space="preserve">
     <value>Veuillez patienter...</value>
   </data>
-  <data name="Url_Firefox" xml:space="preserve">
+	<data name="Url_Firefox" xml:space="preserve">
     <value>https://www.mozilla.org/firefox/browsers</value>
   </data>
-  <data name="Url_Chrome" xml:space="preserve">
+	<data name="Url_Chrome" xml:space="preserve">
     <value>https://www.google.com/chrome/browser/desktop</value>
   </data>
-  <data name="Url_MicrosoftEdge" xml:space="preserve">
+	<data name="Url_MicrosoftEdge" xml:space="preserve">
     <value>https://www.microsoft.com/edge</value>
   </data>
-  <data name="ModelErrorTitle" xml:space="preserve">
+	<data name="ModelErrorTitle" xml:space="preserve">
     <value>Erreur !</value>
   </data>
-  <data name="ModelSuccessTitle_" xml:space="preserve">
+	<data name="ModelSuccessTitle_" xml:space="preserve">
     <value>{0} réussi !</value>
   </data>
-  <data name="CopySuccess" xml:space="preserve">
+	<data name="CopySuccess" xml:space="preserve">
     <value>Copié avec succès dans le presse-papiers</value>
   </data>
-  <data name="CopyNoSupport" xml:space="preserve">
+	<data name="CopyNoSupport" xml:space="preserve">
     <value>Ce navigateur ne prend pas en charge la copie dans le presse-papiers en un clic</value>
   </data>
-  <data name="Bind" xml:space="preserve">
+	<data name="Bind" xml:space="preserve">
     <value>Lier</value>
   </data>
-  <data name="Login2" xml:space="preserve">
+	<data name="Login2" xml:space="preserve">
     <value>Connexion</value>
   </data>
-  <data name="LoginSuccessTip1___" xml:space="preserve">
+	<data name="LoginSuccessTip1___" xml:space="preserve">
     <value>{0} {1} a été terminé, vous pouvez fermer cette fenêtre et retourner à {2}.</value>
   </data>
-  <data name="LoginSuccessTip2" xml:space="preserve">
+	<data name="LoginSuccessTip2" xml:space="preserve">
     <value>Cette fenêtre/onglet du navigateur tentera de se fermer automatiquement dans 10 secondes, ou vous pouvez la fermer manuellement.</value>
   </data>
-  <data name="ClickHereTryAgain" xml:space="preserve">
+	<data name="ClickHereTryAgain" xml:space="preserve">
     <value>Cliquez ici pour réessayer</value>
   </data>
-  <data name="WebSocketLostTip" xml:space="preserve">
+	<data name="WebSocketLostTip" xml:space="preserve">
     <value>Connexion à l'application perdue, cliquez sur réessayer ou cliquez à nouveau sur connexion rapide dans l'application.</value>
   </data>
-  <data name="PleaseCheckSteamCommunity" xml:space="preserve">
+	<data name="PleaseCheckSteamCommunity" xml:space="preserve">
     <value>Veuillez vérifier si vous pouvez accéder normalement à Steam Community.</value>
   </data>
-  <data name="LongTimeNoJump" xml:space="preserve">
+	<data name="LongTimeNoJump" xml:space="preserve">
     <value>Pas de redirection depuis longtemps ?</value>
   </data>
-  <data name="ManualCopyTip" xml:space="preserve">
+	<data name="ManualCopyTip" xml:space="preserve">
     <value>Erreur de connexion de l'application, veuillez copier manuellement le contenu suivant dans l'application et cliquer sur connexion manuelle.</value>
   </data>
-  <data name="CopyButton" xml:space="preserve">
+	<data name="CopyButton" xml:space="preserve">
     <value>Cliquez pour copier</value>
   </data>
-  <data name="LoginAndRegister" xml:space="preserve">
+	<data name="LoginAndRegister" xml:space="preserve">
     <value>Connexion / Inscription</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="SteamLoginException" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+	<data name="SteamLoginException" xml:space="preserve">
+    <value>Il y a actuellement trop de demandes de connexion Steam. Veuillez actualiser la page pour réessayer ou réessayer plus tard</value>
+  </data>
+	<data name="验证码已过期或不存在" xml:space="preserve">
+    <value>Le code de vérification est incorrect ou a expiré</value>
+  </data>
+	<data name="短信服务已停用_登录或注册" xml:space="preserve">
+    <value>Le service SMS a été interrompu, veuillez utiliser la connexion rapide pour vous connecter ou vous inscrire</value>
+  </data>
+	<data name="短信服务已停用" xml:space="preserve">
+    <value>Le service SMS a été interrompu</value>
+  </data>
+	<data name="当前手机号码不存在" xml:space="preserve">
+    <value>Le numéro de téléphone actuel n'existe pas</value>
+  </data>
+	<data name="手机号码已存在_注册" xml:space="preserve">
+    <value>Ce numéro de téléphone a déjà été enregistré</value>
+  </data>
+	<data name="手机号码已存在" xml:space="preserve">
+    <value>Ce numéro de téléphone est déjà utilisé</value>
+  </data>
+	<data name="用户不存在" xml:space="preserve">
+    <value>L'utilisateur n'existe pas</value>
+    <comment>Généralement causé par une valeur UserId incorrecte</comment>
+  </data>
+	<data name="当前手机号发送短信过于频繁_" xml:space="preserve">
+    <value>L'opération est un peu fréquente, veuillez réessayer après {0} minutes</value>
+  </data>
+	<data name="当前手机号今日发送短信数量超过最大上限" xml:space="preserve">
+    <value>Limite de demande de code de vérification atteinte pour aujourd'hui, veuillez réessayer demain</value>
+  </data>
+	<data name="短信服务故障" xml:space="preserve">
+    <value>Erreur serveur 5001 - Service SMS</value>
+  </data>
+	<data name="未知的IP地址" xml:space="preserve">
+    <value>Adresse IP inconnue</value>
+    <comment>Vérifiez la configuration de l'en-tête IP source du proxy inverse</comment>
+  </data>
+	<data name="无法登录客服账户" xml:space="preserve">
+    <value>Impossible de se connecter au compte de service client</value>
+  </data>
+	<data name="该邮箱已被其它用户使用" xml:space="preserve">
+    <value>Cette adresse e-mail est déjà utilisée par un autre utilisateur</value>
+  </data>
+	<data name="验证方式错误" xml:space="preserve">
+    <value>Erreur de méthode de vérification</value>
+  </data>
+	<data name="账号或密码错误" xml:space="preserve">
+    <value>Compte ou mot de passe incorrect</value>
+  </data>
+	<data name="操作太频繁请稍后再试" xml:space="preserve">
+    <value>Opération trop fréquente, veuillez réessayer plus tard</value>
+  </data>
+	<data name="短信验证码不正确" xml:space="preserve">
+    <value>Le code de vérification SMS est incorrect</value>
+    <comment>Échec de la validation du code de vérification saisi par l'utilisateur</comment>
   </data>
 </root>

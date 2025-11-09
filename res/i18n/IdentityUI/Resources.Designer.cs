@@ -412,33 +412,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
-        ///   查找类似 请填写手机号码 的本地化字符串。
-        /// </summary>
-        public static string 请填写手机号码 {
-            get {
-                return ResourceManager.GetString("请填写手机号码", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 请填写邮箱 的本地化字符串。
-        /// </summary>
-        public static string 请填写邮箱 {
-            get {
-                return ResourceManager.GetString("请填写邮箱", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 请输入正确的手机号码哦 的本地化字符串。
-        /// </summary>
-        public static string 请输入正确的手机号码哦 {
-            get {
-                return ResourceManager.GetString("请输入正确的手机号码哦", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 账号或密码错误 的本地化字符串。
         /// </summary>
         public static string 账号或密码错误 {
