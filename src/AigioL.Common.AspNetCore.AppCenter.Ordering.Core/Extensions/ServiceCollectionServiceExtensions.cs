@@ -1,5 +1,5 @@
-using AigioL.Common.AspNetCore.AppCenter.Repositories;
-using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;

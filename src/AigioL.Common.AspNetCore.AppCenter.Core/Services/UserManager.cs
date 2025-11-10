@@ -3,16 +3,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Repositories;
+namespace AigioL.Common.AspNetCore.AppCenter.Services;
 
 /// <inheritdoc/>
-public sealed partial class UserManager2 :
+public partial class UserManager :
     UserManager<User>
 {
-    readonly IHttpContextAccessor accessor;
+    protected readonly IHttpContextAccessor accessor;
 
     /// <inheritdoc/>
-    public UserManager2(
+#pragma warning disable IDE0290 // 使用主构造函数
+    public UserManager(
+#pragma warning restore IDE0290 // 使用主构造函数
         IUserStore<User> store,
         IOptions<IdentityOptions> optionsAccessor,
         IPasswordHasher<User> passwordHasher,
@@ -21,7 +23,7 @@ public sealed partial class UserManager2 :
         ILookupNormalizer keyNormalizer,
         IdentityErrorDescriber errors,
         IServiceProvider services,
-        ILogger<UserManager<User>> logger) : base(
+        ILogger<UserManager> logger) : base(
             store,
             optionsAccessor,
             passwordHasher,

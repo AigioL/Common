@@ -1,5 +1,10 @@
-using AigioL.Common.AspNetCore.AppCenter.Repositories;
-using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Services;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
@@ -9,23 +14,29 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class ServiceCollectionServiceExtensions
 {
-    //public static IServiceCollection AddBasicRepositories<
-    //    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
-    //    this IServiceCollection services)
-    //    where TDbContext : DbContext, IArticleDbContext, IOfficialMessageDbContext, IAppVerDbContext
-    //{
-    //    services.TryAddScoped<IKeyValuePairRepository, KeyValuePairRepository<TDbContext>>();
-    //    services.TryAddScoped<IStaticResourceRepository, StaticResourceRepository<TDbContext>>();
+    public static IServiceCollection AddIdentityRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext, IIdentityDbContext
+    {
+        services.TryAddScoped<IAuthMessageRecordRepository, AuthMessageRecordRepository<TDbContext>>();
+        //services.TryAddScoped<IClockInRecordRepository, ClockInRecordRepository<TDbContext>>();
+        services.TryAddScoped<IUserDeleteRepository, UserDeleteRepository<TDbContext>>();
+        services.TryAddScoped<IUserMembershipRepository, UserMembershipRepository<TDbContext>>();
+        return services;
+    }
 
-    //    // Article
-    //    services.TryAddScoped<IArticleCategoryRepository, ArticleCategoryRepository<TDbContext>>();
-    //    services.TryAddScoped<IArticleRepository, ArticleRepository<TDbContext>>();
-
-    //    // OfficialMessage
-    //    services.TryAddScoped<IOfficialMessageRepository, OfficialMessageRepository<TDbContext>>();
-
-    //    // AppVer
-    //    services.TryAddScoped<IAppVerBuildRepository, AppVerBuildRepository<TDbContext>>();
-    //    return services;
-    //}
+    /// <summary>
+    /// 添加由 <see cref="UserManager2"/> 实现的用户管理服务
+    /// </summary>
+    public static IServiceCollection AddACUserManager2<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext, IIdentityDbContext
+    {
+        services.AddScoped<UserManager2<TDbContext>>();
+        services.AddScoped<IUserManager2>(static s => s.GetRequiredService<UserManager2<TDbContext>>());
+        services.AddScoped<UserManager<User>>(static s => s.GetRequiredService<UserManager2<TDbContext>>());
+        return services;
+    }
 }

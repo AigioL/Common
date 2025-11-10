@@ -49,6 +49,8 @@ public partial interface IIdentityUserManager<TUser> : IDisposable where TUser :
 
     /// <inheritdoc cref="UserManager{TUser}.ChangePhoneNumberAsync(TUser, string, string)"/>
     Task<IdentityResult> ChangePhoneNumberAsync(TUser user, string phoneNumber, string token);
+
+    Task<IdentityResult> UpdateUserAsync(TUser user);
 }
 
 partial interface IIdentityUserManager<TUser> // 自定义方法
@@ -92,5 +94,6 @@ partial interface IIdentityUserManager<TUser> // 自定义方法
     /// </summary>
     Task RefreshUserInfoCacheAsync(TUser user);
 
+    /// <inheritdoc cref="RefreshUserInfoCacheAsync(TUser)"/>
     Task RefreshUserInfoCacheAsync(UserInfoModel user);
 }

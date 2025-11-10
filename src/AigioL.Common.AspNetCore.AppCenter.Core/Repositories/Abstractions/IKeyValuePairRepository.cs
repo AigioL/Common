@@ -4,7 +4,7 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using System.Globalization;
 using KeyValuePair = AigioL.Common.AspNetCore.AppCenter.Entities.KeyValuePair;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+namespace AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 
 public partial interface IKeyValuePairRepository : IRepository<KeyValuePair, string>, IEFRepository
 {

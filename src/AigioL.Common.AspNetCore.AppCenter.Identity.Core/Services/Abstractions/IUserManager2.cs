@@ -32,6 +32,9 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
         bool isLoginOrRegister,
         string? deviceId);
 
+    /// <summary>
+    /// 解绑第三方平台关联账号
+    /// </summary>
     Task UnbundleAccountAsync(User user, ExternalLoginChannel channel);
 }
 

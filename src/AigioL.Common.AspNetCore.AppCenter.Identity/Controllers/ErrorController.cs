@@ -1,5 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
-using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;

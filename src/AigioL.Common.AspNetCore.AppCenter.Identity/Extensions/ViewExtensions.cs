@@ -1,5 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Shared;
-using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace AigioL.Common.AspNetCore.AppCenter;

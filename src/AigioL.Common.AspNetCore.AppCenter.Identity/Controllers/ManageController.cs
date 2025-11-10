@@ -126,13 +126,14 @@ public static partial class ManageController
         routeGroup.MapPost("setPassword", async (HttpContext context,
             [FromBody] SetPasswordRequest request) =>
         {
-            var r = await RefreshUserInfoAsync(context);
+            ApiRsp r = "TODO: 待完成";
             return r;
         }).WithDescription("设置账号密码");
         routeGroup.MapPost("edituserprofile", async (HttpContext context,
             [FromBody] EditUserProfileRequest request) =>
         {
-            var r = await RefreshUserInfoAsync(context);
+            var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
+            var r = await EditUserProfileCoreAsync(userManager, request);
             return r;
         }).WithDescription("编辑个人资料");
         routeGroup.MapGet("signout", async (HttpContext context) =>
@@ -382,7 +383,7 @@ public static partial class ManageController
     }
 
     /// <summary>
-    /// 解绑账号
+    /// 解绑第三方平台关联账号
     /// </summary>
     static async Task<ApiRsp> UnbundleAccountCoreAsync(
         IUserManager2 userManager,
@@ -446,7 +447,7 @@ public static partial class ManageController
     ///// <summary>
     ///// 获取每日签到记录，用于 UI 上显示日历并且标记 ✅
     ///// </summary>
-    //internal static async Task<ApiRsp<DateTimeOffset[]?>> ClockInLogsCoreAsync(
+    //static async Task<ApiRsp<DateTimeOffset[]?>> ClockInLogsCoreAsync(
     //    IUserManager2 userManager,
     //    IClockInRecordRepository clockInRecordRepo,
     //    DateTimeOffset? time)
@@ -457,4 +458,46 @@ public static partial class ManageController
     //    var result = await clockInRecordRepo.GetClockOfMonthAsync(user.Id, time ?? DateTimeOffset.Now);
     //    return result;
     //}
+
+    /// <summary>
+    /// 编辑个人资料
+    /// </summary>
+    static async Task<ApiRsp> EditUserProfileCoreAsync(
+        IUserManager2 userManager,
+        EditUserProfileRequest request)
+    {
+        //var errorMessage = request.GetErrorMessage();
+        //if (errorMessage != null) return errorMessage;
+
+        if (request.AreaId.HasValue)
+        {
+            //if (District.All.All(x => x.Id != request.AreaId.Value))
+            //{
+            //    return ApiRspCode.BadRequest;
+            //}
+        }
+
+        var user = await userManager.GetUserAsync();
+        if (user == null) return ApiRspCode.Unauthorized;
+
+        if (user.BirthDate.HasValue && !request.BirthDate.HasValue)
+        {
+            return ApiRspCode.BadRequest;
+        }
+
+        user.NickName = request.NickName;
+        //user.UserInfo.Avatar = request.Avatar;
+        user.PersonalizedSignature = request.PersonalizedSignature;
+        user.Gender = request.Gender;
+        user.BirthDate = request.BirthDate;
+        //user.BirthDateTimeZone = request.BirthDateTimeZone;
+        user.AreaId = request.AreaId;
+        await userManager.RefreshUserInfoCacheAsync(user);
+        var r = await userManager.UpdateUserAsync(user);
+        if (r.Succeeded)
+        {
+            return true;
+        }
+        return Fail(r);
+    }
 }

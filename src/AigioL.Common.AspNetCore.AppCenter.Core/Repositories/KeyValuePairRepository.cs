@@ -1,5 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Models;
-using AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using MemoryPack;
@@ -10,10 +10,10 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using static AigioL.Common.AspNetCore.AppCenter.Repositories.Abstractions.IKeyValuePairRepository;
+using static AigioL.Common.AspNetCore.AppCenter.Services.Abstractions.IKeyValuePairRepository;
 using KeyValuePair = AigioL.Common.AspNetCore.AppCenter.Entities.KeyValuePair;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Repositories;
+namespace AigioL.Common.AspNetCore.AppCenter.Services;
 
 public sealed partial class KeyValuePairRepository<TDbContext>(TDbContext dbContext, IServiceProvider serviceProvider) :
 #pragma warning disable CS9107 // 参数捕获到封闭类型状态，其值也传递给基构造函数。该值也可能由基类捕获。
