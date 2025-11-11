@@ -27,7 +27,7 @@ public static partial class ServiceCollectionServiceExtensions
     }
 
     /// <summary>
-    /// 添加由 <see cref="UserManager2"/> 实现的用户管理服务
+    /// 添加由 <see cref="IUserManager2"/> 实现的用户管理服务
     /// </summary>
     public static IServiceCollection AddACUserManager2<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(

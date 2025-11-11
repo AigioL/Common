@@ -27,7 +27,7 @@ public partial interface IServerPublishCommand : ICommand
         {
             Description = "推送的名称",
         };
-        var input = new Option<string>("--input", "--n")
+        var input = new Option<string>("--input", "--n", "--i", "--proj")
         {
             Description = "发布的项目组，输入 a、all 发布全部，使用逗号分隔符",
         };
