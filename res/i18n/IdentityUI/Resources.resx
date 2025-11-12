@@ -258,4 +258,7 @@
   <data name="验证码不正确" xml:space="preserve">
     <value>验证码不正确</value>
   </data>
+  <data name="NewUserNickName_" xml:space="preserve">
+    <value>新用户{0}</value>
+  </data>
 </root>

@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.IO.Hashing;
+using System.Runtime.CompilerServices;
+using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 
@@ -299,6 +302,99 @@ partial class User // EntityTypeConfiguration
                 .WithOne(x => x.User)
                 .HasForeignKey(u => u.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        }
+    }
+}
+
+public static partial class UserExtensions
+{
+    /// <summary>
+    /// 根据用户获取昵称
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string GetNickName(this User user)
+    {
+        var value = user.GetNickNameCore();
+        if (value.Length > MaxLengths.CUserNickName)
+            return value[..MaxLengths.CUserNickName];
+        return value;
+    }
+
+    /// <summary>
+    /// 是否为生成的随机昵称
+    /// </summary>
+    /// <param name="user"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsGeneratedNickName(this User user)
+    {
+        if (user.NickName == null)
+            return true;
+
+        var length = R.NewUserNickName_.Length - 3 + MaxLengths.Crc32;
+        if (user.NickName.Length == length)
+        {
+            var mark = R.NewUserNickName_.Replace("{0}", string.Empty);
+            var isContains = user.NickName.Contains(mark);
+            if (isContains)
+            {
+                var num = user.NickName.Replace(mark, string.Empty);
+                var isLetterOrDigital = num.All(x =>
+                    x >= 'a' && x <= 'z' ||
+                    x >= 'A' && x <= 'Z' ||
+                    x >= '0' && x <= '9');
+                if (isLetterOrDigital)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string GetNickNameCore(this User user)
+    {
+        var value = user.NickName;
+
+        if (string.IsNullOrEmpty(value))
+            if (user.ExternalAccounts != null) // 优先取第三方账号中的昵称
+            {
+                value = user.ExternalAccounts
+                    .Select(x => x.NickName)
+                    .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
+                if (value != null && value.Length > MaxLengths.CUserNickName)
+                {
+                    value = value[..MaxLengths.CUserNickName];
+                }
+                if (!string.IsNullOrEmpty(value))
+                {
+                    return value;
+                }
+            }
+
+        if (string.IsNullOrEmpty(value)) // 根据主键或随机生成
+        {
+            if (user.Id != default)
+            {
+                Span<byte> hash = stackalloc byte[4];
+                Crc32.Hash(user.Id.ToByteArray(), hash);
+                value = Convert.ToHexStringLower(hash);
+            }
+            else
+            {
+                Span<byte> hash = stackalloc byte[4];
+                Random.Shared.NextBytes(hash);
+                value = Convert.ToHexStringLower(hash);
+            }
+            return R.NewUserNickName_.Format(value);
+        }
+        else
+        {
+            return value;
         }
     }
 }

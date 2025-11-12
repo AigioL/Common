@@ -104,6 +104,11 @@ public static partial class MaxLengths
     /// <see cref="global::System.Guid"/> 的字符串格式最大长度
     /// </summary>
     public const int Guid = 38;
+
+    /// <summary>
+    /// Crc32 算法的哈希长度
+    /// </summary>
+    public const int Crc32 = 8;
 }
 
 static partial class MaxLengths // 业务相关字段

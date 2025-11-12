@@ -223,6 +223,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 新用户{0} 的本地化字符串。
+        /// </summary>
+        public static string NewUserNickName_ {
+            get {
+                return ResourceManager.GetString("NewUserNickName_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 请检查是否能正常访问 Steam 社区。 的本地化字符串。
         /// </summary>
         public static string PleaseCheckSteamCommunity {

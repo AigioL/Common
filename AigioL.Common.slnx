@@ -31,6 +31,7 @@
     <Project Path="src/AigioL.Common.EntityFrameworkCore/AigioL.Common.EntityFrameworkCore.shproj" Id="a39bde5d-77a9-4136-a88e-0e2d2b0701d0" />
     <Project Path="src/AigioL.Common.Essentials/AigioL.Common.Essentials.shproj" Id="1dcaa278-148a-479e-b1d1-135476b32fdb" />
     <Project Path="src/AigioL.Common.Models.ApiRsp/AigioL.Common.Models.ApiRsp.shproj" Id="d9eafcce-1041-489d-a46b-27adc768a916" />
+    <Project Path="src/AigioL.Common.Primitives.District/AigioL.Common.Primitives.District.csproj" Id="bcc054dd-bfe4-4d0c-a7a9-08cac2705d3e" />
     <Project Path="src/AigioL.Common.Primitives/AigioL.Common.Primitives.shproj" Id="2fc56f9c-d2f9-4e05-b21b-179dc776d471" />
     <Project Path="src/AigioL.Common.ProjectUtils/AigioL.Common.ProjectUtils.shproj" Id="13633681-22dd-4032-aa2c-8c789f0a1962" />
     <Project Path="src/AigioL.Common.Repositories.EntityFrameworkCore/AigioL.Common.Repositories.EntityFrameworkCore.shproj" Id="c07f1f94-4eca-426b-a7a0-80a7d6c5d220" />

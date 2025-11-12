@@ -7,6 +7,7 @@ using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
+using AigioL.Common.Primitives.Models;
 using AigioL.Common.SmsSender.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -168,8 +169,8 @@ public static partial class ManageController
         }
 
         var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
-        var userInfoDTO = await userManager.GetUserInfoCacheAsync();
-        return userInfoDTO;
+        var userInfo = await userManager.GetUserInfoCacheAsync();
+        return userInfo;
     }
 
     static async Task<ApiRsp> DeleteAccountCoreAsync<TIdentityDbContext>(
@@ -471,10 +472,10 @@ public static partial class ManageController
 
         if (request.AreaId.HasValue)
         {
-            //if (District.All.All(x => x.Id != request.AreaId.Value))
-            //{
-            //    return ApiRspCode.BadRequest;
-            //}
+            if (District.All.All(x => x.Id != request.AreaId.Value))
+            {
+                return ApiRspCode.BadRequest;
+            }
         }
 
         var user = await userManager.GetUserAsync();

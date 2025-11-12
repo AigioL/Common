@@ -49,14 +49,14 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
             cancellationToken: context.RequestAborted);
     }
 
-    async Task<UserDeviceIsTrustMap?> GetUserDeviceIsTrustMapAsync(
+    async Task<UserDeviceIsTrustWithUserId?> GetUserDeviceIsTrustMapAsync(
         TDbContext dbContext,
         Guid jwtId,
         CancellationToken cancellationToken)
     {
         var query = dbContext.UserJsonWebTokens.AsNoTrackingWithIdentityResolution()
             .Where(x => x.Id == jwtId && x.UserDevice != null)
-            .Select(x => new UserDeviceIsTrustMap(x.UserDevice.UserId, x.UserDevice.IsTrust));
+            .Select(x => new UserDeviceIsTrustWithUserId(x.UserDevice.UserId, x.UserDevice.IsTrust));
 
         var r = await query.FirstOrDefaultAsync(cancellationToken);
         return r;
@@ -118,7 +118,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
         var db = connection.GetDatabase(CacheKeys.RedisHashDataDb);
 
-        UserDeviceIsTrustMap? isTrustMap = null;
+        UserDeviceIsTrustWithUserId? isTrustMap = null;
         var isTrustMapBin = await db.HashGetAsync(CacheKeys.IdentityUserIsBanMapHashKey, jwtIdStr);
         if (isTrustMapBin.HasValue)
         {
@@ -127,34 +127,34 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
                 var isTrustMapBinLocal = (byte[]?)isTrustMapBin;
                 if (isTrustMapBinLocal != null && isTrustMapBinLocal.Length != 0)
                 {
-                    isTrustMap = MemoryPackSerializer.Deserialize<UserDeviceIsTrustMap>(isTrustMapBinLocal);
+                    isTrustMap = MemoryPackSerializer.Deserialize<UserDeviceIsTrustWithUserId>(isTrustMapBinLocal);
                 }
             }
             catch
             {
             }
         }
-        if (!isTrustMap.HasValue)
+        if (isTrustMap == null)
         {
             var dbContext = context.RequestServices.GetRequiredService<TDbContext>();
             isTrustMap = await GetUserDeviceIsTrustMapAsync(dbContext, jwtId, context.RequestAborted);
-            var isTrustMapBinLocal = MemoryPackSerializer.Serialize(isTrustMap.Value);
+            var isTrustMapBinLocal = MemoryPackSerializer.Serialize(isTrustMap);
             await db.HashSetAsync(CacheKeys.IdentityUserIsBanMapHashKey, jwtIdStr, isTrustMapBinLocal);
         }
-        if (!isTrustMap.HasValue)
+        if (isTrustMap == null)
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
                 ApiRspCode.UserNotFound);
             return;
         }
-        if (!isTrustMap.Value.UserDeviceIsTrust)
+        if (!isTrustMap.IsTrust)
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
                 ApiRspCode.UserDeviceIsNotTrust);
             return;
         }
 
-        request.HttpContext.Items[KEY_USER_ID] = isTrustMap.Value.UserId;
+        request.HttpContext.Items[KEY_USER_ID] = isTrustMap.UserId;
         request.HttpContext.Items[KEY_USER_JWT_ID] = jwtId;
     }
 

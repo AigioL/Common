@@ -68,7 +68,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SmsCodeType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeviceIsTrustMap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeviceIsTrustWithUserId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletPaymentDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletState.cs" />

@@ -11,7 +11,6 @@ public interface IJsonWebTokenValueProvider
     /// <summary>
     /// 生成 JsonWebToken
     /// </summary>
-    /// <returns></returns>
     ValueTask<JsonWebTokenValue> GenerateTokenAsync(
         Guid userId,
         IEnumerable<string>? roles,

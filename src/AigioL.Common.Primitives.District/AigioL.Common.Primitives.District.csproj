@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<PropertyGroup>
+		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+		<RootNamespace>AigioL.Common.Primitives</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="..\..\res\i18n\District\Resources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+			<LinkBase>Properties</LinkBase>
+			<CustomToolNamespace>AigioL.Common.Primitives.District.Properties</CustomToolNamespace>
+		</EmbeddedResource>
+		<EmbeddedResource Include="..\..\res\i18n\District\Resources.*.resx">
+			<LinkBase>Properties</LinkBase>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\res\i18n\District\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+			<LinkBase>Properties</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MemoryPack" />
+	</ItemGroup>
+
+</Project>

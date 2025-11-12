@@ -10,12 +10,21 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
 public sealed partial class UserInfoModel : IPhoneNumber
 {
+    /// <summary>
+    /// 用户 Id
+    /// </summary>
     [global::MemoryPack.MemoryPackOrder(0)]
     public Guid Id { get; set; }
 
+    /// <summary>
+    /// 昵称
+    /// </summary>
     [global::MemoryPack.MemoryPackOrder(1)]
     public string NickName { get; set; } = string.Empty;
 
+    /// <summary>
+    /// 头像图片表关联 Id
+    /// </summary>
     [global::MemoryPack.MemoryPackOrder(2)]
     public Guid Avatar { get; set; }
 
@@ -43,12 +52,21 @@ public sealed partial class UserInfoModel : IPhoneNumber
     [global::MemoryPack.MemoryPackOrder(6)]
     public long? SteamAccountId { get; set; }
 
+    /// <summary>
+    /// 性别
+    /// </summary>
     [global::MemoryPack.MemoryPackOrder(7)]
     public Gender Gender { get; set; }
 
+    /// <summary>
+    /// 出生日期
+    /// </summary>
     [global::MemoryPack.MemoryPackOrder(8)]
     public DateTime? BirthDate { get; set; }
 
+    /// <summary>
+    /// 出生日期时区
+    /// </summary>
     [global::MemoryPack.MemoryPackOrder(9)]
     public sbyte BirthDateTimeZone { get; set; }
 
@@ -58,6 +76,9 @@ public sealed partial class UserInfoModel : IPhoneNumber
     [global::MemoryPack.MemoryPackOrder(10)]
     public byte? CalcAge { get; set; }
 
+    /// <summary>
+    /// 所在地，地区 Id
+    /// </summary>
     [global::MemoryPack.MemoryPackOrder(11)]
     public int? AreaId { get; set; }
 
@@ -136,6 +157,7 @@ public sealed partial class UserInfoModel : IPhoneNumber
     [global::MemoryPack.MemoryPackOrder(24)]
     public bool HasPassword { get; set; }
 
+    /// <inheritdoc/>
     [global::MemoryPack.MemoryPackOrder(25)]
     public string? PhoneNumberRegionCode { get; set; }
 

@@ -95,5 +95,5 @@ partial interface IIdentityUserManager<TUser> // 自定义方法
     Task RefreshUserInfoCacheAsync(TUser user);
 
     /// <inheritdoc cref="RefreshUserInfoCacheAsync(TUser)"/>
-    Task RefreshUserInfoCacheAsync(UserInfoModel user);
+    Task RefreshUserInfoCacheAsync(UserInfoModel userInfo);
 }

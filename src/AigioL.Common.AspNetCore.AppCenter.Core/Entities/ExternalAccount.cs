@@ -107,7 +107,7 @@ public partial class ExternalAccount :
             builder.HasOne(x => x.User)
                 .WithMany(x => x.ExternalAccounts)
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(x => x.UserDeletes)
                 .WithMany(x => x.ExternalAccounts)

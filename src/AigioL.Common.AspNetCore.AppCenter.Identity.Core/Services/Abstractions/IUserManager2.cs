@@ -22,7 +22,7 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
     /// <summary>
     /// 获取用户信息，优先从缓存中取
     /// </summary>
-    Task<UserInfoModel?> GetUserInfoCacheAsync(bool isOpenId = false);
+    Task<UserInfoModel?> GetUserInfoCacheAsync();
 
     /// <summary>
     /// 进行登录生成凭证返回
@@ -46,7 +46,8 @@ partial interface IUserManager2 // 创建用户
     Task<(User user, IdentityResult identityResult)> CreateByPhoneNumberAsync(
         string phoneNumber,
         string? regionCode,
-        bool phoneNumberConfirmed);
+        bool phoneNumberConfirmed,
+        string? password = null);
 
     /// <summary>
     /// 根据邮箱创建用户

@@ -35,8 +35,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\AuthMessageRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\UserDeleteRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\UserMembershipRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IIdentityJsonWebTokenValueProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IIdentityUserManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IUserManager2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IdentityJsonWebTokenValueProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\UserManager2.cs" />
   </ItemGroup>
 </Project>

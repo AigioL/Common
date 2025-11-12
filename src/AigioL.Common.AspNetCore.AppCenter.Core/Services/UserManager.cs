@@ -9,6 +9,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Services;
 public partial class UserManager :
     UserManager<User>
 {
+    protected readonly ILogger logger;
     protected readonly IHttpContextAccessor accessor;
 
     /// <inheritdoc/>
@@ -34,19 +35,20 @@ public partial class UserManager :
             services,
             logger)
     {
+        this.logger = logger;
         accessor = services.GetRequiredService<IHttpContextAccessor>();
     }
 
     /// <inheritdoc/>
-    public sealed override string? GetUserId(ClaimsPrincipal principal)
+    public override string? GetUserId(ClaimsPrincipal principal)
     {
-        var ctx = accessor.HttpContext;
-        if (ctx != null)
+        var context = accessor.HttpContext;
+        if (context != null)
         {
-            if (ctx.User == principal)
+            if (context.User == principal)
             {
-                // 重写此逻辑适配 jwt id 到 user id 的转换
-                var userId = ctx.GetUserIdThrowIfNull();
+                // 此处重写此逻辑适配 jwtId 到 userId 的转换
+                var userId = context.GetUserIdThrowIfNull();
                 return userId.ToString();
             }
         }

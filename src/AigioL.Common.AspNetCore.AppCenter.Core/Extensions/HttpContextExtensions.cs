@@ -77,7 +77,7 @@ public static partial class HttpContextExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Guid GetUserIdThrowIfNull(this HttpContext context)
     {
-        var userId = context.GetJwtUserId();
+        var userId = context.GetUserId();
         if (!userId.HasValue)
 #pragma warning disable CA2208 // 正确实例化参数异常
             throw new ArgumentNullException(nameof(userId));
