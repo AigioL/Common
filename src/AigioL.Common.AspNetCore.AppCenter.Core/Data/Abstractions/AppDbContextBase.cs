@@ -11,11 +11,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 public abstract partial class AppDbContextBase :
     IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
 {
-    protected readonly IHttpContextAccessor? httpContextAccessor;
-
-    protected AppDbContextBase(IServiceProvider serviceProvider, DbContextOptions options) : base(options)
+    protected AppDbContextBase(DbContextOptions options) : base(options)
     {
-        httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
     }
 
     #region 用户模块

@@ -9,6 +9,7 @@
     <Import_RootNamespace>AigioL.Common.SmsSender.Services</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\AlibabaCloud\SenderProviderInvoker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\AlibabaCloud\SmsSenderProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Implementation\SmsSender\Channels\HuaweiCloud\SenderProviderInvoker.cs" />

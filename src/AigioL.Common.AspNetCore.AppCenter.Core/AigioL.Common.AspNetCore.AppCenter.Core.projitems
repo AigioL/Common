@@ -86,5 +86,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Security\ISecurityKeyOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAppVerCoreService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\ILocalizationService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SteamCommunityReverseProxyHttpClientHandler.cs" />
   </ItemGroup>
 </Project>

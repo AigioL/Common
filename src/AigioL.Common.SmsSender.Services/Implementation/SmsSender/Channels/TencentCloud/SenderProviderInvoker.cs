@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace AigioL.Common.SmsSender.Services.Implementation.SmsSender.Channels.TencentCloud;
 
 /// <summary>
-/// 阿里云短信服务发件人提供调用程序
+/// 腾讯云短信服务发件人提供调用程序
 /// </summary>
 /// <typeparam name="TSmsSettings"></typeparam>
 internal sealed class SenderProviderInvoker<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TSmsSettings>(ILogger<SenderProviderInvoker<TSmsSettings>> logger, IOptions<TSmsSettings> settings, HttpClient httpClient) : SmsSenderProvider(logger, settings.Value?.SmsOptions?.TencentCloud, httpClient)

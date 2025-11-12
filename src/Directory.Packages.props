@@ -2,13 +2,13 @@
   <Choose>
     <When Condition="$([MSBuild]::VersionLessThan($(MSBuildVersion), '18.0'))">
       <PropertyGroup>
-        <DotNet_Package_Version>9.0.10</DotNet_Package_Version>
+        <DotNet_Package_Version>9.0.11</DotNet_Package_Version>
         <DotNet_Package_Version_pgsql>9.0.4</DotNet_Package_Version_pgsql>
       </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
-        <DotNet_Package_Version>10.0.0-rc.2.25502.107</DotNet_Package_Version>
+        <DotNet_Package_Version>10.0.0</DotNet_Package_Version>
         <DotNet_Package_Version_pgsql>10.0.0-rc.2</DotNet_Package_Version_pgsql>
       </PropertyGroup>
     </Otherwise>
@@ -29,13 +29,13 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="$(DotNet_Package_Version)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(DotNet_Package_Version)" />
-    <PackageVersion Include="NLog" Version="6.0.5" />
-    <PackageVersion Include="NLog.Web.AspNetCore" Version="6.0.5" />
+    <PackageVersion Include="NLog" Version="6.0.6" />
+    <PackageVersion Include="NLog.Web.AspNetCore" Version="6.0.6" />
   </ItemGroup>
   <!-- 👇 xunit 单元测试 -->
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="xunit.v3" Version="3.2.0" />
   </ItemGroup>
@@ -47,7 +47,7 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.14.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
   </ItemGroup>
   <!-- 👇 可回收内存流 -->
   <ItemGroup>
@@ -72,25 +72,26 @@
   <!-- 👇 OpenApi -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(DotNet_Package_Version)" />
-    <PackageVersion Include="Scalar.AspNetCore" Version="2.10.1" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.10.3" />
   </ItemGroup>
   <!-- 👇 ExternalLogin 外部账号登录 -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="9.0.8" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.8" />
-    <PackageVersion Include="AspNet.Security.OAuth.Apple" Version="9.4.0" />
-    <PackageVersion Include="AspNet.Security.OAuth.Weixin" Version="9.4.0" />
-    <PackageVersion Include="AspNet.Security.OAuth.QQ" Version="9.4.0" />
-    <PackageVersion Include="AspNet.Security.OAuth.Alipay" Version="9.4.0" />
-    <PackageVersion Include="AspNet.Security.OAuth.Feishu" Version="9.4.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.Apple" Version="10.0.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.Weixin" Version="10.0.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.QQ" Version="10.0.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.Alipay" Version="10.0.0" />
+    <PackageVersion Include="AspNet.Security.OAuth.Feishu" Version="10.0.0" />
+    <PackageVersion Include="AspNet.Security.OpenId.Steam" Version="10.0.0" />
   </ItemGroup>
   <!-- 👇 Redis -->
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="9.5.2" />
-    <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.5.2" />
-    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="9.5.2" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.0.0" />
+    <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.0.0" />
+    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.0.0" />
   </ItemGroup>
   <!-- 👇 Quartz -->
   <ItemGroup>
@@ -109,19 +110,19 @@
   </ItemGroup>
   <!-- 👇 Aspire -->
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.5.2" />
-    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="9.5.2" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.10.0" />
-    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.5.2" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.13.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.13.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.13.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.13.0" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.0.0" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0-rc.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0-rc.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.14.0-rc.1" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0-rc.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.13.0" />
-    <PackageVersion Include="Aspire.Hosting.Testing" Version="9.5.2" />
-    <PackageVersion Include="Aspire.Hosting.Docker" Version="9.5.1-preview.1.25502.11" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="9.9.0" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="9.9.0" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.0.0" />
+    <PackageVersion Include="Aspire.Hosting.Docker" Version="13.0.0-preview.1.25560.3" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="13.0.0-beta.439" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.0.0-beta.439" />
   </ItemGroup>
   <!-- 👇 Docker -->
   <ItemGroup>
@@ -138,7 +139,7 @@
   </ItemGroup>
   <!-- 👇 CommandLine -->
   <ItemGroup>
-    <PackageVersion Include="System.CommandLine" Version="2.0.0-rc.2.25502.107" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.0" />
   </ItemGroup>
   <!-- 👇 ReverseProxy -->
   <ItemGroup>

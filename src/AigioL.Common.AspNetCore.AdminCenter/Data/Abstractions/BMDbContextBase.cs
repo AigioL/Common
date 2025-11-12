@@ -33,11 +33,8 @@ public abstract partial class BMDbContextBase<
     /// <inheritdoc/>
     DatabaseFacade IDbContextBase.GetDatabase() => Database;
 
-    protected readonly IHttpContextAccessor? httpContextAccessor;
-
-    protected BMDbContextBase(IServiceProvider serviceProvider, DbContextOptions options) : base(options)
+    protected BMDbContextBase(DbContextOptions options) : base(options)
     {
-        httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
     }
 
     /// <inheritdoc/>
@@ -55,22 +52,22 @@ public abstract partial class BMDbContextBase<
         return null;
     }
 
-    /// <inheritdoc/>
-    public virtual Guid? GetCurrentUserId()
-    {
-        var ctx = httpContextAccessor?.HttpContext;
-        if (ctx != null)
-        {
-            var userId = GetUserId(ctx);
-            return userId;
-        }
-        return null;
-    }
+    ///// <inheritdoc/>
+    //public virtual Guid? GetCurrentUserId()
+    //{
+    //    var ctx = httpContextAccessor?.HttpContext;
+    //    if (ctx != null)
+    //    {
+    //        var userId = GetUserId(ctx);
+    //        return userId;
+    //    }
+    //    return null;
+    //}
 
-    /// <summary>
-    /// 是否允许写入空的管理后台用户 Id，当 <see cref="GetCurrentUserId"/> 返回 <see langword="null"/> 时允许创建或修改表，默认值：不允许
-    /// </summary>
-    protected virtual bool AllowEmptyCurrentUserId { get; }
+    ///// <summary>
+    ///// 是否允许写入空的管理后台用户 Id，当 <see cref="GetCurrentUserId"/> 返回 <see langword="null"/> 时允许创建或修改表，默认值：不允许
+    ///// </summary>
+    //protected virtual bool AllowEmptyCurrentUserId { get; }
 
     protected override void OnModelCreating(ModelBuilder b)
     {

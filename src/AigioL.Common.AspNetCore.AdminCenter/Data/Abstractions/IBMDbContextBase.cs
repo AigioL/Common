@@ -11,11 +11,11 @@ public interface IBMDbContextBase : IDbContextBase
     /// <returns></returns>
     Guid? GetUserId(HttpContext? ctx);
 
-    /// <summary>
-    /// 从当前 Http 上下文中获取管理后台用户 Id
-    /// </summary>
-    /// <returns></returns>
-    Guid? GetCurrentUserId();
+    ///// <summary>
+    ///// 从当前 Http 上下文中获取管理后台用户 Id
+    ///// </summary>
+    ///// <returns></returns>
+    //Guid? GetCurrentUserId();
 
     static class TableNames
     {
