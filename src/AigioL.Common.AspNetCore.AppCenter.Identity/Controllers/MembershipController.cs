@@ -19,14 +19,14 @@ public static partial class MembershipController
         [StringSyntax("Route")] string pattern = "identity/v5/membership")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize)
-            .WithRequiredSecurityKey();
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("info", async (HttpContext context) =>
         {
             var r = await GetUserMembershipInfoAsync(context, context.RequestAborted);
             return r;
-        }).WithDescription("获取会员信息");
+        }).WithDescription("获取会员信息")
+        .WithRequiredSecurityKey();
     }
 
     /// <summary>

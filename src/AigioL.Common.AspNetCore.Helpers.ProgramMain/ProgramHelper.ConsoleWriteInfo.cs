@@ -158,6 +158,34 @@ static partial class ProgramHelper
         Console.Write(CultureInfo.CurrentCulture.EnglishName);
         Console.Write('\n');
 
+        Console.Write("CurrentUICulture: ");
+        Console.Write(CultureInfo.CurrentUICulture.Name);
+        Console.Write(' ');
+        Console.Write(CultureInfo.CurrentUICulture.EnglishName);
+        Console.Write('\n');
+
+        string? zhCNName;
+        string? zhCNEnglishName = null;
+        try
+        {
+            var zhCN = new CultureInfo("zh-CN");
+            zhCNName = zhCN.Name;
+            zhCNEnglishName = zhCN.EnglishName;
+        }
+        catch (Exception ex)
+        {
+            zhCNName = ex.ToString();
+        }
+
+        Console.Write("zh-CN: ");
+        Console.Write(zhCNName);
+        if (!string.IsNullOrWhiteSpace(zhCNEnglishName))
+        {
+            Console.Write(' ');
+            Console.Write(zhCNEnglishName);
+        }
+        Console.Write('\n');
+
         #endregion
 
         #region ShowInfo

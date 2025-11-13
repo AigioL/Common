@@ -9,8 +9,7 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Basic</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Jobs\ActiveUserInsertJob.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Jobs\AppCenterLogJob.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Jobs\DailyStatisticsJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Jobs\AppVerRedisCacheJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Jobs\ArticleViewIncrementStatisticJob.cs" />
   </ItemGroup>
 </Project>

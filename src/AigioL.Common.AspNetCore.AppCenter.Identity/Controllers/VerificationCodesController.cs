@@ -27,21 +27,22 @@ public static partial class VerificationCodesController
         where TAppSettings : class, IDisableSms
     {
         var routeGroup = b.MapGroup(pattern)
-            .AllowAnonymous()
-            .WithRequiredSecurityKey();
+            .AllowAnonymous();
 
         routeGroup.MapPost("sms", async (HttpContext context,
             [FromBody] SendSmsRequest request) =>
         {
             var r = await SendSms<TAppSettings>(context, request.PhoneNumber, request.PhoneNumberRegionCode, request.Type);
             return r;
-        }).WithDescription("发送短信验证码");
+        }).WithDescription("发送短信验证码")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("email", async (HttpContext context,
             [FromBody] SendEmailCodeRequest request) =>
         {
             var r = await SendEmailOtp(context, request.Email, request.Type);
             return r;
-        }).WithDescription("发送邮件验证码");
+        }).WithDescription("发送邮件验证码")
+        .WithRequiredSecurityKey();
     }
 
     /// <summary>

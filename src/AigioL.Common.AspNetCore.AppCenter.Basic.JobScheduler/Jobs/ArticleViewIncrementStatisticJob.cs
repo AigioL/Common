@@ -2,7 +2,7 @@ using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using StackExchange.Redis;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Jobs;
+namespace AigioL.Common.AspNetCore.AppCenter.Basic.Jobs;
 
 /// <summary>
 /// 文章浏览量统计任务

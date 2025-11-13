@@ -1,6 +1,6 @@
 using StackExchange.Redis;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Jobs;
+namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Jobs;
 
 /// <summary>
 /// 活跃用户数据批量插入任务

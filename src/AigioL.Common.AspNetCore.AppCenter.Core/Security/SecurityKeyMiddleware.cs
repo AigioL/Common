@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using static AigioL.Common.AspNetCore.AppCenter.Security.S96bc5bd9;
 
@@ -64,6 +65,12 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
     /// <returns>A task that represents the execution of this middleware.</returns>
     public async Task Invoke(HttpContext context)
     {
+        if (context.Request.Path.StartsWithSegments("/health", StringComparison.InvariantCultureIgnoreCase))
+        {
+            await _next(context);
+            return;
+        }
+
         (Stream originalBody, Aes aes, string? responseContentType)? t = null;
 
         var endpoint = context.GetEndpoint();
@@ -115,6 +122,16 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
                         }
                     }
 
+                    switch (serializableImplType)
+                    {
+                        case SerializableImplType.SystemTextJson:
+                            {
+                                // 将类型固定为 json，避免 RDG 生成引发 415
+                                context.Request.Headers.ContentType = MediaTypeNames.JSON;
+                            }
+                            break;
+                    }
+
                     if (context.Items[ApiConstants.Headers_SecurityKey] is Aes aes)
                     {
                         if (hasRequest)
@@ -125,6 +142,11 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
                             context.Response.RegisterForDispose(new DisposableSafeWrapper(context.Request.Body));
                             context.Response.RegisterForDispose(cryptoStream);
                             context.Request.Body = cryptoStream;
+
+                            //using MemoryStream ms = new();
+                            //await cryptoStream.CopyToAsync(ms);
+                            //var b = ms.ToArray();
+                            //var json = Encoding.UTF8.GetString(b);
                         }
 
                         context.Response.RegisterForDispose(new DisposableSafeWrapper(context.Response.Body));

@@ -31,8 +31,7 @@ public static partial class ManageController
         where TIdentityDbContext : IIdentityDbContext
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize)
-            .WithRequiredSecurityKey();
+            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         #region 刷新用户信息
 
@@ -40,12 +39,14 @@ public static partial class ManageController
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
-        }).WithDescription("刷新用户信息");
+        }).WithDescription("刷新用户信息")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("refreshuserinfo", async (HttpContext context) =>
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
-        }).ExcludeFromDescription();
+        }).ExcludeFromDescription()
+        .WithRequiredSecurityKey();
 
         #endregion
 
@@ -55,17 +56,20 @@ public static partial class ManageController
         {
             ApiRsp r = "TODO: 待完成";
             return r;
-        }).WithDescription("发送绑定邮箱邮件");
+        }).WithDescription("发送绑定邮箱邮件")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("bindemail", async (HttpContext context) =>
         {
             ApiRsp r = "TODO: 待完成";
             return r;
-        }).WithDescription("绑定邮箱");
+        }).WithDescription("绑定邮箱")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("changebindemail", async (HttpContext context) =>
         {
             ApiRsp r = "TODO: 待完成";
             return r;
-        }).WithDescription("换绑邮箱");
+        }).WithDescription("换绑邮箱")
+        .WithRequiredSecurityKey();
 
         #endregion
 
@@ -82,7 +86,8 @@ public static partial class ManageController
                 smsSender, userManager, authMessageRecordRepo,
                 db, request, ResultOkString);
             return r;
-        }).WithDescription("换绑手机（安全验证）");
+        }).WithDescription("换绑手机（安全验证）")
+        .WithRequiredSecurityKey();
         routeGroup.MapPut("changebindphonenumber", async (HttpContext context,
             [FromBody] ChangePhoneNumberNewRequest request) =>
         {
@@ -94,13 +99,15 @@ public static partial class ManageController
                 smsSender, userManager, authMessageRecordRepo,
                 db, request);
             return r;
-        }).WithDescription("换绑手机（绑定新手机号）");
+        }).WithDescription("换绑手机（绑定新手机号）")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("bindphonenumber", async (HttpContext context,
             [FromBody] BindPhoneNumberRequest request) =>
         {
             var r = await RefreshUserInfoAsync(context);
             return r;
-        }).WithDescription("绑定手机号（首次绑定）");
+        }).WithDescription("绑定手机号（首次绑定）")
+        .WithRequiredSecurityKey();
 
         #endregion
 
@@ -110,12 +117,14 @@ public static partial class ManageController
         {
             ApiRsp r = "TODO: 待完成";
             return r;
-        }).WithDescription("每日签到");
+        }).WithDescription("每日签到")
+        .WithRequiredSecurityKey();
         routeGroup.MapGet("clockinrecords", async (HttpContext context) =>
         {
             ApiRsp r = "TODO: 待完成";
             return r;
-        }).WithDescription("获取每日签到记录");
+        }).WithDescription("获取每日签到记录")
+        .WithRequiredSecurityKey();
 
         #endregion
 
@@ -123,25 +132,29 @@ public static partial class ManageController
         {
             var r = await DeleteAccountCoreAsync<TIdentityDbContext>(context);
             return r;
-        }).WithDescription("注销（删除）账号");
+        }).WithDescription("注销（删除）账号")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("setPassword", async (HttpContext context,
             [FromBody] SetPasswordRequest request) =>
         {
             ApiRsp r = "TODO: 待完成";
             return r;
-        }).WithDescription("设置账号密码");
+        }).WithDescription("设置账号密码")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("edituserprofile", async (HttpContext context,
             [FromBody] EditUserProfileRequest request) =>
         {
             var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
             var r = await EditUserProfileCoreAsync(userManager, request);
             return r;
-        }).WithDescription("编辑个人资料");
+        }).WithDescription("编辑个人资料")
+        .WithRequiredSecurityKey();
         routeGroup.MapGet("signout", async (HttpContext context) =>
         {
             var r = await SignOutCoreAsync<TIdentityDbContext>(context);
             return r;
-        }).WithDescription("退出登录（登出）账号");
+        }).WithDescription("退出登录（登出）账号")
+        .WithRequiredSecurityKey();
         routeGroup.MapDelete("unbundleaccount/{channel}", async (HttpContext context,
             [FromRoute] string channel) =>
         {
@@ -156,7 +169,8 @@ public static partial class ManageController
                 r = ApiRspCode.NotFound;
             }
             return r;
-        }).WithDescription("解绑账号的第三方外部平台，例如 Steam、WeChat、QQ、Alipay 等");
+        }).WithDescription("解绑账号的第三方外部平台，例如 Steam、WeChat、QQ、Alipay 等")
+        .WithRequiredSecurityKey();
     }
 
     static async Task<ApiRsp<UserInfoModel?>> RefreshUserInfoAsync(

@@ -4,7 +4,6 @@ using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Services;
 using AigioL.Common.AspNetCore.AppCenter.Services;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
@@ -40,6 +39,7 @@ public static partial class ServiceCollectionServiceExtensions
 
         // AppVer
         services.TryAddScoped<IAppVerBuildRepository, AppVerBuildRepository<TDbContext>>();
+        services.TryAddScoped<IAppVerRepository, AppVerRepository<TDbContext>>();
         return services;
     }
 }

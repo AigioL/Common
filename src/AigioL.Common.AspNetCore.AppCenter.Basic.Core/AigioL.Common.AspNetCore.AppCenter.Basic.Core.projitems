@@ -50,11 +50,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageItemModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerBuildRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOfficialMessageRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IStaticResourceRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\AppVerBuildRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\AppVerRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleCategoryRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\OfficialMessageRepository.cs" />

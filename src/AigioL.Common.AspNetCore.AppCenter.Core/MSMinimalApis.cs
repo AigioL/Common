@@ -41,6 +41,10 @@ public static partial class MSMinimalApis
         out SecurityKeyAlgorithmType algorithmType,
         [NotNullWhen(true)] out string? responseContentType)
     {
+        isSecurity = false;
+        serializableImplType = default;
+        algorithmType = default;
+        responseContentType = default;
         if (!StringValues.IsNullOrEmpty(contentTypeOrAccept))
         {
             foreach (var it in contentTypeOrAccept)
@@ -55,6 +59,7 @@ public static partial class MSMinimalApis
                     isSecurity = false;
                     serializableImplType = SerializableImplType.MemoryPack;
                     responseContentType = MediaTypeNames.MemoryPack;
+                    return true;
                 }
                 else if (Equals(parsedContentType, new(MediaTypeNames.MemoryPackSecurity)))
                 {
@@ -62,6 +67,7 @@ public static partial class MSMinimalApis
                     serializableImplType = SerializableImplType.MemoryPack;
                     algorithmType = SecurityKeyAlgorithmType.RSAWithRandomAes;
                     responseContentType = MediaTypeNames.MemoryPackSecurity;
+                    return true;
                 }
                 else if (Equals(parsedContentType, new(MediaTypeNames.MemoryPackSecurityECDiffieHellman)))
                 {
@@ -69,29 +75,34 @@ public static partial class MSMinimalApis
                     serializableImplType = SerializableImplType.MemoryPack;
                     algorithmType = SecurityKeyAlgorithmType.ECDHSharedKeyWithRandomIV;
                     responseContentType = MediaTypeNames.MemoryPackSecurityECDiffieHellman;
+                    return true;
                 }
                 //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePack)))
                 //{
                 //    isSecurity = false;
                 //    serializableImplType = SerializableImplType.MessagePack;
+                //    return true;
                 //}
                 //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePackSecurity)))
                 //{
                 //    isSecurity = true;
                 //    serializableImplType = SerializableImplType.MessagePack;
                 //    algorithmType = SecurityKeyAlgorithmType.RsaKeyX;
+                //    return true;
                 //}
                 //else if (Equals(parsedContentType, new(MediaTypeNames.MessagePackSecurityECDiffieHellman)))
                 //{
                 //    isSecurity = true;
                 //    serializableImplType = SerializableImplType.MessagePack;
                 //    algorithmType = SecurityKeyAlgorithmType.DiffieHellman;
+                //    return true;
                 //}
                 else if (Equals(parsedContentType, new(MediaTypeNames.JSON)))
                 {
                     isSecurity = false;
                     serializableImplType = SerializableImplType.SystemTextJson;
                     responseContentType = MediaTypeNames.JSON;
+                    return true;
                 }
                 else if (Equals(parsedContentType, new(MediaTypeNames.JSONSecurity)))
                 {
@@ -99,6 +110,7 @@ public static partial class MSMinimalApis
                     serializableImplType = SerializableImplType.SystemTextJson;
                     algorithmType = SecurityKeyAlgorithmType.RSAWithRandomAes;
                     responseContentType = MediaTypeNames.JSONSecurity;
+                    return true;
                 }
                 else if (Equals(parsedContentType, new(MediaTypeNames.JSONSecurityECDiffieHellman)))
                 {
@@ -106,13 +118,10 @@ public static partial class MSMinimalApis
                     serializableImplType = SerializableImplType.SystemTextJson;
                     algorithmType = SecurityKeyAlgorithmType.ECDHSharedKeyWithRandomIV;
                     responseContentType = MediaTypeNames.JSONSecurityECDiffieHellman;
+                    return true;
                 }
             }
         }
-        isSecurity = false;
-        serializableImplType = default;
-        algorithmType = default;
-        responseContentType = default;
         return false;
     }
 }

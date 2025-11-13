@@ -37,8 +37,7 @@ public static partial class AccountController
         [StringSyntax("Route")] string pattern = "identity/v5/account")
     {
         var routeGroup = b.MapGroup(pattern)
-            .AllowAnonymous()
-            .WithRequiredSecurityKey();
+            .AllowAnonymous();
 
         routeGroup.MapPost("loginorregister", async (HttpContext context,
             [FromBody] LoginOrRegisterRequest request) =>
@@ -52,20 +51,23 @@ public static partial class AccountController
                 deviceId,
                 (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
             return r;
-        }).WithDescription("登录或注册账号");
+        }).WithDescription("登录或注册账号")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("refreshtoken", async (HttpContext context,
             [FromBody] RefreshTokenRequest request) =>
         {
             var deviceId = request.GetDeviceId();
             var r = await RefreshTokenAsync(context, request.RefreshToken, deviceId);
             return r;
-        }).WithDescription("刷新 JWT");
+        }).WithDescription("刷新 JWT")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("validateRegisterEmail", async (HttpContext context,
             [FromBody] ValidateRegisterEmailRequest request) =>
         {
             var r = await ValidateRegisterEmail(context, request.Email);
             return r;
-        }).WithDescription("验证注册邮箱账号");
+        }).WithDescription("验证注册邮箱账号")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("resetPassword", async (HttpContext context,
             [FromBody] ResetPasswordRequest request) =>
         {
@@ -77,7 +79,8 @@ public static partial class AccountController
                 request.PhoneNumberRegionCode, request.Email, request.OTPCode,
                 request.Password, request.Password2);
             return r;
-        }).WithDescription("重置密码");
+        }).WithDescription("重置密码")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("registerByEmail", async (HttpContext context,
             [FromBody] RegisterByEmailRequest request) =>
         {
@@ -98,7 +101,8 @@ public static partial class AccountController
                 deviceId,
                 (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
             return r;
-        }).WithDescription("邮箱注册账号");
+        }).WithDescription("邮箱注册账号")
+        .WithRequiredSecurityKey();
         routeGroup.MapPost("loginByPassword", async (HttpContext context,
             [FromBody] AccountLoginRequest request) =>
         {
@@ -109,7 +113,8 @@ public static partial class AccountController
                 request.Password,
                 (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
             return r;
-        }).WithDescription("密码登录账号");
+        }).WithDescription("密码登录账号")
+        .WithRequiredSecurityKey();
 #if DEBUG
         routeGroup.MapGet("test/ex", async (HttpContext context) =>
         {

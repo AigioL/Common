@@ -1,4 +1,4 @@
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Jobs;
+namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Jobs;
 
 /// <summary>
 /// 日活统计汇总任务
