@@ -6,9 +6,7 @@ using Microsoft.IO;
 using System.Buffers.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Security.Authentication;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using static AigioL.Common.AspNetCore.AppCenter.Security.S96bc5bd9;
 
@@ -71,7 +69,7 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
             return;
         }
 
-        (Stream originalBody, Aes aes, string? responseContentType)? t = null;
+        (Stream originalResponseBody, Stream originalRequestBody, Aes aes, string? responseContentType)? t = null;
 
         var endpoint = context.GetEndpoint();
         if (endpoint != null)
@@ -134,23 +132,28 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
 
                     if (context.Items[ApiConstants.Headers_SecurityKey] is Aes aes)
                     {
+                        var originalRequestBody = context.Request.Body;
                         if (hasRequest)
                         {
-                            // 将请求正文替换为解密流
+                            // 启用可重新读取请求正文
                             context.Request.EnableBuffering();
-                            CryptoStream cryptoStream = new(context.Request.Body, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
-                            context.Response.RegisterForDispose(new DisposableSafeWrapper(context.Request.Body));
-                            context.Response.RegisterForDispose(cryptoStream);
-                            context.Request.Body = cryptoStream;
-
-                            //using MemoryStream ms = new();
-                            //await cryptoStream.CopyToAsync(ms);
-                            //var b = ms.ToArray();
-                            //var json = Encoding.UTF8.GetString(b);
+                            // 将请求正文复制到内存流中
+                            using var memoryStream = m.GetStream();
+                            await context.Request.Body.CopyToAsync(memoryStream, context.RequestAborted);
+                            memoryStream.Position = 0;
+                            // 创建解密流
+                            using CryptoStream cryptoStream = new(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
+                            // 创建新的正文流
+                            var newRequestBody = m.GetStream();
+                            // 将解密流写入新的正文流
+                            await cryptoStream.CopyToAsync(newRequestBody, context.RequestAborted);
+                            newRequestBody.Position = 0;
+                            context.Response.RegisterForDispose(newRequestBody);
+                            context.Request.Body = newRequestBody;
                         }
 
-                        context.Response.RegisterForDispose(new DisposableSafeWrapper(context.Response.Body));
-                        t = (context.Response.Body, aes, responseContentType);
+                        var originalResponseBody = context.Response.Body;
+                        t = (originalResponseBody, originalRequestBody, aes, responseContentType);
 
                         // 替换响应正文为新的内存流
                         var newResponseBody = m.GetStream();
@@ -176,18 +179,19 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
                 context.Response.Headers.ContentType = t.Value.responseContentType;
             }
 
-            // 将响应正文流写入缓冲区
-            using var body = context.Response.Body;
-            await body.FlushAsync(context.RequestAborted);
-
             // 使用原始流创建加密流并写入
-            using CryptoStream cryptoStream = new(t.Value.originalBody, t.Value.aes.CreateEncryptor(), CryptoStreamMode.Write, true);
-            await body.CopyToAsync(cryptoStream, context.RequestAborted);
+            using var memoryStream = m.GetStream();
+            using CryptoStream cryptoStream = new(memoryStream, t.Value.aes.CreateEncryptor(), CryptoStreamMode.Write);
+            context.Response.Body.Position = 0;
+            // 将响应正文流写入缓冲区
+            await context.Response.Body.CopyToAsync(cryptoStream, context.RequestAborted);
             await cryptoStream.FlushFinalBlockAsync(context.RequestAborted);
 
+            memoryStream.Position = 0;
+            await memoryStream.CopyToAsync(t.Value.originalResponseBody, context.RequestAborted);
+
             // 恢复原始响应流
-            context.Response.Body = t.Value.originalBody;
-            await context.Response.Body.FlushAsync(context.RequestAborted);
+            context.Response.Body = t.Value.originalResponseBody;
         }
     }
 }
@@ -305,7 +309,7 @@ file static class S96bc5bd9
             cipher = Base64Url.DecodeFromChars(sk!);
         }
         var plain = rsa.Decrypt(cipher, DefaultPadding);
-        var aes = AESUtils.Create(plain);
+        var aes = AESUtils.CreateOld(plain);
         if (aes == null)
         {
             return ApiRspCode.AesKeyIsNull;
@@ -327,31 +331,4 @@ file static class S96bc5bd9
         =>
 #endif
             RSAEncryptionPadding.OaepSHA256;
-}
-
-file sealed class DisposableSafeWrapper : IDisposable
-{
-    IDisposable? disposable;
-
-#pragma warning disable IDE0290 // 使用主构造函数
-    public DisposableSafeWrapper(IDisposable disposable)
-#pragma warning restore IDE0290 // 使用主构造函数
-    {
-        this.disposable = disposable;
-    }
-
-    public void Dispose()
-    {
-        if (disposable != null)
-        {
-            try
-            {
-                disposable.Dispose();
-            }
-            catch
-            {
-            }
-        }
-        disposable = null;
-    }
 }

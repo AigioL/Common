@@ -43,6 +43,14 @@ public static partial class VerificationCodesController
             return r;
         }).WithDescription("发送邮件验证码")
         .WithRequiredSecurityKey();
+        //#if DEBUG
+        routeGroup.MapPost("sms-test", async (HttpContext context) =>
+        {
+            ApiRsp r = "测试加密接口";
+            return r;
+        }).WithDescription("测试加密接口")
+        .WithRequiredSecurityKey();
+        //#endif
     }
 
     /// <summary>

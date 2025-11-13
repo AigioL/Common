@@ -151,6 +151,20 @@ public static partial class AESUtils
 
     }
 
+    public static Aes? CreateOld(byte[] data)
+    {
+        //var uint16 = BitConverter.ToUInt16(data, 0);
+        //var flags = (Flags)uint16;
+        var mIVByteArray = data.Skip(2).Take(16).ToArray();
+        var mKeyByteArray = data.Skip(18).Reverse().ToArray();
+        var aes = Aes.Create();
+        aes.Key = mKeyByteArray;
+        aes.IV = mIVByteArray;
+        //aes.Mode = Mode;
+        //aes.Padding = Padding;
+        return aes;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SetFlags(Aes aes, Flags flags)
     {

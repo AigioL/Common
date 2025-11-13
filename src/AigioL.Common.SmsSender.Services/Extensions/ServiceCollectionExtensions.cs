@@ -32,7 +32,7 @@ public static partial class ServiceCollectionExtensions
         }
         return name switch
         {
-            null => services.TryAddDebugSmsSenderProvider(),
+            null => services.AddDebugSmsSenderProvider(),
             nameof(ISmsSettings.SmsOptions._21VianetBlueCloud)
                 => Add<CHANNELS._21VianetBlueCloud.SenderProviderInvoker<TSmsSettings>, TSmsSettings>(services),
             nameof(ISmsSettings.SmsOptions.AlibabaCloud)
@@ -47,9 +47,10 @@ public static partial class ServiceCollectionExtensions
         };
     }
 
-    static IServiceCollection TryAddDebugSmsSenderProvider(this IServiceCollection services)
+    static IServiceCollection AddDebugSmsSenderProvider(this IServiceCollection services)
     {
-        services.TryAddScoped<DebugSmsSenderProvider>();
+        services.AddScoped<DebugSmsSenderProvider>();
+        services.AddScoped<ISmsSender>(static s => s.GetRequiredService<DebugSmsSenderProvider>());
         return services;
     }
 
@@ -61,7 +62,7 @@ public static partial class ServiceCollectionExtensions
         where TSmsSettings : class, ISmsSettings
     {
         services.AddHttpClient<TSmsSender>();
-        services.TryAddDebugSmsSenderProvider();
+        services.TryAddScoped<DebugSmsSenderProvider>();
         services.AddScoped<ISmsSender, SmsSenderWrapper<TSmsSender, TSmsSettings>>();
         return services;
     }
