@@ -15,6 +15,11 @@ public static partial class ApiConstants
     public const string Headers_SecurityKeyHex = "app-skey-hex";
 
     /// <summary>
+    /// 安全密钥填充
+    /// </summary>
+    public const string Headers_SecurityKeyPadding = "app-skey-padding";
+
+    /// <summary>
     /// App 是否弃用
     /// </summary>
     public const string Headers_AppObsolete = "app-obsolete";
