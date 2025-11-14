@@ -3,7 +3,7 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>d37b0717-d024-4dba-9330-c387df7630e4</SharedGUID>
+    <SharedGUID>4ebfea7e-a8c7-4bd0-9bf8-2f0fc039ea5c</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter</Import_RootNamespace>

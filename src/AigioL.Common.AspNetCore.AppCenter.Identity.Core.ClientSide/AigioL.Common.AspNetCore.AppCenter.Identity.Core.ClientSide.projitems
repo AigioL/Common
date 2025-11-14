@@ -3,13 +3,14 @@
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>46fa67ca-ed96-4300-b507-a7bc5844e12d</SharedGUID>
+    <SharedGUID>e90b47ec-ad0e-40a8-9671-e44041beea71</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Identity</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.cs" />
   </ItemGroup>
 </Project>
