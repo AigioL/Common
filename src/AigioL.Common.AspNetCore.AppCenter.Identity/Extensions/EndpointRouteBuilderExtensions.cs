@@ -23,7 +23,7 @@ public static partial class EndpointRouteBuilderExtensions
         b.MapIdentityVerificationCodesV5<TAppSettings>();
         b.MapIdentityMembershipV5();
         b.MapIdentityExternalLoginV5();
-        b.MapIdentityAccountV5();
+        b.MapIdentityAccountV5<TIdentityDbContext>();
         b.MapIdentityManageV5<TIdentityDbContext>();
     }
 }

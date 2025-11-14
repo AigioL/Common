@@ -389,17 +389,11 @@ public static partial class HttpContextExtensions
     public static bool GetRemoteIpAddress(this HttpContext context, [NotNullWhen(true)] out string? ipAddress)
     {
         ipAddress = context.Connection.RemoteIpAddress?.ToString();
-        if (!string.IsNullOrWhiteSpace(ipAddress) &&
-            !string.Equals("localhost", ipAddress, StringComparison.InvariantCultureIgnoreCase))
+        if (!string.IsNullOrWhiteSpace(ipAddress))
         {
-            if (IPAddress.TryParse(ipAddress, out var address))
+            if (IPAddress.TryParse(ipAddress, out _))
             {
-                // 如果部署模式为网关后转发时获取值为 127.0.0.1 则反向代理配置错误
-                if (!IPAddress.IsLoopback(address))
-                {
-                    // 客户端地址不能是 localhost 或 127.0.0.1
-                    return true;
-                }
+                return true;
             }
         }
         return false;

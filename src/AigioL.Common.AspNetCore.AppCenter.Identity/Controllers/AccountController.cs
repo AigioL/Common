@@ -2,6 +2,7 @@ using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Request;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
@@ -32,9 +33,10 @@ public static partial class AccountController
 
     internal static TimeSpan GetLockoutEnd() => TimeSpan.FromMinutes(7);
 
-    public static void MapIdentityAccountV5(
+    public static void MapIdentityAccountV5<TIdentityDbContext>(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "identity/v5/account")
+        where TIdentityDbContext : IIdentityDbContext
     {
         var routeGroup = b.MapGroup(pattern)
             .AllowAnonymous();
@@ -43,7 +45,7 @@ public static partial class AccountController
             [FromBody] LoginOrRegisterRequest request) =>
         {
             var deviceId = request.GetDeviceId();
-            var r = await LoginOrRegister(context,
+            var r = await LoginOrRegister<LoginOrRegisterResponse, TIdentityDbContext>(context,
                 request.PhoneNumber,
                 request.PhoneNumberRegionCode,
                 request.SmsCode,
@@ -87,7 +89,7 @@ public static partial class AccountController
             var deviceId = request.GetDeviceId();
             var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AccountController));
             var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
-            var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
+            var db = context.RequestServices.GetRequiredService<TIdentityDbContext>();
             var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
             var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
             var r = await RegisterByEmail(logger,
@@ -107,7 +109,7 @@ public static partial class AccountController
             [FromBody] AccountLoginRequest request) =>
         {
             var deviceId = request.GetDeviceId();
-            var r = await LoginByPassword(
+            var r = await LoginByPassword<LoginOrRegisterResponse, TIdentityDbContext>(
                 context,
                 request.Account,
                 request.Password,
@@ -127,7 +129,7 @@ public static partial class AccountController
     /// <summary>
     /// 登录或注册账号，如要支持密码登录，需使用 <see cref="SignInManager{TUser}"/> 提供纪录失败次数与锁定用户
     /// </summary>
-    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginOrRegister<TLoginOrRegisterResponse>(
+    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginOrRegister<TLoginOrRegisterResponse, TIdentityDbContext>(
         HttpContext context,
         string? phoneNumber,
         string? phoneNumberRegionCode,
@@ -135,6 +137,7 @@ public static partial class AccountController
         LoginChannel loginChannel,
         string? deviceId,
         Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
+        where TIdentityDbContext : IIdentityDbContext
     {
         if (string.IsNullOrWhiteSpace(phoneNumberRegionCode))
         {
@@ -156,7 +159,7 @@ public static partial class AccountController
 
         var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AccountController));
         var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
-        var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
+        var db = context.RequestServices.GetRequiredService<TIdentityDbContext>();
         var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
         var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
 
@@ -598,11 +601,12 @@ public static partial class AccountController
     /// <summary>
     /// 通过密码登录
     /// </summary>
-    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginByPassword<TLoginOrRegisterResponse>(
+    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginByPassword<TLoginOrRegisterResponse, TIdentityDbContext>(
         HttpContext context,
         string? account,
         string? password,
         Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
+        where TIdentityDbContext : IIdentityDbContext
     {
         if (!context.GetRemoteIpAddress(out var ip))
         {
@@ -618,7 +622,7 @@ public static partial class AccountController
         }
 
         var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
-        var db = context.RequestServices.GetRequiredService<IIdentityDbContext>();
+        var db = context.RequestServices.GetRequiredService<TIdentityDbContext>();
         var result = await LoginByPasswordCore(
             userManager, db, account,
             password, funcLoginSharedAsync, context.RequestAborted);
