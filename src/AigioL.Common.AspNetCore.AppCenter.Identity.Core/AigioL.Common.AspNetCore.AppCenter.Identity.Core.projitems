@@ -19,7 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ChangePhoneNumberValidationRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\EditUserProfileRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\LoginOrRegisterRequest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RegisterByEmailRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ResetPasswordRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SendEmailCodeRequest.cs" />
@@ -27,7 +26,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\SetPasswordRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ValidateRegisterEmailRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAuthMessageRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IClockInRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IUserDeleteRepository.cs" />

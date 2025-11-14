@@ -147,6 +147,7 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
                             var newRequestBody = m.GetStream();
                             // 将解密流写入新的正文流
                             await cryptoStream.CopyToAsync(newRequestBody, context.RequestAborted);
+                            await cryptoStream.FlushFinalBlockAsync(context.RequestAborted);
                             newRequestBody.Position = 0;
                             context.Response.RegisterForDispose(newRequestBody);
                             context.Request.Body = newRequestBody;
