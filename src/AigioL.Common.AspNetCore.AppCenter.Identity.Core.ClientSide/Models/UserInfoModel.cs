@@ -8,7 +8,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 /// 用户信息模型，使用 VersionTolerant 以支持向后兼容
 /// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial class UserInfoModel : IPhoneNumber
+public sealed partial class UserInfoModel : IPhoneNumber, IId<Guid>
 {
     /// <summary>
     /// 用户 Id
