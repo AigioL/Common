@@ -12,5 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\ApiConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\MediaTypeNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDeviceId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalLoginChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserType.cs" />
   </ItemGroup>
 </Project>

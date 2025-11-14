@@ -61,14 +61,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IViewsUrl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientDistributionChannel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalLoginChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipLicenseFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SmsCodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeviceIsTrustWithUserId.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\UserType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletPaymentDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletValueEvent.cs" />
