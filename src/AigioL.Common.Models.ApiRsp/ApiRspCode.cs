@@ -270,7 +270,12 @@ public enum ApiRspCode : uint
     RequiredSecurityKey = 1017,
 
     /// <summary>
-    /// 空的数据库 App 版本号
+    /// 客户端版本已弃用，需要更新版本
+    /// </summary>
+    AppObsolete = 1019,
+
+    /// <summary>
+    /// 空的数据库或 Redis 缓存 App 版本号
     /// </summary>
     EmptyDbAppVersion = 1022,
 

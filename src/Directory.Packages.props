@@ -15,9 +15,9 @@
   </Choose>
   <!-- 👇 Windows Only -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.213" />
+    <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.242" />
     <PackageVersion Include="System.Management" Version="9.0.8" />
-    <PackageVersion Include="WmiLight" Version="6.14.0" />
+    <PackageVersion Include="WmiLight" Version="6.16.0" />
     <PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(DotNet_Package_Version)" />
   </ItemGroup>
   <!-- 👇 WinUI3 -->
@@ -25,8 +25,13 @@
     <PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
     <PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
   </ItemGroup>
+  <!-- 👇 依赖注入 -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(DotNet_Package_Version)" />
+  </ItemGroup>
   <!-- 👇 日志 -->
   <ItemGroup>
+    <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="$(DotNet_Package_Version)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="$(DotNet_Package_Version)" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(DotNet_Package_Version)" />
     <PackageVersion Include="NLog" Version="6.0.6" />

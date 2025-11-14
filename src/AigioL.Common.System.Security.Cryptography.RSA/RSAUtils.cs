@@ -7,6 +7,15 @@ namespace System.Security.Cryptography;
 
 public static partial class RSAUtils
 {
+    public static RSAEncryptionPadding GetDefaultPadding()
+    {
+        if (OperatingSystem.IsAndroid())
+        {
+            return RSAEncryptionPadding.OaepSHA1;
+        }
+        return RSAEncryptionPadding.OaepSHA256;
+    }
+
     public static RSAParameters ReadParameters(Stream s, long? position = 0)
     {
         try
