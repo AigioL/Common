@@ -8,6 +8,7 @@ using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Services;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Models;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Identity;
@@ -452,6 +453,10 @@ partial class UserManager2<TDbContext> : IUserManager2
         bool phoneNumberConfirmed,
         string? password = null)
     {
+        if (string.IsNullOrWhiteSpace(regionCode))
+        {
+            regionCode = IPhoneNumber.DefaultPhoneNumberRegionCode;
+        }
         var user = new User
         {
             PhoneNumber = phoneNumber,
@@ -475,6 +480,28 @@ partial class UserManager2<TDbContext> : IUserManager2
         };
         var identityResult = await CreateAsync(user, password);
         return (user, identityResult);
+    }
+
+    void OnCreate(User user)
+    {
+        if (string.IsNullOrWhiteSpace(user.NickName))
+        {
+            user.NickName = user.GetNickName();
+        }
+    }
+
+    /// <inheritdoc/>
+    public override Task<IdentityResult> CreateAsync(User user)
+    {
+        OnCreate(user);
+        return base.CreateAsync(user);
+    }
+
+    /// <inheritdoc/>
+    public override Task<IdentityResult> CreateAsync(User user, string password)
+    {
+        OnCreate(user);
+        return base.CreateAsync(user, password);
     }
 
     #endregion

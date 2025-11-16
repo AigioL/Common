@@ -38,7 +38,6 @@ public partial class User :
     /// <summary>
     /// 用户名
     /// </summary>
-    [Required]
     [Comment("用户名")]
     [StringLength(MaxLengths.Name)]
     public override string? UserName { get; set; }
@@ -46,7 +45,6 @@ public partial class User :
     /// <summary>
     /// 用户名全大写字母
     /// </summary>
-    [Required]
     [Comment("用户名全大写字母")]
     [StringLength(MaxLengths.Name)]
     public override string? NormalizedUserName { get; set; }
@@ -242,6 +240,9 @@ partial class User // EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder.Property(p => p.UserName).IsRequired(false);
+            builder.Property(p => p.NormalizedUserName).IsRequired(false);
+
             builder.HasIndex(x => x.AreaId);
             builder.HasIndex(x => x.PhoneNumber);
             builder.HasIndex(x => x.PhoneNumberRegionCode);

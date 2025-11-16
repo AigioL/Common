@@ -82,6 +82,7 @@ public abstract partial class BMDbContextBase<
         b.Entity<TUserRole>().ToTable(TableNames.UserRoles);
         b.Entity<BMUserToken>().ToTable(TableNames.UserTokens);
 
+        // 与 AppDbContextBase 同步调用 BuildEntities 扩展函数
         b.BuildEntities(AppendBuildEntities_);
     }
 
