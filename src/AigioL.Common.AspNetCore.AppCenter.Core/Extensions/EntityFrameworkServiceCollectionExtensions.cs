@@ -25,11 +25,7 @@ public static partial class EntityFrameworkServiceCollectionExtensions
         {
             case SqlStringHelper.PostgreSQL:
                 {
-                    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-                    if (postgreSQL18Plus.HasValue)
-                    {
-                        SqlStringHelper.PostgreSQL18Plus = postgreSQL18Plus.Value;
-                    }
+                    SqlStringHelper.ConfigPostgreSQL(postgreSQL18Plus);
                 }
                 break;
         }

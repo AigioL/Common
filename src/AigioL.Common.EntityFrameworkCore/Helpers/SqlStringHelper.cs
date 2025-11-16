@@ -24,6 +24,15 @@ public static partial class SqlStringHelper
     /// </summary>
     public static string DatabaseProvider { get; set; } = PostgreSQL;
 
+    public static void ConfigPostgreSQL(bool? postgreSQL18Plus = true)
+    {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        if (postgreSQL18Plus.HasValue)
+        {
+            PostgreSQL18Plus = postgreSQL18Plus.Value;
+        }
+    }
+
     /// <summary>
     /// 使用启用 Z.EntityFramework.Plus.EFCore
     /// </summary>
