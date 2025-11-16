@@ -179,9 +179,12 @@ sealed partial class IdentityJsonWebTokenValueProvider<
                 };
             }
 
-            newItem.Refresh.RefreshToken = refresh_token;
-            newItem.Refresh.RefreshExpiration = refresh_token_expires;
-            newItem.Refresh.NotBefore = refresh_not_before;
+            newItem.Refresh = new()
+            {
+                RefreshToken = refresh_token,
+                RefreshExpiration = refresh_token_expires,
+                NotBefore = refresh_not_before,
+            };
 
             await db.UserJsonWebTokens.AddAsync(newItem, cancellationToken);
             await db.SaveChangesAsync(cancellationToken);
