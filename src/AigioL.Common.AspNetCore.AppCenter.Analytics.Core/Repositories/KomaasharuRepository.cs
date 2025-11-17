@@ -68,6 +68,10 @@ partial class KomaasharuRepository<TDbContext>
             query = query.Where(x => x.DeviceIdiom.HasFlag(deviceIdiom.Value));
         }
         var query2 = query.Select(FExpressions.MapToModel);
+#if DEBUG
+        var str = query2.ToQueryString();
+        //Console.WriteLine(str);
+#endif
         var r = await query2.ToArrayAsync(cancellationToken);
         return r;
     }

@@ -45,19 +45,25 @@ sealed partial class AppVerCoreService<TDbContext> :
 
         if (fromHeaderOrQuery)
         {
-            string? api_referrer;
-
-            string? referrer = context.Request.Headers["Referrer"];
-            api_referrer = referrer;
-            if (string.IsNullOrWhiteSpace(api_referrer))
-            {
-                string? referer = context.Request.Headers.Referer;
-                api_referrer = referer;
-            }
-
+            string? api_referrer = context.Request.Headers.GetCustomReferrer().ToString();
             if (!string.IsNullOrWhiteSpace(api_referrer))
             {
-                var appVersionValue = api_referrer.Split('/').LastOrDefault();
+                var api_referrer_span = api_referrer.AsSpan();
+                var split = api_referrer_span.Split('/');
+                Range? lastSplit = default;
+                while (split.MoveNext())
+                {
+                    lastSplit = split.Current;
+                }
+                string? appVersionValue;
+                if (lastSplit.HasValue)
+                {
+                    appVersionValue = new(api_referrer_span[lastSplit.Value]);
+                }
+                else
+                {
+                    appVersionValue = null;
+                }
                 appVersionInfo = await CheckHttpRequestHeadersByValueAsync(
                     context, appVersionValue);
             }

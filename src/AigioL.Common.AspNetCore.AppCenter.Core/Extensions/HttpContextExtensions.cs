@@ -3,6 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Primitives.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Primitives;
+using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -151,20 +152,16 @@ public static partial class HttpContextExtensions
         var index = chars.IndexOf(':');
         if (index > 0)
         {
-            chars = chars[..index];
-            index = chars.IndexOf('/');
-            if (index <= 0)
-            {
-                index = chars.IndexOf('\\');
-            }
+            var enumChars = chars[(index + 1)..].Trim('/');
+            index = enumChars.IndexOf('/');
             if (index > 0)
             {
-                chars = chars[..index];
-                if (Enum.TryParse<DevicePlatform2>(chars, ignoreCase: true, out var platform))
+                enumChars = enumChars[..index];
+                if (Enum.TryParse<DevicePlatform2>(enumChars, ignoreCase: true, out var platform))
                 {
                     return platform;
                 }
-                else if (chars.Equals("Windows Desktop Bridge", StringComparison.InvariantCultureIgnoreCase))
+                else if (enumChars.Equals("Windows Desktop Bridge", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return DevicePlatform2.WindowsDesktopBridge;
                 }
@@ -173,23 +170,28 @@ public static partial class HttpContextExtensions
         return default;
     }
 
+    public static StringValues GetCustomReferrer(this IHeaderDictionary headers)
+    {
+        StringValues referrer = headers["Referrer"];
+        if (StringValues.IsNullOrEmpty(referrer))
+        {
+            referrer = headers["Referer2"];
+            if (StringValues.IsNullOrEmpty(referrer))
+            {
+                referrer = headers.Referer;
+            }
+        }
+        return referrer;
+    }
+
     static DevicePlatform2 GetDevicePlatformCore(this HttpRequest request)
     {
         ReadOnlySpan<char> chars = default;
 
-        var referer = request.Headers.Referer;
+        var referer = request.Headers.GetCustomReferrer();
         if (!StringValues.IsNullOrEmpty(referer))
         {
             chars = referer.ToString().AsSpan();
-        }
-        else
-        {
-            // 备用键名为 Referer2
-            var referer2 = request.Headers["Referer2"];
-            if (!StringValues.IsNullOrEmpty(referer2))
-            {
-                chars = referer2.ToString().AsSpan();
-            }
         }
 
         try
