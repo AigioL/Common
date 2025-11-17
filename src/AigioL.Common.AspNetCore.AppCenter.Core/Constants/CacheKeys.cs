@@ -36,7 +36,10 @@ public static partial class CacheKeys
 
     #region HashKey
 
-    public const string IdentityUserIsBanMapHashKey = "IdentityUserIsBanMapHashKey";
+    /// <summary>
+    /// 类型 UserDeviceIsTrustWithUserId 的缓存 HashKey
+    /// </summary>
+    public const string IdentityUserDeviceIsTrustWithUserIdMapHashKey = "IdentityUserDeviceIsTrustWithUserIdMapHashKey";
 
     /// <summary>
     /// 文章浏览量 HashKey
@@ -52,10 +55,10 @@ public static partial class CacheKeys
 
     public const string IdentityUserInfoDataHashV1Key = "IdentityUserInfoDataHashKey_v1";
 
-    /// <summary>
-    /// UserJsonWebToken
-    /// </summary>
-    public const string IdentityUserJsonWebTokenInfoHashKey = "IdentityUserJsonWebTokenInfoHashKey";
+#if DEBUG
+    [Obsolete("use IdentityUserDeviceIsTrustWithUserIdMapHashKey", true)]
+    public const string IdentityUserJsonWebTokenInfoHashKey = IdentityUserDeviceIsTrustWithUserIdMapHashKey;
+#endif
 
     public const string IdentityUserExternalAccountsHashKey = "IdentityUserExternalAccountsHashKey";
 

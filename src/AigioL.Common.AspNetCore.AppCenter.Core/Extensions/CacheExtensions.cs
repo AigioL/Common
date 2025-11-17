@@ -34,7 +34,18 @@ public static partial class CacheExtensions
                 }
                 catch
                 {
-                    // 反序列化失败，视作缓存数据无效
+                    try
+                    {
+                        var logger = Log.CreateLogger(nameof(CacheExtensions));
+                        var tType = typeof(TItem);
+                        var typeName = tType.FullName ?? tType.Name;
+                        LogErrorByGetV2Async(logger, typeName);
+                    }
+                    catch
+                    {
+                    }
+                    // 反序列化失败
+                    throw;
                 }
             }
         }
@@ -87,7 +98,6 @@ public static partial class CacheExtensions
             }
             catch
             {
-                // 反序列化失败，视作缓存数据无效
                 try
                 {
                     var logger = Log.CreateLogger(nameof(CacheExtensions));
@@ -98,6 +108,8 @@ public static partial class CacheExtensions
                 catch
                 {
                 }
+                // 反序列化失败
+                throw;
             }
         }
         return value;
@@ -122,7 +134,6 @@ public static partial class CacheExtensions
             }
             catch
             {
-                // 反序列化失败，视作缓存数据无效
                 try
                 {
                     var logger = Log.CreateLogger(nameof(CacheExtensions));
@@ -133,6 +144,8 @@ public static partial class CacheExtensions
                 catch
                 {
                 }
+                // 反序列化失败
+                throw;
             }
         }
         return (bytes, value);

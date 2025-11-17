@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -49,11 +50,7 @@ static partial class ProgramHelper
             {
             }
         }
-        if (assembly == null)
-        {
-            assembly = typeof(ProgramHelper).Assembly;
-        }
-
+        assembly ??= typeof(ProgramHelper).Assembly;
         var version = assembly.GetName().Version?.ToString();
         if (string.IsNullOrWhiteSpace(version) || !global::System.Version.TryParse(version, out var _))
         {

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using StackExchange.Redis;
-using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
@@ -25,28 +24,33 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
 {
     readonly AuthorizationMiddlewareResultHandler defaultHandler = new();
 
-    static async Task Fail(HttpContext context, ApiRspCode failCode)
+    static async Task Fail(HttpContext context, ApiRspCode failCode, bool writeApiRsp = false)
     {
         const int statusCode = StatusCodes.Status401Unauthorized;
+        context.Response.StatusCode = statusCode;
 
         context.Items[KEY_FAIL_CODE] = failCode;
-        var message = failCode switch
+
+        if (writeApiRsp)
         {
-            ApiRspCode.UserDeviceIsNotTrust => UserIsBanErrorMessage,
-            _ => string.Format(AuthorizationFailErrorMessage_, failCode),
-        };
-        var traceId = context.GetTraceId();
-        ApiRsp apiRsp = new()
-        {
-            Code = unchecked((uint)failCode),
-            Url = context.Request.Path,
-            TraceId = traceId,
-            Message = message,
-        };
-        context.Response.StatusCode = statusCode;
-        await apiRsp.WriteAsync(
-            context.Response,
-            cancellationToken: context.RequestAborted);
+            // 旧版使用 MVC ObjectResult，虽然传递了 object? value 值，但实际上并没有写入响应
+            var message = failCode switch
+            {
+                ApiRspCode.UserDeviceIsNotTrust => UserIsBanErrorMessage,
+                _ => string.Format(AuthorizationFailErrorMessage_, failCode),
+            };
+            var traceId = context.GetTraceId();
+            ApiRsp apiRsp = new()
+            {
+                Code = unchecked((uint)failCode),
+                Url = context.Request.Path,
+                TraceId = traceId,
+                Message = message,
+            };
+            await apiRsp.WriteAsync(
+                context.Response,
+                cancellationToken: context.RequestAborted);
+        }
     }
 
     async Task<UserDeviceIsTrustWithUserId?> GetUserDeviceIsTrustMapAsync(
@@ -81,6 +85,25 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         }
     }
 
+    async Task<(UserDeviceIsTrustWithUserId? isTrustMap, bool isTrustMapBinHasValue)> HashGetAsync(IDatabase db, string jwtIdStr)
+    {
+        // 先尝试从缓存中获取
+        var isTrustMapBin = await db.HashGetAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, jwtIdStr);
+        if (isTrustMapBin.HasValue)
+        {
+            var isTrustMapBinLocal = (byte[]?)isTrustMapBin;
+            if (isTrustMapBinLocal?.Length > 0)
+            {
+                var isTrustMap = MemoryPackSerializer.Deserialize<UserDeviceIsTrustWithUserId>(isTrustMapBinLocal);
+                if (isTrustMap != null)
+                {
+                    return (isTrustMap, true);
+                }
+            }
+        }
+        return (null, false);
+    }
+
     public async Task HandleAsync(
         RequestDelegate next,
         HttpContext context,
@@ -108,7 +131,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
 
         var nameId = context.User.FindFirst(ClaimTypes.NameIdentifier);
         var jwtIdStr = nameId?.Value;
-        if (!ShortGuid.TryParse(jwtIdStr, out Guid jwtId) || jwtId == default)
+        if (jwtIdStr == null || !ShortGuid.TryParse(jwtIdStr, out Guid jwtId) || jwtId == default)
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
                 ApiRspCode.UserNotFound);
@@ -118,29 +141,22 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
         var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
         var db = connection.GetDatabase(CacheKeys.RedisHashDataDb);
 
-        UserDeviceIsTrustWithUserId? isTrustMap = null;
-        var isTrustMapBin = await db.HashGetAsync(CacheKeys.IdentityUserIsBanMapHashKey, jwtIdStr);
-        if (isTrustMapBin.HasValue)
+        // 先尝试从缓存中获取
+        (var isTrustMap, bool isTrustMapBinHasValue) = await HashGetAsync(db, jwtIdStr);
+        if (isTrustMapBinHasValue)
         {
-            try
-            {
-                var isTrustMapBinLocal = (byte[]?)isTrustMapBin;
-                if (isTrustMapBinLocal != null && isTrustMapBinLocal.Length != 0)
-                {
-                    isTrustMap = MemoryPackSerializer.Deserialize<UserDeviceIsTrustWithUserId>(isTrustMapBinLocal);
-                }
-            }
-            catch
-            {
-            }
+            // 已从缓存中获取到，isTrustMap 值不可能为 null
         }
-        if (isTrustMap == null)
+        else
         {
+            // 缓存中获取失败时，从数据库中取
             var dbContext = context.RequestServices.GetRequiredService<TDbContext>();
             isTrustMap = await GetUserDeviceIsTrustMapAsync(dbContext, jwtId, context.RequestAborted);
             var isTrustMapBinLocal = MemoryPackSerializer.Serialize(isTrustMap);
-            await db.HashSetAsync(CacheKeys.IdentityUserIsBanMapHashKey, jwtIdStr, isTrustMapBinLocal);
+            await db.HashSetAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, jwtIdStr, isTrustMapBinLocal);
         }
+
+        // 如果数据库中也没有，说明用户不存在
         if (isTrustMap == null)
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,

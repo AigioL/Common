@@ -454,7 +454,7 @@ public static partial class ManageController
         await db.UserJsonWebTokens.Where(x => x.Id == jwtUserId).ExecuteDeleteAsync();
         var redisdb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
         await redisdb.HashDeleteAsync(CacheKeys.IdentityUserInfoDataHashV1Key, jwtUserIdS);
-        await redisdb.HashDeleteAsync(CacheKeys.IdentityUserJsonWebTokenInfoHashKey, jwtUserIdS);
+        await redisdb.HashDeleteAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, jwtUserIdS);
         await cache.RemoveAsync(jwtUserIdS);
         await db.UserRefreshJsonWebTokens.Where(x => x.Id == jwtUserId).ExecuteDeleteAsync();
     }

@@ -142,7 +142,7 @@ sealed partial class IdentityJsonWebTokenValueProvider<
                     // 删除映射，使之前的 Token 失效
                     db.UserJsonWebTokens.Remove(oldItem);
                     await db.SaveChangesAsync(cancellationToken);
-                    await redisdb.HashDeleteAsync(CacheKeys.IdentityUserJsonWebTokenInfoHashKey, ShortGuid.Encode(oldItem.Id));
+                    await redisdb.HashDeleteAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, ShortGuid.Encode(oldItem.Id));
                 }
             }
 
@@ -196,7 +196,7 @@ sealed partial class IdentityJsonWebTokenValueProvider<
                    x.SetProperty(u => u.LastLoginTime, u => DateTimeOffset.Now), cancellationToken);
             var hashField = ShortGuid.Encode(newItem.Id);
             var hashValue = MemoryPackSerializer.Serialize(new UserDeviceIsTrustWithUserId(userId, true));
-            await redisdb.HashSetAsync(CacheKeys.IdentityUserJsonWebTokenInfoHashKey, hashField, hashValue);
+            await redisdb.HashSetAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, hashField, hashValue);
             return newItem.Id;
         }
         catch (OperationCanceledException)
