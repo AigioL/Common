@@ -23,5 +23,6 @@ public static partial class EndpointRouteBuilderExtensions
         b.MapBasicServerCertificateValidate();
         b.MapBasicImage<TAppSettings>();
         b.MapBasicVersions();
+        b.MapBasicKomaasharus<TAppSettings>();
     }
 }

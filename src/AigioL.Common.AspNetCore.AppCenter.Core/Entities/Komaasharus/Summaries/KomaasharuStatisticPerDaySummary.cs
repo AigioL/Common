@@ -1,11 +1,11 @@
-using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Komaasharu.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.Komaasharu.Summaries;
+namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 
 /// <summary>
 /// 广告统计每日汇总表实体类
@@ -54,10 +54,10 @@ public partial class KomaasharuStatisticPerDaySummary :
     /// </summary>
     public DateTimeOffset StatisticsTime { get; set; }
 
-    public static Expression<Func<KomaasharuStatisticPerDaySummary, StatisticsKomaasharuResponse>> Expression => _.Expression;
+    public static Expression<Func<KomaasharuStatisticPerDaySummary, StatisticsKomaasharuResponse>> Expression => _Expression.Expression;
 }
 
-file static class _
+file static class _Expression
 {
     internal static readonly Expression<Func<KomaasharuStatisticPerDaySummary, StatisticsKomaasharuResponse>> Expression = x => new()
     {

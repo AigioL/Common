@@ -22,11 +22,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IIdentityDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IJobDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKeyValuePairsDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKomaasharuDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AuthMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Identitys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\JobRecordResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\KeyValuePair.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharus\Komaasharu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharus\KomaasharuPersonalized.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharus\Summaries\KomaasharuStatistic.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharus\Summaries\KomaasharuStatisticPerDaySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDelete.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDeleteExternalAccount.cs" />
@@ -52,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddUserManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.ConfigureRequestLocalizationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.UseForwardedHeaders.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.AddKomaasharuRepositories.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValidationServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\AppSettingsBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDisableSms.cs" />
@@ -61,6 +67,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IViewsUrl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientDistributionChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuOrientation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuRedisModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\Summaries\StatisticsKomaasharuResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipLicenseFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSAppSettings.cs" />
@@ -76,6 +87,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\JsonWebTokenAuthorizationMiddlewareResultHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKeyValuePairRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\KeyValuePairRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Komaasharus\Abstractions\IKomaasharuRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Komaasharus\KomaasharuRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\UserManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\RequiredSecurityKeyAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\SecurityKeyAlgorithmType.cs" />

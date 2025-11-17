@@ -1,4 +1,4 @@
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Komaasharu;
+namespace AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus;
 
 /// <summary>
 /// 广告方向

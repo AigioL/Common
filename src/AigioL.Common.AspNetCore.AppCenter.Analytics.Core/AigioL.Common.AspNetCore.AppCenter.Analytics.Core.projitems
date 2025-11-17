@@ -14,7 +14,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAnalysisLogDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAnalysisLogSummariesDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IBigDataAnalysisDbContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKomaasharuDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKomaasharuSummariesDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\ActiveUserAnonymousStatistic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserAppVerSummary.cs" />
@@ -41,10 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\AnalysisStartServiceLogSummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\AnalysisStartSessionLogSummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Summaries\EventRelatedPropertieSummary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Komaasharu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\KomaasharuPersonalized.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatistic.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharu\Summaries\KomaasharuStatisticPerDaySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticCacheModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticType.cs" />
@@ -62,12 +57,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisPageLogModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisStartServiceLogModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisStartSessionLogModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuOrientation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\KomaasharuType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharu\Summaries\StatisticsKomaasharuResponse.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IKomaasharuRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\KomaasharuRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\" />

@@ -1,13 +1,15 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Data.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.Komaasharu;
-using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Komaasharu;
-using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus;
+using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus;
+using AigioL.Common.AspNetCore.AppCenter.Repositories.Komaasharus.Abstractions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories;
+namespace AigioL.Common.AspNetCore.AppCenter.Repositories.Komaasharus;
 
 sealed partial class KomaasharuRepository<TDbContext> :
     Repository<TDbContext, Komaasharu, Guid>,
@@ -21,28 +23,45 @@ sealed partial class KomaasharuRepository<TDbContext> :
 
 partial class KomaasharuRepository<TDbContext>
 {
-    //public async Task AddCounterAsync(Guid id, long count, long clickCount)
-    //{
-    //    await db.KomaasharuStatistics.AddAsync(new KomaasharuStatistic
-    //    {
-    //        KomaasharuId = id,
-    //        NumDisplay = count,
-    //        NumClick = clickCount,
-    //        CreationTime = DateTimeOffset.Now,
-    //    });
-    //    await db.Komaasharus.Where(x => x.Id == id).UpdateFromQueryAsync(query => new Komaasharu
-    //    {
-    //        TotalDisplay = query.TotalDisplay + count,
-    //        TotalClick = query.TotalClick + clickCount,
-    //    });
-    //    await db.SaveChangesAsync();
-    //}
+    public async Task AddCounterAsync(Guid id, long count, long clickCount)
+    {
+        await db.KomaasharuStatistics.AddAsync(new KomaasharuStatistic
+        {
+            KomaasharuId = id,
+            NumDisplay = count,
+            NumClick = clickCount,
+            CreationTime = DateTimeOffset.Now,
+        });
+        await db.Komaasharus.Where(x => x.Id == id).ExecuteUpdateAsync(setters =>
+        {
+            setters.SetProperty(b => b.TotalDisplay, b => b.TotalDisplay + count);
+            setters.SetProperty(b => b.TotalClick, b => b.TotalClick + clickCount);
+        });
+        await db.SaveChangesAsync();
+    }
 
     public async Task<Komaasharu[]> GetAllEntitiesAsync()
     {
         var query = db.Komaasharus.AsNoTrackingWithIdentityResolution()
             .Where(FExpressions.ValidityPeriod);
+#if DEBUG
+        var str = query.ToQueryString();
+        //Console.WriteLine(str);
+#endif
         var r = await query.ToArrayAsync(RequestAborted);
+        return r;
+    }
+
+    public async Task<KomaasharuRedisModel[]> GetCacheModelsAsync()
+    {
+        var query = db.Komaasharus.AsNoTrackingWithIdentityResolution()
+            .Where(FExpressions.ValidityPeriod);
+        var query2 = query.Select(FExpressions.MapToRedisModel);
+#if DEBUG
+        var str = query2.ToQueryString();
+        //Console.WriteLine(str);
+#endif
+        var r = await query2.ToArrayAsync(RequestAborted);
         return r;
     }
 
@@ -90,5 +109,20 @@ file static class FExpressions
         Orientation = x.Orientation,
         Type = x.Type,
         Sort = x.Sort,
+    };
+
+    internal static readonly Expression<Func<Komaasharu, KomaasharuRedisModel>> MapToRedisModel = x => new()
+    {
+        Id = x.Id,
+        Name = x.Name,
+        Desc = x.Description,
+        Orientation = x.Orientation,
+        Type = x.Type,
+        Sort = x.Sort,
+        ImageUrl = x.Url,
+        JumpUrl = x.JumpUrl,
+        DeviceIdiom = x.DeviceIdiom,
+        Platform = x.Platform,
+        IsAuth = x.IsAuth,
     };
 }

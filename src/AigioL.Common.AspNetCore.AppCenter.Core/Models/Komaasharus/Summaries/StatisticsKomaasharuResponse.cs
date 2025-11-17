@@ -1,4 +1,4 @@
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Komaasharu.Summaries;
+namespace AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 
 /// <summary>
 /// 广告统计响应模型类

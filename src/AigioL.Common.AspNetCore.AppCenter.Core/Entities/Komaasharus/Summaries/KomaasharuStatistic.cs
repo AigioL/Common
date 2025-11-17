@@ -1,4 +1,4 @@
-using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Komaasharu.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.Komaasharu.Summaries;
+namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 
 /// <summary>
 /// 广告统计汇总表实体类
@@ -55,10 +55,10 @@ public partial class KomaasharuStatistic :
     [Comment("设备类型")]
     public DeviceIdiom DeviceIdiom { get; set; }
 
-    public static Expression<Func<KomaasharuStatistic, StatisticsKomaasharuResponse>> Expression => _.Expression;
+    public static Expression<Func<KomaasharuStatistic, StatisticsKomaasharuResponse>> Expression => _Expression.Expression;
 }
 
-file static class _
+file static class _Expression
 {
     internal static readonly Expression<Func<KomaasharuStatistic, StatisticsKomaasharuResponse>> Expression = x => new()
     {

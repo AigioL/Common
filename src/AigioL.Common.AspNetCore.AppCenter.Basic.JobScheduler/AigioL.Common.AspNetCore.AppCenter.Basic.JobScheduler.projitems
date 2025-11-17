@@ -11,5 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\AppVerRedisCacheJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\ArticleViewIncrementStatisticJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Jobs\KomaasharuCacheJob.cs" />
   </ItemGroup>
 </Project>

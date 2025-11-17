@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.Komaasharu.Summaries;
-using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Komaasharu;
+using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.Komaasharu;
+namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus;
 
 /// <summary>
 /// 广告表实体类
@@ -123,7 +123,7 @@ public partial class Komaasharu :
 
     public virtual List<KomaasharuStatistic> Statistics { get; set; } = null!;
 
-    /// <inheritdoc cref="AdvertisementPersonalized" />
+    /// <inheritdoc cref="KomaasharuPersonalized" />
     public virtual KomaasharuPersonalized AdvertisementPersonalized { get; set; } = new();
 
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<Komaasharu>

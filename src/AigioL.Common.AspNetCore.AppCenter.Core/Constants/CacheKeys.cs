@@ -34,12 +34,31 @@ public static partial class CacheKeys
 
     #endregion
 
+    /// <summary>
+    /// 广告列表
+    /// </summary>
+    public const string AdvertisementCacheKey =
+        "AdvertisementCache";
+
     #region HashKey
+
+    /// <summary>
+    /// 广告图片地址 HashKey
+    /// </summary>
+    public const string AdvertisementImagesHashKey =
+        "AdvertisementImagesHashKey";
+
+    /// <summary>
+    /// 广告跳转地址 HashKey
+    /// </summary>
+    public const string AdvertisementJumpHashKey =
+        "AdvertisementJumpHashKey";
 
     /// <summary>
     /// 类型 UserDeviceIsTrustWithUserId 的缓存 HashKey
     /// </summary>
-    public const string IdentityUserDeviceIsTrustWithUserIdMapHashKey = "IdentityUserDeviceIsTrustWithUserIdMapHashKey";
+    public const string IdentityUserDeviceIsTrustWithUserIdMapHashKey =
+        "IdentityUserDeviceIsTrustWithUserIdMapHashKey";
 
     /// <summary>
     /// 文章浏览量 HashKey
@@ -47,20 +66,24 @@ public static partial class CacheKeys
     public const string ArticleViewHashKey =
         "ArticleViewHashKey";
 
-    public const string AppVersionHashKey = "AppVersionHashKey"; // 版本使用改缓存 Key 为 ID Last 最新与全部版本缓存 后台编辑时添加或编辑该缓存数据
+    public const string AppVersionHashKey =
+        "AppVersionHashKey"; // 版本使用改缓存 Key 为 ID Last 最新与全部版本缓存 后台编辑时添加或编辑该缓存数据
 
     /// <summary>
     /// 缓存用户信息，减少数据库查询，在编辑、删除时清理该数据
     /// </summary>
 
-    public const string IdentityUserInfoDataHashV1Key = "IdentityUserInfoDataHashKey_v1";
+    public const string IdentityUserInfoDataHashV1Key =
+        "IdentityUserInfoDataHashKey_v1";
 
 #if DEBUG
     [Obsolete("use IdentityUserDeviceIsTrustWithUserIdMapHashKey", true)]
-    public const string IdentityUserJsonWebTokenInfoHashKey = IdentityUserDeviceIsTrustWithUserIdMapHashKey;
+    public const string IdentityUserJsonWebTokenInfoHashKey =
+        IdentityUserDeviceIsTrustWithUserIdMapHashKey;
 #endif
 
-    public const string IdentityUserExternalAccountsHashKey = "IdentityUserExternalAccountsHashKey";
+    public const string IdentityUserExternalAccountsHashKey =
+        "IdentityUserExternalAccountsHashKey";
 
     #endregion
 }

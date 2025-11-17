@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.Komaasharu;
+namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus;
 
 /// <summary>
 /// 广告个性化推荐表实体类

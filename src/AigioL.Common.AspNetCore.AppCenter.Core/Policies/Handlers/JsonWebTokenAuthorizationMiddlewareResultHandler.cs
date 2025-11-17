@@ -172,6 +172,8 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
 
         request.HttpContext.Items[KEY_USER_ID] = isTrustMap.UserId;
         request.HttpContext.Items[KEY_USER_JWT_ID] = jwtId;
+
+        await defaultHandler.HandleAsync(next, context, policy, authorizeResult);
     }
 
     /// <summary>

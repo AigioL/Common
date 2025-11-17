@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ArticleController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\CustomerServiceController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ImageController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\KomaasharusController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\OfficialMessageController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ServerCertificateController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VersionsController.cs" />
