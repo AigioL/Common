@@ -97,6 +97,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 读取 NameIdentifier 失败，值：{0}，渠道：{1}，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ClaimTypes_NameIdentifier_IsNull__ {
+            get {
+                return ResourceManager.GetString("ClaimTypes_NameIdentifier_IsNull__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 点击此处重试 的本地化字符串。
         /// </summary>
         public static string ClickHereTryAgain {
@@ -309,6 +318,33 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         public static string PleaseWait {
             get {
                 return ResourceManager.GetString("PleaseWait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 读取 OpenId 失败，值：{0}，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ReadFailByOpenId_ {
+            get {
+                return ResourceManager.GetString("ReadFailByOpenId_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 读取 SteamAccountId64 失败，值：{0}，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ReadFailBySteamAccountId64_ {
+            get {
+                return ResourceManager.GetString("ReadFailBySteamAccountId64_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 读取 UnionId 失败，值：{0}，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ReadFailByUnionId_ {
+            get {
+                return ResourceManager.GetString("ReadFailByUnionId_", resourceCulture);
             }
         }
         

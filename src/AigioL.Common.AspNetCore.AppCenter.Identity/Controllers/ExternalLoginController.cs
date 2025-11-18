@@ -3,6 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
@@ -21,6 +22,9 @@ using System.Security.Cryptography;
 using System.Text.Encodings.Web;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.D3b96193;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorController;
+using QQConstants = AspNet.Security.OAuth.QQ.QQAuthenticationConstants;
+using AlipayConstants = AspNet.Security.OAuth.Alipay.AlipayAuthenticationConstants;
+using WeChatConstants = AspNet.Security.OAuth.Weixin.WeixinAuthenticationConstants;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
@@ -73,7 +77,6 @@ public static partial class ExternalLoginController
     /// <summary>
     /// 第三方外部平台登录接口（第一步：浏览器兼容性检测）
     /// </summary>
-    /// <returns></returns>
     static Task<IResult> ExternalLoginDetectionAsync(
         HttpContext context,
         ExternalLoginChannel channel)
@@ -87,7 +90,6 @@ public static partial class ExternalLoginController
     /// <summary>
     /// 第三方外部平台登录接口（第二步：跳转外部网站进行授权）
     /// </summary>
-    /// <returns></returns>
     static async Task<IResult> ExternalLogin(
         HttpContext context,
         ExternalLoginChannel channel)
@@ -141,9 +143,14 @@ public static partial class ExternalLoginController
     }
 
     /// <summary>
+    /// OpenID is the unique identifier of Alipay users in the application dimension.
+    /// <para>See https://opendocs.alipay.com/mini/0ai2i6</para>
+    /// </summary>
+    public const string AlipayOpenId = "urn:alipay:open_id";
+
+    /// <summary>
     /// 第三方外部平台登录接口（第三步：由外部网站回调此接口）
     /// </summary>
-    /// <returns></returns>
     static async Task<IResult> Callback<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
         HttpContext context)
@@ -162,7 +169,8 @@ public static partial class ExternalLoginController
                 context.Session.GetString("dn"))
                 .GetDeviceId();
         }
-        else
+
+        if (string.IsNullOrWhiteSpace(deviceId))
         {
             var r = await ExternalLoginDetectionCoreAsync(context, error: "unknown device id g.", channel: channel);
             return r;
@@ -225,7 +233,7 @@ public static partial class ExternalLoginController
             var r = await ExternalLoginDetectionCoreAsync(context, error: R.ErrorLoadingExternalLoginInfo, channel: channel);
             return r;
         }
-        await signInManager.SignOutAsync(); // 登出第三方账号，重新授权 JWT
+        await signInManager.SignOutAsync(); // 登出第三方账号，重新授权本平台 JWT
 
         var authType = externalLoginInfo.Principal.Identity?.AuthenticationType;
         if (!Enum.TryParse<ExternalLoginChannel>(authType, true, out var channel2))
@@ -235,39 +243,114 @@ public static partial class ExternalLoginController
         }
         channel = channel2;
 
-        ApiRsp<LoginOrRegisterResponse> rsp = null!;
+        var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
+        ApiRsp<LoginOrRegisterResponse?> rsp = null!;
         switch (channel)
         {
             case ExternalLoginChannel.Steam:
                 {
-                    // TODO: xxx
+                    var steamNameIdentifier = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (string.IsNullOrWhiteSpace(steamNameIdentifier))
+                    {
+                        var r = await ExternalLoginDetectionCoreAsync(context, error: R.ReadFailBySteamAccountId64_.Format("null"), channel: channel);
+                        return r;
+                    }
+                    var steamAccountId64 = GetSteamAccountId64(steamNameIdentifier);
+                    if (!steamAccountId64.HasValue)
+                    {
+                        var r = await ExternalLoginDetectionCoreAsync(context, error: R.ReadFailBySteamAccountId64_.Format(steamNameIdentifier), channel: channel);
+                        return r;
+                    }
+                    var name = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(steamAccountId64.Value.ToString(), channel, deviceId, userId, p =>
+                    {
+                        p.NickName = name;
+                    });
                 }
                 break;
             case ExternalLoginChannel.Microsoft:
                 {
-                    // TODO: xxx
+                    var nameIdentifier = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (string.IsNullOrWhiteSpace(nameIdentifier))
+                    {
+                        var r = await ExternalLoginDetectionCoreAsync(context, error: R.ClaimTypes_NameIdentifier_IsNull__.Format("null", channel), channel: channel);
+                        return r;
+                    }
+                    var name = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
+                    var email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+                    var givenName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
+                    var surname = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(nameIdentifier, channel, deviceId, userId, x =>
+                    {
+                        x.NickName = name;
+                        x.Email = email;
+                        x.GivenName = givenName;
+                        x.Surname = surname;
+                    });
                 }
                 break;
             case ExternalLoginChannel.QQ:
                 {
-                    // TODO: xxx
-                }
-                break;
-            case ExternalLoginChannel.Apple:
-                {
-                    // TODO: xxx
-                }
-                break;
-            case ExternalLoginChannel.Alipay:
-                {
-                    // TODO: xxx
+                    var unionId = externalLoginInfo.Principal.FindFirstValue(QQConstants.Claims.UnionId);
+                    if (string.IsNullOrWhiteSpace(unionId))
+                    {
+                        var r = await ExternalLoginDetectionCoreAsync(context, error: R.ReadFailByUnionId_.Format(unionId), channel: channel);
+                        return r;
+                    }
+                    var nickname = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
+                    var gender = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Gender);
+                    var avatar_full = externalLoginInfo.Principal.FindFirstValue(QQConstants.Claims.AvatarFullUrl);
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(unionId, channel, deviceId, userId, x =>
+                    {
+                        x.NickName = nickname;
+                        x.Gender = ExternalAccount.ParseGenderStr(gender);
+                        x.AvatarUrl = avatar_full;
+                    });
                 }
                 break;
             case ExternalLoginChannel.Weixin:
                 {
-                    // TODO: xxx
+                    var openId = externalLoginInfo.Principal.FindFirstValue(WeChatConstants.Claims.OpenId);
+                    if (string.IsNullOrWhiteSpace(openId))
+                    {
+                        var r = await ExternalLoginDetectionCoreAsync(context, error: R.ReadFailByOpenId_.Format(openId), channel: channel);
+                        return r;
+                    }
+                    var nickname = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
+                    var gender = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Gender);
+                    var avatar_full = externalLoginInfo.Principal.FindFirstValue(WeChatConstants.Claims.HeadImgUrl);
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(openId, channel, deviceId, userId, x =>
+                    {
+                        x.NickName = nickname;
+                        x.Gender = ExternalAccount.ParseGenderStr(gender);
+                        x.AvatarUrl = avatar_full;
+                    });
                 }
                 break;
+            case ExternalLoginChannel.Alipay:
+                {
+                    var openId = externalLoginInfo.Principal.FindFirstValue(AlipayOpenId);
+                    if (string.IsNullOrWhiteSpace(openId))
+                    {
+                        var r = await ExternalLoginDetectionCoreAsync(context, error: R.ReadFailByOpenId_.Format(openId), channel: channel);
+                        return r;
+                    }
+                    var nickname = externalLoginInfo.Principal.FindFirstValue(AlipayConstants.Claims.Nickname);
+                    var gender = externalLoginInfo.Principal.FindFirstValue(AlipayConstants.Claims.Gender);
+                    var avatar_full = externalLoginInfo.Principal.FindFirstValue(AlipayConstants.Claims.Avatar);
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(openId, channel, deviceId, userId, x =>
+                    {
+                        x.NickName = nickname;
+                        x.Gender = ExternalAccount.ParseGenderStr(gender);
+                        x.AvatarUrl = avatar_full;
+                    });
+                }
+                break;
+            //case ExternalLoginChannel.Apple:
+            //    {
+            //        // TODO: xxx
+            //    }
+            //    break;
             //case ExternalLoginChannel.Facebook:
             //    break;
             //case ExternalLoginChannel.Twitter:

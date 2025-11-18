@@ -33,9 +33,19 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
         string? deviceId);
 
     /// <summary>
-    /// 解绑第三方平台关联账号
+    /// 解绑第三方外部账号
     /// </summary>
     Task UnbundleAccountAsync(User user, ExternalLoginChannel channel);
+
+    /// <summary>
+    /// 登录或注册或绑定通过第三方外部账号
+    /// </summary>
+    Task<ApiRsp<LoginOrRegisterResponse?>> LoginOrRegisterOrBindAsync(
+        string externalAccountId,
+        ExternalLoginChannel channel,
+        string deviceId,
+        Guid? bindUserId = null,
+        Action<ExternalAccount>? setProperties = null);
 }
 
 partial interface IUserManager2 // 创建用户

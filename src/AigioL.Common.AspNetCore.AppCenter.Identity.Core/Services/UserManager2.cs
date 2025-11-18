@@ -444,6 +444,114 @@ partial class UserManager2<TDbContext> : IUserManager2
         await query.ExecuteDeleteAsync();
     }
 
+    /// <inheritdoc/>
+    public async Task<ApiRsp<LoginOrRegisterResponse?>> LoginOrRegisterOrBindAsync(
+        string externalAccountId,
+        ExternalLoginChannel channel,
+        string deviceId,
+        Guid? bindUserId = null,
+        Action<ExternalAccount>? setProperties = null)
+    {
+        CancellationToken.ThrowIfCancellationRequested();
+        ThrowIfDisposed();
+
+        throw new NotImplementedException("TODO");
+
+        //Guid userId;
+        //var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+        //var userIdCache = await redisDb.HashGetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId);
+        //if (userIdCache.HasValue)
+        //{
+        //    userId = new Guid((byte[])userIdCache!);
+        //    if (userId == default)
+        //    {
+        //        userId = await db.Users.Include(x => x.ExternalAccounts)
+        //        .Where(x => x.ExternalAccounts != null &&
+        //             x.ExternalAccounts.Any(y => y.ExternalAccountId == externalAccountId &&
+        //                 y.Type == channel))
+        //         .Select(x => x.Id).FirstOrDefaultAsync();
+        //    }
+        //}
+        //else
+        //{
+        //    userId = await db.Users.Include(x => x.ExternalAccounts)
+        //        .Where(x => x.ExternalAccounts != null &&
+        //             x.ExternalAccounts.Any(y => y.ExternalAccountId == externalAccountId &&
+        //                 y.Type == channel))
+        //         .Select(x => x.Id).FirstOrDefaultAsync();
+        //}
+        //if (userId == default) // Register
+        //{
+        //    var externalAccount = await db.ExternalAccounts
+        //        .OrderBy(x => x.CreationTime)
+        //        .FirstOrDefaultAsync(a => a.ExternalAccountId == externalAccountId &&
+        //            a.Type == channel);
+        //    externalAccount ??= new ExternalAccount
+        //    {
+        //        ExternalAccountId = externalAccountId,
+        //        Type = channel,
+        //    };
+        //    setProperties?.Invoke(externalAccount);
+        //    if (bindUserId.HasValue) // 绑定用户
+        //    {
+        //        Microsoft.AspNetCore.Authentication.OAuth.OAuthConstants.CodeVerifierKey
+        //        var bindUser = await FindByIdAsync(bindUserId.Value);
+        //        ArgumentNullException.ThrowIfNull(bindUser);
+        //        SetUserPropertiesByExternalAccount(bindUser, externalAccount);
+
+        //        externalAccount.UserId = bindUserId;
+        //        if (externalAccount.Id == default)
+        //        {
+        //            await db.ExternalAccounts.AddAsync(externalAccount);
+        //        }
+        //        await db.SaveChangesAsync();
+        //        await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, bindUserId.ToByteArray());
+        //        await RefreshUserInfoCacheAsync(bindUser);
+        //        return GetBindRsp(externalAccount);
+        //    }
+        //    else // 创建用户
+        //    {
+        //        (var user, var result) = await CreateAccountAsync(externalAccount);
+
+        //        if (result.Succeeded)
+        //        {
+        //            var r = isApiV1 ? await LoginShared_v1_Async(user, false, deviceId) : await LoginSharedAsync(isV3, user, false, deviceId);
+        //            await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, user.Id.ToByteArray());
+        //            return r;
+        //        }
+
+        //        const ApiRspCode code = ApiRspCode.BadRequest;
+        //        return ControllerHelper.Fail<LoginOrRegisterResponseCompat?>(result, code);
+        //    }
+        //}
+        //else // Login
+        //{
+        //    if (bindUserId == userId)
+        //    {
+        //        var externalAccount = await UpdateExternalAccountAsync(externalAccountId,
+        //            channel, userId, setProperties);
+        //        setProperties?.Invoke(externalAccount);
+        //        return GetBindRsp(externalAccount);
+        //    }
+        //    else if (bindUserId != default) // 该外部账号已被 userId 使用不可绑定
+        //    {
+        //        return ApiRspHelper.Fail<LoginOrRegisterResponseCompat?>(Resources.Strings.BindFail_UserIsNotNull);
+        //    }
+        //    else // 更新外部账号
+        //    {
+        //        var externalAccount = await UpdateExternalAccountAsync(externalAccountId, channel, userId, setProperties);
+
+        //        var loginUser = await FindByIdAsync(userId);
+        //        loginUser.ThrowIsNull();
+
+        //        SetUserPropertiesByExternalAccount(loginUser, externalAccount);
+
+        //        var r = isApiV1 ? await LoginShared_v1_Async(loginUser, true, deviceId) : await LoginSharedAsync(isV3, loginUser, true, deviceId);
+        //        return r;
+        //    }
+        //}
+    }
+
     #region 创建用户
 
     /// <inheritdoc/>

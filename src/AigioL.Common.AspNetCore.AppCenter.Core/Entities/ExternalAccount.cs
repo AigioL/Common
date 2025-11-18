@@ -122,4 +122,40 @@ public partial class ExternalAccount :
                         .OnDelete(DeleteBehavior.Cascade));
         }
     }
+
+    public static Gender ParseGenderStr(string? gender)
+    {
+        if (!string.IsNullOrWhiteSpace(gender))
+        {
+            switch (gender.Length)
+            {
+                case 1:
+                    {
+                        switch (gender[0])
+                        {
+                            case '男': // QQ
+                            case 'M': // Alipay
+                            case 'm':
+                            case '1': // Weixin
+                                return Gender.Male;
+                            case '女': // QQ
+                            case 'F': // Alipay
+                            case 'f':
+                            case '2': // Weixin
+                                return Gender.Female;
+                        }
+                    }
+                    break;
+                default:
+                    {
+                        if (Enum.TryParse(gender, true, out Gender result))
+                        {
+                            return result;
+                        }
+                    }
+                    break;
+            }
+        }
+        return Gender.Unknown;
+    }
 }
