@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthenticationBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ViewExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IExternalLoginRedirect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\LoginDetection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\LoginDetectionModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Shared\LayoutModel.cs" />

@@ -275,31 +275,14 @@ file static class S96bc5bd9
             return ApiRspCode.EmptyDbAppVersion;
         }
 
-        RSAParameters rsaPara;
-        var rsaPrivateKeySpan = rsaPrivateKey.AsSpan();
-        if (rsaPrivateKeySpan.StartsWith('{'))
+        var rsaPara = RSAUtils.GetRSAParameters(rsaPrivateKey);
+        if (!rsaPara.HasValue)
         {
-#pragma warning disable CS0618 // 类型或成员已过时
-            rsaPara = JsonSerializer.Deserialize(rsaPrivateKeySpan, RSAUtils.Parameters.GetJsonTypeInfo());
-#pragma warning restore CS0618 // 类型或成员已过时
-        }
-        else
-        {
-            const string KEY_Stream = "Stream";
-            if (rsaPrivateKeySpan.StartsWith(KEY_Stream, StringComparison.InvariantCultureIgnoreCase))
-            {
-                rsaPrivateKeySpan = rsaPrivateKeySpan[KEY_Stream.Length..];
-                using var stream = new MemoryStream(Base64Url.DecodeFromChars(rsaPrivateKeySpan), false);
-                rsaPara = RSAUtils.ReadParameters(stream);
-            }
-            else
-            {
-                return ApiRspCode.EmptyDbAppVersion;
-            }
+            return ApiRspCode.EmptyDbAppVersion;
         }
 
         byte[] cipher;
-        using var rsa = RSA.Create(rsaPara);
+        using var rsa = RSA.Create(rsaPara.Value);
         if (skIsHexOrB64U)
         {
             cipher = Convert.FromHexString(sk!);

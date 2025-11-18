@@ -5,14 +5,45 @@ using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Primitives.Columns;
 using MemoryPack;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using StackExchange.Redis;
 using System.Buffers.Text;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Services;
 
-sealed partial class AppVerCoreService<TDbContext> :
+partial class AppVerCoreService
+{
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "解析 RSA Padding 失败，值为：{rsaPaddingStr}, UserAgent: {userAgent}")]
+    protected static partial void LogErrorGetRSAPadding(ILogger logger, Exception e, string? rsaPaddingStr, StringValues userAgent);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "解密 AES 密钥(Hex) 失败, UserAgent: UserAgent: {userAgent}")]
+    protected static partial void LogErrorRSADecryptHex(ILogger logger, Exception e, StringValues userAgent);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "解密 AES 密钥(Base64Url) 失败, UserAgent: UserAgent: {userAgent}")]
+    protected static partial void LogErrorRSADecryptBase64Url(ILogger logger, Exception e, StringValues userAgent);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "创建 AES 密钥失败, UserAgent: UserAgent: {userAgent}")]
+    protected static partial void LogErrorAesCreate(ILogger logger, Exception e, StringValues userAgent);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "版本号主键: {appVersionInfoString}, 没有正确的私钥")]
+    protected static partial void LogErrorPrivateKeyIsNullOrWhiteSpace(
+        ILogger logger,
+        string? appVersionInfoString);
+}
+
+sealed partial class AppVerCoreService<TDbContext> : AppVerCoreService,
     IAppVerCoreService
     where TDbContext : IAppVerDbContext
 {
@@ -31,6 +62,121 @@ sealed partial class AppVerCoreService<TDbContext> :
         this.logger = logger;
         this.connection = connection;
         this.db = db;
+    }
+
+    const string SecurityResultKey = "SecurityResult";
+
+    /// <summary>
+    /// (Hex)经过 RSA 加密的 AES 密钥
+    /// </summary>
+    const string KeyAESKeyHex = "sKeyHex";
+
+    /// <summary>
+    /// (Base64Url)经过 RSA 加密的 AES 密钥
+    /// </summary>
+    const string KeyAESKey = "sKey";
+
+    /// <summary>
+    /// RSA Padding
+    /// </summary>
+    const string KeyRSAPadding = "sKeyPadding";
+
+    public async Task<(string? ErrorMessage, Aes? Aes)> GetSecurityResultAsync(HttpContext context)
+    {
+        if (context.Items[SecurityResultKey] is not ValueTuple<string?, Aes?> result)
+        {
+            result = await GetSecurityResultCoreAsync(context);
+            context.Items[SecurityResultKey] = result;
+        }
+        return result;
+    }
+
+    async Task<(string? ErrorMessage, Aes? Aes)> GetSecurityResultCoreAsync(HttpContext context)
+    {
+        #region 获取当前的 App 版本数据，拿到 RSA 私钥
+
+        var appVersionInfo = await GetAsync(context, fromHeaderOrQuery: false);
+        if (appVersionInfo == null)
+        {
+            return ("Failed to Unknown app version.", default);
+        }
+
+        #endregion 获取当前的 App 版本数据，拿到 RSA 私钥
+
+        #region 从 URL Query 中获取 RSAEncryptionPadding
+
+        string? rsaPaddingStr = null;
+        RSAEncryptionPadding rsaPadding;
+        try
+        {
+            rsaPaddingStr = context.GetQueryOrSessionValue(KeyRSAPadding);
+            rsaPadding = RSAUtils.GetPaddingByOaepHashAlgorithmName(rsaPaddingStr);
+        }
+        catch (Exception e)
+        {
+            LogErrorGetRSAPadding(logger, e, rsaPaddingStr, context.Request.Headers.UserAgent);
+            return ("Failed to resolve key padding.", default);
+        }
+
+        #endregion 从 URL Query 中获取 RSAEncryptionPadding
+
+        var rsaPara = RSAUtils.GetRSAParameters(appVersionInfo.PrivateKey);
+        if (!rsaPara.HasValue)
+        {
+            return ("Failed to Unknown app key.", default);
+        }
+        using var rsa = RSA.Create(rsaPara.Value);
+
+        byte[]? aesKeyBytes = null;
+        var aesKeyHex = context.GetQueryOrSessionValue(KeyAESKeyHex);
+        if (!string.IsNullOrEmpty(aesKeyHex))
+        {
+            try
+            {
+                aesKeyBytes = rsa.DecryptToByteArrayHex(aesKeyHex, rsaPadding);
+            }
+            catch (Exception e)
+            {
+                LogErrorRSADecryptHex(logger, e, context.Request.Headers.UserAgent);
+                return ("Failed to decrypt security hex key.", default);
+            }
+        }
+        else
+        {
+            var aesKey = context.GetQueryOrSessionValue(KeyAESKey);
+            if (!string.IsNullOrEmpty(aesKey))
+            {
+                try
+                {
+                    aesKeyBytes = rsa.DecryptToByteArray(aesKey, rsaPadding);
+                }
+                catch (Exception e)
+                {
+                    LogErrorRSADecryptBase64Url(logger, e, context.Request.Headers.UserAgent);
+                    return ("Failed to decrypt security b64u key.", default);
+                }
+            }
+            else
+            {
+                return ("Failed to Security key not found.", default);
+            }
+        }
+
+        if (aesKeyBytes == null)
+        {
+            return ("Failed to Security key is null.", default);
+        }
+
+        try
+        {
+            var aes = AESUtils.Create(aesKeyBytes);
+            return (default, aes);
+        }
+        catch (Exception e)
+        {
+            LogErrorAesCreate(logger, e, context.Request.Headers.UserAgent);
+            return ("Failed to create a.", default);
+        }
     }
 
     public async ValueTask<IReadOnlyAppVer?> FindAsync(Guid id, CancellationToken cancellationToken = default)
@@ -134,13 +280,6 @@ partial class AppVerCoreService<TDbContext> // 内部函数
 
         return appVersionInfo;
     }
-
-    [LoggerMessage(
-        Level = LogLevel.Error,
-        Message = "版本号主键: {appVersionInfoString}, 没有正确的私钥")]
-    private static partial void LogErrorPrivateKeyIsNullOrWhiteSpace(
-        ILogger logger,
-        string? appVersionInfoString);
 
     async Task<IReadOnlyAppVer?> GetByIdOrValueAsync(
         Guid? appVersionId,

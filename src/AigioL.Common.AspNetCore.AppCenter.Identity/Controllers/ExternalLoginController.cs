@@ -1,12 +1,27 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
+using AigioL.Common.Models;
+using MemoryPack;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.IO;
+using System.Buffers.Text;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text.Encodings.Web;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.D3b96193;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorController;
+using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
@@ -15,30 +30,36 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 /// </summary>
 public static partial class ExternalLoginController
 {
-    public static void MapIdentityExternalLoginV5(
+    public static void MapIdentityExternalLoginV5<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "identity/v5/externallogin")
+        where TAppSettings : class, IExternalLoginRedirect
     {
+        RoutePattern = pattern;
         var routeGroup = b.MapGroup(pattern)
             .AllowAnonymous();
 
-        routeGroup.MapGet("start/{channel?}", async (HttpContext context,
-            [FromRoute] ExternalLoginChannel channel = ExternalLoginChannel.Steam) =>
-        {
-            var r = await ExternalLogin(context, channel);
-            return r;
-        }).WithIdentityUIView();
         routeGroup.MapGet("{channel?}", async (HttpContext context,
-            [FromRoute] ExternalLoginChannel channel = ExternalLoginChannel.Steam) =>
+            [FromRoute] ExternalLoginChannel channel = DefaultExternalLoginChannel) =>
         {
             var r = await ExternalLoginDetectionAsync(context, channel);
             return r;
-        }).WithIdentityUIView();
-        routeGroup.MapGet("callback", async (HttpContext context) =>
+        }).WithIdentityUIView()
+        .WithDescription("第三方外部平台登录接口（第一步：浏览器兼容性检测）");
+        routeGroup.MapGet("step2/{channel?}", async (HttpContext context,
+            [FromRoute] ExternalLoginChannel channel = DefaultExternalLoginChannel) =>
         {
-            var r = await Callback(context);
+            var r = await ExternalLogin(context, channel);
             return r;
-        }).WithIdentityUIView();
+        }).WithIdentityUIView()
+        .WithDescription("第三方外部平台登录接口（第二步：跳转外部网站进行授权）");
+        routeGroup.MapGet("step3", async (HttpContext context) =>
+        {
+            var r = await Callback<TAppSettings>(context);
+            return r;
+        }).WithIdentityUIView()
+        .WithDescription("第三方外部平台登录接口（第三步：由外部网站回调此接口）");
 
 #if DEBUG
         routeGroup.MapGet("test/ex", async (HttpContext context) =>
@@ -50,26 +71,7 @@ public static partial class ExternalLoginController
     }
 
     /// <summary>
-    /// 第三方外部登录接口（开始首步骤）
-    /// </summary>
-    /// <returns></returns>
-    static async Task<IResult> ExternalLogin(
-        HttpContext context,
-        ExternalLoginChannel channel)
-    {
-        ResponseCacheNone(context);
-
-        if (!Enum.IsDefined(channel))
-        {
-            return Results.NotFound();
-        }
-
-        await Task.CompletedTask;
-        throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// 第三方外部登录接口（浏览器兼容性检测步骤）
+    /// 第三方外部平台登录接口（第一步：浏览器兼容性检测）
     /// </summary>
     /// <returns></returns>
     static Task<IResult> ExternalLoginDetectionAsync(
@@ -83,21 +85,303 @@ public static partial class ExternalLoginController
     }
 
     /// <summary>
-    /// 第三方外部登录接口（回调接口）
+    /// 第三方外部平台登录接口（第二步：跳转外部网站进行授权）
     /// </summary>
     /// <returns></returns>
-    static async Task<IResult> Callback(
-        HttpContext context)
+    static async Task<IResult> ExternalLogin(
+        HttpContext context,
+        ExternalLoginChannel channel)
     {
         ResponseCacheNone(context);
 
-        await Task.CompletedTask;
-        throw new NotImplementedException();
+        if (!Enum.IsDefined(channel))
+        {
+            return Results.NotFound();
+        }
+        context.Session.SetInt32(nameof(ExternalLoginChannel), unchecked((int)channel));
+
+        var appVerCoreService = context.RequestServices.GetRequiredService<IAppVerCoreService>();
+        var (errMsg, _) = await appVerCoreService.GetSecurityResultAsync(context);
+        if (errMsg != default)
+        {
+            var r = await ExternalLoginDetectionCoreAsync(context, error: errMsg, channel: channel);
+            return r;
+        }
+
+        var userId = context.GetUserId();
+        var isBind = bool.TryParse(context.Session.GetString(KeyIsBind), out var isBind_) && isBind_;
+        context.Items[KeyIsBind] = isBind;
+        if (isBind)
+        {
+            if (!userId.HasValue)
+            {
+                // 绑定账号时，用户不能是未登录
+                var r = await ExternalLoginDetectionCoreAsync(context, error: R.IsBindTrueUserIsNull, channel: channel);
+                return r;
+            }
+        }
+        else
+        {
+            if (userId.HasValue)
+            {
+                // 非绑定账号时，用户不能是已登录
+                var r = await ExternalLoginDetectionCoreAsync(context, error: R.IsBindFalseUserIsNotNull, channel: channel);
+                return r;
+            }
+        }
+
+        var pattern = RoutePattern;
+        ArgumentNullException.ThrowIfNull(pattern);
+        var redirectUrl = $"/{pattern.AsSpan().TrimStart('/').TrimEnd('/')}/step3";
+        var provider = channel.ToString2();
+
+        var signInManager = context.RequestServices.GetRequiredService<SignInManager<User>>();
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        return Results.Challenge(properties, [provider]);
+    }
+
+    /// <summary>
+    /// 第三方外部平台登录接口（第三步：由外部网站回调此接口）
+    /// </summary>
+    /// <returns></returns>
+    static async Task<IResult> Callback<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
+        HttpContext context)
+        where TAppSettings : class, IExternalLoginRedirect
+    {
+        ResponseCacheNone(context);
+
+        var channelInt32 = context.Session.GetInt32(nameof(ExternalLoginChannel));
+        var channel = channelInt32.HasValue ? (ExternalLoginChannel)channelInt32.Value : DefaultExternalLoginChannel;
+
+        string? deviceId = null;
+        if (ShortGuid.TryParse(context.Session.GetString("dg"), out Guid dg))
+        {
+            deviceId = new DeviceId(dg,
+                context.Session.GetString("dr"),
+                context.Session.GetString("dn"))
+                .GetDeviceId();
+        }
+        else
+        {
+            var r = await ExternalLoginDetectionCoreAsync(context, error: "unknown device id g.", channel: channel);
+            return r;
+        }
+
+        var remoteError = context.Request.Query["remoteError"];
+        var port = context.Session.GetString("port");
+        var isWeb = bool.TryParse(context.Session.GetString("isWeb"), out var isWebB) && isWebB;
+        var portHasValue = !string.IsNullOrEmpty(port);
+        if (portHasValue && !ushort.TryParse(port, out var _))
+        {
+            var r = await ExternalLoginDetectionCoreAsync(context, error: R.WebSocketPortIsNotUInt16, channel: channel);
+            return r;
+        }
+        if (!StringValues.IsNullOrEmpty(remoteError))
+        {
+            var javaScriptEncoder = context.RequestServices.GetService<JavaScriptEncoder>() ?? JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+            var remoteErrorEncode = javaScriptEncoder.Encode(remoteError!);
+            var r = await ExternalLoginDetectionCoreAsync(context, error: R.ErrorFromExternalProvider_.Format(remoteErrorEncode), channel: channel);
+            return r;
+        }
+
+        var appVerCoreService = context.RequestServices.GetRequiredService<IAppVerCoreService>();
+        var (errMsg, aes) = await appVerCoreService.GetSecurityResultAsync(context);
+        if (errMsg != default)
+        {
+            var r = await ExternalLoginDetectionCoreAsync(context, error: errMsg, channel: channel);
+            return r;
+        }
+
+        ArgumentNullException.ThrowIfNull(aes);
+
+        var userId = context.GetUserId();
+        var isBind = bool.TryParse(context.Session.GetString(KeyIsBind), out var isBind_) && isBind_;
+        context.Items[KeyIsBind] = isBind;
+        if (isBind)
+        {
+            if (!userId.HasValue)
+            {
+                // 绑定账号时，用户不能是未登录
+                var r = await ExternalLoginDetectionCoreAsync(context, error: R.IsBindTrueUserIsNull, channel: channel);
+                return r;
+            }
+        }
+        else
+        {
+            if (userId.HasValue)
+            {
+                // 非绑定账号时，用户不能是已登录
+                var r = await ExternalLoginDetectionCoreAsync(context, error: R.IsBindFalseUserIsNotNull, channel: channel);
+                return r;
+            }
+        }
+
+        var signInManager = context.RequestServices.GetRequiredService<SignInManager<User>>();
+        var externalLoginInfo = await signInManager.GetExternalLoginInfoAsync();
+        if (externalLoginInfo == null)
+        {
+
+            var r = await ExternalLoginDetectionCoreAsync(context, error: R.ErrorLoadingExternalLoginInfo, channel: channel);
+            return r;
+        }
+        await signInManager.SignOutAsync(); // 登出第三方账号，重新授权 JWT
+
+        var authType = externalLoginInfo.Principal.Identity?.AuthenticationType;
+        if (!Enum.TryParse<ExternalLoginChannel>(authType, true, out var channel2))
+        {
+            var r = await ExternalLoginDetectionCoreAsync(context, error: R.ErrorFromUnknownAuthType_.Format(authType), channel: channel);
+            return r;
+        }
+        channel = channel2;
+
+        ApiRsp<LoginOrRegisterResponse> rsp = null!;
+        switch (channel)
+        {
+            case ExternalLoginChannel.Steam:
+                {
+                    // TODO: xxx
+                }
+                break;
+            case ExternalLoginChannel.Microsoft:
+                {
+                    // TODO: xxx
+                }
+                break;
+            case ExternalLoginChannel.QQ:
+                {
+                    // TODO: xxx
+                }
+                break;
+            case ExternalLoginChannel.Apple:
+                {
+                    // TODO: xxx
+                }
+                break;
+            case ExternalLoginChannel.Alipay:
+                {
+                    // TODO: xxx
+                }
+                break;
+            case ExternalLoginChannel.Weixin:
+                {
+                    // TODO: xxx
+                }
+                break;
+            //case ExternalLoginChannel.Facebook:
+            //    break;
+            //case ExternalLoginChannel.Twitter:
+            //    break;
+            //case ExternalLoginChannel.Google:
+            //    break;
+            //case ExternalLoginChannel.Feishu:
+            //    break;
+            default:
+                {
+                    var r = await ExternalLoginDetectionCoreAsync(context, error: R.ErrorFromUnknownChannel_.Format(channel), channel: channel);
+                    return r;
+                }
+        }
+
+        // 返回页面 Html
+        async Task<IResult> EndPageAsync(string? error, string? token)
+        {
+            var useUrlSchemeLoginToken = bool.TryParse(context.Session.GetString("isUS"), out var isUS) && isUS;
+            var r = await ExternalLoginDetectionCoreAsync(
+                context, error: error, token: token,
+                port: port, useUrlSchemeLoginToken: useUrlSchemeLoginToken, channel: channel);
+            return r;
+        }
+
+        // 返回错误消息的页面 Html
+        Task<IResult> EndErrorPageAsync(ApiRsp apiRsp)
+        {
+            var error = apiRsp.Message;
+            if (string.IsNullOrWhiteSpace(error))
+            {
+                error = R.ExternalLoginError_.Format(unchecked((int)apiRsp.Code));
+            }
+            var r = EndPageAsync(error, null);
+            return r;
+        }
+
+        if (!portHasValue)
+        {
+            if (isWeb)
+            {
+                if (isBind)
+                {
+                    if (rsp.IsSuccess())
+                    {
+                        var options = context.RequestServices.GetRequiredService<IOptions<TAppSettings>>();
+                        var url = options.Value.AccountCenterBindUrl;
+                        if (!url.IsHttpUrl(context.Request.IsHttps))
+                        {
+                            url = "/account/center/bind";
+                        }
+                        return Results.Redirect(url);
+                    }
+                    else
+                    {
+                        var r = await EndErrorPageAsync(rsp);
+                        return r;
+                    }
+                }
+                else
+                {
+                    if (rsp.IsSuccess() && rsp.Content?.AuthToken != null)
+                    {
+                        var redirectUrl = context.Session.GetString("redirectUrl");
+                        var isOAuth = string.IsNullOrWhiteSpace(redirectUrl);
+                        if (isOAuth)
+                        {
+                            // OAuth 使用 ReturnUrl
+                            redirectUrl = context.Session.GetString("ReturnUrl");
+                        }
+                        redirectUrl = WebUtility.UrlEncode(redirectUrl);
+                        var ticks = rsp.Content.AuthToken.ExpiresIn.Ticks;
+                        var options = context.RequestServices.GetRequiredService<IOptions<TAppSettings>>();
+                        var url = options.Value.AccountLoginUrl ?? "/account/login";
+                        // TODO: 改为 QueryHelpers.AddQueryString(string uri, IDictionary<string, string?> queryString)
+                        url = $"{url.AsSpan().TrimEnd('/')}?tk={rsp.Content.AuthToken.AccessToken}&t={ticks}&isBind={isBind}{(string.IsNullOrWhiteSpace(redirectUrl) ? "" : isOAuth ? $"&ReturnUrl={redirectUrl}" : $"&redirectUrl={redirectUrl}")}";
+                        return Results.Redirect(url);
+                    }
+                    else
+                    {
+                        var r = await EndErrorPageAsync(rsp);
+                        return r;
+                    }
+                }
+            }
+            else
+            {
+                var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
+                return Results.File(encryptStream, MediaTypeNames.MemoryPackSecurity);
+            }
+        }
+        else
+        {
+            rsp.Content?.FastLRBChannel = channel;
+            if (rsp.IsSuccess())
+            {
+                using var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
+                var rspStr = Base64Url.EncodeToString(encryptStream.GetSpan());
+                var r = await EndPageAsync(null, rspStr);
+                return r;
+            }
+            else
+            {
+                var r = await EndErrorPageAsync(rsp);
+                return r;
+            }
+        }
     }
 }
 
 file static class D3b96193
 {
+    internal static string? RoutePattern { get; set; }
+
     static readonly string[] QueryKeys = [
         "port",
         "sKeyHex",
@@ -117,6 +401,8 @@ file static class D3b96193
         "dn", // DeviceIdN
     ];
 
+    internal const string KeyIsBind = "isBind";
+
     /// <summary>
     /// 将指定的 Query 参数保存到 Session 中
     /// </summary>
@@ -133,6 +419,14 @@ file static class D3b96193
         }
     }
 
+    internal const ExternalLoginChannel DefaultExternalLoginChannel = ExternalLoginChannel.Steam;
+
+    internal static string ToString2(this ExternalLoginChannel channel) => channel switch
+    {
+        ExternalLoginChannel.Xbox => nameof(ExternalLoginChannel.Microsoft),
+        _ => channel.ToString(),
+    };
+
     /// <summary>
     /// 返回 HTML 页面，用于显示错误信息或成功信息，并在此页面上唤起客户端 App，传递 Token 值
     /// </summary>
@@ -143,10 +437,15 @@ file static class D3b96193
         string? token = null,
         string? port = null,
         bool useUrlSchemeLoginToken = false,
-        ExternalLoginChannel channel = ExternalLoginChannel.Steam)
+        ExternalLoginChannel channel = DefaultExternalLoginChannel)
     {
         var repo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
         var layout = await repo.GetLayoutModelAsync(context.RequestAborted);
+        var channelInt32 = unchecked((int)channel);
+        var pattern = RoutePattern;
+        ArgumentNullException.ThrowIfNull(pattern);
+        var loginUrl = $"/{pattern.AsSpan().TrimStart('/').TrimEnd('/')}/step2/{channelInt32}";
+        var isBind = context.Items[KeyIsBind] is bool isBindB && isBindB;
         LoginDetectionModel m = new()
         {
             Layout = layout,
@@ -154,13 +453,10 @@ file static class D3b96193
             Port = port,
             Error = error,
             UseUrlSchemeLoginToken = useUrlSchemeLoginToken,
-            IsV1 = true,
-            Channel = channel switch
-            {
-                ExternalLoginChannel.Xbox => nameof(ExternalLoginChannel.Microsoft),
-                _ => channel.ToString(),
-            },
-            ChannelInt32 = unchecked((int)channel),
+            Channel = channel.ToString2(),
+            ChannelInt32 = channelInt32,
+            LoginUrl = loginUrl,
+            IsBind = isBind,
         };
         return m.ToResult();
     }
@@ -186,5 +482,23 @@ file static class D3b96193
         }
 
         return default;
+    }
+
+    internal record struct DeviceId(Guid DeviceIdG, string? DeviceIdR, string? DeviceIdN) : IDeviceId;
+
+    internal static readonly RecyclableMemoryStreamManager m = new();
+
+    internal static async Task<RecyclableMemoryStream> SerializeEncryptAsync<T>(T obj, Aes aes, CancellationToken cancellationToken = default)
+    {
+        using var serializeStream = m.GetStream();
+        await MemoryPackSerializer.SerializeAsync(serializeStream, obj, cancellationToken: cancellationToken);
+        serializeStream.Position = 0;
+
+        var encryptStream = m.GetStream();
+        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+        await serializeStream.CopyToAsync(cryptoStream, cancellationToken);
+        await cryptoStream.FlushFinalBlockAsync(cancellationToken);
+        encryptStream.Position = 0;
+        return encryptStream;
     }
 }

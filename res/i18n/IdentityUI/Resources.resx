@@ -261,4 +261,28 @@
   <data name="NewUserNickName_" xml:space="preserve">
     <value>新用户{0}</value>
   </data>
+  <data name="IsBindTrueUserIsNull" xml:space="preserve">
+    <value>账号绑定获取当前登录用户失败，请联系网站管理员。</value>
+  </data>
+  <data name="IsBindFalseUserIsNotNull" xml:space="preserve">
+    <value>快速登录仅可在未授权时使用，请联系网站管理员。</value>
+  </data>
+  <data name="WebSocketPortIsNotUInt16" xml:space="preserve">
+    <value>端口号必须为 UInt16 类型，请联系网站管理员。</value>
+  </data>
+  <data name="ErrorFromExternalProvider_" xml:space="preserve">
+    <value>来自第三方登录提供程序的错误，{0}，请联系网站管理员。</value>
+  </data>
+  <data name="ErrorLoadingExternalLoginInfo" xml:space="preserve">
+    <value>加载第三方登录信息时出错，请联系网站管理员。</value>
+  </data>
+  <data name="ErrorFromUnknownAuthType_" xml:space="preserve">
+    <value>未知的第三方登录提供程序，{0}，请联系网站管理员。</value>
+  </data>
+  <data name="ErrorFromUnknownChannel_" xml:space="preserve">
+    <value>未知的第三方登录渠道，{0}，请联系网站管理员。</value>
+  </data>
+  <data name="ExternalLoginError_" xml:space="preserve">
+    <value>快速登录错误 {0}</value>
+  </data>
 </root>

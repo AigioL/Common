@@ -65,11 +65,6 @@ public sealed partial record class LoginDetectionModel
     public bool UseUrlSchemeLoginToken { get; init; }
 
     /// <summary>
-    /// 是否调用 V1 版本的外部登录接口
-    /// </summary>
-    public bool IsV1 { get; init; }
-
-    /// <summary>
     /// 请稍后…
     /// </summary>
     public string PleaseWait
@@ -141,11 +136,7 @@ public sealed partial record class LoginDetectionModel
     /// <summary>
     /// 登录地址（相对路径）
     /// </summary>
-    public string LoginUrl
-    {
-        get => field ?? (IsV1 ? $"/identity/v1/externallogin/start/{ChannelInt32}" : $"/ExternalLogin/{ChannelInt32}");
-        init;
-    }
+    public string? LoginUrl { get; init; }
 
     /// <summary>
     /// 成功复制到剪贴板

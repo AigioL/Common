@@ -1,5 +1,7 @@
 using System.Buffers.Binary;
 using System.Buffers.Text;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
@@ -14,6 +16,67 @@ public static partial class RSAUtils
             return RSAEncryptionPadding.OaepSHA1;
         }
         return RSAEncryptionPadding.OaepSHA256;
+    }
+
+    /// <summary>
+    /// 根据 OAEP 哈希算法获取 RSA 加密填充方式
+    /// </summary>
+    /// <param name="oaepHashAlgorithmName">OAEP 哈希算法的名称</param>
+    /// <returns>对应的 RSA 加密填充方式</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static RSAEncryptionPadding GetPaddingByOaepHashAlgorithmName(string? oaepHashAlgorithmName)
+    {
+        if (!string.IsNullOrWhiteSpace(oaepHashAlgorithmName))
+        {
+            switch (oaepHashAlgorithmName)
+            {
+                case "0":
+                    return RSAEncryptionPadding.Pkcs1;
+                case "1":
+                    return RSAEncryptionPadding.OaepSHA1;
+                case "2" or "256":
+                    return RSAEncryptionPadding.OaepSHA256;
+                case "3" or "384":
+                    return RSAEncryptionPadding.OaepSHA384;
+                case "5" or "512":
+                    return RSAEncryptionPadding.OaepSHA512;
+                default:
+                    if (oaepHashAlgorithmName!.Equals(nameof(HashAlgorithmName.SHA1), StringComparison.OrdinalIgnoreCase))
+                        return RSAEncryptionPadding.OaepSHA1;
+                    if (oaepHashAlgorithmName.Equals(nameof(HashAlgorithmName.SHA256), StringComparison.OrdinalIgnoreCase))
+                        return RSAEncryptionPadding.OaepSHA256;
+                    if (oaepHashAlgorithmName.Equals(nameof(HashAlgorithmName.SHA384), StringComparison.OrdinalIgnoreCase))
+                        return RSAEncryptionPadding.OaepSHA384;
+                    if (oaepHashAlgorithmName.Equals(nameof(HashAlgorithmName.SHA512), StringComparison.OrdinalIgnoreCase))
+                        return RSAEncryptionPadding.OaepSHA512;
+                    break;
+            }
+        }
+        return GetDefaultPadding();
+    }
+
+    public static RSAParameters? GetRSAParameters(ReadOnlySpan<char> rsaKey)
+    {
+        if (rsaKey.StartsWith('{'))
+        {
+#pragma warning disable CS0618 // 类型或成员已过时
+            return JsonSerializer.Deserialize(rsaKey, Parameters.GetJsonTypeInfo());
+#pragma warning restore CS0618 // 类型或成员已过时
+        }
+        else
+        {
+            const string KEY_Stream = "Stream";
+            if (rsaKey.StartsWith(KEY_Stream, StringComparison.InvariantCultureIgnoreCase))
+            {
+                rsaKey = rsaKey[KEY_Stream.Length..];
+                using var stream = new MemoryStream(Base64Url.DecodeFromChars(rsaKey), false);
+                return ReadParameters(stream);
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 
     public static RSAParameters ReadParameters(Stream s, long? position = 0)
@@ -368,6 +431,28 @@ public static partial class RSAUtils
                 Q = parameters.Q == null ? null : Base64Url.EncodeToString(parameters.Q),
             };
         }
+    }
+
+    /// <summary>
+    /// RSA解密(String → ByteArray)
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte[] DecryptToByteArrayHex(this RSA rsa, string text, RSAEncryptionPadding? padding = null)
+    {
+        var bytes = Convert.FromHexString(text);
+        padding ??= GetDefaultPadding();
+        return rsa.Decrypt(bytes, padding);
+    }
+
+    /// <summary>
+    /// RSA解密(String → ByteArray)
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte[] DecryptToByteArray(this RSA rsa, string text, RSAEncryptionPadding? padding = null)
+    {
+        var bytes = Base64Url.DecodeFromChars(text);
+        padding ??= GetDefaultPadding();
+        return rsa.Decrypt(bytes, padding);
     }
 }
 

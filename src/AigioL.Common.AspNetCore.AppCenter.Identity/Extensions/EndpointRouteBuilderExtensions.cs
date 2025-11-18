@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using System.Diagnostics.CodeAnalysis;
 
@@ -15,14 +16,14 @@ public static partial class EndpointRouteBuilderExtensions
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings,
         TIdentityDbContext>(
         this IEndpointRouteBuilder b)
-        where TAppSettings : class, IDisableSms
+        where TAppSettings : class, IDisableSms, IExternalLoginRedirect
         where TIdentityDbContext : IIdentityDbContext
     {
         b.MapIdentityError();
 
         b.MapIdentityVerificationCodesV5<TAppSettings>();
         b.MapIdentityMembershipV5();
-        b.MapIdentityExternalLoginV5();
+        b.MapIdentityExternalLoginV5<TAppSettings>();
         b.MapIdentityAccountV5<TIdentityDbContext>();
         b.MapIdentityManageV5<TIdentityDbContext>();
     }

@@ -142,6 +142,69 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 来自第三方登录提供程序的错误，{0}，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ErrorFromExternalProvider_ {
+            get {
+                return ResourceManager.GetString("ErrorFromExternalProvider_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未知的第三方登录提供程序，{0}，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ErrorFromUnknownAuthType_ {
+            get {
+                return ResourceManager.GetString("ErrorFromUnknownAuthType_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未知的第三方登录渠道，{0}，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ErrorFromUnknownChannel_ {
+            get {
+                return ResourceManager.GetString("ErrorFromUnknownChannel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 加载第三方登录信息时出错，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string ErrorLoadingExternalLoginInfo {
+            get {
+                return ResourceManager.GetString("ErrorLoadingExternalLoginInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 快速登录错误 {0} 的本地化字符串。
+        /// </summary>
+        public static string ExternalLoginError_ {
+            get {
+                return ResourceManager.GetString("ExternalLoginError_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 快速登录仅可在未授权时使用，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string IsBindFalseUserIsNotNull {
+            get {
+                return ResourceManager.GetString("IsBindFalseUserIsNotNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 账号绑定获取当前登录用户失败，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string IsBindTrueUserIsNull {
+            get {
+                return ResourceManager.GetString("IsBindTrueUserIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 登录 的本地化字符串。
         /// </summary>
         public static string Login2 {
@@ -291,6 +354,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         public static string WebSocketLostTip {
             get {
                 return ResourceManager.GetString("WebSocketLostTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 端口号必须为 UInt16 类型，请联系网站管理员。 的本地化字符串。
+        /// </summary>
+        public static string WebSocketPortIsNotUInt16 {
+            get {
+                return ResourceManager.GetString("WebSocketPortIsNotUInt16", resourceCulture);
             }
         }
         

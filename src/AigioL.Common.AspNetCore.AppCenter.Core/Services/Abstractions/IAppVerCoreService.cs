@@ -1,9 +1,16 @@
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
+using System.Security.Cryptography;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 
 public interface IAppVerCoreService
 {
+    /// <summary>
+    /// 用于在浏览器中打开的网页上通过 Query 获取的安全信息参数值
+    /// <para>在 Items 中缓存，适用于在中间件与控制器中或者其他服务中使用</para>
+    /// </summary>
+    Task<(string? ErrorMessage, Aes? Aes)> GetSecurityResultAsync(HttpContext context);
+
     /// <summary>
     /// 从 HTTP 请求上下文获取 App 版本信息
     /// </summary>
@@ -28,3 +35,10 @@ public interface IAppVerCoreService
     /// <returns></returns>
     ValueTask<IReadOnlyAppVer?> FindAsync(Guid id, CancellationToken cancellationToken = default);
 }
+
+#if DEBUG
+[Obsolete("use IAppVerCoreService", true)]
+public interface IAppVerService : IAppVerCoreService
+{
+}
+#endif

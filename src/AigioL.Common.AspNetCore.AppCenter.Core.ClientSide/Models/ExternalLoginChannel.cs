@@ -23,7 +23,7 @@ public enum ExternalLoginChannel : ushort
     /// <item>Package：https://www.nuget.org/packages/AspNet.Security.OpenId.Steam </item>
     /// </list>
     /// </summary>
-    Steam,
+    Steam = 0,
 
     /// <summary>
     /// <list type="bullet">
@@ -31,7 +31,7 @@ public enum ExternalLoginChannel : ushort
     /// <item>Package：https://www.nuget.org/packages/Microsoft.AspNetCore.Authentication.MicrosoftAccount </item>
     /// </list>
     /// </summary>
-    Microsoft,
+    Microsoft = 1,
 
     /// <summary>
     /// <list type="bullet">
@@ -39,7 +39,7 @@ public enum ExternalLoginChannel : ushort
     /// <item>Package：https://www.nuget.org/packages/AspNet.Security.OAuth.QQ </item>
     /// </list>
     /// </summary>
-    QQ,
+    QQ = 2,
 
     /// <summary>
     /// <list type="bullet">
@@ -47,7 +47,7 @@ public enum ExternalLoginChannel : ushort
     /// <item>Package：https://www.nuget.org/packages/AspNet.Security.OAuth.Apple </item>
     /// </list>
     /// </summary>
-    Apple,
+    Apple = 3,
 
     /// <summary>
     /// <list type="bullet">
@@ -55,7 +55,7 @@ public enum ExternalLoginChannel : ushort
     /// <item>Package：https://www.nuget.org/packages/AspNet.Security.OAuth.Alipay </item>
     /// </list>
     /// </summary>
-    Alipay,
+    Alipay = 4,
 
     /// <summary>
     /// <list type="bullet">
@@ -63,15 +63,15 @@ public enum ExternalLoginChannel : ushort
     /// <item>Package：https://www.nuget.org/packages/AspNet.Security.OAuth.Weixin </item>
     /// </list>
     /// </summary>
-    Weixin,
+    Weixin = 5,
 
     Xbox = Microsoft,
 
-    Facebook,
+    Facebook = 6,
 
-    Twitter,
+    Twitter = 7,
 
-    Google,
+    Google = 8,
 
-    Feishu,
+    Feishu = 9,
 }
