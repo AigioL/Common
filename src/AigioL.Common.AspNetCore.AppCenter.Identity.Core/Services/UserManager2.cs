@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.ComponentModel.DataAnnotations;
+using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Services;
 
@@ -455,101 +456,217 @@ partial class UserManager2<TDbContext> : IUserManager2
         CancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
 
-        throw new NotImplementedException("TODO");
+        Guid userId;
+        var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+        var userIdCache = await redisDb.HashGetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId);
+        if (userIdCache.HasValue)
+        {
+            userId = new Guid((byte[])userIdCache!);
+            if (userId == default)
+            {
+                userId = await db.Users.Include(x => x.ExternalAccounts)
+                .Where(x => x.ExternalAccounts != null &&
+                     x.ExternalAccounts.Any(y => y.ExternalAccountId == externalAccountId &&
+                         y.Type == channel))
+                 .Select(x => x.Id).FirstOrDefaultAsync();
+            }
+        }
+        else
+        {
+            userId = await db.Users.Include(x => x.ExternalAccounts)
+                .Where(x => x.ExternalAccounts != null &&
+                     x.ExternalAccounts.Any(y => y.ExternalAccountId == externalAccountId &&
+                         y.Type == channel))
+                 .Select(x => x.Id).FirstOrDefaultAsync();
+        }
+        if (userId == default) // Register
+        {
+            var externalAccount = await db.ExternalAccounts
+                .OrderBy(x => x.CreationTime)
+                .FirstOrDefaultAsync(a => a.ExternalAccountId == externalAccountId &&
+                    a.Type == channel);
+            externalAccount ??= new ExternalAccount
+            {
+                ExternalAccountId = externalAccountId,
+                Type = channel,
+            };
+            setProperties?.Invoke(externalAccount);
+            if (bindUserId.HasValue) // 绑定用户
+            {
+                var bindUser = await FindByIdAsync(bindUserId.Value);
+                ArgumentNullException.ThrowIfNull(bindUser);
+                SetUserPropertiesByExternalAccount(bindUser, externalAccount);
 
-        //Guid userId;
-        //var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
-        //var userIdCache = await redisDb.HashGetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId);
-        //if (userIdCache.HasValue)
-        //{
-        //    userId = new Guid((byte[])userIdCache!);
-        //    if (userId == default)
-        //    {
-        //        userId = await db.Users.Include(x => x.ExternalAccounts)
-        //        .Where(x => x.ExternalAccounts != null &&
-        //             x.ExternalAccounts.Any(y => y.ExternalAccountId == externalAccountId &&
-        //                 y.Type == channel))
-        //         .Select(x => x.Id).FirstOrDefaultAsync();
-        //    }
-        //}
-        //else
-        //{
-        //    userId = await db.Users.Include(x => x.ExternalAccounts)
-        //        .Where(x => x.ExternalAccounts != null &&
-        //             x.ExternalAccounts.Any(y => y.ExternalAccountId == externalAccountId &&
-        //                 y.Type == channel))
-        //         .Select(x => x.Id).FirstOrDefaultAsync();
-        //}
-        //if (userId == default) // Register
-        //{
-        //    var externalAccount = await db.ExternalAccounts
-        //        .OrderBy(x => x.CreationTime)
-        //        .FirstOrDefaultAsync(a => a.ExternalAccountId == externalAccountId &&
-        //            a.Type == channel);
-        //    externalAccount ??= new ExternalAccount
-        //    {
-        //        ExternalAccountId = externalAccountId,
-        //        Type = channel,
-        //    };
-        //    setProperties?.Invoke(externalAccount);
-        //    if (bindUserId.HasValue) // 绑定用户
-        //    {
-        //        Microsoft.AspNetCore.Authentication.OAuth.OAuthConstants.CodeVerifierKey
-        //        var bindUser = await FindByIdAsync(bindUserId.Value);
-        //        ArgumentNullException.ThrowIfNull(bindUser);
-        //        SetUserPropertiesByExternalAccount(bindUser, externalAccount);
+                externalAccount.UserId = bindUserId;
+                if (externalAccount.Id == default)
+                {
+                    await db.ExternalAccounts.AddAsync(externalAccount);
+                }
+                await db.SaveChangesAsync();
+                await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, bindUserId.Value.ToByteArray());
+                await RefreshUserInfoCacheAsync(bindUser);
+                return GetBindRsp(externalAccount);
+            }
+            else // 创建用户
+            {
+                (var user, var result) = await CreateAccountAsync(externalAccount);
+                if (result.Succeeded)
+                {
+                    var r = await LoginSharedAsync(user, false, deviceId);
+                    await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, user.Id.ToByteArray());
+                    return r;
+                }
+                const ApiRspCode code = ApiRspCode.BadRequest;
+                return result.Fail<LoginOrRegisterResponse>(code);
+            }
+        }
+        else // Login
+        {
+            if (bindUserId == userId)
+            {
+                var externalAccount = await UpdateExternalAccountAsync(externalAccountId,
+                    channel, userId, setProperties);
+                setProperties?.Invoke(externalAccount);
+                return GetBindRsp(externalAccount);
+            }
+            else if (bindUserId != default) // 该外部账号已被 userId 使用不可绑定
+            {
+                return R.BindFail_UserIsNotNull;
+            }
+            else // 更新外部账号
+            {
+                var externalAccount = await UpdateExternalAccountAsync(externalAccountId, channel, userId, setProperties);
 
-        //        externalAccount.UserId = bindUserId;
-        //        if (externalAccount.Id == default)
-        //        {
-        //            await db.ExternalAccounts.AddAsync(externalAccount);
-        //        }
-        //        await db.SaveChangesAsync();
-        //        await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, bindUserId.ToByteArray());
-        //        await RefreshUserInfoCacheAsync(bindUser);
-        //        return GetBindRsp(externalAccount);
-        //    }
-        //    else // 创建用户
-        //    {
-        //        (var user, var result) = await CreateAccountAsync(externalAccount);
+                var loginUser = await FindByIdAsync(userId);
+                ArgumentNullException.ThrowIfNull(loginUser);
 
-        //        if (result.Succeeded)
-        //        {
-        //            var r = isApiV1 ? await LoginShared_v1_Async(user, false, deviceId) : await LoginSharedAsync(isV3, user, false, deviceId);
-        //            await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, user.Id.ToByteArray());
-        //            return r;
-        //        }
+                SetUserPropertiesByExternalAccount(loginUser, externalAccount);
 
-        //        const ApiRspCode code = ApiRspCode.BadRequest;
-        //        return ControllerHelper.Fail<LoginOrRegisterResponseCompat?>(result, code);
-        //    }
-        //}
-        //else // Login
-        //{
-        //    if (bindUserId == userId)
-        //    {
-        //        var externalAccount = await UpdateExternalAccountAsync(externalAccountId,
-        //            channel, userId, setProperties);
-        //        setProperties?.Invoke(externalAccount);
-        //        return GetBindRsp(externalAccount);
-        //    }
-        //    else if (bindUserId != default) // 该外部账号已被 userId 使用不可绑定
-        //    {
-        //        return ApiRspHelper.Fail<LoginOrRegisterResponseCompat?>(Resources.Strings.BindFail_UserIsNotNull);
-        //    }
-        //    else // 更新外部账号
-        //    {
-        //        var externalAccount = await UpdateExternalAccountAsync(externalAccountId, channel, userId, setProperties);
+                var r = await LoginSharedAsync(loginUser, true, deviceId);
+                return r;
+            }
+        }
+    }
 
-        //        var loginUser = await FindByIdAsync(userId);
-        //        loginUser.ThrowIsNull();
+    static LoginOrRegisterResponse GetBindRsp(ExternalAccount externalAccount)
+    {
+        // 绑定快速登录账号时，将第三方平台可覆盖的信息，例如昵称，性别等，直接赋值在 DTO 上，由客户端比较原值为空时覆盖
+        var user = new UserInfoModel
+        {
+            NickName = externalAccount.NickName ?? string.Empty,
+        };
 
-        //        SetUserPropertiesByExternalAccount(loginUser, externalAccount);
+        switch (externalAccount.Type)
+        {
+            case ExternalLoginChannel.Microsoft:
+                if (!string.IsNullOrWhiteSpace(externalAccount.Email))
+                    user.MicrosoftAccountEmail = externalAccount.Email;
+                break;
+            case ExternalLoginChannel.Apple:
+                if (!string.IsNullOrWhiteSpace(externalAccount.Email))
+                    user.AppleAccountEmail = externalAccount.Email;
+                break;
+            case ExternalLoginChannel.QQ:
+                user.QQNickName = externalAccount.NickName;
+                break;
+            case ExternalLoginChannel.Steam:
+                user.SteamAccountId = long.TryParse(externalAccount.ExternalAccountId,
+                    out var steamAccountId) ? steamAccountId : null;
+                break;
+        }
 
-        //        var r = isApiV1 ? await LoginShared_v1_Async(loginUser, true, deviceId) : await LoginSharedAsync(isV3, loginUser, true, deviceId);
-        //        return r;
-        //    }
-        //}
+        if (Enum.IsDefined(externalAccount.Gender) && externalAccount.Gender != Gender.Unknown)
+        {
+            user.Gender = externalAccount.Gender;
+        }
+
+        if (!string.IsNullOrWhiteSpace(externalAccount.AvatarUrl))
+        {
+            user.AvatarUrl = new Dictionary<ExternalLoginChannel, string>
+            {
+                { externalAccount.Type, externalAccount.AvatarUrl },
+            };
+        }
+
+        var r = new LoginOrRegisterResponse()
+        {
+            User = user,
+        };
+        return r;
+    }
+
+    static void SetUserPropertiesByExternalAccount(User user, ExternalAccount externalAccount)
+    {
+        if ((string.IsNullOrEmpty(user.NickName) || user.IsGeneratedNickName())
+            && !string.IsNullOrWhiteSpace(externalAccount.NickName))
+        {
+            user.NickName = externalAccount.NickName;
+        }
+
+        if (user.Gender == default
+            && Enum.IsDefined(externalAccount.Gender) && externalAccount.Gender != Gender.Unknown)
+        {
+            user.Gender = externalAccount.Gender;
+        }
+
+        if (user.AvatarUrl == default
+            && !string.IsNullOrWhiteSpace(externalAccount.AvatarUrl)
+            && externalAccount.AvatarUrl.IsHttpUrl())
+        {
+            user.AvatarUrl = externalAccount.AvatarUrl;
+        }
+    }
+
+    async Task<(User user, IdentityResult identityResult)> CreateAccountAsync(ExternalAccount externalAccount)
+    {
+        var user = new User
+        {
+            ExternalAccounts = new() { externalAccount }
+        };
+        SetUserPropertiesByExternalAccount(user, externalAccount);
+        var identityResult = await CreateAsync(user);
+        return (user, identityResult);
+    }
+
+    /// <summary>
+    /// 更新外部账号
+    /// </summary>
+    async Task<ExternalAccount> UpdateExternalAccountAsync(
+        string externalAccountId,
+        ExternalLoginChannel channel,
+        Guid userId = default,
+        Action<ExternalAccount>? setProperties = null)
+    {
+        var externalAccounts = await db.ExternalAccounts
+                    .Where(x => (x.UserId.HasValue && x.UserId == userId) &&
+                        x.ExternalAccountId == externalAccountId &&
+                        x.Type == channel)
+                    .OrderBy(x => x.CreationTime)
+                    .ToArrayAsync();
+        if (externalAccounts != null && externalAccounts.Length != 0)
+        {
+            var externalAccount = externalAccounts.First();
+            setProperties?.Invoke(externalAccount);
+            if (externalAccounts.Length > 1)
+            {
+                db.ExternalAccounts.RemoveRange(externalAccounts.Skip(1));
+            }
+            await db.SaveChangesAsync();
+            return externalAccount;
+        }
+        else
+        {
+            var externalAccount = new ExternalAccount
+            {
+                UserId = userId,
+                ExternalAccountId = externalAccountId,
+                Type = channel,
+            };
+            setProperties?.Invoke(externalAccount);
+            await db.ExternalAccounts.AddAsync(externalAccount);
+            await db.SaveChangesAsync();
+            return externalAccount;
+        }
     }
 
     #region 创建用户

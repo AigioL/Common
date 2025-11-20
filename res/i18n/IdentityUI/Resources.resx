@@ -297,4 +297,7 @@
   <data name="ReadFailByOpenId_" xml:space="preserve">
     <value>读取 OpenId 失败，值：{0}，请联系网站管理员。</value>
   </data>
+  <data name="BindFail_UserIsNotNull" xml:space="preserve">
+    <value>绑定失败，此账号已被其他用户绑定</value>
+  </data>
 </root>

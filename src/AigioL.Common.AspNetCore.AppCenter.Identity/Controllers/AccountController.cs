@@ -247,7 +247,7 @@ public static partial class AccountController
                 {
                     return await LoginSharedAsync(false);
                 }
-                return Fail<TLoginOrRegisterResponse?>(result);
+                return result.Fail<TLoginOrRegisterResponse?>();
             }
             catch (Exception ex)
             {
@@ -291,57 +291,6 @@ public static partial class AccountController
         Message = "注册用户失败，邮箱：{email}")]
     private static partial void LogErrorOnRegisterByEmail(
         ILogger logger, Exception ex, string? email);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ApiRsp<T?> Fail<T>(
-        IdentityResult identityResult,
-        ApiRspCode code = ApiRspCode.BadRequest)
-    {
-        var errorMessage = FailCore(identityResult);
-        ApiRsp<T?> r = new()
-        {
-            Code = unchecked((uint)code),
-            Message = errorMessage,
-        };
-        return r;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ApiRsp Fail(
-        IdentityResult identityResult,
-        ApiRspCode code = ApiRspCode.BadRequest)
-    {
-        var errorMessage = FailCore(identityResult);
-        ApiRsp r = new()
-        {
-            Code = unchecked((uint)code),
-            Message = errorMessage,
-        };
-        return r;
-    }
-
-    static string FailCore(
-        IdentityResult identityResult)
-    {
-        if (identityResult.Succeeded)
-        {
-            throw new ArgumentOutOfRangeException(nameof(identityResult));
-        }
-        var error = identityResult.Errors?.FirstOrDefault();
-        var errorMessage = "Identity error";
-        if (error != null)
-        {
-            if (!string.IsNullOrWhiteSpace(error.Description))
-            {
-                errorMessage = error.Description;
-            }
-            else if (!string.IsNullOrWhiteSpace(error.Code))
-            {
-                errorMessage = $"Identity error, code: {error.Code}";
-            }
-        }
-        return errorMessage;
-    }
 
     /// <summary>
     /// 刷新 JWT
@@ -522,7 +471,7 @@ public static partial class AccountController
             return HttpStatusCode.OK;
         }
 
-        return Fail(result);
+        return result.Fail();
     }
 
     /// <summary>
@@ -588,7 +537,7 @@ public static partial class AccountController
                 return r;
             }
 
-            return Fail<TLoginOrRegisterResponse?>(result);
+            return result.Fail<TLoginOrRegisterResponse?>();
         }
         catch (Exception ex)
         {

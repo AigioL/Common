@@ -1,3 +1,4 @@
+using AspNet.Security.OAuth.Alipay;
 using Microsoft.AspNetCore.Authentication;
 using System.Net.Security;
 
@@ -89,9 +90,21 @@ public static partial class AuthenticationBuilderExtensions
         var alipayOAuthOptions = configuration.GetSection("Authentication:Alipay");
         if (alipayOAuthOptions.Exists())
         {
-            builder.AddAlipay(options =>
+            builder.AddAlipay2()
+                .Services
+                .AddOptions<Alipay2AuthenticationOptions>(AlipayAuthenticationDefaults.AuthenticationScheme)
+            .Configure<IConfiguration, IServiceProvider>((options, configuration, serviceProvider) =>
             {
                 alipayOAuthOptions.Bind(options);
+                if (options.EnableCertSignature)
+                {
+                    // Otherwise assume the private key is stored locally on disk
+                    var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+
+                    options.UsePrivateKey(
+                        keyId =>
+                            environment.ContentRootFileProvider.GetFileInfo($"AuthKey_{keyId}.pem"));
+                }
             });
         }
 #endif

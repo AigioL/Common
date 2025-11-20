@@ -70,6 +70,15 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties {
         }
         
         /// <summary>
+        ///   查找类似 绑定失败，此账号已被其他用户绑定 的本地化字符串。
+        /// </summary>
+        public static string BindFail_UserIsNotNull {
+            get {
+                return ResourceManager.GetString("BindFail_UserIsNotNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 需要开启 JavaScript 才能浏览本站点。 的本地化字符串。
         /// </summary>
         public static string BodyNoScript {

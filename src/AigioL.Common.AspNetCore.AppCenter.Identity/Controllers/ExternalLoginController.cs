@@ -23,7 +23,7 @@ using System.Text.Encodings.Web;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.D3b96193;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorController;
 using QQConstants = AspNet.Security.OAuth.QQ.QQAuthenticationConstants;
-using AlipayConstants = AspNet.Security.OAuth.Alipay.AlipayAuthenticationConstants;
+using AlipayConstants = AspNet.Security.OAuth.Alipay.Alipay2AuthenticationConstants;
 using WeChatConstants = AspNet.Security.OAuth.Weixin.WeixinAuthenticationConstants;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
@@ -141,12 +141,6 @@ public static partial class ExternalLoginController
         var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
         return Results.Challenge(properties, [provider]);
     }
-
-    /// <summary>
-    /// OpenID is the unique identifier of Alipay users in the application dimension.
-    /// <para>See https://opendocs.alipay.com/mini/0ai2i6</para>
-    /// </summary>
-    public const string AlipayOpenId = "urn:alipay:open_id";
 
     /// <summary>
     /// 第三方外部平台登录接口（第三步：由外部网站回调此接口）
@@ -329,7 +323,7 @@ public static partial class ExternalLoginController
                 break;
             case ExternalLoginChannel.Alipay:
                 {
-                    var openId = externalLoginInfo.Principal.FindFirstValue(AlipayOpenId);
+                    var openId = externalLoginInfo.Principal.FindFirstValue(AlipayConstants.Claims.OpenId);
                     if (string.IsNullOrWhiteSpace(openId))
                     {
                         var r = await ExternalLoginDetectionCoreAsync(context, error: R.ReadFailByOpenId_.Format(openId), channel: channel);

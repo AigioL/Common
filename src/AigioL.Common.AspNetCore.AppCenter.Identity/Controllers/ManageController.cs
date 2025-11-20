@@ -9,12 +9,12 @@ using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.SmsSender.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
-using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.AccountController;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 using RModelValid = AigioL.Common.AspNetCore.AppCenter.Properties.ModelValidationErrors;
 
@@ -394,7 +394,7 @@ public static partial class ManageController
             return true;
         }
 
-        return Fail(result);
+        return result.Fail();
     }
 
     /// <summary>
@@ -513,6 +513,6 @@ public static partial class ManageController
         {
             return true;
         }
-        return Fail(r);
+        return r.Fail();
     }
 }

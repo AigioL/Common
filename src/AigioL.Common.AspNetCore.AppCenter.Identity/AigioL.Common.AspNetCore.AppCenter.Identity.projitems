@@ -12,6 +12,12 @@
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)3rd\AspNet.Security.OAuth.Alipay\AlipayAuthenticationConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)3rd\AspNet.Security.OAuth.Alipay\AlipayAuthenticationExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)3rd\AspNet.Security.OAuth.Alipay\AlipayAuthenticationHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)3rd\AspNet.Security.OAuth.Alipay\AlipayAuthenticationOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)3rd\AspNet.Security.OAuth.Alipay\AlipayAuthenticationOptionsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)3rd\AspNet.Security.OAuth.Alipay\AntCertificationUtil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ErrorController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\ExternalLoginController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\AccountController.cs" />
@@ -28,7 +34,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\Shared\_Layout.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)3rd\AspNet.Security.OAuth.Alipay\" />
     <Folder Include="$(MSBuildThisFileDirectory)Models\Shared\" />
   </ItemGroup>
 </Project>

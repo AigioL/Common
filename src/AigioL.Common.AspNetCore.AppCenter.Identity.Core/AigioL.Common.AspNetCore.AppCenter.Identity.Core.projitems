@@ -9,6 +9,7 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Identity</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IdentityResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IdentityMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipInfo.cs" />
