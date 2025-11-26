@@ -22,7 +22,9 @@ public static class UserOrderController
         routeGroup.MapGet("{id}", async (HttpContext context,
             [FromRoute] Guid id) =>
         {
-            var r = await GetOrderDetail(context, id);
+            var userId = context.GetUserIdThrowIfNull();
+            var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
+            var r = await GetOrderDetail(userId, repo, id, context.RequestAborted);
             return r;
         }).WithDescription("获取用户订单信息");
         routeGroup.MapGet("", async (HttpContext context,
@@ -70,16 +72,13 @@ public static class UserOrderController
     /// <summary>
     /// 获取用户订单信息
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="id"></param>
-    /// <returns></returns>
     static async Task<ApiRsp<OrderDetailModel?>> GetOrderDetail(
-        HttpContext context,
-        Guid id)
+        Guid userId,
+        IOrderRepository repo,
+        Guid id,
+        CancellationToken cancellationToken = default)
     {
-        var userId = context.GetUserIdThrowIfNull();
-        var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
-        var result = await repo.GetOrderInfo(id, userId);
+        var result = await repo.GetOrderInfo(id, userId, cancellationToken);
         return result;
     }
 

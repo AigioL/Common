@@ -13,30 +13,27 @@ public static class OrderingController
         [StringSyntax("Route")] string pattern = "ordering")
     {
         var routeGroup = b.MapGroup(pattern)
-            .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
+            .AllowAnonymous(); // 允许匿名访问
 
         routeGroup.MapGet("{id}", async (HttpContext context,
             [FromRoute] Guid id) =>
         {
-            var r = await GetOrderPaymentInfo(context, id);
+            var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
+            var r = await GetOrderPaymentInfo(repo, id, context.RequestAborted);
             return r;
-        }).WithDescription("获取订单支付信息")
-        .AllowAnonymous(); // 允许匿名访问
+        }).WithDescription("获取订单支付信息");
 
     }
 
     /// <summary>
     /// 获取订单支付信息
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="id"></param>
-    /// <returns></returns>
     static async Task<ApiRsp<OrderPayInfoModel?>> GetOrderPaymentInfo(
-        HttpContext context,
-        Guid id)
+        IOrderRepository repo,
+        Guid id,
+        CancellationToken cancellationToken = default)
     {
-        var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
-        var result = await repo.GetOrderPaymentInfo(id);
+        var result = await repo.GetOrderPaymentInfo(id, cancellationToken: cancellationToken);
         return result;
     }
 }

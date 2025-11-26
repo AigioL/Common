@@ -1,7 +1,9 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
+using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Controllers;
@@ -18,7 +20,10 @@ public static class AftersalesBillController
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] AftersalesBillAddDto m) =>
         {
-            var r = await CreateAftersalesBill(context, m);
+            var userId = context.GetUserIdThrowIfNull();
+            var repo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
+            var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
+            var r = await CreateAftersalesBill(userId, repo, connection, m, context.RequestAborted);
             return r;
         }).WithDescription("创建售后单");
 
@@ -27,16 +32,33 @@ public static class AftersalesBillController
     /// <summary>
     /// 创建售后单
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="m"></param>
-    /// <returns></returns>
     static async Task<ApiRsp<AftersalesBillDetailModel?>> CreateAftersalesBill(
-        HttpContext context,
-        AftersalesBillAddDto m)
+        Guid userId,
+        IAftersalesBillRepository repo,
+        IConnectionMultiplexer connection,
+        AftersalesBillAddDto m,
+        CancellationToken cancellationToken = default)
     {
-        var userId = context.GetUserIdThrowIfNull();
-        var repo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
-        var result = await repo.CreateAftersalesBill(m.OrderId, m.RefundReason, userId);
-        return result;
+        var redisDb = connection.GetDatabase(CacheKeys.RedisMessagingDb);
+        var result = await repo.CreateAftersalesBill(m.OrderId, m.RefundReason, userId, cancellationToken);
+        if (!result.IsSuccess())
+        {
+            var error = result.Message;
+            ArgumentNullException.ThrowIfNull(error);
+            return error;
+        }
+        else
+        {
+            var aftersalesBill = result.Content.aftersalesBill;
+            ArgumentNullException.ThrowIfNull(aftersalesBill);
+            var order = result.Content.order;
+            ArgumentNullException.ThrowIfNull(order);
+
+            // 通知业务订单要中止业务
+            var channel = CacheKeys.GetOrderUserRequestRefundMessageQueueKeyByBusinessType(order.BusinessTypeId);
+            await redisDb.ListRightPushAsync(channel, m.OrderId.ToString());
+
+            return aftersalesBill;
+        }
     }
 }

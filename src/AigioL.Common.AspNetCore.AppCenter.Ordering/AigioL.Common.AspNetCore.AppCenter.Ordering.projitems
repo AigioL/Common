@@ -24,5 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\UserOrderController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\VipPaymentController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\OrderStatusSubscribe.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\PaymentResultSubscribe.cs" />
   </ItemGroup>
 </Project>

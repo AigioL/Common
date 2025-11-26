@@ -86,4 +86,6 @@ public static partial class CacheKeys
         "IdentityUserExternalAccountsHashKey";
 
     #endregion
+
+    public static string GetOrderUserRequestRefundMessageQueueKeyByBusinessType(int orderBusinessTypeId) => $"OrderBusinessType_{orderBusinessTypeId}";
 }
