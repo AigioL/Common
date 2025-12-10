@@ -57,6 +57,9 @@ public partial interface IRenameCommand : ICommand
         ".json",
         ".yaml",
         "Dockerfile",
+        ".pubxml",
+        ".shproj",
+        ".projitems",
     ];
 
     static readonly string[] handlerIgnorePaths =
