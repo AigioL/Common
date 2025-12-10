@@ -95,7 +95,11 @@ public partial interface IRenameCommand : ICommand
         var tempSlnPath = Path.Combine(ROOT_ProjPath, "AigioLTemplate.Server.slnx");
         if (!File.Exists(tempSlnPath))
         {
-            throw new FileNotFoundException("未找到模板解决方案文件！", tempSlnPath);
+            tempSlnPath = Path.Combine(ROOT_ProjPath, "AigioLTemplate.slnx");
+            if (!File.Exists(tempSlnPath))
+            {
+                throw new FileNotFoundException("未找到模板解决方案文件！", tempSlnPath);
+            }
         }
 
         Enumerate(ROOT_ProjPath);
@@ -113,18 +117,29 @@ public partial interface IRenameCommand : ICommand
                 var itFilePath = f;
                 if (handlerFileExs.Any(x => itFilePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    if (itFilePath.Contains("AigioLTemplate.Server", StringComparison.InvariantCultureIgnoreCase))
+                    bool move = false;
+                    if (itFilePath.Contains("AigioLTemplate.Server", StringComparison.InvariantCulture))
                     {
-                        itFilePath = itFilePath.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCultureIgnoreCase);
+                        itFilePath = itFilePath.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCulture);
+                        move = true;
+                    }
+                    else if (itFilePath.Contains("AigioLTemplate", StringComparison.InvariantCulture))
+                    {
+                        itFilePath = itFilePath.Replace("AigioLTemplate", projNameTrimServer, StringComparison.InvariantCulture);
+                        move = true;
+                    }
+                    if (move)
+                    {
                         // 移动文件
                         File.Move(f, itFilePath);
                     }
                     var content = File.ReadAllText(itFilePath);
                     var content2 = content;
                     // 替换文件内容
-                    content = content.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCultureIgnoreCase);
-                    content = content.Replace("aigioltemplate", projNameLower, StringComparison.InvariantCultureIgnoreCase);
-                    content = content.Replace("localhost:29", $"localhost:{webProtStartString}", StringComparison.InvariantCultureIgnoreCase);
+                    content = content.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCulture);
+                    content = content.Replace("AigioLTemplate", projNameTrimServer, StringComparison.InvariantCulture);
+                    content = content.Replace("aigioltemplate", projNameLower, StringComparison.InvariantCulture);
+                    content = content.Replace("localhost:29", $"localhost:{webProtStartString}", StringComparison.InvariantCulture);
                     if (content != content2)
                     {
                         Console.WriteLine($"处理文件：{itFilePath}");
@@ -136,10 +151,20 @@ public partial interface IRenameCommand : ICommand
             var dirs = Directory.EnumerateDirectories(dirPath);
             foreach (var d in dirs)
             {
+                bool move = false;
                 var itDirPath = d;
                 if (itDirPath.Contains("AigioLTemplate.Server", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    itDirPath = itDirPath.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCultureIgnoreCase);
+                    itDirPath = itDirPath.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCulture);
+                    move = true;
+                }
+                else if (itDirPath.Contains("AigioLTemplate", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    itDirPath = itDirPath.Replace("AigioLTemplate", projNameTrimServer, StringComparison.InvariantCulture);
+                    move = true;
+                }
+                if (move)
+                {
                     // 移动文件夹
                     try
                     {
