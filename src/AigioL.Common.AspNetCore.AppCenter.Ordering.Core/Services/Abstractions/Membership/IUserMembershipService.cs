@@ -1,7 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
+namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
 
 public interface IUserMembershipService
 {

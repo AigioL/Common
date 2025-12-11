@@ -4,6 +4,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;

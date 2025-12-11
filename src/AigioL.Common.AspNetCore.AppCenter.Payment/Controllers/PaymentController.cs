@@ -3,6 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;

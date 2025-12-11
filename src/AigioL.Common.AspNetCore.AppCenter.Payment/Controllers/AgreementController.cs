@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;

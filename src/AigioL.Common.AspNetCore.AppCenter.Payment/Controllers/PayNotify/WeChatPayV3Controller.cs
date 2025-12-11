@@ -1,5 +1,17 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
+using Microsoft.Extensions.Options;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using V2 = global::Essensoft.Paylink.WeChatPay.V2;
+using V2Notify = global::Essensoft.Paylink.WeChatPay.V2.Notify;
+using V3 = global::Essensoft.Paylink.WeChatPay.V3;
+using V3Notify = global::Essensoft.Paylink.WeChatPay.V3.Notify;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Controllers.PayNotify;
 
@@ -45,14 +57,49 @@ public static partial class WeChatPayV3Controller
 
         static async Task<IResult> v2(HttpContext context)
         {
-            await Task.CompletedTask;
-            throw new NotImplementedException();
+            var clientV2 = context.RequestServices.GetRequiredService<V2.IWeChatPayNotifyClient>();
+            var paymentOptions = context.RequestServices.GetRequiredService<IOptions<WeChatPayExOptions>>().Value;
+            var paymentService = context.RequestServices.GetRequiredService<IPaymentService>();
+
+            var notify = await clientV2.ExecuteAsync<V2Notify.WeChatPayUnifiedOrderNotify>(context.Request, paymentOptions);
+            if (notify.ReturnCode == V2.WeChatPayCode.Success &&
+                notify.ResultCode == V2.WeChatPayCode.Success)
+            {
+                var amountReceived = notify.TotalFee / 100M;
+                var paymentTime = DateTimeOffset.ParseExact(notify.TimeEnd, "yyyyMMddHHmmss", CultureInfo.InvariantCulture.DateTimeFormat);
+                await paymentService.NotifyOrderComplete(
+                    notify.OutTradeNo,
+                    notify.TransactionId,
+                    PaymentType.WeChatPay,
+                    amountReceived,
+                    paymentTime);
+
+                return WeChatPayNotifyResults.V2.Success;
+            }
+            return WeChatPayNotifyResults.V2.Failure;
         }
 
         static async Task<IResult> v3(HttpContext context)
         {
-            await Task.CompletedTask;
-            throw new NotImplementedException();
+            var clientV3 = context.RequestServices.GetRequiredService<V3.IWeChatPayNotifyClient>();
+            var paymentOptions = context.RequestServices.GetRequiredService<IOptions<WeChatPayExOptions>>().Value;
+            var paymentService = context.RequestServices.GetRequiredService<IPaymentService>();
+
+            var notify = await clientV3.ExecuteAsync<V3Notify.WeChatPayTransactionsNotify>(context.Request, paymentOptions);
+            if (notify.TradeState == V3.WeChatPayTradeState.Success)
+            {
+                var amountReceived = (notify.Amount.Total ?? 0) / 100M;
+                var paymentTime = DateTimeOffset.Parse(notify.SuccessTime);
+                await paymentService.NotifyOrderComplete(
+                    notify.OutTradeNo,
+                    notify.TransactionId,
+                    PaymentType.WeChatPay,
+                    amountReceived,
+                    paymentTime);
+
+                return WeChatPayNotifyResults.V3.Success;
+            }
+            return WeChatPayNotifyResults.V3.Failure;
         }
     }
 
@@ -67,14 +114,57 @@ public static partial class WeChatPayV3Controller
 
         static async Task<IResult> v2(HttpContext context)
         {
-            await Task.CompletedTask;
-            throw new NotImplementedException();
+            var clientV2 = context.RequestServices.GetRequiredService<V2.IWeChatPayNotifyClient>();
+            var paymentOptions = context.RequestServices.GetRequiredService<IOptions<WeChatPayExOptions>>().Value;
+            var paymentService = context.RequestServices.GetRequiredService<IPaymentService>();
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(WeChatPayV3Controller));
+            var paymentMessageQueue = context.RequestServices.GetRequiredService<IPaymentMessageQueueService>();
+            var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
+
+            var notify = await clientV2.ExecuteAsync<V2Notify.WeChatPayRefundNotify>(context.Request, paymentOptions);
+            if (notify.ReturnCode == V2.WeChatPayCode.Success &&
+                notify.RefundStatus == V2.WeChatPayCode.Success)
+            {
+                var refundInfo = new OrderRefundSuccessInfo(
+                    notify.OutTradeNo,
+                    notify.OutRefundNo,
+                    PaymentType.WeChatPay);
+
+                await paymentRepo.CompleteRefundForOrderAsync(refundInfo);    // 完成订单退款
+                await paymentMessageQueue.PushRefundSuccess(refundInfo); // 推送退款完成的消息
+
+                logger.LogInformation("微信退款成功：{RefundInfo}", refundInfo);
+
+                return WeChatPayNotifyResults.V2.Success;
+            }
+            return WeChatPayNotifyResults.V2.Failure;
         }
 
         static async Task<IResult> v3(HttpContext context)
         {
-            await Task.CompletedTask;
-            throw new NotImplementedException();
+            var clientV3 = context.RequestServices.GetRequiredService<V3.IWeChatPayNotifyClient>();
+            var paymentOptions = context.RequestServices.GetRequiredService<IOptions<WeChatPayExOptions>>().Value;
+            var paymentService = context.RequestServices.GetRequiredService<IPaymentService>();
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(WeChatPayV3Controller));
+            var paymentMessageQueue = context.RequestServices.GetRequiredService<IPaymentMessageQueueService>();
+            var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
+
+            var notify = await clientV3.ExecuteAsync<V3Notify.WeChatPayRefundDomesticRefundsNotify>(context.Request, paymentOptions);
+            if (notify.RefundStatus == V3.WeChatPayRefundStatus.Success)
+            {
+                var refundInfo = new OrderRefundSuccessInfo(
+                    notify.OutTradeNo,
+                    notify.OutRefundNo,
+                    PaymentType.WeChatPay);
+
+                await paymentRepo.CompleteRefundForOrderAsync(refundInfo);    // 完成订单退款
+                await paymentMessageQueue.PushRefundSuccess(refundInfo); // 推送退款完成的消息
+
+                logger.LogInformation("微信退款成功：{RefundInfo}", refundInfo);
+
+                return WeChatPayNotifyResults.V3.Success;
+            }
+            return WeChatPayNotifyResults.V3.Failure;
         }
     }
 
@@ -89,8 +179,39 @@ public static partial class WeChatPayV3Controller
 
         static async Task<IResult> v2(HttpContext context)
         {
-            await Task.CompletedTask;
-            throw new NotImplementedException();
+            var clientV2 = context.RequestServices.GetRequiredService<V2.IWeChatPayNotifyClient>();
+            var paymentOptions = context.RequestServices.GetRequiredService<IOptions<WeChatPayExOptions>>().Value;
+            var paymentService = context.RequestServices.GetRequiredService<IPaymentService>();
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(WeChatPayV3Controller));
+            var paymentMessageQueue = context.RequestServices.GetRequiredService<IPaymentMessageQueueService>();
+            var agreementRepo = context.RequestServices.GetRequiredService<IMerchantDeductionAgreementRepository>();
+
+            var notify = await clientV2.ExecuteAsync<V2Notify.WeChatPayPaPayPartnerEntrustNotify>(context.Request, paymentOptions);
+            if (string.Equals("ADD", notify.ChangeType, StringComparison.InvariantCultureIgnoreCase)) // 签约
+            {
+                await agreementRepo.CompleteAgreementSign(new MerchantDeductionAgreement()
+                {
+                    ExtAgreementNo = notify.ContractId,
+                    AgreementNo = notify.ContractCode,
+                    SigningTime = DateTimeOffset.Parse(notify.OperateTime),
+                    ValidTime = DateTimeOffset.Parse(notify.OperateTime),
+                    InvalidTime = DateTimeOffset.Parse(notify.ContractExpiredTime),
+                    UserOpenId = notify.OpenId,
+                    PeriodType = "",
+                });
+                await paymentMessageQueue.PushSignAgreementSuccess(notify.ContractCode);
+                return WeChatPayNotifyResults.V2.Success;
+            }else if (string.Equals("DELETE", notify.ChangeType, StringComparison.InvariantCultureIgnoreCase)) // 解约
+            {
+                await agreementRepo.CompleteAgreementUnSign(notify.ContractCode, DateTimeOffset.Parse(notify.OperateTime));
+                await paymentMessageQueue.PushUnSignAgreementSuccess(notify.ContractCode);
+                return WeChatPayNotifyResults.V2.Success;
+            }
+            else
+            {
+                logger.LogError("签约/解约结果通知错误，未知的协议变动类型。{ChangeType}", notify.ChangeType);
+            }
+            return WeChatPayNotifyResults.V2.Failure;
         }
 
         static Task<IResult> v3(HttpContext context)

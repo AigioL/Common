@@ -7,6 +7,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 /// </summary>
 /// <param name="Channel"></param>
 /// <param name="NickName"></param>
-public sealed record class ExternalLoginChannelWithNickName(ExternalLoginChannel Channel, string NickName)
+public sealed partial record class ExternalLoginChannelWithNickName(ExternalLoginChannel Channel, string? NickName)
 {
 }

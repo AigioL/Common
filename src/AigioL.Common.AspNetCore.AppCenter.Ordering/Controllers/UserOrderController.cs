@@ -188,7 +188,7 @@ public static class UserOrderController
     /// <summary>
     /// 星号打码
     /// </summary>
-    static string StarredMasking(string? s)
+    static string? StarredMasking(string? s)
     {
         if (string.IsNullOrEmpty(s))
         {

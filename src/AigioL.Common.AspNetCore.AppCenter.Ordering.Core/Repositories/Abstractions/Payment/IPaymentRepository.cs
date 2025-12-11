@@ -16,6 +16,11 @@ public partial interface IPaymentRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 完成订单退款
+    /// </summary>
+    Task CompleteRefundForOrderAsync(OrderRefundSuccessInfo refundInfo);
+
+    /// <summary>
     /// 获取支付组成支付状态
     /// </summary>
     Task<bool> GetPaymentCompositionStateAsync(Guid orderId, OrderBusinessPaymentMethod method,

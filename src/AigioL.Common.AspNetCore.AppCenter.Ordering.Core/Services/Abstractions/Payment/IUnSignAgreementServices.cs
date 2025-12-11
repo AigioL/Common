@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
+namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
 
 /// <summary>
 /// 解约委托代扣协议服务

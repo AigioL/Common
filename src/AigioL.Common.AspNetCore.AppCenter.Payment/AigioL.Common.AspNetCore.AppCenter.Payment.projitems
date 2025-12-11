@@ -17,9 +17,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\PayNotify\WeChatPayV3Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\TestController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VipPaymentController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AlipayClientExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IWeChatApiOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AlipayExOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatApiOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayExOptions.cs" />
   </ItemGroup>
 </Project>

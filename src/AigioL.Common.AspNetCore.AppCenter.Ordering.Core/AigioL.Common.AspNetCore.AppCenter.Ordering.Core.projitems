@@ -58,6 +58,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderPayInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderRefundSuccessInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PaymentAccessTokenEnum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PaymentMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PaymentMinimalApisJsonSerializerContext.cs" />
@@ -80,15 +81,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Membership\IMembershipProductKeyRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IPaymentRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAliPayServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IUnSignAgreementServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IUserMembershipService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IWeChatPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IAliPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IPaymentMessageQueueService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IUnSignAgreementServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Membership\IUserMembershipService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IPaymentService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IWeChatPayServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Helpers\Payment\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Services\Abstractions\Membership\" />
   </ItemGroup>
 </Project>

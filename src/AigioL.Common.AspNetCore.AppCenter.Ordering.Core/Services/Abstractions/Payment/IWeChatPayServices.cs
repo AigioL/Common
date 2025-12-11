@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
+namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
 
 /// <summary>
 /// 微信支付服务
