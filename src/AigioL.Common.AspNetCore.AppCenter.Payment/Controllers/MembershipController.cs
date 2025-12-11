@@ -10,7 +10,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Controllers.Payment;
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Controllers;
 
 public static class MembershipController
 {

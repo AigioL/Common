@@ -7,7 +7,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Controllers.Payment;
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Controllers;
 
 public static class AgreementController
 {

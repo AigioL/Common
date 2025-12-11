@@ -3,19 +3,25 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using SKIT.FlurlHttpClient.Wechat.Api;
+using SKIT.FlurlHttpClient.Wechat.Api.Models;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Controllers.Payment;
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Controllers;
 
 public static class PaymentController
 {
-    public static void MapPayment(
+    public static void MapPayment<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "payment")
+        where TAppSettings : class, IAppSettings
     {
         var routeGroup = b.MapGroup(pattern)
             .AllowAnonymous();
@@ -58,7 +64,11 @@ public static class PaymentController
             [FromQuery] string url,
             [FromQuery] string code) =>
         {
-            var r = RedirectToV2(context, url, code);
+            var settings = context.RequestServices.GetRequiredService<IOptions<TAppSettings>>().Value;
+            var appIdWeChat = settings.WeChatApiOptions.AppId;
+            var appSecretWeChat = settings.WeChatApiOptions.AppSecret;
+            var r = RedirectToV2(context, appIdWeChat, appSecretWeChat,
+                url, code, context.RequestAborted);
             return r;
         });
     }
@@ -184,8 +194,10 @@ public static class PaymentController
     static async Task<IResult> RedirectToV2(
         HttpContext context,
         string appIdWeChat,
+        string appSecretWeChat,
         string code,
-        string url)
+        string url,
+        CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(url))
         {
@@ -198,7 +210,7 @@ public static class PaymentController
         ReadOnlySpan<char> cache = await redis.HashGetAsync("AccessToken", $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}");
         var accessToken = JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
 
-        var request = new SKIT.FlurlHttpClient.Wechat.Api.Models.SnsOAuth2AccessTokenRequest()
+        var request = new SnsOAuth2AccessTokenRequest()
         {
             Code = code,
             AccessToken = accessToken!.AccessToken,
@@ -207,18 +219,17 @@ public static class PaymentController
 
         var client = new WechatApiClient(new()
         {
-            AppId = appSettings!.WeChatApiOptions!.AppId!,
-            AppSecret = appSettings!.WeChatApiOptions!.AppSecret!,
+            AppId = appIdWeChat,
+            AppSecret = appSecretWeChat,
         });
 
         client.Configure(settings =>
         {
-            settings.JsonSerializer = new SKIT.FlurlHttpClient.NewtonsoftJsonSerializer();
+            settings.JsonSerializer = new global::SKIT.FlurlHttpClient.SystemTextJsonSerializer();
         });
 
-        var response = await client.ExecuteSnsOAuth2AccessTokenAsync(request, HttpContext.RequestAborted);
-        var flurl = Flurl.Url.Parse(url).SetQueryParam("openId", response.OpenId);
-
-        return Redirect(flurl);
+        var response = await client.ExecuteSnsOAuth2AccessTokenAsync(request, cancellationToken);
+        var redirectUrl = global::Flurl.Url.Parse(url).SetQueryParam("openId", response.OpenId);
+        return Results.Redirect(redirectUrl);
     }
 }

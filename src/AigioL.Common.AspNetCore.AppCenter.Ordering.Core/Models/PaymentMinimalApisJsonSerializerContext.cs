@@ -22,6 +22,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 #region VipPaymentController
 [JsonSerializable(typeof(ApiRsp<OrderStatus?>))]
 #endregion
+[JsonSerializable(typeof(TradeAgreementCreateResult))]
+[JsonSerializable(typeof(WeChatAccessToken))]
 [JsonSourceGenerationOptions]
 public sealed partial class PaymentMinimalApisJsonSerializerContext : JsonSerializerContext
 {

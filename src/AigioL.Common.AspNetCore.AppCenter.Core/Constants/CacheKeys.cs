@@ -23,6 +23,11 @@ public static partial class CacheKeys
     public const int RedisLockDb = 3;
 
     /// <summary>
+    /// Redis 访问 Token DB index
+    /// </summary>
+    public const int RedisAccessTokenDb = 4;
+
+    /// <summary>
     /// Redis 储存 Hash 类型数据 的 DB index
     /// </summary>
     public const int RedisHashDataDb = 5;
@@ -39,6 +44,11 @@ public static partial class CacheKeys
     /// </summary>
     public const string AdvertisementCacheKey =
         "AdvertisementCache";
+
+    /// <summary>
+    /// Steam 充值用户操作并发锁
+    /// </summary>
+    public static string GetSteamRechargeUserOperationLockKey(Guid userId) => $"SteamRechargeUserOperationHashKey:{userId:N}";
 
     #region HashKey
 
@@ -84,6 +94,32 @@ public static partial class CacheKeys
 
     public const string IdentityUserExternalAccountsHashKey =
         "IdentityUserExternalAccountsHashKey";
+
+    #endregion
+
+    /// <summary>
+    /// 支付服务是否停止
+    /// </summary>
+    public const string PaymentServiceStopped = "PaymentServiceStopped";
+
+    #region 用户会员
+
+    /// <summary>
+    /// 获取用户会员信息缓存 Key
+    /// </summary>
+    public static string GetUserMembershipCacheKey(Guid userId) => $"UserMembership:{userId}";
+
+    /// <summary>
+    /// 获取用户会员信息缓存锁 Key
+    /// </summary>
+    public static string GetUserMembershipCacheLockKey(Guid userId) => $"UserMembershipLock:{userId}";
+
+    /// <summary>
+    /// 获取会员商品信息缓存 Key
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public const string GetMembershipGoodsCacheKey = "MembershipGoodsCacheKey";
 
     #endregion
 

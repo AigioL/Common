@@ -1,3 +1,5 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
 
 /// <summary>
@@ -7,21 +9,21 @@ public interface IWeChatPayServices : IUnSignAgreementServices
 {
     const string V2 = "v2";
 
-    ///// <summary>
-    ///// 发起支付
-    ///// </summary>
-    ///// <param name="tradeType">交易类型</param>
-    ///// <param name="orderNumber">商户订单号</param>
-    ///// <param name="title">显示标题</param>
-    ///// <param name="amount">金额</param>
-    ///// <param name="body">描述</param>
-    ///// <param name="ip">客户端 IP</param>
-    ///// <param name="timeExpire">过期时间</param>
-    ///// <param name="userOpenId">用户OpenId</param>
-    ///// <param name="returnUrl">返回地址</param>
-    ///// <returns></returns>
-    //Task<PubPayState> PubPay(WeChatPayTradeType tradeType, string orderNumber, string title,
-    //    decimal amount, string body, string ip, DateTimeOffset timeExpire, string? userOpenId = null, string? returnUrl = null);
+    /// <summary>
+    /// 发起支付
+    /// </summary>
+    /// <param name="tradeType">交易类型</param>
+    /// <param name="orderNumber">商户订单号</param>
+    /// <param name="title">显示标题</param>
+    /// <param name="amount">金额</param>
+    /// <param name="body">描述</param>
+    /// <param name="ip">客户端 IP</param>
+    /// <param name="timeExpire">过期时间</param>
+    /// <param name="userOpenId">用户OpenId</param>
+    /// <param name="returnUrl">返回地址</param>
+    /// <returns></returns>
+    Task<PubPayState> PubPay(WeChatPayTradeType tradeType, string orderNumber, string title,
+        decimal amount, string body, string ip, DateTimeOffset timeExpire, string? userOpenId = null, string? returnUrl = null);
 
     /// <summary>
     /// 申请退款

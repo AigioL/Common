@@ -74,6 +74,7 @@
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Ordering.JobScheduler.shproj" Id="cf9886f0-052e-44b5-9081-0a8ec661fe61" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Ordering/AigioL.Common.AspNetCore.AppCenter.Ordering.shproj" Id="050a2e79-a588-44b3-87b4-4c32d5af4414" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Payment.JobScheduler.shproj" Id="d51747da-fec9-4a8b-b018-5b0e2e355a94" />
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment/AigioL.Common.AspNetCore.AppCenter.Payment.shproj" Id="e4766a40-d4ce-49f0-967f-bfcb02a6eef4" />
   </Folder>
   <Folder Name="/2.Libraries/JsonWebTokens/">
     <Project Path="src/AigioL.Common.JsonWebTokens.Entities/AigioL.Common.JsonWebTokens.Entities.shproj" Id="26839620-b9b9-4fbe-b03b-a92d5a034e8e" />

@@ -1,5 +1,9 @@
+using AigioL.Common.Models;
+using MemoryPack;
+using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Constants;
 
@@ -18,16 +22,6 @@ static partial class CacheKeys
         var dbConnection = connection.GetDatabase(RedisHashIncrementDb, cancellationToken);
         await dbConnection.HashIncrementAsync(ArticleViewHashKey, idString);
     }
-
-    /// <summary>
-    /// 获取用户会员信息缓存 Key
-    /// </summary>
-    public static string GetUserMembershipCacheKey(Guid userId) => $"UserMembership:{userId}";
-
-    /// <summary>
-    /// 获取用户会员信息缓存锁 Key
-    /// </summary>
-    public static string GetUserMembershipCacheLockKey(Guid userId) => $"UserMembershipLock:{userId}";
 
     /// <summary>
     /// 获取方法缓存 Key
@@ -60,6 +54,118 @@ static partial class CacheKeys
             }
             temp[0] = ')';
         });
+        return r;
+    }
+
+    /// <summary>
+    /// 获取支付服务状态
+    /// </summary>
+    /// <param name="distributedCache"></param>
+    /// <returns></returns>
+    public static async Task<bool> GetPaymentServiceStatus(IDistributedCache distributedCache)
+    {
+        bool enable = await distributedCache.GetAsync(PaymentServiceStopped) is null;
+        return enable;
+    }
+
+    /// <summary>
+    /// 竞争锁执行方法
+    /// </summary>
+    public static async Task<ApiRsp<T?>> LockHandleAsync<T>(
+        this IConnectionMultiplexer connection,
+        RedisKey lockKey,
+        Func<Task<ApiRsp<T?>>> handle,
+        TimeSpan? expiry = null,
+        Func<Exception, Task<ApiRsp<T?>>>? errorHandle = null)
+    {
+        expiry ??= TimeSpan.FromMinutes(2);
+
+        var lockValue = Guid.NewGuid().ToString("N");
+        var lockDb = connection.GetDatabase(RedisLockDb);
+
+        if (await lockDb.LockTakeAsync(lockKey, lockValue, expiry.Value))
+        {
+            try
+            {
+                return await handle();
+            }
+            catch (Exception ex) when (errorHandle is not null)
+            {
+                return await errorHandle(ex);
+            }
+            finally
+            {
+                await lockDb.LockReleaseAsync(lockKey, lockValue);
+            }
+        }
+
+        return (ApiRspCode.TooManyRequests, "操作频繁，请稍后再试");
+    }
+
+    /// <summary>
+    /// 获取缓存数据，缓存过期从数据库获取，避免缓存击穿
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="database"></param>
+    /// <param name="cacheKey"></param>
+    /// <param name="getData"></param>
+    /// <param name="semaphoreSlim"></param>
+    /// <param name="expireSpan">缓存数据过期时间，默认 1 小时</param>
+    /// <param name="millisecondsTimeout">获取锁超时时间</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public static async ValueTask<T?> GetCacheDataAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        this IDatabase database,
+        string cacheKey,
+        Func<CancellationToken, Task<T>> getData,
+        SemaphoreSlim? semaphoreSlim = null,
+        TimeSpan? expireSpan = null,
+        int millisecondsTimeout = 30,
+        CancellationToken cancellationToken = default)
+    {
+        ReadOnlyMemory<byte> data = await database.StringGetAsync(cacheKey);
+
+        T? r = default;
+        if (data.Length <= 0)
+        {
+            if (semaphoreSlim is null ||
+                (semaphoreSlim is not null && await semaphoreSlim.WaitAsync(millisecondsTimeout)))
+            {
+                try
+                {
+                    // 二次检查
+                    data = await database.StringGetAsync(cacheKey);
+                    if (data.Length <= 0)
+                    {
+                        r = await getData(cancellationToken);
+
+                        if (r is not null)
+                        {
+                            var serializeData = MemoryPackSerializer.Serialize(r);
+
+                            expireSpan ??= TimeSpan.FromHours(1);
+                            await database.StringSetAsync(cacheKey, serializeData, expireSpan);
+                            return r;
+                        }
+                    }
+                }
+                catch { }
+                finally
+                {
+                    semaphoreSlim?.Release();
+                }
+            }
+            else // 获取锁失败直接获取缓存数据
+            {
+                data = await database.StringGetAsync(cacheKey);
+            }
+        }
+
+        if (data.Length > 0)
+        {
+            r = MemoryPackSerializer.Deserialize<T>(data.Span);
+        }
+
         return r;
     }
 }

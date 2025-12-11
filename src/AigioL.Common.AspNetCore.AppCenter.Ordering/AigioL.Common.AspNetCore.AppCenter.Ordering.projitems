@@ -13,16 +13,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\AftersalesBillController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\AgreementController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\CooperatorOrderController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\MembershipController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\OrderingController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\PaymentController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\PayNotify\AliPayController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\PayNotify\WeChatPayV3Controller.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\TestController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\UserOrderController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Payment\VipPaymentController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workers\OrderStatusSubscribe.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workers\PaymentResultSubscribe.cs" />

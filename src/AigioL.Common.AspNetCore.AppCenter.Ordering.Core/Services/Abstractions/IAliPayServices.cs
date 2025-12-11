@@ -1,3 +1,5 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
 
 /// <summary>
@@ -5,20 +7,20 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
 /// </summary>
 public interface IAliPayServices : IUnSignAgreementServices
 {
-    ///// <summary>
-    ///// 发起支付
-    ///// </summary>
-    ///// <param name="tradeType">支付类型</param>
-    ///// <param name="orderId">订单 Id</param>
-    ///// <param name="orderNumber">商户订单号</param>
-    ///// <param name="title">标题</param>
-    ///// <param name="amount">金额</param>
-    ///// <param name="body">描述</param>
-    ///// <param name="timeExpire">过期时间</param>
-    ///// <param name="returnUrl">返回地址</param>
-    ///// <returns></returns>
-    //Task<PubPayState> PubPay(AliPayPayTradeType tradeType, Guid orderId, string orderNumber,
-    //    string title, decimal amount, string body, DateTimeOffset timeExpire, string? returnUrl = null);
+    /// <summary>
+    /// 发起支付
+    /// </summary>
+    /// <param name="tradeType">支付类型</param>
+    /// <param name="orderId">订单 Id</param>
+    /// <param name="orderNumber">商户订单号</param>
+    /// <param name="title">标题</param>
+    /// <param name="amount">金额</param>
+    /// <param name="body">描述</param>
+    /// <param name="timeExpire">过期时间</param>
+    /// <param name="returnUrl">返回地址</param>
+    /// <returns></returns>
+    Task<PubPayState> PubPay(AliPayPayTradeType tradeType, Guid orderId, string orderNumber,
+        string title, decimal amount, string body, DateTimeOffset timeExpire, string? returnUrl = null);
 
     /// <summary>
     /// 交易退款
