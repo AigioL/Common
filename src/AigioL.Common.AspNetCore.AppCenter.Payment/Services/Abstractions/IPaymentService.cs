@@ -4,7 +4,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 
 public partial interface IPaymentService
 {
-    Task NotifyOrderClose(Guid id);
+    Task NotifyOrderClose(Guid paymentId);
 
     Task NotifyOrderComplete(string orderNumber, string tradeNo, PaymentType paymentType, decimal amountReceived, DateTimeOffset paymentTime);
 }

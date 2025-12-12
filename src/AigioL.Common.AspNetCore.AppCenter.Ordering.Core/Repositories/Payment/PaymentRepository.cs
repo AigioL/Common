@@ -40,6 +40,51 @@ sealed partial class PaymentRepository<TDbContext> :
         return r;
     }
 
+    public async Task CompletePaymentForOrder(OrderPaymentSuccessInfo orderPaidInfo)
+    {
+        await db.Database.CreateExecutionStrategy().ExecuteAsync(CompletePaymentForOrderCoreAsync);
+
+        async Task CompletePaymentForOrderCoreAsync()
+        {
+            try
+            {
+                using var transaction = await db.Database.BeginTransactionAsync();
+
+                int orderAffected = await db.Orders
+                    .Where(x => x.PaymentCompositions!.Any(a => a.Id == orderPaidInfo.PaymentId))
+                    .Where(x => x.Status == OrderStatus.WaitPay || x.Status == OrderStatus.Expired || x.Status == OrderStatus.Canceled)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(x => x.Status, v => OrderStatus.Paid)
+                        .SetProperty(x => x.AmountReceived, v => v.AmountReceived + orderPaidInfo.AmountReceived)
+                        .SetProperty(x => x.PaymentTime, DateTimeOffset.Now)
+                        .SetProperty(x => x.PaymentType, orderPaidInfo.PaymentPlatform)
+                        .SetProperty(x => x.UpdateTime, DateTimeOffset.Now));
+                if (orderAffected != 1)
+                    throw new ApplicationException("更新订单为已支付失败，订单不存在或不处于待支付状态");
+
+                int payCoAffected = await db.OrderPaymentCompositions
+                    .Where(a => a.Id == orderPaidInfo.PaymentId)
+                    .Where(a => a.PaymentMethod == PaymentMethod.Online &&
+                                a.PaymentType == orderPaidInfo.PaymentPlatform &&
+                                a.PaymentStatus == PaymentStatus.WaitPay)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(x => x.PaymentNumber, x => orderPaidInfo.PaymentPlatformOrderNumber)
+                        .SetProperty(x => x.PaymentStatus, PaymentStatus.Paid)
+                        .SetProperty(x => x.PaymentTime, DateTimeOffset.Now)
+                        .SetProperty(x => x.UpdateTime, DateTimeOffset.Now));
+                if (payCoAffected != 1)
+                    throw new ApplicationException("更新订单为已支付失败，订单支付组成不存在或不处于待支付状态");
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "订单支付成功通知处理失败，订单号：{PaymentId}，消息内容：{Message}", orderPaidInfo.PaymentId, orderPaidInfo);
+                throw;
+            }
+        }
+    }
+
     public async Task CompleteRefundForOrderAsync(OrderRefundSuccessInfo refundInfo)
     {
         await db.Database.CreateExecutionStrategy().ExecuteAsync(CompleteRefundForOrderCoreAsync);
@@ -154,6 +199,29 @@ sealed partial class PaymentRepository<TDbContext> :
             }
         }
         return order;
+    }
+
+    public Task ClosePayment(Guid paymentId)
+    {
+        // TODO: OrderPaymentComposition 的 PaymentStatus 状态要不要与支付平台的同步？
+        //return await db.OrderPaymentCompositions.Where(a => a.PaymentStatus == PaymentStatus.).ToListAsync(RequestAborted);
+        return Task.CompletedTask;
+    }
+
+    public async Task<(Order Order, OrderPaymentComposition OrderPaymentComposition)?> GetOrderPayment(string orderNumber, PaymentType paymentType,
+        CancellationToken cancellationToken = default)
+    {
+        var info = await db.OrderPaymentCompositions
+            .AsNoTrackingWithIdentityResolution()
+            .Include(c => c.Order)
+            .ThenInclude(c => c!.MerchantDeductionAgreement)
+            .Where(c => c.Order!.OrderNumber == orderNumber && c.PaymentType == paymentType)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (info == null)
+            return null;
+
+        return (info.Order!, info);
     }
 }
 

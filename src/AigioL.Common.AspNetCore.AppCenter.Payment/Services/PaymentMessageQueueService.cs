@@ -5,6 +5,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services;
 
 sealed partial class PaymentMessageQueueService : IPaymentMessageQueueService
 {
+    public Task PushPaymentSuccess(OrderPaymentSuccessInfo info)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task PushRefundSuccess(OrderRefundSuccessInfo info)
     {
         throw new NotImplementedException();

@@ -16,6 +16,12 @@ public partial interface IPaymentRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 完成订单支付
+    /// </summary>
+    /// <param name="orderPaidInfo"></param>
+    Task CompletePaymentForOrder(OrderPaymentSuccessInfo orderPaidInfo);
+
+    /// <summary>
     /// 完成订单退款
     /// </summary>
     Task CompleteRefundForOrderAsync(OrderRefundSuccessInfo refundInfo);
@@ -54,4 +60,17 @@ public partial interface IPaymentRepository
     /// <param name="method">支付方式</param>
     /// <returns></returns>
     Task<OrderPaymentComposition?> AddOrGetPayMethodAsync(string orderId, decimal amount, OrderBusinessPaymentMethod method);
+
+    /// <summary>
+    /// 关闭支付
+    /// </summary>
+    Task ClosePayment(Guid paymentId);
+
+    /// <summary>
+    /// 检查待支付的订单
+    /// </summary>
+    /// <param name="orderNumber">订单号</param>
+    /// <param name="paymentType">支付平台</param>
+    Task<(Order Order, OrderPaymentComposition OrderPaymentComposition)?> GetOrderPayment(string orderNumber, PaymentType paymentType,
+        CancellationToken cancellationToken = default);
 }

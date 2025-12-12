@@ -1,17 +1,50 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services;
 
-sealed partial class PaymentService : IPaymentService
+sealed partial class PaymentService(
+    ILogger<PaymentService> logger,
+    PaymentMessageQueueService paymentMessageQueue,
+    IPaymentRepository paymentRepo,
+    IMerchantDeductionAgreementRepository agreementRepo) : IPaymentService
 {
-    public Task NotifyOrderClose(Guid id)
+    public async Task NotifyOrderClose(Guid paymentId)
     {
-        throw new NotImplementedException();
+        await paymentRepo.ClosePayment(paymentId);
     }
 
-    public Task NotifyOrderComplete(string orderNumber, string tradeNo, PaymentType paymentType, decimal amountReceived, DateTimeOffset paymentTime)
+    public async Task NotifyOrderComplete(string orderNumber, string tradeNo, PaymentType paymentType, decimal amountReceived, DateTimeOffset paymentTime)
     {
-        throw new NotImplementedException();
+        var orderInfo = await paymentRepo.GetOrderPayment(orderNumber, paymentType);
+        if (orderInfo is not var (order, paymentComposition))
+        {
+            logger.LogError("平台支付完成回调通知，找不到订单信息");
+            return;
+        }
+
+        //if (order.Status == OrderStatus.Paid && paymentComposition.PaymentStatus == PaymentStatus.Paid)
+        if (order.Status is not (OrderStatus.WaitPay or OrderStatus.Expired))
+        {
+            logger.LogInformation("平台支付完成回调通知，出现重复调用的情况：" +
+                "OrderNumber: {OrderNumber} TradeNo: {TradeNo} PaymentType: {PaymentType} AmountReceived: {AmountReceived} PaymentTime: {PaymentTime}",
+                orderNumber, tradeNo, paymentType, amountReceived, paymentTime);
+            return;
+        }
+
+        var info = new OrderPaymentSuccessInfo(paymentComposition.Id, order.OrderNumber, paymentType, tradeNo, amountReceived, paymentTime);
+
+        // 完成订单支付并推送“支付完成”的消息
+        await paymentRepo.CompletePaymentForOrder(info);
+        await paymentMessageQueue.PushPaymentSuccess(info);
+
+        // 如果是按商家扣款协议创建的订单，则更新下次扣款时间
+        if (order.MerchantDeductionAgreement is MerchantDeductionAgreement agreement)
+        {
+            await agreementRepo.UpdateNextDeductionTime(agreement, paymentTime);
+        }
     }
 }

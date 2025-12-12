@@ -7,10 +7,10 @@ namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 /// </summary>
 public partial interface IPaymentMessageQueueService
 {
-    ///// <summary>
-    ///// 添加支付成功消息通知
-    ///// </summary>
-    //Task PushPaymentSuccess(OrderPaymentSuccessInfo info);
+    /// <summary>
+    /// 添加支付成功消息通知
+    /// </summary>
+    Task PushPaymentSuccess(OrderPaymentSuccessInfo info);
 
     /// <summary>
     /// 添加退款成功消息通知
