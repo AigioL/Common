@@ -24,5 +24,5 @@ public interface IMembershipProductKeyRecordRepository : IRepository<MembershipP
     //    string? orderBy = null,
     //    bool? desc = null);
 
-    Task<MembershipProductKeyRecord?> GetProductKeyRecord(Guid recordId, bool? disable, bool? isUsed);
+    Task<MembershipProductKeyRecord?> GetProductKeyRecord(Guid recordId, bool? disable, bool? isUsed, CancellationToken cancellationToken = default);
 }

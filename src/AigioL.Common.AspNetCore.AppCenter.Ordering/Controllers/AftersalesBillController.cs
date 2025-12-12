@@ -49,8 +49,8 @@ public static class AftersalesBillController
         }
         else
         {
-            var aftersalesBill = result.Content.aftersalesBill;
-            ArgumentNullException.ThrowIfNull(aftersalesBill);
+            var aftersalesBillDetailModel = result.Content.aftersalesBillDetailModel;
+            ArgumentNullException.ThrowIfNull(aftersalesBillDetailModel);
             var order = result.Content.order;
             ArgumentNullException.ThrowIfNull(order);
 
@@ -58,7 +58,7 @@ public static class AftersalesBillController
             var channel = CacheKeys.GetOrderUserRequestRefundMessageQueueKeyByBusinessType(order.BusinessTypeId);
             await redisDb.ListRightPushAsync(channel, m.OrderId.ToString());
 
-            return aftersalesBill;
+            return aftersalesBillDetailModel;
         }
     }
 }

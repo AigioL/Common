@@ -88,7 +88,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
     async Task<(UserDeviceIsTrustWithUserId? isTrustMap, bool isTrustMapBinHasValue)> HashGetAsync(IDatabase db, string jwtIdStr)
     {
         // 先尝试从缓存中获取
-        var isTrustMapBin = await db.HashGetAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, jwtIdStr);
+        var isTrustMapBin = await db.StringGetAsync($"{CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey}:{jwtIdStr}");
         if (isTrustMapBin.HasValue)
         {
             var isTrustMapBinLocal = (byte[]?)isTrustMapBin;
@@ -153,7 +153,7 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
             var dbContext = context.RequestServices.GetRequiredService<TDbContext>();
             isTrustMap = await GetUserDeviceIsTrustMapAsync(dbContext, jwtId, context.RequestAborted);
             var isTrustMapBinLocal = MemoryPackSerializer.Serialize(isTrustMap);
-            await db.HashSetAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, jwtIdStr, isTrustMapBinLocal);
+            await db.StringSetAsync($"{CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey}:{jwtIdStr}", isTrustMapBinLocal, expiry: TimeSpan.FromDays(7));
         }
 
         // 如果数据库中也没有，说明用户不存在

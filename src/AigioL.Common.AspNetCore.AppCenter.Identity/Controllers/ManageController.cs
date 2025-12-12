@@ -453,8 +453,8 @@ public static partial class ManageController
         var jwtUserIdS = ShortGuid.Encode(jwtUserId);
         await db.UserJsonWebTokens.Where(x => x.Id == jwtUserId).ExecuteDeleteAsync();
         var redisdb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
-        await redisdb.HashDeleteAsync(CacheKeys.IdentityUserInfoDataHashV1Key, jwtUserIdS);
-        await redisdb.HashDeleteAsync(CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey, jwtUserIdS);
+        await redisdb.KeyDeleteAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{jwtUserIdS}");
+        await redisdb.KeyDeleteAsync($"{CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey}:{jwtUserIdS}");
         await cache.RemoveAsync(jwtUserIdS);
         await db.UserRefreshJsonWebTokens.Where(x => x.Id == jwtUserId).ExecuteDeleteAsync();
     }

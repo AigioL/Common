@@ -23,7 +23,7 @@ public partial interface IPaymentRepository
     /// <summary>
     /// 获取支付组成支付状态
     /// </summary>
-    Task<bool> GetPaymentCompositionStateAsync(Guid orderId, OrderBusinessPaymentMethod method,
+    Task<bool> GetPaymentCompositionStateAsync(string orderId, OrderBusinessPaymentMethod method,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -33,7 +33,7 @@ public partial interface IPaymentRepository
     /// <param name="isWaitPay">是否获取等待支付状态</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<OrderPayInfoModel?> GetOrderPaymentInfoAsync(Guid orderId, bool isWaitPay = false,
+    Task<OrderPayInfoModel?> GetOrderPaymentInfoAsync(string orderId, bool isWaitPay = false,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -53,5 +53,5 @@ public partial interface IPaymentRepository
     /// <param name="amount">支付金额</param>
     /// <param name="method">支付方式</param>
     /// <returns></returns>
-    Task<OrderPaymentComposition?> AddOrGetPayMethodAsync(Guid orderId, decimal amount, OrderBusinessPaymentMethod method);
+    Task<OrderPaymentComposition?> AddOrGetPayMethodAsync(string orderId, decimal amount, OrderBusinessPaymentMethod method);
 }

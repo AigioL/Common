@@ -1,5 +1,6 @@
 using AspNet.Security.OAuth.Alipay;
 using Microsoft.AspNetCore.Authentication;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Security;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
@@ -7,6 +8,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class AuthenticationBuilderExtensions
 {
+    [RequiresDynamicCode("Binding strongly typed objects to configuration values requires generating dynamic code at runtime, for example instantiating generic types.")]
+    [RequiresUnreferencedCode("Cannot statically analyze the type of instance so its members may be trimmed")]
     public static AuthenticationBuilder ConfigureExternalLoginChannels(this AuthenticationBuilder builder, ConfigurationManager configuration)
     {
 #if !EXCLUDE_EXTERNALLOGINCHANNEL_STEAM

@@ -3,7 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ public static class PaymentController
             .AllowAnonymous();
 
         routeGroup.MapPost("state/{orderId}", async (HttpContext context,
-            [FromRoute] Guid orderId,
+            [FromRoute] string orderId,
             [FromBody] OrderBusinessPaymentMethod method) =>
         {
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
@@ -38,7 +38,7 @@ public static class PaymentController
             return r;
         });
         routeGroup.MapPost("{orderId}", async (HttpContext context,
-            [FromRoute] Guid orderId,
+            [FromRoute] string orderId,
             [FromBody] OrderBusinessPaymentMethod method) =>
         {
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
@@ -76,11 +76,11 @@ public static class PaymentController
 
     static async Task<ApiRsp<bool?>> GetOrderPayState(
         IPaymentRepository paymentRepo,
-        Guid orderId,
+        string orderId,
         OrderBusinessPaymentMethod method,
         CancellationToken cancellationToken = default)
     {
-        if (orderId == default)
+        if (string.IsNullOrWhiteSpace(orderId))
         {
             return ApiRspCode.NotFound;
         }
@@ -98,11 +98,11 @@ public static class PaymentController
     static async Task<ApiRsp<PubPayState?>> Pay(
         IPaymentRepository paymentRepo,
         HttpContext context,
-        Guid orderId,
+        string orderId,
         OrderBusinessPaymentMethod method,
         CancellationToken cancellationToken = default)
     {
-        if (orderId == default)
+        if (string.IsNullOrWhiteSpace(orderId))
         {
             return ApiRspCode.NotFound;
         }

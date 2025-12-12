@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
@@ -27,13 +28,13 @@ public static class AgreementController
         .WithDescription("短链接");
         routeGroup.MapGet("", async (HttpContext context) =>
         {
-            var r = await QueryAsync(context);
+            var r = await QueryAsync(context, context.RequestAborted);
             return r;
         }).WithDescription("商家扣款协议列表");
         routeGroup.MapPost("{agreementNo}/unSign", async (HttpContext context,
             [FromRoute] string agreementNo) =>
         {
-            var r = await AgreementUnSign(context, agreementNo);
+            var r = await AgreementUnSign(context, agreementNo, context.RequestAborted);
             return r;
         }).WithDescription("商家扣款协议解约");
     }
@@ -62,15 +63,14 @@ public static class AgreementController
     /// <summary>
     /// 商家扣款协议列表
     /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
     static async Task<ApiRsp<List<AgreementModel>?>> QueryAsync(
-        HttpContext context)
+        HttpContext context,
+        CancellationToken cancellationToken = default)
     {
         var userId = context.GetUserIdThrowIfNull();
         var repo = context.RequestServices.GetRequiredService<IMerchantDeductionAgreementRepository>();
 
-        var result = await repo.GetAgreementsByUser(userId);
+        var result = await repo.GetAgreementsByUser(userId, cancellationToken);
         return result;
     }
 
@@ -79,15 +79,17 @@ public static class AgreementController
     /// </summary>
     /// <param name="context"></param>
     /// <param name="agreementNo">协议号</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
     static async Task<ApiRsp> AgreementUnSign(
         HttpContext context,
-        string agreementNo)
+        string agreementNo,
+        CancellationToken cancellationToken = default)
     {
         var userId = context.GetUserIdThrowIfNull();
         var repo = context.RequestServices.GetRequiredService<IMerchantDeductionAgreementRepository>();
 
-        var agreement = await repo.GetByNo(agreementNo);
+        var agreement = await repo.GetByNo(agreementNo, cancellationToken);
         if (agreement == null)
         {
             return "出现错误"; // 未知的协议号

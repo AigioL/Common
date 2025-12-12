@@ -59,6 +59,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.UseForwardedHeaders.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.AddKomaasharuRepositories.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValidationServiceCollectionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SnowFlake\IdGeneratorHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\AppSettingsBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDisableSms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\INotUseForwardedHeaders.cs" />

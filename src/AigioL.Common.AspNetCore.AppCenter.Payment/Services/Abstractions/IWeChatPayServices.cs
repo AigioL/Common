@@ -1,14 +1,13 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 
 /// <summary>
 /// 微信支付服务
 /// </summary>
 public interface IWeChatPayServices : IUnSignAgreementServices
 {
-    const string V2 = "v2";
-
     /// <summary>
     /// 发起支付
     /// </summary>
@@ -42,50 +41,50 @@ public interface IWeChatPayServices : IUnSignAgreementServices
     /// <returns></returns>
     Task<bool?> OrderClose(string orderNumber);
 
-    ///// <summary>
-    ///// 查询订单
-    ///// </summary>
-    ///// <param name="orderNumber">商户订单号</param>
-    ///// <returns></returns>
-    //Task<WechatPayTradeResult?> OrderQuery(string orderNumber);
+    /// <summary>
+    /// 查询订单
+    /// </summary>
+    /// <param name="orderNumber">商户订单号</param>
+    /// <returns></returns>
+    Task<WechatPayTradeResult?> OrderQuery(string orderNumber);
 
-    ///// <summary>
-    ///// 查询退款
-    ///// </summary>
-    ///// <param name="orderNumber">商户订单号</param>
-    ///// <param name="refundNumber">商户退款单号</param>
-    ///// <returns></returns>
-    //Task<RefundResult?> RefundQuery(string orderNumber, string refundNumber);
+    /// <summary>
+    /// 查询退款
+    /// </summary>
+    /// <param name="orderNumber">商户订单号</param>
+    /// <param name="refundNumber">商户退款单号</param>
+    /// <returns></returns>
+    Task<RefundResult?> RefundQuery(string orderNumber, string refundNumber);
 
     #region 商家扣款
 
-    ///// <summary>
-    ///// 获取支付中签约链接
-    ///// </summary>
-    ///// <param name="configuration"></param>
-    ///// <param name="tradeType"></param>
-    ///// <param name="agreementNo"></param>
-    ///// <param name="orderNumber"></param>
-    ///// <param name="title"></param>
-    ///// <param name="firstAmount"></param>
-    ///// <param name="ip"></param>
-    ///// <param name="timeExpire"></param>
-    ///// <param name="displayAccount"></param>
-    ///// <param name="userOpenId"></param>
-    ///// <param name="returnUrl"></param>
-    ///// <returns></returns>
-    //Task<UserAgreement> GetContractOrderPageUrl(
-    //    MerchantDeductionAgreementConfiguration configuration,
-    //    WeChatPayTradeType tradeType,
-    //    string agreementNo,
-    //    string orderNumber,
-    //    string title,
-    //    decimal firstAmount,
-    //    string ip,
-    //    DateTimeOffset timeExpire,
-    //    string displayAccount,
-    //    string? userOpenId = null,
-    //    string? returnUrl = null);
+    /// <summary>
+    /// 获取支付中签约链接
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// <param name="tradeType"></param>
+    /// <param name="agreementNo"></param>
+    /// <param name="orderNumber"></param>
+    /// <param name="title"></param>
+    /// <param name="firstAmount"></param>
+    /// <param name="ip"></param>
+    /// <param name="timeExpire"></param>
+    /// <param name="displayAccount"></param>
+    /// <param name="userOpenId"></param>
+    /// <param name="returnUrl"></param>
+    /// <returns></returns>
+    Task<UserAgreement> GetContractOrderPageUrl(
+        MerchantDeductionAgreementConfiguration configuration,
+        WeChatPayTradeType tradeType,
+        string agreementNo,
+        string orderNumber,
+        string title,
+        decimal firstAmount,
+        string ip,
+        DateTimeOffset timeExpire,
+        string displayAccount,
+        string? userOpenId = null,
+        string? returnUrl = null);
 
     /// <summary>
     /// 解约委托代扣协议

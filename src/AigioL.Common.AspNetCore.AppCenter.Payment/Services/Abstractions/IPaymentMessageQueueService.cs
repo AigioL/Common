@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 
 /// <summary>
 /// 支付相关的消息队列服务

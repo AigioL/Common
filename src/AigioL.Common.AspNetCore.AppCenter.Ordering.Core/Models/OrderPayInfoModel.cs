@@ -2,7 +2,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 
 public sealed record class OrderPayInfoModel
 {
-    public Guid Id { get; set; }
+    public required string Id { get; set; }
 
     /// <summary>
     /// 订单号

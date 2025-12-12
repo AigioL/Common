@@ -4,7 +4,7 @@ using AigioL.Common.Primitives.Models;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
 
-public interface IOrderRepository
+public partial interface IOrderRepository
 {
     /// <summary>
     /// 获取订单信息
@@ -13,7 +13,7 @@ public interface IOrderRepository
     /// <param name="userId">用户 Id，限制用户只能操作自己的订单</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<OrderDetailModel?> GetOrderInfo(Guid orderId, Guid userId, CancellationToken cancellationToken = default);
+    Task<OrderDetailModel?> GetOrderInfo(string orderId, Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取支付相关的订单信息
@@ -22,7 +22,7 @@ public interface IOrderRepository
     /// <param name="isWaitPay">是否获取等待支付状态</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<OrderPayInfoModel?> GetOrderPaymentInfo(Guid orderId, bool isWaitPay = false, CancellationToken cancellationToken = default);
+    Task<OrderPayInfoModel?> GetOrderPaymentInfo(string orderId, bool isWaitPay = false, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取用户的订单列表
@@ -31,10 +31,10 @@ public interface IOrderRepository
         Guid userId,
         long? orderNumber,
         OrderStatus[]? status,
-        DateTimeOffset[]? paymentTime,
+        DateTimeOffset?[]? paymentTime,
         int? businessType,
-        string? remarks,
-        DateTimeOffset[]? creationTime,
+        string? note,
+        DateTimeOffset?[]? creationTime,
         int current,
         int pageSize,
         CancellationToken cancellationToken = default);

@@ -2,7 +2,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using Microsoft.Extensions.Options;
 using System.Buffers;
@@ -201,7 +201,8 @@ public static partial class WeChatPayV3Controller
                 });
                 await paymentMessageQueue.PushSignAgreementSuccess(notify.ContractCode);
                 return WeChatPayNotifyResults.V2.Success;
-            }else if (string.Equals("DELETE", notify.ChangeType, StringComparison.InvariantCultureIgnoreCase)) // 解约
+            }
+            else if (string.Equals("DELETE", notify.ChangeType, StringComparison.InvariantCultureIgnoreCase)) // 解约
             {
                 await agreementRepo.CompleteAgreementUnSign(notify.ContractCode, DateTimeOffset.Parse(notify.OperateTime));
                 await paymentMessageQueue.PushUnSignAgreementSuccess(notify.ContractCode);

@@ -16,7 +16,7 @@ public static class OrderingController
             .AllowAnonymous(); // 允许匿名访问
 
         routeGroup.MapGet("{id}", async (HttpContext context,
-            [FromRoute] Guid id) =>
+            [FromRoute] string id) =>
         {
             var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
             var r = await GetOrderPaymentInfo(repo, id, context.RequestAborted);
@@ -30,7 +30,7 @@ public static class OrderingController
     /// </summary>
     static async Task<ApiRsp<OrderPayInfoModel?>> GetOrderPaymentInfo(
         IOrderRepository repo,
-        Guid id,
+        string id,
         CancellationToken cancellationToken = default)
     {
         var result = await repo.GetOrderPaymentInfo(id, cancellationToken: cancellationToken);

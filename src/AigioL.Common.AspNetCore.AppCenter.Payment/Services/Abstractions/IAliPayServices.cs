@@ -1,9 +1,10 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 
 /// <summary>
-/// 支付宝服务
+/// 支付宝支付服务
 /// </summary>
 public interface IAliPayServices : IUnSignAgreementServices
 {
@@ -19,7 +20,7 @@ public interface IAliPayServices : IUnSignAgreementServices
     /// <param name="timeExpire">过期时间</param>
     /// <param name="returnUrl">返回地址</param>
     /// <returns></returns>
-    Task<PubPayState> PubPay(AliPayPayTradeType tradeType, Guid orderId, string orderNumber,
+    Task<PubPayState> PubPay(AliPayPayTradeType tradeType, string orderId, string orderNumber,
         string title, decimal amount, string body, DateTimeOffset timeExpire, string? returnUrl = null);
 
     /// <summary>
@@ -38,40 +39,40 @@ public interface IAliPayServices : IUnSignAgreementServices
     /// <returns></returns>
     Task<bool?> TradeClose(string orderNumber);
 
-    ///// <summary>
-    ///// 单笔转账
-    ///// </summary>
-    ///// <param name="outBizNo">商户转账单号</param>
-    ///// <param name="transAmount">转账金额</param>
-    ///// <param name="title">标题</param>
-    ///// <param name="userOpenId">支付宝用户OpenId</param>
-    ///// <returns></returns>
-    //Task<PubTransferState> Transfer(string outBizNo, decimal transAmount, string title, string userOpenId);
+    /// <summary>
+    /// 单笔转账
+    /// </summary>
+    /// <param name="outBizNo">商户转账单号</param>
+    /// <param name="transAmount">转账金额</param>
+    /// <param name="title">标题</param>
+    /// <param name="userOpenId">支付宝用户OpenId</param>
+    /// <returns></returns>
+    Task<PubTransferState> Transfer(string outBizNo, decimal transAmount, string title, string userOpenId);
 
-    ///// <summary>
-    ///// 交易查询
-    ///// </summary>
-    ///// <param name="orderNumber">商户订单号</param>
-    ///// <returns></returns>
-    //Task<AliPayTradeResult?> TradeQuery(string orderNumber);
+    /// <summary>
+    /// 交易查询
+    /// </summary>
+    /// <param name="orderNumber">商户订单号</param>
+    /// <returns></returns>
+    Task<AliPayTradeResult?> TradeQuery(string orderNumber);
 
-    ///// <summary>
-    ///// 交易退款查询
-    ///// </summary>
-    ///// <param name="orderNumber">商户订单号</param>
-    ///// <param name="refundNumber">商户退款单号</param>
-    ///// <returns></returns>
-    //Task<RefundResult?> RefundQuery(string orderNumber, string refundNumber);
+    /// <summary>
+    /// 交易退款查询
+    /// </summary>
+    /// <param name="orderNumber">商户订单号</param>
+    /// <param name="refundNumber">商户退款单号</param>
+    /// <returns></returns>
+    Task<RefundResult?> RefundQuery(string orderNumber, string refundNumber);
 
-    #region 商家扣款
+    #region 商家扣款协议
 
-    ///// <summary>
-    ///// 获取商家扣款协议页面地址
-    ///// </summary>
-    ///// <param name="configuration">协议配置</param>
-    ///// <param name="outAgreementNo">商家协议号</param>
-    ///// <returns></returns>
-    //Task<UserAgreement> GetAgreementSignPageUrl(MerchantDeductionAgreementConfiguration configuration, string outAgreementNo);
+    /// <summary>
+    /// 获取商家扣款协议页面地址
+    /// </summary>
+    /// <param name="configuration">协议配置</param>
+    /// <param name="outAgreementNo">商家协议号</param>
+    /// <returns></returns>
+    Task<UserAgreement> GetAgreementSignPageUrl(MerchantDeductionAgreementConfiguration configuration, string outAgreementNo);
 
     /// <summary>
     /// 解约商家扣款协议
@@ -99,25 +100,17 @@ public interface IAliPayServices : IUnSignAgreementServices
     /// <returns></returns>
     Task<bool> ExecuteAgreementDeduction(string orderNumber, string title, decimal amount, string agreementNo);
 
-    #endregion 商家扣款
+    /// <summary>
+    /// 获取支付并签约页面地址（小程序中JSAPI）
+    /// </summary>
+    Task<UserAgreement> GetPayAndAgreementSignPageUrl(MerchantDeductionAgreementConfiguration configuration, string agreementNo, string orderNumber, string title, decimal firstAmount, string ip, DateTimeOffset timeExpire, string displayAccount, string? userOpenId = null, string? returnUrl = null);
 
-    ///// <summary>
-    ///// 获取支付并签约页面地址（小程序中JSAPI）
-    ///// </summary>
-    ///// <param name="configuration"></param>
-    ///// <param name="agreementNo"></param>
-    ///// <param name="orderNumber"></param>
-    ///// <param name="title"></param>
-    ///// <param name="firstAmount"></param>
-    ///// <param name="ip"></param>
-    ///// <param name="timeExpire"></param>
-    ///// <param name="displayAccount"></param>
-    ///// <param name="userOpenId"></param>
-    ///// <param name="returnUrl"></param>
-    ///// <returns></returns>
-    //Task<UserAgreement> GetPayAndAgreementSignPageUrl(MerchantDeductionAgreementConfiguration configuration, string agreementNo, string orderNumber, string title, decimal firstAmount, string ip, DateTimeOffset timeExpire, string displayAccount, string? userOpenId = null, string? returnUrl = null);
+    #endregion
 
     Task<string?> GetUserOpenId(string code);
 
+    /// <summary>
+    /// 构造支付宝小程序授权链接
+    /// </summary>
     string GetMiniProgramPayUrl(string continueUrl, string agreementNo);
 }

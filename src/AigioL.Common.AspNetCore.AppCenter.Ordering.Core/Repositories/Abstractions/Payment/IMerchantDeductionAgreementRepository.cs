@@ -3,12 +3,12 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
+namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 
 public partial interface IMerchantDeductionAgreementRepository : IRepository<MerchantDeductionAgreement, Guid>, IEFRepository
 {
     ///// <summary>
-    ///// 分页查询MerchantDeductionAgreement表格
+    ///// 分页查询商家扣款协议表格
     ///// </summary>
     ///// <param name="id">Id</param>
     ///// <param name="userId">UserId</param>
@@ -85,9 +85,7 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     /// <summary>
     /// 按协议号查找协议
     /// </summary>
-    /// <param name="agreementNo"></param>
-    /// <returns></returns>
-    Task<MerchantDeductionAgreement?> GetByNo(string agreementNo);
+    Task<MerchantDeductionAgreement?> GetByNo(string agreementNo, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 解约业务商家扣款协议
@@ -124,44 +122,49 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     /// 获取协议的初始化扣款订单
     /// </summary>
     /// <param name="agreementNo">协议号</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<Order?> GetFirstDeductionOrderToAgreement(string agreementNo);
+    Task<Order?> GetFirstDeductionOrderToAgreement(string agreementNo, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取需要扣款的商家扣款协议
     /// </summary>
     /// <param name="daysInAdvance">提前天数</param>
     /// <param name="debugTime">调试时间</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<List<MerchantDeductionAgreement>> GetAgreementsForDeduction(int daysInAdvance = 0, DateTimeOffset? debugTime = null);
+    Task<List<MerchantDeductionAgreement>> GetAgreementsForDeduction(int daysInAdvance = 0, DateTimeOffset? debugTime = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取用户的商家扣款协议
     /// </summary>
     /// <returns></returns>
-    Task<List<AgreementModel>> GetAgreementsByUser(Guid userId);
+    Task<List<AgreementModel>> GetAgreementsByUser(Guid userId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取协议配置
     /// </summary>
     /// <param name="configurationCode">配置编码</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<MerchantDeductionAgreementConfiguration?> GetConfiguration(string configurationCode);
+    Task<MerchantDeductionAgreementConfiguration?> GetConfiguration(string configurationCode, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取协议带订单信息
     /// </summary>
     /// <param name="agreementNo">协议号</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<MerchantDeductionAgreement?> GetAgreementAndOrdersByNo(string agreementNo);
+    Task<MerchantDeductionAgreement?> GetAgreementAndOrdersByNo(string agreementNo, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 检查用户是否签约指定业务的商家扣款协议
     /// </summary>
     /// <param name="userId">用户 Id</param>
     /// <param name="businessType">业务类型</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> CheckUserBusinessSigned(Guid userId, int businessType);
+    Task<bool> CheckUserBusinessSigned(Guid userId, int businessType, CancellationToken cancellationToken = default);
 
     ///// <summary>
     ///// 完成通知业务支付成功
@@ -199,6 +202,5 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     /// <summary>
     /// 获取扣款超时的商家扣款协议
     /// </summary>
-    /// <returns></returns>
-    Task<List<MerchantDeductionAgreement>> GetMerchantAgreementOfDeductionTimeout();
+    Task<List<MerchantDeductionAgreement>> GetMerchantAgreementOfDeductionTimeout(CancellationToken cancellationToken = default);
 }

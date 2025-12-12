@@ -338,7 +338,7 @@ public static partial class HttpContextExtensions
             {
                 if (!fixedLength.HasValue || (value.Count >= fixedLength.Value))
                 {
-                    var result = new DateTimeOffset[fixedLength.HasValue ? fixedLength.Value : value.Count];
+                    var result = new DateTimeOffset[fixedLength ?? value.Count];
                     int arrIndex = 0;
                     for (int i = 0; i < value.Count; i++)
                     {
@@ -372,6 +372,59 @@ public static partial class HttpContextExtensions
     }
 
     /// <summary>
+    /// 从 HTTP 请求 Query 中获取日期时间范围
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="key"></param>
+    /// <param name="fixedLength"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DateTimeOffset?[]? GetQueryDateTimeRangeNullable(this HttpRequest request, string key, int? fixedLength = 2)
+    {
+        if (request.Query.TryGetValue(key, out var value))
+        {
+            if (value.Count > 0)
+            {
+                if (!fixedLength.HasValue || (value.Count >= fixedLength.Value))
+                {
+                    var result = new DateTimeOffset?[fixedLength ?? value.Count];
+                    int arrIndex = 0;
+                    for (int i = 0; i < value.Count; i++)
+                    {
+                        var it = value[i];
+                        if (string.IsNullOrWhiteSpace(it))
+                        {
+                            arrIndex++;
+                        }
+                        else if (DateTimeParseHelper.TryParse(it, out var result1))
+                        {
+                            result[arrIndex++] = result1.Value;
+                            if (fixedLength.HasValue)
+                            {
+                                if (fixedLength.Value == arrIndex)
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (arrIndex == result.Length - 1)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        var resultLocal = new DateTimeOffset?[arrIndex + 1];
+                        Array.Copy(result, resultLocal, resultLocal.Length);
+                        return resultLocal;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
     /// 从 HTTP 上下文的请求 Query 中获取日期时间范围
     /// </summary>
     /// <param name="context"></param>
@@ -380,6 +433,16 @@ public static partial class HttpContextExtensions
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DateTimeOffset[]? GetQueryDateTimeRange(this HttpContext context, string key, int? fixedLength = 2) => context.Request.GetQueryDateTimeRange(key, fixedLength);
+
+    /// <summary>
+    /// 从 HTTP 上下文的请求 Query 中获取日期时间范围
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="key"></param>
+    /// <param name="fixedLength"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static DateTimeOffset?[]? GetQueryDateTimeRangeNullable(this HttpContext context, string key, int? fixedLength = 2) => context.Request.GetQueryDateTimeRangeNullable(key, fixedLength);
 
     /// <summary>
     /// 获取客户端 IP 地址

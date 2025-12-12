@@ -8,7 +8,7 @@ public sealed partial class AftersalesBillAddDto
     /// <summary>
     /// 订单 Id
     /// </summary>
-    public Guid OrderId { get; set; }
+    public string OrderId { get; set; } = "";
 
     /// <summary>
     /// 退款原因

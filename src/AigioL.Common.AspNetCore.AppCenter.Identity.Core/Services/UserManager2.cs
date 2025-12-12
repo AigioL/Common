@@ -273,7 +273,7 @@ partial class UserManager2<TDbContext> : IIdentityUserManager<User>
         var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
         var hashKey = ShortGuid.Encode(userInfo.Id);
         var hashValue = MemoryPackSerializer.Serialize(userInfo);
-        await redisDb.HashSetAsync(CacheKeys.IdentityUserInfoDataHashV1Key, hashKey, hashValue);
+        await redisDb.StringSetAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{hashKey}", hashValue, expiry: TimeSpan.FromDays(7));
     }
 }
 
@@ -303,7 +303,7 @@ partial class UserManager2<TDbContext> : IUserManager2
             {
                 var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
                 var hashKey = ShortGuid.Encode(userId.Value);
-                var cacheData = await redisDb.HashGetAsync(CacheKeys.IdentityUserInfoDataHashV1Key, hashKey);
+                var cacheData = await redisDb.StringGetAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{hashKey}");
                 if (cacheData.HasValue)
                 {
                     var userInfo = MemoryPackSerializer.Deserialize<UserInfoModel>((byte[])cacheData!);

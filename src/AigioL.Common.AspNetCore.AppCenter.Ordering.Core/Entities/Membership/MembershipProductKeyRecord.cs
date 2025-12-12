@@ -18,7 +18,7 @@ public partial class MembershipProductKeyRecord :
     INEWSEQUENTIALID,
     IDisable
 {
-    public virtual MembershipGoods MembershipGood { get; set; } = null!;
+    public virtual MembershipGoods MembershipGoods { get; set; } = null!;
 
     /// <summary>
     /// 会员商品 Id
@@ -55,7 +55,7 @@ public partial class MembershipProductKeyRecord :
             base.Configure(builder);
 
             builder
-                .HasOne(x => x.MembershipGood)
+                .HasOne(x => x.MembershipGoods)
                 .WithMany()
                 .HasForeignKey(x => x.MembershipGoodsId)
                 .OnDelete(DeleteBehavior.SetNull);

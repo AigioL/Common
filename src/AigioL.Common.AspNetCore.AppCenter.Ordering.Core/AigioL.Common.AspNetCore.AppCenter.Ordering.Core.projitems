@@ -51,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipGoodsModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipOrderRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AliPayPayTradeType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AliPayTradeResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\NoticeStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderDetailModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderingMinimalApisJsonSerializerContext.cs" />
@@ -67,8 +68,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\MerchantDeductionConfigurationInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderBusinessPaymentMethod.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PubPayState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PubTransferState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\RefundResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\TradeAgreementCreateResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\TradeStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\UserAgreement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\WeChatAccessToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\WechatPayTradeResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\WeChatPayTradeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\RefundChannelType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\RefundStatus.cs" />
@@ -77,16 +83,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAftersalesBillRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Membership\IMembershipGoodsRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IMerchantDeductionAgreementRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IMerchantDeductionAgreementRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Membership\IMembershipProductKeyRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IPaymentRepository.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IAliPayServices.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IPaymentMessageQueueService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IUnSignAgreementServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\AftersalesBillRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Membership\MembershipGoodsRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Membership\MembershipProductKeyRecordRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\OrderRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Payment\MerchantDeductionAgreementRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Payment\PaymentRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Membership\IUserMembershipService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IPaymentService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Payment\IWeChatPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Membership\UserMembershipService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

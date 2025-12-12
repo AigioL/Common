@@ -9,6 +9,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 #region AgreementController
 [JsonSerializable(typeof(ApiRsp<List<AgreementModel>?>))]
 #endregion
+#region CooperatorOrderController
+#endregion
 #region MembershipController
 [JsonSerializable(typeof(ApiRsp<MembershipGoodsModel[]?>))]
 [JsonSerializable(typeof(MembershipOrderRequest))]
@@ -17,6 +19,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 #endregion
 #region PaymentController
 [JsonSerializable(typeof(OrderBusinessPaymentMethod))]
+[JsonSerializable(typeof(ApiRsp<PubPayState?>))]
 [JsonSerializable(typeof(ApiRsp<OrderBusinessPaymentMethod[]?>))]
 #endregion
 #region VipPaymentController

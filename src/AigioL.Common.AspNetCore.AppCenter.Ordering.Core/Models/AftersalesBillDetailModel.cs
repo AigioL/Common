@@ -13,7 +13,7 @@ public sealed partial class AftersalesBillDetailModel
     /// <summary>
     /// 订单 Id
     /// </summary>
-    public Guid OrderId { get; set; }
+    public string OrderId { get; set; } = "";
 
     /// <summary>
     /// 售后单号

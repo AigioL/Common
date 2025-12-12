@@ -21,7 +21,7 @@ public static class UserOrderController
             .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapGet("{id}", async (HttpContext context,
-            [FromRoute] Guid id) =>
+            [FromRoute] string id) =>
         {
             var userId = context.GetUserIdThrowIfNull();
             var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
@@ -36,8 +36,8 @@ public static class UserOrderController
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
             var status = context.GetQueryEnums<OrderStatus>("status");
-            var paymentTime = context.GetQueryDateTimeRange("paymentTime");
-            var creationTime = context.GetQueryDateTimeRange("creationTime");
+            var paymentTime = context.GetQueryDateTimeRangeNullable("paymentTime");
+            var creationTime = context.GetQueryDateTimeRangeNullable("creationTime");
             if (note == null)
             {
                 if (context.Request.Query.TryGetValue("remarks", out var remarks) && !StringValues.IsNullOrEmpty(remarks))
@@ -87,7 +87,7 @@ public static class UserOrderController
     static async Task<ApiRsp<OrderDetailModel?>> GetOrderDetail(
         Guid userId,
         IOrderRepository repo,
-        Guid id,
+        string id,
         CancellationToken cancellationToken = default)
     {
         var result = await repo.GetOrderInfo(id, userId, cancellationToken);
@@ -115,10 +115,10 @@ public static class UserOrderController
         IOrderRepository repo,
         long? orderNumber,
         OrderStatus[]? status,
-        DateTimeOffset[]? paymentTime,
+        DateTimeOffset?[]? paymentTime,
         int? businessType,
         string? note,
-        DateTimeOffset[]? creationTime,
+        DateTimeOffset?[]? creationTime,
         int current,
         int pageSize,
         CancellationToken cancellationToken = default)

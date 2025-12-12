@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Payment;
+namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 
 /// <summary>
 /// 解约委托代扣协议服务
@@ -23,7 +23,7 @@ public interface IUnSignAgreementServices
     static IUnSignAgreementServices? GetServices(IServiceProvider serviceProvider, PaymentType paymentType) => paymentType switch
     {
         PaymentType.Alipay => serviceProvider.GetRequiredService<IAliPayServices>(),
-        PaymentType.WeChatPay => serviceProvider.GetRequiredKeyedService<IWeChatPayServices>(IWeChatPayServices.V2),
+        PaymentType.WeChatPay => serviceProvider.GetRequiredService<IWeChatPayServices>(), // V2 与 V3 版本已融合服务
         //PaymentType.UnionPay => TODO: 银联解约
         _ => null,
     };

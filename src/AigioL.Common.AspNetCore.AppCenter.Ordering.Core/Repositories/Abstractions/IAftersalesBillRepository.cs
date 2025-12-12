@@ -16,8 +16,8 @@ public partial interface IAftersalesBillRepository : IRepository<AftersalesBill,
     /// <param name="userId">用户 Id，限制用户只能操作自己的订单</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ApiRsp<(Order? order, AftersalesBillDetailModel? aftersalesBill)>> CreateAftersalesBill(
-        Guid orderId,
+    Task<ApiRsp<(Order? order, AftersalesBillDetailModel? aftersalesBillDetailModel)>> CreateAftersalesBill(
+        string orderId,
         string refundReason,
         Guid userId,
         CancellationToken cancellationToken = default);
