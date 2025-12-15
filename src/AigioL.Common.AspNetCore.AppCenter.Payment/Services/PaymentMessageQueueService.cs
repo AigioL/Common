@@ -1,27 +1,56 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
+using Microsoft.IO;
+using RabbitMQ.Client;
+using System.Text;
+using System.Text.Json;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services;
 
-sealed partial class PaymentMessageQueueService : IPaymentMessageQueueService
+sealed partial class PaymentMessageQueueService(IConnection rabbitmqConn) : IPaymentMessageQueueService
 {
-    public Task PushPaymentSuccess(OrderPaymentSuccessInfo info)
+    readonly RecyclableMemoryStreamManager m = new();
+
+    const string exchange = ""; // 默认交换机
+
+    async Task ListRightPushAsync(
+        string routingKey,
+        ReadOnlyMemory<byte> body,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
+        await channel.BasicPublishAsync(exchange, routingKey, body, cancellationToken);
     }
 
-    public Task PushRefundSuccess(OrderRefundSuccessInfo info)
+    public async Task PushPaymentSuccess(OrderPaymentSuccessInfo info)
     {
-        throw new NotImplementedException();
+        using var stream = m.GetStream();
+        await JsonSerializer.SerializeAsync(stream, info,
+            PaymentMinimalApisJsonSerializerContext.Default.OrderPaymentSuccessInfo);
+        var value = stream.GetMemory();
+        await ListRightPushAsync(CacheKeys.OrderPaymentSuccess, value);
     }
 
-    public Task PushSignAgreementSuccess(string agreementNo)
+    public async Task PushRefundSuccess(OrderRefundSuccessInfo info)
     {
-        throw new NotImplementedException();
+        using var stream = m.GetStream();
+        await JsonSerializer.SerializeAsync(stream, info,
+            PaymentMinimalApisJsonSerializerContext.Default.OrderRefundSuccessInfo);
+        var value = stream.GetMemory();
+        await ListRightPushAsync(CacheKeys.OrderRefundSuccess, value);
     }
 
-    public Task PushUnSignAgreementSuccess(string agreementNo)
+    public async Task PushSignAgreementSuccess(string agreementNo)
     {
-        throw new NotImplementedException();
+        var value = Encoding.UTF8.GetBytes(agreementNo);
+        await ListRightPushAsync(CacheKeys.AgreementSignSuccessInfo, value);
+    }
+
+    public async Task PushUnSignAgreementSuccess(string agreementNo)
+    {
+        var value = Encoding.UTF8.GetBytes(agreementNo);
+        await ListRightPushAsync(CacheKeys.AgreementUnSignSuccessInfo, value);
     }
 }

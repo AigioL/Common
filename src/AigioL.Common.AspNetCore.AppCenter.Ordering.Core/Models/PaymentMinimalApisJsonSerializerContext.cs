@@ -27,6 +27,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 #endregion
 [JsonSerializable(typeof(TradeAgreementCreateResult))]
 [JsonSerializable(typeof(WeChatAccessToken))]
+[JsonSerializable(typeof(OrderPaymentSuccessInfo))]
+[JsonSerializable(typeof(OrderRefundSuccessInfo))]
 [JsonSourceGenerationOptions]
 public sealed partial class PaymentMinimalApisJsonSerializerContext : JsonSerializerContext
 {

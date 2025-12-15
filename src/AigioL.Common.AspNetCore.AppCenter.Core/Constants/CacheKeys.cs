@@ -97,6 +97,30 @@ public static partial class CacheKeys
 
     #endregion
 
+    #region Message
+
+    /// <summary>
+    /// 通用订单收到支付成功通知
+    /// </summary>
+    public const string OrderPaymentSuccess = "OrderPaymentSuccessMessage";
+
+    /// <summary>
+    /// 通用订单收到退款完成通知
+    /// </summary>
+    public const string OrderRefundSuccess = "OrderRefundSuccessMessage";
+
+    /// <summary>
+    /// 协议签约成功通知
+    /// </summary>
+    public const string AgreementSignSuccessInfo = "AgreementSignSuccessInfo";
+
+    /// <summary>
+    /// 协议解约成功通知
+    /// </summary>
+    public const string AgreementUnSignSuccessInfo = "AgreementUnSignSuccessInfo";
+
+    #endregion
+
     /// <summary>
     /// 支付服务是否停止
     /// </summary>
