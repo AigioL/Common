@@ -154,4 +154,8 @@
 	<ItemGroup>
 		<PackageVersion Include="Yitter.IdGenerator" Version="1.0.14" />
 	</ItemGroup>
+	<!-- 👇 腾讯云 -->
+	<ItemGroup>
+		<PackageVersion Include="Tencent.QCloud.Cos.Sdk" Version="5.4.49" />
+	</ItemGroup>
 </Project>

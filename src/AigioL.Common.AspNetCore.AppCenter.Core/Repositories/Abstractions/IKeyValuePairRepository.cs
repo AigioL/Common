@@ -66,8 +66,3 @@ public partial interface IKeyValuePairRepository : IRepository<KeyValuePair, str
         TimeSpan absoluteExpirationRelativeToNow,
         JsonTypeInfo<T> jsonTypeInfo);
 }
-
-partial interface IKeyValuePairRepository
-{
-    const string 创建用户时赠送会员时长天 = "创建用户时赠送会员时长天";
-}

@@ -9,7 +9,7 @@ namespace AigioL.Common.SmsSender.Models;
 /// <summary>
 /// 提供短信相关配置选项
 /// </summary>
-public class SmsOptions
+public sealed record class SmsOptions
 {
     /// <summary>
     /// 阿里云短信配置选项

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>bf2ae051-a657-4596-ae02-ea0b1939a55c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.Storage.Models</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Abstractions\IObjectStorageSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\TencentCloudOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectStorageOptions.cs" />
+  </ItemGroup>
+</Project>

@@ -71,6 +71,7 @@ public partial interface IPaymentRepository
     /// </summary>
     /// <param name="orderNumber">订单号</param>
     /// <param name="paymentType">支付平台</param>
+    /// <param name="cancellationToken"></param>
     Task<(Order Order, OrderPaymentComposition OrderPaymentComposition)?> GetOrderPayment(string orderNumber, PaymentType paymentType,
         CancellationToken cancellationToken = default);
 }

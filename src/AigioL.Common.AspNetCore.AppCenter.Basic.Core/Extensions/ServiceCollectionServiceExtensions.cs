@@ -4,6 +4,7 @@ using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Services;
 using AigioL.Common.AspNetCore.AppCenter.Services;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
+using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
@@ -40,6 +41,15 @@ public static partial class ServiceCollectionServiceExtensions
         // AppVer
         services.TryAddScoped<IAppVerBuildRepository, AppVerBuildRepository<TDbContext>>();
         services.TryAddScoped<IAppVerRepository, AppVerRepository<TDbContext>>();
+        return services;
+    }
+
+    public static IServiceCollection AddKeyValuePairRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext, IDbContextBase
+    {
+        services.TryAddScoped<IKeyValuePairRepository, KeyValuePairRepository<TDbContext>>();
         return services;
     }
 }

@@ -750,7 +750,7 @@ partial class UserManager2<TDbContext> : IUserManager2
 
         // 创建时赠送会员时长
         var dayFreeMembershipDuration = await keyValuePairRepo.GetAsync(cache,
-            IKeyValuePairRepository.创建用户时赠送会员时长天,
+            CacheKeys.创建用户时赠送会员时长天,
             MSMinimalApisJsonSerializerContext.Default.NullableDouble);
         if (dayFreeMembershipDuration.HasValue && dayFreeMembershipDuration.Value > 0)
         {
