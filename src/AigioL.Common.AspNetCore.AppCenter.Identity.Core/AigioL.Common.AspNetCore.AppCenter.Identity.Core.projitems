@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IdentityResultExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IdentityMinimalApisJsonSerializerContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\AccountLoginRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\BindPhoneNumberRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\ChangePhoneNumberNewRequest.cs" />

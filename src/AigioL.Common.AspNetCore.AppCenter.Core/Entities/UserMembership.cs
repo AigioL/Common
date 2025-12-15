@@ -28,7 +28,7 @@ public partial class UserMembership :
     public virtual User User { get; set; } = null!;
 
     /// <summary>
-    /// 首次成为会员时间，创建记录时填入
+    /// 首次成为会员时间
     /// </summary>
     [Comment("首次成为会员时间")]
     public DateTimeOffset FirstMembershipDate { get; set; }

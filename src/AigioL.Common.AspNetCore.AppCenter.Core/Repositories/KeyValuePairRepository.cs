@@ -75,16 +75,7 @@ public sealed partial class KeyValuePairRepository<TDbContext>(TDbContext dbCont
 
 partial class KeyValuePairRepository<TDbContext>
 {
-    /// <summary>
-    /// 根据键获取值，优先从缓存获取，缓存值使用 MemoryPack 序列化，数据库值使用 System.Text.Json 序列化
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="cache"></param>
-    /// <param name="key"></param>
-    /// <param name="jsonTypeInfo"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    async Task<T?> GetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+    public async Task<T?> GetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         IDistributedCache cache,
         string key,
         JsonTypeInfo<T> jsonTypeInfo,
@@ -121,17 +112,7 @@ partial class KeyValuePairRepository<TDbContext>
         return default;
     }
 
-    /// <summary>
-    /// 根据键值对设置值到数据库中，并更新缓存，缓存值使用 MemoryPack 序列化，数据库值使用 System.Text.Json 序列化
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="value"></param>
-    /// <param name="cache"></param>
-    /// <param name="options"></param>
-    /// <param name="key"></param>
-    /// <param name="jsonTypeInfo"></param>
-    /// <returns></returns>
-    async Task SetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+    public async Task SetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         string key,
         T value,
         IDistributedCache? cache,
@@ -162,8 +143,7 @@ partial class KeyValuePairRepository<TDbContext>
         }
     }
 
-    /// <inheritdoc cref="SetAsync{T}(string, T, IDistributedCache?, DistributedCacheEntryOptions?, JsonTypeInfo{T})"/>
-    Task SetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+    public Task SetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         string key,
         T value,
         IDistributedCache? cache,

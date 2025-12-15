@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
@@ -160,6 +161,12 @@ public sealed partial class UserInfoModel : IPhoneNumber, IId<Guid>
     /// <inheritdoc/>
     [global::MemoryPack.MemoryPackOrder(25)]
     public string? PhoneNumberRegionCode { get; set; }
+
+    /// <summary>
+    /// 会员信息
+    /// </summary>
+    [global::MemoryPack.MemoryPackOrder(26)]
+    public MembershipInfo? MembershipInfo { get; set; }
 
     /// <inheritdoc/>
     public override string ToString() => $"NickName: {NickName}, Id: {Id}";

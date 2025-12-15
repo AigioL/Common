@@ -2,10 +2,13 @@ using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Response;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Services;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
@@ -13,9 +16,11 @@ using AigioL.Common.Primitives.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Services;
@@ -27,6 +32,9 @@ sealed partial class UserManager2<TDbContext> : UserManager
     readonly TDbContext db;
     readonly IIdentityJsonWebTokenValueProvider jwtValueProvider;
     readonly IConnectionMultiplexer connection;
+    readonly IUserMembershipRepository userMembershipRepo;
+    readonly IKeyValuePairRepository keyValuePairRepo;
+    readonly IDistributedCache cache;
 
     /// <inheritdoc/>
 #pragma warning disable IDE0290 // 使用主构造函数
@@ -43,6 +51,9 @@ sealed partial class UserManager2<TDbContext> : UserManager
         ILookupNormalizer keyNormalizer,
         IdentityErrorDescriber errors,
         IServiceProvider services,
+        IUserMembershipRepository userMembershipRepo,
+        IKeyValuePairRepository keyValuePairRepo,
+        IDistributedCache cache,
         ILogger<UserManager2<TDbContext>> logger) : base(
             store,
             optionsAccessor,
@@ -57,6 +68,9 @@ sealed partial class UserManager2<TDbContext> : UserManager
         this.db = db;
         this.jwtValueProvider = jwtValueProvider;
         this.connection = connection;
+        this.userMembershipRepo = userMembershipRepo;
+        this.keyValuePairRepo = keyValuePairRepo;
+        this.cache = cache;
     }
 }
 
@@ -361,7 +375,14 @@ partial class UserManager2<TDbContext> : IUserManager2
         //    .Select(x => x.CreationTime)
         //    .FirstOrDefault();
 
-        return new()
+        (MembershipInfo? membershipInfo, var _) = await userMembershipRepo.GetUserMembershipCachePriorityAsync(
+            logger,
+            connection,
+            user.Id,
+            false,
+            cancellationToken);
+
+        UserInfoModel r = new()
         {
             Id = user.Id,
             NickName = user.GetNickName(),
@@ -387,7 +408,20 @@ partial class UserManager2<TDbContext> : IUserManager2
             EmailConfirmed = user.EmailConfirmed,
             HasPassword = await HasPasswordAsync(user),
             PhoneNumberRegionCode = user.PhoneNumberRegionCode,
+            MembershipInfo = membershipInfo,
         };
+
+        var isMembership = membershipInfo != null && membershipInfo.IsMembership;
+        if (isMembership)
+        {
+            r.UserType |= UserType.Membership;
+        }
+        else
+        {
+            r.UserType &= ~UserType.Membership;
+        }
+
+        return r;
     }
 
     /// <inheritdoc/>
@@ -707,26 +741,39 @@ partial class UserManager2<TDbContext> : IUserManager2
         return (user, identityResult);
     }
 
-    void OnCreate(User user)
+    async Task OnCreateAsync(User user)
     {
         if (string.IsNullOrWhiteSpace(user.NickName))
         {
             user.NickName = user.GetNickName();
         }
+
+        // 创建时赠送会员时长
+        var dayFreeMembershipDuration = await keyValuePairRepo.GetAsync(cache,
+            IKeyValuePairRepository.创建用户时赠送会员时长天,
+            MSMinimalApisJsonSerializerContext.Default.NullableDouble);
+        if (dayFreeMembershipDuration.HasValue && dayFreeMembershipDuration.Value > 0)
+        {
+            user.Membership ??= new();
+            user.Membership.StartDate = user.Membership.FirstMembershipDate = DateTimeOffset.Now;
+            user.Membership.ExpireDate = user.Membership.StartDate.AddDays(dayFreeMembershipDuration.Value);
+        }
     }
 
     /// <inheritdoc/>
-    public override Task<IdentityResult> CreateAsync(User user)
+    public override async Task<IdentityResult> CreateAsync(User user)
     {
-        OnCreate(user);
-        return base.CreateAsync(user);
+        await OnCreateAsync(user);
+        var r = await base.CreateAsync(user);
+        return r;
     }
 
     /// <inheritdoc/>
-    public override Task<IdentityResult> CreateAsync(User user, string password)
+    public override async Task<IdentityResult> CreateAsync(User user, string password)
     {
-        OnCreate(user);
-        return base.CreateAsync(user, password);
+        await OnCreateAsync(user);
+        var r = await base.CreateAsync(user, password);
+        return r;
     }
 
     #endregion
