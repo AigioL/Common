@@ -29,6 +29,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 [JsonSerializable(typeof(WeChatAccessToken))]
 [JsonSerializable(typeof(OrderPaymentSuccessInfo))]
 [JsonSerializable(typeof(OrderRefundSuccessInfo))]
+[JsonSerializable(typeof(OrderRefundMessage))]
 [JsonSourceGenerationOptions]
 public sealed partial class PaymentMinimalApisJsonSerializerContext : JsonSerializerContext
 {

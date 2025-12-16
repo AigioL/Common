@@ -13,7 +13,7 @@ sealed partial class PaymentMessageQueueService(IConnection rabbitmqConn) : IPay
 {
     readonly RecyclableMemoryStreamManager m = new();
 
-    const string exchange = ""; // 默认交换机
+    const string exchangeName = ""; // 默认交换机
 
     async Task ListRightPushAsync(
         string routingKey,
@@ -21,7 +21,7 @@ sealed partial class PaymentMessageQueueService(IConnection rabbitmqConn) : IPay
         CancellationToken cancellationToken = default)
     {
         using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
-        await channel.BasicPublishAsync(exchange, routingKey, body, cancellationToken);
+        await channel.BasicPublishAsync(exchangeName, routingKey, body, cancellationToken);
     }
 
     public async Task PushPaymentSuccess(OrderPaymentSuccessInfo info)

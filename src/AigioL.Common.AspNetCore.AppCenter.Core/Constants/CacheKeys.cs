@@ -100,6 +100,11 @@ public static partial class CacheKeys
     #region Message
 
     /// <summary>
+    /// 通用订单收到订单完成通知
+    /// </summary>
+    public const string OrderCompleted = "OrderCompletedMessage";
+
+    /// <summary>
     /// 通用订单收到支付成功通知
     /// </summary>
     public const string OrderPaymentSuccess = "OrderPaymentSuccessMessage";
@@ -110,6 +115,11 @@ public static partial class CacheKeys
     public const string OrderRefundSuccess = "OrderRefundSuccessMessage";
 
     /// <summary>
+    /// 要求支付模块执行退款通知（退款单审核通过后，执行支付平台的退款接口）
+    /// </summary>
+    public const string PaymentRefundRequest = "PaymentRefundRequestMessage";
+
+    /// <summary>
     /// 协议签约成功通知
     /// </summary>
     public const string AgreementSignSuccessInfo = "AgreementSignSuccessInfo";
@@ -118,6 +128,17 @@ public static partial class CacheKeys
     /// 协议解约成功通知
     /// </summary>
     public const string AgreementUnSignSuccessInfo = "AgreementUnSignSuccessInfo";
+
+    /// <summary>
+    /// 业务订单收到支付成功通知
+    /// </summary>
+    public static string GetPaymentSuccessMessageQueueKeyByBusinessType(int businessType) => $"OrderPaymentSuccess_{businessType}";
+
+    /// <summary>
+    /// 业务订单收到退款成功通知
+    /// </summary>
+    public static string GetOrderRefundedMessageQueueKeyByBusinessType(int businessType) => $"OrderRefunded_{businessType}";
+
 
     #endregion
 

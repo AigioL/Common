@@ -11,4 +11,6 @@ public interface IOrderingPaymentBaseDbContext : IDbContextBase
     DbSet<OrderPaymentComposition> OrderPaymentCompositions { get; }
 
     DbSet<TransferOrder> TransferOrders { get; }
+
+    DbSet<RefundBill> RefundBills { get; }
 }

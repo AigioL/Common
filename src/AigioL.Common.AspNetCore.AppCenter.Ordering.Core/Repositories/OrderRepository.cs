@@ -167,6 +167,26 @@ sealed partial class OrderRepository<TDbContext> :
         var r = await query.CountAsync(cancellationToken);
         return r;
     }
+
+    public async Task<int?> GetBusinessTypeIdByOrderNumberAsync(string orderNumber, CancellationToken cancellationToken = default)
+    {
+        var query = db.Orders.AsNoTrackingWithIdentityResolution()
+              .Where(x => x.Id == orderNumber)
+              .Select(x => x.BusinessTypeId);
+
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
+    public async Task CompleteOrderAsync(string orderNumber)
+    {
+        var r = await Entity.Where(a => a.Id == orderNumber && a.Status == OrderStatus.Paid)
+            .ExecuteUpdateAsync(s => s.SetProperty(a => a.Status, OrderStatus.Completed));
+        if (r <= 0)
+        {
+            throw new ApplicationException("完成订单失败，改订单不是已付款状态");
+        }
+    }
 }
 
 file static class ProjectToMapper

@@ -113,12 +113,10 @@ public abstract partial class JobService<
     /// 作业计划（JobScheduler）的通知
     /// </summary>
     protected virtual async Task OnNotificationAsync(
-        string jobName,
-        JobRecordResult jobRecordResult,
-        CancellationToken cancellationToken)
+        string title,
+        JobRecordResult jobRecordResult)
     {
-        var title = $"JobErr: {jobName}";
-        var result = await feishuApiClient.SendMessageAsync(title, jobRecordResult.Message, cancellationToken);
+        var result = await feishuApiClient.SendMessageAsync(title, jobRecordResult.Message, CancellationToken.None); // 飞书通知不取消
         jobRecordResult.Notification = result.IsSuccess();
     }
 
@@ -160,7 +158,7 @@ public abstract partial class JobService<
         {
             if (!NotificationOnlyFail || !isSuccess)
             {
-                await OnNotificationAsync(jobName, jobRecordResult, cancellationToken);
+                await OnNotificationAsync($"JobErr: {jobName}", jobRecordResult);
             }
         }
 

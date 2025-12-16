@@ -72,6 +72,32 @@ public partial interface IPaymentRepository
     /// <param name="orderNumber">订单号</param>
     /// <param name="paymentType">支付平台</param>
     /// <param name="cancellationToken"></param>
-    Task<(Order Order, OrderPaymentComposition OrderPaymentComposition)?> GetOrderPayment(string orderNumber, PaymentType paymentType,
+    Task<(Order Order, OrderPaymentComposition OrderPaymentComposition)?> GetOrderPaymentAsync(string orderNumber, PaymentType paymentType,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取线上支付成功的支付组成
+    /// </summary>
+    /// <param name="orderNumber">订单号</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<OrderPaymentComposition?> GetOnlinePaidCompositionAsync(string orderNumber, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取退款单
+    /// </summary>
+    /// <param name="refundNumber">退款单号</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<RefundBill?> GetRefundBillAsync(string refundNumber, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 更新退款单退款状态
+    /// </summary>
+    /// <param name="refundNumber">退款单号</param>
+    /// <param name="refunding">已申请退款</param>
+    /// <param name="refundSuccess">退款成功</param>
+    /// <param name="errorDesc">错误描述</param>
+    /// <returns></returns>
+    Task UpdateRefundBillAsync(string refundNumber, bool refunding, bool refundSuccess, string errorDesc);
 }

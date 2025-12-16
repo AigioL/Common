@@ -60,6 +60,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderPaymentSuccessInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderRefundMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderRefundSuccessInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PaymentAccessTokenEnum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PaymentMethod.cs" />
