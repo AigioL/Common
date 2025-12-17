@@ -40,11 +40,36 @@ public static partial class ProgramHelper
 
     public static IDisposable? Disposable => app;
 
+    static string GetProjectNameByProcessPath()
+    {
+        var processPath = Environment.ProcessPath;
+        ArgumentNullException.ThrowIfNull(processPath);
+        var chars = processPath.AsSpan();
+        var index = chars.LastIndexOf(Path.DirectorySeparatorChar);
+        if (index > 0)
+        {
+            chars = chars[(index + 1)..];
+        }
+        if (chars.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase) ||
+            chars.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
+        {
+            chars = chars[..^4];
+        }
+
+        if (chars.Equals("Analytics", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return "Analysis";
+        }
+
+        var r = chars.ToString();
+        return r;
+    }
+
     /// <summary>
     /// 适用于 ASP.NET Core 6.0+ 中新的最小托管模型的代码
     /// </summary>
     public static unsafe void M(
-       string projectName,
+       string? projectName,
        string[] args,
        delegate* managed<WebApplicationBuilder, void> configureServices = default,
        delegate* managed<WebApplication, void> configure = default,
@@ -55,6 +80,7 @@ public static partial class ProgramHelper
        int maxArchiveFiles = maxArchiveFiles,
        int maxArchiveDays = maxArchiveDays)
     {
+        projectName ??= GetProjectNameByProcessPath();
         SetProject(projectName);
 
         try
