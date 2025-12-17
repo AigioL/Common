@@ -353,11 +353,14 @@ public static partial class ProgramHelper
         {
             throw new InvalidOperationException($"Connection string '{connectionString}' not found.");
         }
+        //IDbContext.ConnectionString = connectionString;
         return connectionString;
     }
 
     public interface IDbContext
     {
         DbContext GetDbContext();
+
+        //static string? ConnectionString { get; internal set; }
     }
 }

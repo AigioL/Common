@@ -101,6 +101,7 @@ public static partial class InfoController
                 TimeZoneInfo = timeZoneInfo,
                 ApplicationParts = applicationParts,
                 DatabaseVersion = dbVersion,
+                //ConnectionString = ProgramHelper.IDbContext.ConnectionString,
                 FrameworkDescription = RuntimeInformation.FrameworkDescription,
                 OSDescription = RuntimeInformation.OSDescription,
                 OSArchitecture = RuntimeInformation.OSArchitecture,
@@ -170,6 +171,8 @@ public static partial class InfoController
         public ApplicationPartsModel? ApplicationParts { get; set; }
 
         public string?[]? DatabaseVersion { get; set; }
+
+        //public string? ConnectionString { get; set; }
 
         public string? FrameworkDescription { get; set; }
 
