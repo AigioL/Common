@@ -87,7 +87,15 @@ static partial class ProgramHelper
                 }
                 if (lastRange.HasValue)
                 {
-                    ProjectId = new(projectNameSpan[lastRange.Value]);
+                    var chars = projectNameSpan[lastRange.Value];
+                    if (chars.Equals("Analytics", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        ProjectId = "Analysis";
+                    }
+                    else
+                    {
+                        ProjectId = new(chars);
+                    }
                     ProjectIdLower = ProjectId.ToLowerInvariant();
                 }
             }

@@ -56,11 +56,6 @@ public static partial class ProgramHelper
             chars = chars[..^4];
         }
 
-        if (chars.Equals("Analytics", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return "Analysis";
-        }
-
         var r = chars.ToString();
         return r;
     }
