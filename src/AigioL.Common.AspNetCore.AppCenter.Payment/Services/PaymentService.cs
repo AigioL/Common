@@ -8,7 +8,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services;
 
 sealed partial class PaymentService(
     ILogger<PaymentService> logger,
-    PaymentMessageQueueService paymentMessageQueue,
+    IPaymentMessageQueueService paymentMessageQueue,
     IPaymentRepository paymentRepo,
     IMerchantDeductionAgreementRepository agreementRepo) : IPaymentService
 {

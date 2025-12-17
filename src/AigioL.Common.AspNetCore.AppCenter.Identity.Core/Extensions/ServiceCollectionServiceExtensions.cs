@@ -21,6 +21,8 @@ public static partial class ServiceCollectionServiceExtensions
         this IServiceCollection services)
         where TDbContext : DbContext, IIdentityDbContext
     {
+        services.AddKeyValuePairRepositories<TDbContext>();
+
         services.TryAddScoped<IAuthMessageRecordRepository, AuthMessageRecordRepository<TDbContext>>();
         //services.TryAddScoped<IClockInRecordRepository, ClockInRecordRepository<TDbContext>>();
         services.TryAddScoped<IUserDeleteRepository, UserDeleteRepository<TDbContext>>();
