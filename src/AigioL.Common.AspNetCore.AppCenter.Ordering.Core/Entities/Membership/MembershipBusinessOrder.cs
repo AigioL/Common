@@ -60,12 +60,11 @@ public partial class MembershipBusinessOrder :
     public int RechargeDays { get; set; }
 
     /// <summary>
-    /// 订单 Id
+    /// 通用订单 Id
     /// </summary>
-    [Required]
     [StringLength(MaxLengths.OrderId)]
-    [Comment("订单 Id")]
-    public required string OrderId { get; set; }
+    [Comment("通用订单 Id")]
+    public string? OrderId { get; set; }
 
     /// <summary>
     /// 应收金额
@@ -92,7 +91,7 @@ public partial class MembershipBusinessOrder :
     /// 商品充值状态
     /// </summary>
     [Comment("商品充值状态")]
-    public GoodRechargeStatus GoodsRechargeStatus { get; set; }
+    public GoodsRechargeStatus GoodsRechargeStatus { get; set; }
 
     /// <summary>
     /// 充值完成时间
@@ -107,7 +106,7 @@ public partial class MembershipBusinessOrder :
     public DateTimeOffset? PaymentTime { get; set; }
 
     /// <summary>
-    /// 业务来源(普通订单,Key激活)
+    /// 业务来源（普通订单，Key 激活）
     /// </summary>
     [Required]
     [Comment("业务来源")]

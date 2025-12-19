@@ -1,48 +1,205 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
+using StackExchange.Redis;
+using Order = AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Membership;
 
-sealed partial class UserMembershipService : IUserMembershipService
+sealed partial class UserMembershipService(
+    ILogger<UserMembershipService> logger,
+    IConnectionMultiplexer connection,
+    IUserMembershipRepository userMembershipRepo,
+    //IUserMembershipChangeRecordRepository userMembershipChangeRecordRepo,
+    IMembershipBusinessOrderRepository membershipBusinessOrderRepo,
+    IMembershipGoodsRepository membershipGoodsRepo,
+    //IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
+    IMerchantDeductionAgreementRepository agreementRepo) : IUserMembershipService
 {
-    public Task<Guid?> CreateMembershipOrderAsync(Guid userId, MembershipGoods goods)
+    public async Task<string?> CreateMembershipOrderAsync(
+        Guid userId,
+        MembershipGoods goods,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        // 检查是否使用过首次优惠，使用过则按商品当前正常价格计算
+        decimal amountReceivable;
+        var useFirstPrice = await membershipGoodsRepo.CheckUserUseFirstPriceOfGoodsAsync(
+            userId, goods.Id, cancellationToken);
+
+        amountReceivable = !useFirstPrice && goods.FirstCurrentPrice.HasValue
+            ? goods.FirstCurrentPrice.Value
+            : goods.CurrentPrice;
+
+        var membershipOrder = new MembershipBusinessOrder
+        {
+            RechargeDays = goods.RechargeDays,
+            AmountReceivable = amountReceivable,
+            UserId = userId,
+            Note = "购买会员",
+            GoodsNo = goods.GoodsNo,
+            GoodsName = goods.GoodsName,
+            MemberLicenseType = goods.MemberLicenseType,
+            MembershipGoodsId = goods.Id,
+            BusinessSource = MembershipBusinessSource.普通订单,
+        };
+
+        var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder);
+        return result.Success ? result.Order?.Id : null;
     }
 
-    public Task<bool> CreateMembershipOrderByCDKeyAsync(Guid userId, MembershipProductKeyRecord productKeyRecord, MembershipGoods goods)
+    public async Task<bool> CreateMembershipOrderByCDKeyAsync(
+        Guid userId,
+        MembershipProductKeyRecord productKeyRecord,
+        MembershipGoods goods,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (productKeyRecord.MembershipGoodsId != goods.Id)
+        {
+            return false;
+        }
+
+        var membershipOrder = new MembershipBusinessOrder
+        {
+            RechargeDays = productKeyRecord.RechargeDays,
+            UserId = userId,
+            Note = "CDKey 兑换会员",
+            GoodsNo = goods.GoodsNo,
+            GoodsName = goods.GoodsName,
+            MemberLicenseType = goods.MemberLicenseType,
+            MembershipGoodsId = goods.Id,
+            BusinessSource = MembershipBusinessSource.CDK激活,
+            ProductKeyRecordId = productKeyRecord.Id,
+        };
+
+        var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder);
+        return result.Success;
     }
 
-    public Task<Order?> CreateMembershipOrderByMerchantDeductionAsync(MerchantDeductionAgreement agreement)
+    #region SubscribeHandle / 支付订单通知处理
+
+    public async Task<bool> OrderPaymentSuccessHandleAsync(string orderId)
     {
-        throw new NotImplementedException();
+        (var isSuccess, var userId) = await membershipBusinessOrderRepo.OrderPaymentSuccess(orderId);
+
+        if (isSuccess) await RefreshUserMembershipCacheAsync(userId!.Value);
+
+        return isSuccess;
     }
 
-    public Task<bool> OrderPaymentCancelHandleAsync(Guid orderId)
+    public async Task<bool> OrderPaymentRefundedHandleAsync(string orderId)
     {
-        throw new NotImplementedException();
+        (var isSuccess, var userId) = await membershipBusinessOrderRepo.OrderRefunded(orderId);
+
+        if (isSuccess) await RefreshUserMembershipCacheAsync(userId!.Value);
+
+        return isSuccess;
     }
 
-    public Task<bool> OrderPaymentRefundedHandleAsync(Guid orderId)
+    public Task<bool> OrderPaymentCancelHandleAsync(string orderId)
     {
-        throw new NotImplementedException();
+        // 会员充值成功后可以通过退款成功后撤销会员，所以这里不需要终止业务
+        return Task.FromResult(true);
     }
 
-    public Task<bool> OrderPaymentSuccessHandleAsync(Guid orderId)
+    #endregion
+
+    #region MerchantDeduction / 商户扣款（连续订阅处理）
+
+    public async Task<Order?> CreateMembershipOrderByMerchantDeductionAsync(MerchantDeductionAgreement agreement)
     {
-        throw new NotImplementedException();
+        var agreement_business_order = await membershipBusinessOrderRepo.NoTrackingFirstOrDefaultAsync(x => x.MerchantDeductionAgreementId == agreement.Id);
+        if (agreement_business_order is null)
+            return null;
+
+        var membershipOrder = new MembershipBusinessOrder
+        {
+            RechargeDays = GetRechargeDays(agreement.PeriodType, agreement.Period),
+            AmountReceivable = agreement.SingleAmount,
+            UserId = agreement.UserId,
+            Note = agreement.Note,
+            MerchantDeductionAgreementId = agreement.Id,
+            PaymentStatus = OrderStatus.WaitPay,
+            GoodsRechargeStatus = GoodsRechargeStatus.Waiting,
+            GoodsNo = agreement_business_order.GoodsNo,
+            GoodsName = agreement_business_order.GoodsName,
+            MemberLicenseType = agreement_business_order.MemberLicenseType,
+            MembershipGoodsId = agreement_business_order.MembershipGoodsId,
+            BusinessSource = MembershipBusinessSource.协议扣款,
+        };
+
+        // 创建瓦特会员订单：通用订单、业务订单、支付组成一并创建
+        var result = await membershipBusinessOrderRepo.CreateBusinessOrder(
+            membershipOrder,
+            true,
+            agreement.Platform);
+        if (!result.Success || result.Order is null)
+        {
+            logger.LogError("签约扣款 创建会员订单错误");
+            return null;
+        }
+        return result.Order;
+
+        static int GetRechargeDays(string periodType, int period) => periodType switch
+        {
+            "MONTH" => 30 * period,
+            "DAY" => period,
+            _ => 0
+        };
     }
 
-    public Task<bool> SignMerchantDeductionSuccessHandleAsync(string agreementNo)
+    public async Task<bool> SignMerchantDeductionSuccessHandleAsync(string agreementNo)
     {
-        throw new NotImplementedException();
+        var agreement = await agreementRepo.GetAgreementAndOrdersByNo(agreementNo);
+
+        if (agreement is null)
+            return false;
+
+        var business_order = await membershipBusinessOrderRepo.GetBusinessOrderByAgreementAsync(agreement.Id);
+        if (business_order is null)
+            return false;
+
+        var handleSuccess = await userMembershipRepo.AddUserMembershipFlagAsync(business_order.UserId, business_order.MemberLicenseType);
+
+        if (handleSuccess) await RefreshUserMembershipCacheAsync(business_order.UserId);
+
+        return handleSuccess;
     }
 
-    public Task<bool> UnSignMerchantDeductionSuccessHandleAsync(string agreementNo)
+    public async Task<bool> UnSignMerchantDeductionSuccessHandleAsync(string agreementNo)
     {
-        throw new NotImplementedException();
+        var agreement = await agreementRepo.GetAgreementAndOrdersByNo(agreementNo);
+
+        if (agreement is null)
+            return false;
+
+        var business_order = await membershipBusinessOrderRepo.GetBusinessOrderByAgreementAsync(agreement.Id);
+        if (business_order is null)
+            return false;
+
+        var handleSuccess = await userMembershipRepo.RemoveUserMembershipFlagAndCheckExpiredAsync(business_order.UserId, business_order.MemberLicenseType);
+
+        if (handleSuccess) await RefreshUserMembershipCacheAsync(business_order.UserId);
+
+        return handleSuccess;
+    }
+
+    #endregion
+
+    /// <summary>
+    /// 刷新用户会员信息缓存
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    async Task<bool> RefreshUserMembershipCacheAsync(Guid userId)
+    {
+        var database = connection.GetDatabase(CacheKeys.RedisMessagingDb);
+        var cacheKey = CacheKeys.GetUserMembershipCacheKey(userId);
+        return await database.KeyDeleteAsync(cacheKey);
     }
 }

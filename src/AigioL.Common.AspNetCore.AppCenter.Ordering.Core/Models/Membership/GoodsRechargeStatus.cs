@@ -5,7 +5,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 /// <summary>
 /// 商品充值状态
 /// </summary>
-public enum GoodRechargeStatus : byte
+public enum GoodsRechargeStatus : byte
 {
     /// <summary>
     /// 待充值，适用于订单支付完毕后
