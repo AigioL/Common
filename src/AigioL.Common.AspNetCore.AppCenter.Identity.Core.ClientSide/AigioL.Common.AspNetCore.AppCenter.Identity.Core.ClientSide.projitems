@@ -10,11 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipLicenseFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Request\RefreshTokenRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Response\LoginOrRegisterResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserInfoModel.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Models\Membership\" />
   </ItemGroup>
 </Project>

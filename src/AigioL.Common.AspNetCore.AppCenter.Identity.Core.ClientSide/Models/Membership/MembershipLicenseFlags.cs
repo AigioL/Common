@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace AigioL.Common.AspNetCore.AppCenter.Models;
+namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 
 /// <summary>
 /// 会员订阅类型
