@@ -100,6 +100,13 @@ static partial class ProgramHelper
                 }
             }
         }
+        try
+        {
+            Console.WriteLine($"ProjectIdLower: {ProjectIdLower}");
+        }
+        catch
+        {
+        }
     }
 
     public static void ConsoleWriteInfo(string? projectName = default, bool isDevelopment = true)

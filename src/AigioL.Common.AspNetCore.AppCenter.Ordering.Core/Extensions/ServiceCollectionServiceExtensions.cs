@@ -47,7 +47,7 @@ public static partial class ServiceCollectionServiceExtensions
     {
         services.TryAddScoped<IUserMembershipRepository, UserMembershipRepository<TDbContext>>();
         //services.TryAddScoped<IUserMembershipChangeRecordRepository, UserMembershipChangeRecordRepository<TDbContext>>();
-        //services.TryAddScoped<IMembershipBusinessOrderRepository, MembershipBusinessOrderRepository<TDbContext>>();
+        services.TryAddScoped<IMembershipBusinessOrderRepository, MembershipBusinessOrderRepository<TDbContext>>();
         services.TryAddScoped<IMembershipGoodsRepository, MembershipGoodsRepository<TDbContext>>();
         services.TryAddScoped<IMembershipProductKeyRecordRepository, MembershipProductKeyRecordRepository<TDbContext>>();
         AddMembershipServices(services);

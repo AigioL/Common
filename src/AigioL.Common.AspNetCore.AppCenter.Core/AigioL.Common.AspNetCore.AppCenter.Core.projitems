@@ -75,7 +75,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\Summaries\StatisticsKomaasharuResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipLicenseFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SmsCodeType.cs" />

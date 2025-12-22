@@ -27,11 +27,11 @@ public static class AliPayController
         {
             var r = await UnifiedOrder(context);
             return r;
-        }).WithDescription("支付宝应用网关（用于接收由支付宝服务器通知）");
+        }).WithDescription("支付宝授权回调地址");
     }
 
     /// <summary>
-    /// 支付宝应用网关（用于接收由支付宝服务器通知）
+    /// 支付宝授权回调地址
     /// <para>https://{host}/payment/notify/alipay</para>
     /// </summary>
     static async Task<IResult> UnifiedOrder(

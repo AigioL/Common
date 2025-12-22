@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
@@ -40,6 +41,25 @@ public static class MembershipController
             var r = await CreateOrderAsync(logger, conn, repo, userMembershipService, request);
             return r;
         }).WithDescription("创建会员订单");
+        routeGroup.MapPost("create/good/{goodId}", async (HttpContext context,
+            [FromRoute] string goodId) =>
+        {
+            if (!ShortGuid.TryParse(goodId, out Guid goodIdG) || goodIdG == default)
+            {
+                return ApiRspCode.BadRequest;
+            }
+            var userId = context.GetUserIdThrowIfNull();
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MembershipController));
+            var repo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
+            var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
+            var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
+            var r = await CreateOrderAsync(logger, conn, repo, userMembershipService, new()
+            {
+                UserId = userId,
+                MembershipGoodsId = goodIdG,
+            });
+            return r;
+        }).WithDescription("根据会员商品 Id 创建会员订单");
         routeGroup.MapPost("create/cdkey", async (HttpContext context,
             [FromBody] MembershipCDKeyRequest request) =>
         {
@@ -90,7 +110,7 @@ public static class MembershipController
         return goods;
     }
 
-    static async Task<ApiRsp<Guid?>> CreateOrderAsync(
+    static async Task<ApiRsp<string?>> CreateOrderAsync(
         ILogger logger,
         IConnectionMultiplexer conn,
         IMembershipGoodsRepository repo,
@@ -101,14 +121,14 @@ public static class MembershipController
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
         return r;
 
-        Task<ApiRsp<Guid?>> ErrorHandleAsync(Exception ex)
+        Task<ApiRsp<string?>> ErrorHandleAsync(Exception ex)
         {
             logger.LogError(ex, "{userid} create businessOrder error", orderRequest.UserId);
-            ApiRsp<Guid?> r = ApiRspCode.InternalServerError;
+            ApiRsp<string?> r = ApiRspCode.InternalServerError;
             return Task.FromResult(r);
         }
 
-        async Task<ApiRsp<Guid?>> HandleCoreAsync()
+        async Task<ApiRsp<string?>> HandleCoreAsync()
         {
             var goods = await repo.FindAsync(orderRequest.MembershipGoodsId);
 
@@ -117,20 +137,20 @@ public static class MembershipController
                 goods.MemberLicenseType == MembershipLicenseFlags.CDKey ||
                 goods.MemberLicenseType == MembershipLicenseFlags.Points)
             {
-                return "充值商品类型未找到 或充值类型不匹配";
+                return ApiRsp.Fail<string>("充值商品类型未找到 或充值类型不匹配");
             }
 
             if (!goods.Enable)
             {
-                return "商品已下架";
+                return ApiRsp.Fail<string>("商品已下架");
             }
 
             var generic_order_id = await userMembershipService.CreateMembershipOrderAsync(
                 orderRequest.UserId,
                 goods);
-            if (generic_order_id.HasValue)
+            if (!string.IsNullOrWhiteSpace(generic_order_id))
             {
-                return generic_order_id;
+                return ApiRsp.Ok(generic_order_id);
             }
 
             logger.LogTrace("{userid} create businessOrder failed", orderRequest.UserId);
