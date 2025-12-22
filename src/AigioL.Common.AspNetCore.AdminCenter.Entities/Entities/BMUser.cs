@@ -17,6 +17,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class BMUser :
     IdentityUser<Guid>,
+    IEntity<Guid>,
     INEWSEQUENTIALID,
     INote,
     INickName,

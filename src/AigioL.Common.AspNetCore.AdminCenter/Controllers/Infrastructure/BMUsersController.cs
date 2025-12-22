@@ -19,7 +19,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMUsersController
 {
-    const string ControllerName = "SystemUser";
+    internal const string ControllerName = "SystemUser";
 
     public static void MapBMUsers<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/users") where TUser : BMUser, new()
     {

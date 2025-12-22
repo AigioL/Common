@@ -140,7 +140,7 @@ public sealed partial record class BMApiRsp<TContent> : BMApiRsp
     [JsonPropertyName("data")]
     public TContent? Content { get; set; }
 
-    public static implicit operator BMApiRsp<TContent>(TContent content) => new() { Content = content };
+    public static implicit operator BMApiRsp<TContent>(TContent content) => new() { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
 
     public static implicit operator BMApiRsp<TContent>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 

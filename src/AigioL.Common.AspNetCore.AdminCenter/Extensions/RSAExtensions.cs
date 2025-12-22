@@ -28,7 +28,7 @@ public static partial class RSAExtensions
             {
                 continue;
             }
-            var data = _.DecryptHexStringToBytes(rsa, it, RSAEncryptionPadding.Pkcs1);
+            var data = _.DecryptHexStringToBytes(rsa, it, RSAEncryptionPadding.OaepSHA256);
             stream.Write(data);
         }
 
@@ -63,10 +63,10 @@ public static partial class RSAExtensions
             {
                 if (!Convert.TryFromBase64Chars(it, b, out var bytesWritten))
                 {
-                    throw new FormatException($"无法将 Base64 字符串转换为字节数组: {it.ToString()}");
+                    throw new FormatException($"无法将 Base64 字符串转换为字节数组: {it}");
                 }
                 var writtenSpan = b.AsSpan(0, bytesWritten);
-                writtenSpan = rsa.Decrypt(writtenSpan, RSAEncryptionPadding.Pkcs1);
+                writtenSpan = rsa.Decrypt(writtenSpan, RSAEncryptionPadding.OaepSHA256);
                 stream.Write(writtenSpan);
             }
             finally

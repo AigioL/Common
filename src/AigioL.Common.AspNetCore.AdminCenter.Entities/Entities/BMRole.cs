@@ -15,6 +15,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class BMRole :
     IdentityRole<Guid>,
+    IEntity<Guid>,
     INEWSEQUENTIALID,
     ISort,
     IDisable,

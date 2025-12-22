@@ -16,7 +16,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMRolesController
 {
-    const string ControllerName = "RoleManage";
+    internal const string ControllerName = "RoleManage";
 
     public static void MapBMRoles<TRole>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/roles") where TRole : BMRole, new()
     {

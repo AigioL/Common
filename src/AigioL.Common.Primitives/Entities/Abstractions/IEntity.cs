@@ -1,3 +1,4 @@
+using AigioL.Common.Primitives.Columns;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
@@ -28,7 +29,7 @@ public interface IEntity
 /// </summary>
 /// <typeparam name="TPrimaryKey"></typeparam>
 public interface IEntity<[DynamicallyAccessedMembers(DAMT)] TPrimaryKey>
-    : IEntity
+    : IEntity, IReadOnlyId<TPrimaryKey>
     where TPrimaryKey : notnull, IEquatable<TPrimaryKey>
 {
     /// <inheritdoc cref="IEntity.Id"/>

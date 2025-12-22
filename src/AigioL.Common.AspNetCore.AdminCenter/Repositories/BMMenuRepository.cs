@@ -90,9 +90,11 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
 {
     public async Task<bool> EditMenuButtonsAsync(Guid menuId, Guid tenantId, params IEnumerable<Guid> buttons)
     {
-        var query = db.Menus.AsNoTrackingWithIdentityResolution();
+        var query = db.Menus
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.Id == menuId && x.TenantId == tenantId);
 
-        var menu = query.FirstOrDefaultAsync(x => x.Id == menuId && x.TenantId == tenantId, RequestAborted);
+        var menu = await query.FirstOrDefaultAsync(RequestAborted);
         if (menu == null)
         {
             return false;
