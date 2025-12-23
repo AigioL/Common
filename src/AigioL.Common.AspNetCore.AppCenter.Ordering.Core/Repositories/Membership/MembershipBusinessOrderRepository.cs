@@ -226,7 +226,7 @@ public class MembershipBusinessOrderRepository<TDbContext> :
     {
         var query = db.MembershipBusinessOrders
             .AsNoTrackingWithIdentityResolution()
-            .OrderBy(x => x.CreationTime)
+            .OrderBy(x => x.CreateTime)
             .Where(x => x.MerchantDeductionAgreementId == agreementId);
         var r = await query.FirstOrDefaultAsync();
         return r;
@@ -345,7 +345,7 @@ public class MembershipBusinessOrderRepository<TDbContext> :
                 Days = business_order.RechargeDays,
                 Note = business_order.MemberLicenseType.GetDescription(),
                 MemberLicenseType = business_order.MemberLicenseType,
-                CreationTime = DateTimeOffset.Now,
+                CreateTime = DateTimeOffset.Now,
                 CurrentRealExpireDate = currentRealExpireDate,
             };
 
@@ -462,7 +462,7 @@ public class MembershipBusinessOrderRepository<TDbContext> :
                 Days = rechargeDays,
                 Note = "用户退款，撤回",
                 CurrentRealExpireDate = currentRealExpireDate,
-                CreationTime = now
+                CreateTime = now
             };
 
             db.UserMembershipChangeRecords.Add(changeRecord);

@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IAvatar.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreationTime.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreateTime.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IDescription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IDisable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IDisableReason.cs" />

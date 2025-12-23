@@ -10,7 +10,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 [Table("MerchantDeductionAgreementConfigurations")]
 public partial class MerchantDeductionAgreementConfiguration :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     IUpdateTime,
     INote,
     INEWSEQUENTIALID
@@ -85,7 +85,7 @@ public partial class MerchantDeductionAgreementConfiguration :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 更新时间

@@ -12,7 +12,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 /// </summary>
 public interface ICreationBaseEntity :
     IEntity,
-    ICreationTime,
+    ICreateTime,
     ICreateBMUser,
     ICreateUserIdNullable
 {

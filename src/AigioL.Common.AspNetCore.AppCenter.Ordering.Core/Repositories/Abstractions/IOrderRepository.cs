@@ -34,7 +34,7 @@ public partial interface IOrderRepository
         DateTimeOffset?[]? paymentTime,
         int? businessType,
         string? note,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         int current,
         int pageSize,
         CancellationToken cancellationToken = default);

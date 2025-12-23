@@ -170,16 +170,16 @@ public static partial class SqlStringHelper
     public const string SelectCountFrom_0 = "select count({0}) from ";
 
     /// <summary>
-    /// " order by CreationTime desc"
+    /// " order by CreateTime desc"
     /// <para>根据 创建时间 倒序</para>
     /// </summary>
-    public const string OrderByCreationTimeDescending = " order by CreationTime desc";
+    public const string OrderByCreateTimeDescending = " order by CreateTime desc";
 
     /// <summary>
-    /// " order by ReceiveTime, CreationTime desc"
+    /// " order by ReceiveTime, CreateTime desc"
     /// <para>根据 接收时间, 创建时间 倒序</para>
     /// </summary>
-    public const string OrderByReceiveTimeThenByCreationTimeDescending = " order by ReceiveTime, CreationTime desc";
+    public const string OrderByReceiveTimeThenByCreateTimeDescending = " order by ReceiveTime, CreateTime desc";
 
     /// <summary>
     /// " order by {0} desc"

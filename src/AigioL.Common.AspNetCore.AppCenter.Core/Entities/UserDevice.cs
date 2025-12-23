@@ -16,7 +16,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 public partial class UserDevice :
     Entity<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime
+    ICreateTime
 {
     /// <summary>
     /// 用户 Id
@@ -61,7 +61,7 @@ public partial class UserDevice :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 设备所属终端

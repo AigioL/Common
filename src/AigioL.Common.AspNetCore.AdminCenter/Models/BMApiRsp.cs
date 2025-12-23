@@ -100,6 +100,12 @@ public partial record class BMApiRsp
         Code = unchecked((uint)HttpStatusCode.OK),
     };
 
+    public static BMApiRsp<bool> OkBoolean(bool content = true) => new()
+    {
+        Code = unchecked((uint)HttpStatusCode.OK),
+        Content = content,
+    };
+
     public static implicit operator BMApiRsp(ApiRsp apiRsp) => new()
     {
         Code = apiRsp.Code,

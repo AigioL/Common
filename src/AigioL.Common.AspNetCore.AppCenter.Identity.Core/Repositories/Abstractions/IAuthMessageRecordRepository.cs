@@ -81,7 +81,7 @@ partial interface IAuthMessageRecordRepository // 管理后台
     ///// <param name="phoneNumber">电话</param>
     ///// <param name="phoneNumberRegionCode"></param>
     ///// <param name="nickName"></param>
-    ///// <param name="creationTime">创建时间</param>
+    ///// <param name="createTime">创建时间</param>
     ///// <param name="email">邮箱地址</param>
     ///// <param name="requestType">短信验证用途</param>
     ///// <param name="everCheck">是否校验过</param>
@@ -95,7 +95,7 @@ partial interface IAuthMessageRecordRepository // 管理后台
     //    string? phoneNumber,
     //    string? phoneNumberRegionCode,
     //    string? nickName,
-    //    DateTimeOffset?[]? creationTime,
+    //    DateTimeOffset?[]? createTime,
     //    string? email,
     //    SmsCodeType? requestType,
     //    bool? everCheck,

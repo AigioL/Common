@@ -12,7 +12,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 
@@ -23,7 +22,10 @@ public static partial class BMLoginController
 {
     public static void MapBMLogin<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/login") where TUser : BMUser
     {
-        b.MapPost(pattern, async (HttpContext context, [FromBody] string[] args) =>
+        var routeGroup = b.MapGroup(pattern)
+            .WithDescription("管理后台用户登录");
+
+        routeGroup.MapPost("", async (HttpContext context, [FromBody] string[] args) =>
         {
             var r = await LoginAsync<TUser>(context, args);
             return r.SetHttpContext(context);

@@ -13,7 +13,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMMenusController
 {
-    internal const string ControllerName = "SystemMenuManage";
+    const string ControllerName = ControllerConstants.SystemMenuManage;
 
     public static void MapBMMenus(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/menus")
     {

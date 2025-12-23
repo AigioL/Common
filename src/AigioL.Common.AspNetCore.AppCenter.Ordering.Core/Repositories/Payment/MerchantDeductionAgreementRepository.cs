@@ -119,7 +119,7 @@ sealed partial class MerchantDeductionAgreementRepository<TDbContext> :
             .AsNoTrackingWithIdentityResolution()
             .Where(a => a.UserId == userId)
             .Where(a => a.Status != AgreementStatus.UnSigned)
-            .OrderByDescending(a => a.CreationTime)
+            .OrderByDescending(a => a.CreateTime)
             .Select(ProjectToMapper.AgreementModelExpr);
 
         var r = await query.ToListAsync(cancellationToken);

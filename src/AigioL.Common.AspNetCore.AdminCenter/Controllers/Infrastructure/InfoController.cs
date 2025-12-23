@@ -319,7 +319,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         return result = HttpStatusCode.OK;
     }
 
-    static IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
+    protected virtual IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
     {
         //yield return new BMMenu
         //{
@@ -347,7 +347,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             {
                 Url = "/" + nameof(Titles.bm_users),
                 Name = Titles.bm_users,
-                Key = BMUsersController.ControllerName,
+                Key = ControllerConstants.SystemUser,
                 //Icon = IconType.Outline.User,
             };
 
@@ -355,7 +355,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             {
                 Url = "/" + nameof(Titles.bm_roles),
                 Name = Titles.bm_roles,
-                Key = BMRolesController.ControllerName,
+                Key = ControllerConstants.RoleManage,
                 //Icon = IconType.Outline.Apartment,
             };
 
@@ -363,7 +363,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             {
                 Url = "/" + nameof(Titles.bm_menubuttonroles),
                 Name = Titles.bm_menubuttonroles,
-                Key = BMMenusController.ControllerName,
+                Key = ControllerConstants.SystemMenuManage,
                 //Icon = IconType.Outline.Menu,
             };
 
@@ -396,37 +396,44 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         }
     }
 
-    static void SetUserIdAndTenantId(IEnumerable<BMMenu>? menus, Guid userId, Guid tenantId, long? order = null)
+    protected virtual void SetUserIdAndTenantId(IEnumerable<BMMenu>? menus, Guid userId, Guid tenantId, long? sort = null)
     {
-        if (menus == null) return;
-        if (!order.HasValue) order = -100000L;
+        if (menus == null)
+        {
+            return;
+        }
+        if (!sort.HasValue)
+        {
+            // 从大的数开始递减，保证插入数据库时排序正确
+            sort = 10_0000L;
+        }
         foreach (var menu in menus)
         {
             menu.CreateUserId = userId;
             menu.TenantId = tenantId;
-            menu.Sort = order.Value;
-            order++;
-            SetUserIdAndTenantId(menu.Children, userId, tenantId, order);
+            menu.Sort = sort.Value;
+            sort--;
+            SetUserIdAndTenantId(menu.Children, userId, tenantId, sort);
         }
     }
-}
 
-file static partial class Titles
-{
-    public const string home = "主页";
-    public const string dashboard = "仪表盘";
-    public const string welcome = "欢迎页";
-    public const string bm_users = "后台用户";
-    public const string bm_roles = "角色管理";
-    public const string bm_menubuttonroles = "菜单权限管理";
+    public static partial class Titles
+    {
+        public const string home = "主页";
+        public const string dashboard = "仪表盘";
+        public const string welcome = "欢迎页";
+        public const string bm_users = "后台用户";
+        public const string bm_roles = "角色管理";
+        public const string bm_menubuttonroles = "菜单权限管理";
 
-    //public const string tenants = "租户管理";
-    //public const string tenantproductkeybalances = "租户套餐管理";
-    //public const string tenantproductkeybalancerecords = "租户套餐记录";
-}
+        //public const string tenants = "租户管理";
+        //public const string tenantproductkeybalances = "租户套餐管理";
+        //public const string tenantproductkeybalancerecords = "租户套餐记录";
+    }
 
 
-file static partial class MenuTitles
-{
-    public const string SystemManage = "系统管理";
+    public static partial class MenuTitles
+    {
+        public const string SystemManage = "系统管理";
+    }
 }

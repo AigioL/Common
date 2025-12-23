@@ -12,14 +12,14 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.AnalysisLogs;
 public partial class AnalysisInstall :
     Entity<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime
+    ICreateTime
 {
     [Required]
     public required string InstallId { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     public virtual List<AnalysisEventLog> EventLogs { get; set; } = null!;
 

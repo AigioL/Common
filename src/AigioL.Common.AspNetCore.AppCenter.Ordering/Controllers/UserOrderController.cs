@@ -37,7 +37,7 @@ public static class UserOrderController
         {
             var status = context.GetQueryEnums<OrderStatus>("status");
             var paymentTime = context.GetQueryDateTimeRangeNullable("paymentTime");
-            var creationTime = context.GetQueryDateTimeRangeNullable("creationTime");
+            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
             if (note == null)
             {
                 if (context.Request.Query.TryGetValue("remarks", out var remarks) && !StringValues.IsNullOrEmpty(remarks))
@@ -51,7 +51,7 @@ public static class UserOrderController
             var r = await QueryAsync(
                 userId, repo, orderNumber, status,
                 paymentTime, businessType, note,
-                creationTime, current, pageSize,
+                createTime, current, pageSize,
                 context.RequestAborted);
             return r;
         }).WithDescription("分页查询订单");
@@ -105,7 +105,7 @@ public static class UserOrderController
     /// <param name="paymentTime">支付时间</param>
     /// <param name="businessType">业务类型</param>
     /// <param name="note">订单备注</param>
-    /// <param name="creationTime">创建时间</param>
+    /// <param name="createTime">创建时间</param>
     /// <param name="current">当前页码，页码从 1 开始，默认值：<see cref="IPagedModel.DefaultCurrent"/></param>
     /// <param name="pageSize">页大小，如果为 0 必定返回空集合，默认值：<see cref="IPagedModel.DefaultPageSize"/></param>
     /// <param name="cancellationToken"></param>
@@ -118,7 +118,7 @@ public static class UserOrderController
         DateTimeOffset?[]? paymentTime,
         int? businessType,
         string? note,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         int current,
         int pageSize,
         CancellationToken cancellationToken = default)
@@ -126,7 +126,7 @@ public static class UserOrderController
         var r = await repo.QueryUserOrderListAsync(
             userId, orderNumber, status,
             paymentTime, businessType, note,
-            creationTime, current, pageSize,
+            createTime, current, pageSize,
             cancellationToken);
         return r;
     }

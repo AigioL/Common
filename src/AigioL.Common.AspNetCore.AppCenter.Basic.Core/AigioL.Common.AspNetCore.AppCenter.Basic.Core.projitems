@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Models\Komaasharus\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

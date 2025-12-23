@@ -12,7 +12,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Summaries;
 [Table("OrderAmountQtySummaries")]
 public partial class OrderAmountQtySummary :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <summary>
@@ -67,5 +67,5 @@ public partial class OrderAmountQtySummary :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

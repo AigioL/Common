@@ -16,7 +16,7 @@ public abstract class CreationBaseEntity<[DynamicallyAccessedMembers(IEntity.DAM
 {
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建人")]

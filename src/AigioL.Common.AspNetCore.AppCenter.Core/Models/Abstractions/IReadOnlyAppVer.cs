@@ -5,7 +5,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 /// <summary>
 /// APP 版本号信息只读接口
 /// </summary>
-public interface IReadOnlyAppVer : ICreationTime
+public interface IReadOnlyAppVer : ICreateTime
 {
     /// <summary>
     /// 版本号

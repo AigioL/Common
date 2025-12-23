@@ -35,8 +35,13 @@ public abstract partial class BMDbContextBase<
     /// <inheritdoc/>
     DatabaseFacade IDbContextBase.GetDatabase() => Database;
 
-    protected BMDbContextBase(DbContextOptions options) : base(options)
+    protected readonly IHttpContextAccessor httpContextAccessor;
+
+    protected BMDbContextBase(
+        DbContextOptions options,
+        IHttpContextAccessor httpContextAccessor) : base(options)
     {
+        this.httpContextAccessor = httpContextAccessor;
     }
 
     /// <inheritdoc/>
@@ -103,9 +108,20 @@ public abstract partial class BMDbContextBase<
     /// <inheritdoc cref="BMTenant"/>
     public DbSet<BMTenant> Tenants { get; set; }
 
+    sealed record UserIdM(Guid? UserId);
+
     protected virtual void OnSaveChanges()
     {
-        // todo: 构造函数不注入 httpctx，待定！
+        UserIdM? userIdM = null;
+        Guid? GetCurrentlyLoggedInUserId()
+        {
+            if (userIdM == null)
+            {
+                userIdM = new UserIdM(GetUserId(httpContextAccessor.HttpContext));
+            }
+            return userIdM?.UserId;
+        }
+
         foreach (var entity in ChangeTracker.Entries())
         {
             switch (entity.State)
@@ -118,22 +134,28 @@ public abstract partial class BMDbContextBase<
                     if (entity.Entity is IOperatorUserId operatorUserId) // 设置操作人
                     {
                         var uid = GetCurrentlyLoggedInUserId();
-                        if (uid != default)
+                        if (uid.HasValue)
+                        {
                             operatorUserId.OperatorUserId = uid;
+                        }
                     }
                     break;
                 case EntityState.Added:
                     if (entity.Entity is ICreateUserId createUserId) // 设置创建人
                     {
                         var uid = GetCurrentlyLoggedInUserId();
-                        if (uid != default)
-                            createUserId.CreateUserId = uid;
+                        if (uid.HasValue)
+                        {
+                            createUserId.CreateUserId = uid.Value;
+                        }
                     }
                     else if (entity.Entity is ICreateUserIdNullable createUserIdNullable)
                     {
                         var uid = GetCurrentlyLoggedInUserId();
-                        if (uid != default)
-                            createUserIdNullable.CreateUserId = uid;
+                        if (uid.HasValue)
+                        {
+                            createUserIdNullable.CreateUserId = uid.Value;
+                        }
                     }
                     break;
             }

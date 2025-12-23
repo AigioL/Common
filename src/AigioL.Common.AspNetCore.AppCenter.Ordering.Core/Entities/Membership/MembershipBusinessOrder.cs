@@ -19,7 +19,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class MembershipBusinessOrder :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     IUpdateTime,
     INote,
     INEWSEQUENTIALID
@@ -127,7 +127,7 @@ public partial class MembershipBusinessOrder :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("更新时间")]

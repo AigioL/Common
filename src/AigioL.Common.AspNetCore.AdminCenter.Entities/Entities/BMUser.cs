@@ -131,7 +131,7 @@ partial class BMUser : ICreationBaseEntity<Guid>
 {
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建人")]

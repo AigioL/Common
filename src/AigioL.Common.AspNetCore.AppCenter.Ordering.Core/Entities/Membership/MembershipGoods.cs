@@ -18,7 +18,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 public partial class MembershipGoods :
     OperatorBaseEntity<Guid>,
     INote,
-    ICreationTime,
+    ICreateTime,
     IUpdateTime,
     INEWSEQUENTIALID
 {

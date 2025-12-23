@@ -69,9 +69,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IViewsUrl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientDistributionChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuEdit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuOrientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuRedisModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\Summaries\StatisticsKomaasharuResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />

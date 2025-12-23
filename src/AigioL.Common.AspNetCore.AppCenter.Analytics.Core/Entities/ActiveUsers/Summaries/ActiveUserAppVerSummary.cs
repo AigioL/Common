@@ -12,7 +12,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summ
 public partial class ActiveUserAppVerSummary :
     Entity<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime
+    ICreateTime
 {
     public string? AppVersion { get; set; }
 
@@ -25,5 +25,5 @@ public partial class ActiveUserAppVerSummary :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

@@ -14,7 +14,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 [Table("AdvertisementStatistics")]
 public partial class KomaasharuStatistic :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <summary>
@@ -27,7 +27,7 @@ public partial class KomaasharuStatistic :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 点击数
@@ -64,6 +64,6 @@ file static class _Expression
     {
         ViewCount = x.NumDisplay,
         ClickCount = x.NumClick,
-        StatisticsTime = x.CreationTime,
+        StatisticsTime = x.CreateTime,
     };
 }

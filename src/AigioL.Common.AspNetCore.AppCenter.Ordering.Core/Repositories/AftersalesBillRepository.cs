@@ -84,7 +84,7 @@ sealed partial class AftersalesBillRepository<TDbContext> :
             RefundAmount = order.AmountReceived,
             AuditStatus = AuditStatus.Pending,
             RefundReason = refundReason,
-            CreationTime = DateTimeOffset.Now,
+            CreateTime = DateTimeOffset.Now,
         };
         await db.AftersalesBills.AddAsync(aftersalesBill, cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
@@ -110,7 +110,7 @@ file static class ProjectToMapper
         AuditStatus = it.AuditStatus,
         RefundReason = it.RefundReason ?? "",
         SellerNote = it.SellerNote ?? "",
-        CreationTime = it.CreationTime,
+        CreateTime = it.CreateTime,
         UpdateTime = it.UpdateTime,
         OrderNumber = it.OrderId,
         BusinessType = it.Order.BusinessTypeId,
