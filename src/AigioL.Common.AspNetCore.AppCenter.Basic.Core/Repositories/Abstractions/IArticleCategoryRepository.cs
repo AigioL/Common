@@ -16,7 +16,7 @@ public partial interface IArticleCategoryRepository : IRepository<ArticleCategor
     ///// <param name="parentId">父级 Id</param>
     ///// <param name="name">分类名</param>
     ///// <param name="order">排序</param>
-    ///// <param name="creationTime">创建时间</param>
+    ///// <param name="createTime">创建时间</param>
     ///// <param name="updateTime">更新时间</param>
     ///// <param name="createUser">创建人</param>
     ///// <param name="operatorUser">操作人</param>
@@ -29,7 +29,7 @@ public partial interface IArticleCategoryRepository : IRepository<ArticleCategor
     //    Guid? parentId,
     //    string? name,
     //    long? order,
-    //    DateTimeOffset[]? creationTime,
+    //    DateTimeOffset[]? createTime,
     //    DateTimeOffset[]? updateTime,
     //    string? createUser,
     //    string? operatorUser,

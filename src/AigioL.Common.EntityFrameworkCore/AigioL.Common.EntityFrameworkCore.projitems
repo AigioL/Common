@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ModelBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryableExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryableExtensions.Delete.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryableExtensions.OrderByDynamic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\QueryableExtensions.Paging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ColumnHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SqlStringHelper.cs" />

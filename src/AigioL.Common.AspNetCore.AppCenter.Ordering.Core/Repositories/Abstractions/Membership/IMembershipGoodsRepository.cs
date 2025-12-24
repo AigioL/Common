@@ -16,4 +16,9 @@ public interface IMembershipGoodsRepository : IRepository<MembershipGoods, Guid>
     /// 根据用户检查商品价格，检查用户是否使用过首次优惠
     /// </summary>
     Task<MembershipGoodsModel[]> CheckPriceByUserAsync(Guid userId, MembershipGoodsModel[] goodsArray, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 检查用户是否使用过商品的首次优惠
+    /// </summary>
+    Task<bool> CheckUserUseFirstPriceOfGoodsAsync(Guid userId, Guid goodsId, CancellationToken cancellationToken = default);
 }

@@ -7,7 +7,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.AnalysisLogs.Abs
 public abstract partial class AnalysisLog :
     Entity<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime
+    ICreateTime
 {
     public Guid? DeviceId { get; set; }
 
@@ -15,7 +15,7 @@ public abstract partial class AnalysisLog :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     public required Guid AppId { get; set; }
 

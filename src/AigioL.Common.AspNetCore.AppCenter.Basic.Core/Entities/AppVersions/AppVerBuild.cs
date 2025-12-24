@@ -18,7 +18,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions;
 public partial class AppVerBuild :
     Entity<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime,
+    ICreateTime,
     IDisable
 {
     /// <summary>
@@ -76,7 +76,7 @@ public partial class AppVerBuild :
     public bool Disable { get; set; }
 
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 客户端版本

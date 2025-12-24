@@ -18,7 +18,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class Komaasharu :
     OperatorBaseEntity<Guid>,
-    ICreationTime,
+    ICreateTime,
     ISoftDeleted,
     IDisable,
     ISort,

@@ -1,6 +1,8 @@
+using AigioL.Common.Primitives.Columns;
+
 namespace AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 
-public sealed class BMMenuTreeItem
+public sealed class BMMenuTreeItem : IReadOnlyId<Guid>
 {
     public Guid Id { get; set; }
 

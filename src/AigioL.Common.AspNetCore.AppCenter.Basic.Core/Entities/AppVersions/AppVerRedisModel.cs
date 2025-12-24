@@ -15,7 +15,7 @@ public sealed partial record class AppVerRedisModel : IReadOnlyAppVer
 
     /// <inheritdoc/>
     [global::MemoryPack.MemoryPackOrder(1)]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [global::MemoryPack.MemoryPackOrder(2)]

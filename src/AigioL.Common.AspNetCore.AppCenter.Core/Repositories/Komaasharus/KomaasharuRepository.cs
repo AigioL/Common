@@ -3,7 +3,9 @@ using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus;
 using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Repositories.Komaasharus.Abstractions;
+using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +32,7 @@ partial class KomaasharuRepository<TDbContext>
             KomaasharuId = id,
             NumDisplay = count,
             NumClick = clickCount,
-            CreationTime = DateTimeOffset.Now,
+            CreateTime = DateTimeOffset.Now,
         });
         await db.Komaasharus.Where(x => x.Id == id).ExecuteUpdateAsync(setters =>
         {
@@ -96,6 +98,97 @@ partial class KomaasharuRepository<TDbContext>
     }
 }
 
+partial class KomaasharuRepository<TDbContext>
+{
+    public async Task<PagedModel<KomaasharuTableItem>> QueryAsync(string? name, KomaasharuType? type, KomaasharuOrientation? orientation, DateTimeOffset?[]? startTime, DateTimeOffset?[]? endTime, bool? expired, bool? disable, string? orderBy, bool? desc, int current, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var query = db.Komaasharus.AsNoTrackingWithIdentityResolution();
+
+        if (!string.IsNullOrEmpty(name))
+            query = query.Where(a => a.Name.Contains(name));
+        if (type.HasValue)
+            query = query.Where(a => a.Type == type);
+        if (orientation.HasValue)
+            query = query.Where(a => a.Orientation == orientation);
+
+        if (startTime != null && startTime.Length == 2)
+        {
+            if (startTime[0].HasValue)
+                query = query.Where(x => x.StartTime >= startTime[0]);
+            if (startTime[1].HasValue)
+                query = query.Where(x => x.StartTime < startTime[1]);
+        }
+        if (disable.HasValue)
+            query = query.Where(x => x.Disable == disable);
+        if (endTime != null && endTime.Length == 2)
+        {
+            if (endTime[0].HasValue)
+                query = query.Where(x => x.EndTime >= endTime[0]);
+            if (endTime[1].HasValue)
+                query = query.Where(x => x.EndTime < endTime[1]);
+        }
+        if (expired.HasValue)
+        {
+            if (expired.Value)
+            {
+                query = query.Where(x => DateTimeOffset.UtcNow >= x.EndTime);
+            }
+            else
+            {
+                query = query.Where(x => DateTimeOffset.UtcNow < x.EndTime);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            query = query.OrderByPropertyName(orderBy, desc);
+        }
+        else
+        {
+            query = query.OrderBy(x => x.Sort).ThenByDescending(x => x.CreateTime);
+        }
+
+        var query2 = query.Select(FExpressions.MapToKomaasharuTableItem);
+        var r = await query2.PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
+
+    public async Task<int> InsertOrUpdateAsync(KomaasharuEdit model)
+    {
+        (int rowCount, _) = await base.InsertOrUpdateAsync(model);
+        return rowCount;
+    }
+
+    public async Task<KomaasharuEdit?> GetEditByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var query = db.Komaasharus.AsNoTrackingWithIdentityResolution()
+               .Where(x => x.Id == id)
+               .Select(FExpressions.MapToEdit);
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
+    public async Task<int> SetDisableAsync(Guid id, bool disable)
+    {
+        var r = await db.Komaasharus
+            .Where(x => x.Id == id)
+            .ExecuteUpdateAsync(x => x.SetProperty(y => y.Disable, y => disable));
+        return r;
+    }
+
+    public async Task<StatisticsKomaasharuResponse[]?> GetStatistics(Guid id, CancellationToken cancellationToken = default)
+    {
+        var query = db.KomaasharuStatistics.AsNoTrackingWithIdentityResolution()
+           .Where(x => x.Id == id)
+           .OrderBy(x => x.CreateTime);
+
+        var query2 = query.Select(KomaasharuStatistic.Expression);
+
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
+    }
+}
+
 file static class FExpressions
 {
     internal static readonly Expression<Func<Komaasharu, bool>> ValidityPeriod = x =>
@@ -122,6 +215,44 @@ file static class FExpressions
         ImageUrl = x.Url,
         JumpUrl = x.JumpUrl,
         DeviceIdiom = x.DeviceIdiom,
+        Platform = x.Platform,
+        IsAuth = x.IsAuth,
+    };
+
+    internal static readonly Expression<Func<Komaasharu, KomaasharuTableItem>> MapToKomaasharuTableItem = x => new()
+    {
+        Id = x.Id,
+        Name = x.Name,
+        Describe = x.Description,
+        Url = x.Url,
+        JumpUrl = x.JumpUrl,
+        StartTime = x.StartTime,
+        EndTime = x.EndTime,
+        Type = x.Type,
+        TotalClick = x.TotalClick,
+        TotalDisplay = x.TotalDisplay,
+        Orientation = x.Orientation,
+        Order = x.Sort,
+        Platform = x.Platform,
+        DeviceIdiom = x.DeviceIdiom,
+        CreateTime = x.CreateTime,
+        UpdateTime = x.UpdateTime,
+        Disable = x.Disable,
+        Expired = DateTimeOffset.UtcNow >= x.EndTime,
+    };
+
+    internal static readonly Expression<Func<Komaasharu, KomaasharuEdit>> MapToEdit = x => new()
+    {
+        Id = x.Id,
+        Name = x.Name,
+        Describe = x.Description,
+        Url = x.Url,
+        JumpUrl = x.JumpUrl,
+        StartTime = x.StartTime,
+        EndTime = x.EndTime,
+        Type = x.Type,
+        Orientation = x.Orientation,
+        Sort = x.Sort,
         Platform = x.Platform,
         IsAuth = x.IsAuth,
     };

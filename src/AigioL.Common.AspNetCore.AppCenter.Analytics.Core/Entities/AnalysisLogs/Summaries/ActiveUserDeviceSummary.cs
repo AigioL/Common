@@ -12,7 +12,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.AnalysisLogs.Sum
 [Table("ActiveUserDeviceSummaries")]
 public partial class ActiveUserDeviceSummary :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <summary>
@@ -55,5 +55,5 @@ public partial class ActiveUserDeviceSummary :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

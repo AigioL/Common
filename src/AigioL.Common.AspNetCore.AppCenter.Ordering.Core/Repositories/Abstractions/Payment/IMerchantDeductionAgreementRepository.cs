@@ -28,7 +28,7 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     ///// <param name="nextDeductionTime">下次扣款时间</param>
     ///// <param name="singleAmount">单次扣款金额</param>
     ///// <param name="status">状态</param>
-    ///// <param name="creationTime">创建时间</param>
+    ///// <param name="createTime">创建时间</param>
     ///// <param name="updateTime">更新时间</param>
     ///// <param name="remarks">备注</param>
     ///// <param name="orderBy">排序字段</param>
@@ -56,7 +56,7 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     //    DateTimeOffset?[]? nextDeductionTime,
     //    decimal? singleAmount,
     //    AgreementStatus? status,
-    //    DateTimeOffset[]? creationTime,
+    //    DateTimeOffset[]? createTime,
     //    DateTimeOffset[]? updateTime,
     //    string? remarks,
     //    string? orderBy,

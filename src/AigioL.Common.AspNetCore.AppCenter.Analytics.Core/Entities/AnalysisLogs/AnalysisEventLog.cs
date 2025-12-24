@@ -24,7 +24,7 @@ public partial class AnalysisEventLog : AnalysisLog
     {
         public void Configure(EntityTypeBuilder<AnalysisEventLog> builder)
         {
-            builder.HasIndex(x => x.CreationTime);
+            builder.HasIndex(x => x.CreateTime);
             builder.HasIndex(x => x.TimeStamp);
             builder.HasIndex(x => x.InstallId);
             builder.HasIndex(x => x.DeviceId);

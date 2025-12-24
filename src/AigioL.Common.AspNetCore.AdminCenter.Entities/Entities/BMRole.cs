@@ -15,6 +15,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class BMRole :
     IdentityRole<Guid>,
+    IEntity<Guid>,
     INEWSEQUENTIALID,
     ISort,
     IDisable,
@@ -68,7 +69,7 @@ partial class BMRole : ICreationBaseEntity<Guid>
 {
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建人")]

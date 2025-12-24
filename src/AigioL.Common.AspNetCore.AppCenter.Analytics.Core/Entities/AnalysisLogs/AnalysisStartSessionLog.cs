@@ -13,7 +13,7 @@ public partial class AnalysisStartSessionLog : AnalysisLog
     {
         public void Configure(EntityTypeBuilder<AnalysisStartSessionLog> builder)
         {
-            builder.HasIndex(x => x.CreationTime);
+            builder.HasIndex(x => x.CreateTime);
             builder.HasIndex(x => x.TimeStamp);
             builder.HasIndex(x => x.InstallId);
             builder.HasIndex(x => x.DeviceId);

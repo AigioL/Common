@@ -15,12 +15,12 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions;
 /// 客户端文件表实体类
 /// </summary>
 [Table(nameof(AppVerFile) + "s")]
-[Index(nameof(AppVerBuildId), nameof(CreationTime))]
+[Index(nameof(AppVerBuildId), nameof(CreateTime))]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class AppVerFile :
     Entity<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime,
+    ICreateTime,
     ICloudFileInfo
 {
     /// <summary>
@@ -119,7 +119,7 @@ public partial class AppVerFile :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 客户端版本构建

@@ -13,7 +13,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus;
 [Table("AdvertisementPersonalizeds")]
 public partial class KomaasharuPersonalized :
     IEntity<Guid>,
-    ICreationTime
+    ICreateTime
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -65,5 +65,5 @@ public partial class KomaasharuPersonalized :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

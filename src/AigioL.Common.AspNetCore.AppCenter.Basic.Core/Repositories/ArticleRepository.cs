@@ -37,7 +37,7 @@ partial class ArticleRepository<TDbContext> // 微服务
             .Include(x => x.Tags);
         if (categoryId.HasValue)
             query = query.Where(x => x.CategoryId == categoryId);
-        query = query.OrderByDescending(x => x.CreationTime);
+        query = query.OrderByDescending(x => x.CreateTime);
         var query2 = query.Select(FExpressions.MapToItemDTO);
         var r = await query2.PagingAsync(current, pageSize, RequestAborted);
         return r;
@@ -53,7 +53,7 @@ partial class ArticleRepository<TDbContext> // 微服务
         switch (orderBy)
         {
             case ArticleOrderBy.DateTime:
-                query = query.OrderByDescending(x => x.CreationTime);
+                query = query.OrderByDescending(x => x.CreateTime);
                 break;
             case ArticleOrderBy.ViewCount:
                 query = query.OrderByDescending(x => x.ViewCount);
@@ -93,7 +93,7 @@ file static class FExpressions
             CoverUrl = x.CoverUrl,
             Introduction = x.Introduction,
             ViewCount = x.ViewCount,
-            CreationTime = x.CreationTime,
+            CreateTime = x.CreateTime,
             Tags = x.Tags.Select(t => new ArticleTagModel
             {
                 Id = t.Id,
@@ -115,7 +115,7 @@ file static class FExpressions
             AuthorName = x.AuthorName,
             Content = x.Content,
             ViewCount = x.ViewCount,
-            CreationTime = x.CreationTime,
+            CreateTime = x.CreateTime,
             Tags = x.Tags.Select(t => new ArticleTagModel
             {
                 Id = t.Id,

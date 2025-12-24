@@ -27,6 +27,8 @@ public static partial class ServiceCollectionServiceExtensions
         //services.TryAddScoped<IClockInRecordRepository, ClockInRecordRepository<TDbContext>>();
         services.TryAddScoped<IUserDeleteRepository, UserDeleteRepository<TDbContext>>();
         services.TryAddScoped<IUserMembershipRepository, UserMembershipRepository<TDbContext>>();
+
+        services.TryAddScoped<IExternalAccountRepository, ExternalAccountRepository<TDbContext>>();
         return services;
     }
 

@@ -46,7 +46,7 @@ public partial class ArticleItemModel
     /// 文章创建时间
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(6)]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 文章标签

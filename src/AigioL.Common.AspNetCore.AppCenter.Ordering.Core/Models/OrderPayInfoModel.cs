@@ -40,5 +40,5 @@ public sealed record class OrderPayInfoModel
     /// <summary>
     /// 创建时间
     /// </summary>
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

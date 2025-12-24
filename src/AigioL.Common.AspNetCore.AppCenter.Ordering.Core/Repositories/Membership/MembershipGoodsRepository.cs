@@ -52,6 +52,16 @@ sealed partial class MembershipGoodsRepository<TDbContext> :
 
         return goodsArray;
     }
+
+    public async Task<bool> CheckUserUseFirstPriceOfGoodsAsync(Guid userId, Guid goodsId, CancellationToken cancellationToken = default)
+    {
+        var query = db.MembershipGoodsUserFirstRecords
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.UserId == userId && x.MembershipGoodsId == goodsId);
+
+        var r = await query.AnyAsync(cancellationToken);
+        return r;
+    }
 }
 
 file static class ProjectToMapper

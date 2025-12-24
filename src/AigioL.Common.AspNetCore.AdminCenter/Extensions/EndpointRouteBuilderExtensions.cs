@@ -16,7 +16,7 @@ public static partial class EndpointRouteBuilderExtensions
         where TUser : BMUser, new()
         where TRole : BMRole, new()
     {
-        b.MapPostInfo();
+        //b.MapPostInfo();
         b.MapBMLogin<TUser>();
         b.MapBMMenus();
         b.MapBMRoles<TRole>();

@@ -46,7 +46,16 @@ public partial record class ApiRsp
 
     public static implicit operator ApiRsp(ApiRspCode code) => new() { Code = unchecked((uint)code) };
 
-    public static implicit operator ApiRsp(string message) => new() { Message = message };
+    public static implicit operator ApiRsp(string message) => Fail(message);
+
+    public static ApiRsp Fail(string message)
+    {
+        ApiRsp r = new()
+        {
+            Message = message
+        };
+        return r;
+    }
 
     static ApiRsp Create(ApiRspCode code, string message)
     {
@@ -69,16 +78,25 @@ public partial record class ApiRsp
         return result;
     }
 
-    public static ApiRsp<TContent> Create<TContent>(TContent content)
+    public static ApiRsp<TContent?> Create<TContent>(TContent content) where TContent : notnull
     {
-        var result = new ApiRsp<TContent> { Content = content, };
+        var result = new ApiRsp<TContent?> { Content = content, };
         return result;
     }
 
-    public static ApiRsp<TContent> Ok<TContent>(TContent content)
+    public static ApiRsp<TContent?> Ok<TContent>(TContent content) where TContent : notnull
     {
-        var result = new ApiRsp<TContent> { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
+        var result = new ApiRsp<TContent?> { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
         return result;
+    }
+
+    public static ApiRsp<TContent?> Fail<TContent>(string message) where TContent : notnull
+    {
+        ApiRsp<TContent?> r = new()
+        {
+            Message = message
+        };
+        return r;
     }
 }
 
@@ -100,7 +118,7 @@ public sealed partial record class ApiRsp<TContent> : ApiRsp
 
     public static implicit operator ApiRsp<TContent>(ApiRspCode code) => new() { Code = unchecked((uint)code) };
 
-    public static implicit operator ApiRsp<TContent>(string message) => new() { Message = message };
+    public static implicit operator ApiRsp<TContent>(string message) => Fail<TContent>(message);
 
     static ApiRsp<TContent> Create(ApiRspCode code, string message)
     {

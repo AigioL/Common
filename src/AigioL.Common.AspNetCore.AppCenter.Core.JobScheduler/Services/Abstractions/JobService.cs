@@ -125,7 +125,7 @@ public abstract partial class JobService<
     /// </summary>
     protected virtual async Task OnCompletedAsync(
         IJobExecutionContext? context,
-        DateTimeOffset creationTime,
+        DateTimeOffset createTime,
         long timestamp,
         ApiRsp result,
         CancellationToken cancellationToken)
@@ -133,14 +133,14 @@ public abstract partial class JobService<
         var jobName = JobName;
         JobRecordResult jobRecordResult = new()
         {
-            CreationTime = creationTime,
+            CreateTime = createTime,
             Name = jobName,
             Code = result.Code,
             Message = result.Message,
             IsAutomatic = context != null,
             Elapsed = Stopwatch.GetElapsedTime(timestamp),
         };
-        jobRecordResult.CompletedTime = jobRecordResult.CreationTime.Add(jobRecordResult.Elapsed);
+        jobRecordResult.CompletedTime = jobRecordResult.CreateTime.Add(jobRecordResult.Elapsed);
 
         var isSuccess = result.IsSuccess();
         if (!isSuccess)
@@ -148,7 +148,7 @@ public abstract partial class JobService<
 #pragma warning disable CA1873 // 避免进行可能成本高昂的日志记录
             LogOnHandleFail(logger,
                 jobName,
-                jobRecordResult.CreationTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
+                jobRecordResult.CreateTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
                 jobRecordResult.Code,
                 jobRecordResult.Message);
 #pragma warning restore CA1873 // 避免进行可能成本高昂的日志记录

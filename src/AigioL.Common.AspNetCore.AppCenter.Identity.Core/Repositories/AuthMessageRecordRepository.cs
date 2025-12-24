@@ -1,10 +1,16 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AigioL.Common.SmsSender.Services;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
@@ -95,8 +101,8 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
 
         var query2 = from x in query
                      where x.PhoneNumber == phoneNumberOrEmail && x.Type == type_
-                     orderby x.CreationTime descending
-                     select (DateTimeOffset?)x.CreationTime;
+                     orderby x.CreateTime descending
+                     select (DateTimeOffset?)x.CreateTime;
 
         var r = await query2.Take(1).FirstOrDefaultAsync();
         return r;
@@ -108,11 +114,11 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
         var before = DateTimeOffset.Now.AddSeconds(-SMSConstants.SmsSendPeriodValidity); // 30分钟之前
         IQueryable<AuthMessageRecord> query = from x in Entity
                                               where x.RequestType.Equals(useType) &&
-                                              x.CreationTime >= before &&
+                                              x.CreateTime >= before &&
                                               !x.Abandoned &&
                                               !x.CheckSuccess &&
                                               x.Type == type
-                                              orderby x.CreationTime descending // 时间倒排序
+                                              orderby x.CreateTime descending // 时间倒排序
                                               select x;
 
         var isPhoneNumberOrEmail = IsPhoneNumberOrEmail(type);
@@ -138,14 +144,14 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
 
         var count = await Entity
             .CountAsync(x => x.PhoneNumber == phoneNumber && x.PhoneNumberRegionCode == phoneNumberRegionCode &&
-                x.CreationTime >= today &&
-                x.CreationTime < tomorrow &&
+                x.CreateTime >= today &&
+                x.CreateTime < tomorrow &&
                 x.Type == type_);
 
         return count > maxSendSmsDay_;
     }
 
-    //public Task<PagedModel<dynamic>> QueryAsync(Guid? userId, string? phoneNumber, string? phoneNumberRegionCode, string? nickName, DateTimeOffset?[]? creationTime, string? email, SmsCodeType? requestType, bool? everCheck, bool? checkSuccess, string? orderBy, bool? desc, int current = 1, int pageSize = 10)
+    //public Task<PagedModel<dynamic>> QueryAsync(Guid? userId, string? phoneNumber, string? phoneNumberRegionCode, string? nickName, DateTimeOffset?[]? createTime, string? email, SmsCodeType? requestType, bool? everCheck, bool? checkSuccess, string? orderBy, bool? desc, int current = 1, int pageSize = 10)
     //{
     //    var query = Entity.AsNoTrackingWithIdentityResolution();
 
@@ -155,12 +161,12 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
     //        query = query.Where(x => x.PhoneNumber != null && x.PhoneNumber.Contains(phoneNumber));
     //    if (!string.IsNullOrWhiteSpace(nickName))
     //        query = query.Where(a => a.User!.NickName!.ToLower().Contains(nickName.ToLower()));
-    //    if (creationTime != null && creationTime.Length == 2)
+    //    if (createTime != null && createTime.Length == 2)
     //    {
-    //        if (creationTime[0].HasValue)
-    //            query = query.Where(x => x.CreationTime >= creationTime[0]);
-    //        if (creationTime[1].HasValue)
-    //            query = query.Where(x => x.CreationTime < creationTime[1]);
+    //        if (createTime[0].HasValue)
+    //            query = query.Where(x => x.CreateTime >= createTime[0]);
+    //        if (createTime[1].HasValue)
+    //            query = query.Where(x => x.CreateTime < createTime[1]);
     //    }
     //    if (!string.IsNullOrWhiteSpace(email))
     //        query = query.Where(x => x.Email == email);
@@ -175,12 +181,91 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
     //    if (!string.IsNullOrEmpty(orderBy))
     //        query = desc != true ? query.OrderByDynamic($"x=>x.{orderBy}") : query.OrderByDescendingDynamic($"x=>x.{orderBy}");
     //    else
-    //        query = query.OrderByDescending(x => x.CreationTime);
+    //        query = query.OrderByDescending(x => x.CreateTime);
     //    var r = await query
-    //        //.OrderByDescending(x => x.CreationTime)
+    //        //.OrderByDescending(x => x.CreateTime)
     //        .Include(x => x.User)
     //        .ProjectTo<AuthMessageRecordTableItem>(mapper.ConfigurationProvider)
     //        .PagingAsync(current, pageSize, RequestAborted);
     //    return r;
     //}
+}
+partial class AuthMessageRecordRepository<TDbContext>
+{
+    public async Task<PagedModel<AuthMessageRecordTableItem>> QueryAsync(
+        Guid? userId,
+        string? phoneNumber,
+        string? phoneNumberRegionCode,
+        string? nickName,
+        DateTimeOffset?[]? createTime,
+        string? email,
+        SmsCodeType? requestType,
+        bool? everCheck,
+        bool? checkSuccess,
+        string? orderBy,
+        bool? desc,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+
+        IQueryable<AuthMessageRecord> query = EntityNoTracking
+            .Include(x => x.User);
+
+        if (userId.HasValue)
+        {
+            query = query.Where(x => x.UserId == userId);
+        }
+        if (!string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            query = query.Where(x => x.PhoneNumber != null && x.PhoneNumber.Contains(phoneNumber));
+        }
+        if (!string.IsNullOrWhiteSpace(nickName))
+        {
+            query = query.Where(a => a.User!.NickName!.Contains(nickName));
+        }
+        if (createTime != null && createTime.Length == 2)
+        {
+            if (createTime[0].HasValue)
+            {
+                query = query.Where(x => x.CreateTime >= createTime[0]);
+            }
+            if (createTime[1].HasValue)
+            {
+                query = query.Where(x => x.CreateTime < createTime[1]);
+            }
+        }
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            query = query.Where(x => x.Email == email);
+        }
+
+        if (requestType.HasValue)
+        {
+            query = query.Where(x => x.RequestType == requestType);
+        }
+
+        if (everCheck.HasValue)
+        {
+            query = query.Where(x => x.EverCheck == everCheck);
+        }
+        if (checkSuccess.HasValue)
+        {
+            query = query.Where(x => x.CheckSuccess == checkSuccess);
+        }
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            query = query.OrderByPropertyName(orderBy, desc);
+        }
+        else
+        {
+            query = query.OrderByDescending(x => x.CreateTime);
+        }
+
+        var r = await query
+            .ProjectTo<AuthMessageRecordTableItem>(mapper.ConfigurationProvider)
+            .PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
 }

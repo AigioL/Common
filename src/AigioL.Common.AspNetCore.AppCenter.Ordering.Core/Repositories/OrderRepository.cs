@@ -91,7 +91,7 @@ sealed partial class OrderRepository<TDbContext> :
         DateTimeOffset?[]? paymentTime,
         int? businessType,
         string? note,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         int current,
         int pageSize,
         CancellationToken cancellationToken = default)
@@ -99,7 +99,7 @@ sealed partial class OrderRepository<TDbContext> :
         IQueryable<Order> query = db.Orders
             .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == userId)
-            .OrderByDescending(x => x.CreationTime)
+            .OrderByDescending(x => x.CreateTime)
             .ThenBy(x => x.Id);
 
         if (status is { Length: > 0 }) query = query.Where(x => status.Contains(x.Status));
@@ -115,12 +115,12 @@ sealed partial class OrderRepository<TDbContext> :
             if (paymentTime[1].HasValue)
                 query = query.Where(x => x.PaymentTime < paymentTime[1]);
         }
-        if (creationTime != null && creationTime.Length == 2)
+        if (createTime != null && createTime.Length == 2)
         {
-            if (creationTime[0].HasValue)
-                query = query.Where(x => x.CreationTime >= creationTime[0]);
-            if (creationTime[1].HasValue)
-                query = query.Where(x => x.CreationTime < creationTime[1]);
+            if (createTime[0].HasValue)
+                query = query.Where(x => x.CreateTime >= createTime[0]);
+            if (createTime[1].HasValue)
+                query = query.Where(x => x.CreateTime < createTime[1]);
         }
 
         var r = await query
@@ -206,7 +206,7 @@ file static class ProjectToMapper
         BusinessType = it.BusinessTypeId,
         //BusinessId = it.bu
         Note = it.Note,
-        CreationTime = it.CreationTime,
+        CreateTime = it.CreateTime,
     };
 
     internal static readonly Expression<Func<Order, OrderPayInfoModel>> OrderPayInfoModelExpr = it => new()
@@ -218,7 +218,7 @@ file static class ProjectToMapper
         BusinessType = it.BusinessTypeId,
         Note = it.Note,
         Status = it.Status,
-        CreationTime = it.CreationTime,
+        CreateTime = it.CreateTime,
     };
 
     internal static readonly Expression<Func<Order, OrderItemInfoModel>> OrderItemInfoModelExpr = it => new()
@@ -231,6 +231,6 @@ file static class ProjectToMapper
         BusinessType = it.BusinessTypeId,
         AmountReceivable = it.AmountReceivable,
         Note = it.Note,
-        CreationTime = it.CreationTime,
+        CreateTime = it.CreateTime,
     };
 }

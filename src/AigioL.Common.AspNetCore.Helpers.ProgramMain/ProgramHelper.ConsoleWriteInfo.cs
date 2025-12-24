@@ -92,11 +92,22 @@ static partial class ProgramHelper
                     {
                         ProjectId = "Analysis";
                     }
+                    else if (chars.Equals("AdminCenter", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        ProjectId = "BM";
+                    }
                     else
                     {
                         ProjectId = new(chars);
                     }
                     ProjectIdLower = ProjectId.ToLowerInvariant();
+                    try
+                    {
+                        Console.WriteLine($"ProjectIdLower: {ProjectIdLower}");
+                    }
+                    catch
+                    {
+                    }
                 }
             }
         }

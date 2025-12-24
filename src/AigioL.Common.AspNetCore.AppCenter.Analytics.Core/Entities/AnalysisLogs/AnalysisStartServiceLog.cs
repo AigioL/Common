@@ -17,7 +17,7 @@ public partial class AnalysisStartServiceLog : AnalysisLog
     {
         public void Configure(EntityTypeBuilder<AnalysisStartServiceLog> builder)
         {
-            builder.HasIndex(x => x.CreationTime);
+            builder.HasIndex(x => x.CreateTime);
             builder.HasIndex(x => x.TimeStamp);
             builder.HasIndex(x => x.InstallId);
             builder.HasIndex(x => x.DeviceId);

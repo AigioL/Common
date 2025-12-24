@@ -24,7 +24,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 public partial class User :
     IdentityUser<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime,
+    ICreateTime,
     IOperatorUserId,
     IUpdateTime,
     INickName,
@@ -154,7 +154,7 @@ public partial class User :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 修改人 Id

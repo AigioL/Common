@@ -19,9 +19,9 @@ public static partial class ColumnHelper
     public static readonly Type PSoftDeleted = typeof(ISoftDeleted);
 
     /// <summary>
-    /// 类型 <see cref="ICreationTime"/> 的 Type 对象
+    /// 类型 <see cref="ICreateTime"/> 的 Type 对象
     /// </summary>
-    public static readonly Type PCreationTime = typeof(ICreationTime);
+    public static readonly Type PCreateTime = typeof(ICreateTime);
 
     /// <summary>
     /// 类型 <see cref="IUpdateTime"/> 的 Type 对象

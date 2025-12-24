@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
@@ -15,7 +16,7 @@ public partial class UserMembershipChangeRecord :
     Entity<Guid>,
     INEWSEQUENTIALID,
     INote,
-    ICreationTime
+    ICreateTime
 {
     /// <summary>
     /// 用户 Id
@@ -57,7 +58,7 @@ public partial class UserMembershipChangeRecord :
     /// 变更时间
     /// </summary>
     [Comment("变更时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<UserMembershipChangeRecord>
     {

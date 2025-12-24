@@ -18,14 +18,16 @@ public static partial class OpenApiOptionsExtensions
     /// <param name="options"></param>
     /// <returns></returns>
     public static OpenApiOptions AddBMBearerSecuritySchemeTransformer(this OpenApiOptions options)
-        => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    {
+        return options.AddDocumentTransformer<BearerSecuritySchemeTransformer_BM>();
+    }
 }
 
 /// <summary>
 /// https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/openapi/customize-openapi#use-document-transformers
 /// </summary>
 /// <param name="authenticationSchemeProvider"></param>
-file sealed class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
+file sealed class BearerSecuritySchemeTransformer_BM(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
     {

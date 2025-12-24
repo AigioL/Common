@@ -100,6 +100,12 @@ public partial record class BMApiRsp
         Code = unchecked((uint)HttpStatusCode.OK),
     };
 
+    public static BMApiRsp<bool> OkBoolean(bool content = true) => new()
+    {
+        Code = unchecked((uint)HttpStatusCode.OK),
+        Content = content,
+    };
+
     public static implicit operator BMApiRsp(ApiRsp apiRsp) => new()
     {
         Code = apiRsp.Code,
@@ -140,7 +146,7 @@ public sealed partial record class BMApiRsp<TContent> : BMApiRsp
     [JsonPropertyName("data")]
     public TContent? Content { get; set; }
 
-    public static implicit operator BMApiRsp<TContent>(TContent content) => new() { Content = content };
+    public static implicit operator BMApiRsp<TContent>(TContent content) => new() { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
 
     public static implicit operator BMApiRsp<TContent>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 

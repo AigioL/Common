@@ -14,7 +14,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.OfficialMessages;
 /// <summary>
 /// 官方消息实体类
 /// </summary>
-[Index(nameof(CreationTime), IsDescending = new[] { true })]
+[Index(nameof(CreateTime), IsDescending = new[] { true })]
 [Table(nameof(OfficialMessage) + "s")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class OfficialMessage :

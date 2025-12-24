@@ -33,7 +33,7 @@ public sealed partial class AppVerRedisCacheJob(
             var idS = ShortGuid.Encode(item.Id);
             await redisDb.HashSetAsync(CacheKeys.AppVersionHashKey, idS, MemoryPackSerializer.Serialize(new AppVerRedisModel
             {
-                CreationTime = item.CreationTime,
+                CreateTime = item.CreateTime,
                 Id = item.Id,
                 Disable = item.Disable,
                 PrivateKey = item.PrivateKey,
@@ -41,19 +41,19 @@ public sealed partial class AppVerRedisCacheJob(
             }));
             await redisDb.HashSetAsync(CacheKeys.AppVersionHashKey, item.Version, MemoryPackSerializer.Serialize(new AppVerRedisModel
             {
-                CreationTime = item.CreationTime,
+                CreateTime = item.CreateTime,
                 Id = item.Id,
                 Disable = item.Disable,
                 PrivateKey = item.PrivateKey,
                 Version = item.Version,
             }));
         }
-        var lastItem = appVers.OrderByDescending(x => x.CreationTime).FirstOrDefault();
+        var lastItem = appVers.OrderByDescending(x => x.CreateTime).FirstOrDefault();
         if (lastItem != null)
         {
             await redisDb.HashSetAsync(CacheKeys.AppVersionHashKey, "GetLastOrDefaultAsync", MemoryPackSerializer.Serialize(new AppVerRedisModel
             {
-                CreationTime = lastItem.CreationTime,
+                CreateTime = lastItem.CreateTime,
                 Id = lastItem.Id,
                 Disable = lastItem.Disable,
                 PrivateKey = lastItem.PrivateKey,

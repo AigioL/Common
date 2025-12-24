@@ -17,7 +17,7 @@ public partial class UserWalletChangeRecord :
     Entity<Guid>,
     INEWSEQUENTIALID,
     INote,
-    ICreationTime
+    ICreateTime
 {
     /// <summary>
     /// 用户 Id
@@ -72,7 +72,7 @@ public partial class UserWalletChangeRecord :
     /// 变更时间
     /// </summary>
     [Comment("变更时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 来源 Id
