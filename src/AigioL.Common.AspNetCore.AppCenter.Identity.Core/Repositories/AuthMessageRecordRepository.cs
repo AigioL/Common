@@ -1,10 +1,16 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AigioL.Common.SmsSender.Services;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
@@ -183,4 +189,83 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
     //        .PagingAsync(current, pageSize, RequestAborted);
     //    return r;
     //}
+}
+partial class AuthMessageRecordRepository<TDbContext>
+{
+    public async Task<PagedModel<AuthMessageRecordTableItem>> QueryAsync(
+        Guid? userId,
+        string? phoneNumber,
+        string? phoneNumberRegionCode,
+        string? nickName,
+        DateTimeOffset?[]? createTime,
+        string? email,
+        SmsCodeType? requestType,
+        bool? everCheck,
+        bool? checkSuccess,
+        string? orderBy,
+        bool? desc,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+
+        IQueryable<AuthMessageRecord> query = EntityNoTracking
+            .Include(x => x.User);
+
+        if (userId.HasValue)
+        {
+            query = query.Where(x => x.UserId == userId);
+        }
+        if (!string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            query = query.Where(x => x.PhoneNumber != null && x.PhoneNumber.Contains(phoneNumber));
+        }
+        if (!string.IsNullOrWhiteSpace(nickName))
+        {
+            query = query.Where(a => a.User!.NickName!.Contains(nickName));
+        }
+        if (createTime != null && createTime.Length == 2)
+        {
+            if (createTime[0].HasValue)
+            {
+                query = query.Where(x => x.CreateTime >= createTime[0]);
+            }
+            if (createTime[1].HasValue)
+            {
+                query = query.Where(x => x.CreateTime < createTime[1]);
+            }
+        }
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            query = query.Where(x => x.Email == email);
+        }
+
+        if (requestType.HasValue)
+        {
+            query = query.Where(x => x.RequestType == requestType);
+        }
+
+        if (everCheck.HasValue)
+        {
+            query = query.Where(x => x.EverCheck == everCheck);
+        }
+        if (checkSuccess.HasValue)
+        {
+            query = query.Where(x => x.CheckSuccess == checkSuccess);
+        }
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            query = query.OrderByPropertyName(orderBy, desc);
+        }
+        else
+        {
+            query = query.OrderByDescending(x => x.CreateTime);
+        }
+
+        var r = await query
+            .ProjectTo<AuthMessageRecordTableItem>(mapper.ConfigurationProvider)
+            .PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
 }

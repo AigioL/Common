@@ -141,7 +141,7 @@ partial class KomaasharuRepository<TDbContext>
 
         if (!string.IsNullOrEmpty(orderBy))
         {
-            query = query.OrderByPropertyName(orderBy, desc ?? false);
+            query = query.OrderByPropertyName(orderBy, desc);
         }
         else
         {

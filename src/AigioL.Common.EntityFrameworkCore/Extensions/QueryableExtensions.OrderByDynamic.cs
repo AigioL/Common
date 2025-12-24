@@ -9,10 +9,10 @@ static partial class QueryableExtensions
     public static IQueryable<T> OrderByPropertyName<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(
         this IQueryable<T> source,
         string propertyName,
-        bool desc,
+        bool? desc,
         bool throwPropertyIsNull = true)
     {
-        var command = desc ? "OrderByDescending" : "OrderBy";
+        var command = (desc ?? false) ? "OrderByDescending" : "OrderBy";
         var type = typeof(T);
         var property = type.GetProperty(propertyName);
         if (property == null)

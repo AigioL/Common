@@ -1,5 +1,8 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.SmsSender.Services;
 
@@ -74,34 +77,36 @@ partial interface IAuthMessageRecordRepository // 微服务
 
 partial interface IAuthMessageRecordRepository // 管理后台
 {
-    ///// <summary>
-    ///// 后台表格查询
-    ///// </summary>
-    ///// <param name="userId">用户 Id</param>
-    ///// <param name="phoneNumber">电话</param>
-    ///// <param name="phoneNumberRegionCode"></param>
-    ///// <param name="nickName"></param>
-    ///// <param name="createTime">创建时间</param>
-    ///// <param name="email">邮箱地址</param>
-    ///// <param name="requestType">短信验证用途</param>
-    ///// <param name="everCheck">是否校验过</param>
-    ///// <param name="checkSuccess"></param>
-    ///// <param name="orderBy">排序字段</param>
-    ///// <param name="desc">排序: <see langword="false"/> 为降序，<see langword="true"/> 为升序</param>
-    ///// <param name="current"></param>
-    ///// <param name="pageSize"></param>
-    //Task<PagedModel<dynamic>> QueryAsync(
-    //    Guid? userId,
-    //    string? phoneNumber,
-    //    string? phoneNumberRegionCode,
-    //    string? nickName,
-    //    DateTimeOffset?[]? createTime,
-    //    string? email,
-    //    SmsCodeType? requestType,
-    //    bool? everCheck,
-    //    bool? checkSuccess,
-    //    string? orderBy,
-    //    bool? desc,
-    //    int current = IPagedModel.DefaultCurrent,
-    //    int pageSize = IPagedModel.DefaultPageSize);
+    /// <summary>
+    /// 后台表格查询
+    /// </summary>
+    /// <param name="userId">用户 Id</param>
+    /// <param name="phoneNumber">电话</param>
+    /// <param name="phoneNumberRegionCode"></param>
+    /// <param name="nickName"></param>
+    /// <param name="createTime">创建时间</param>
+    /// <param name="email">邮箱地址</param>
+    /// <param name="requestType">短信验证用途</param>
+    /// <param name="everCheck">是否校验过</param>
+    /// <param name="checkSuccess"></param>
+    /// <param name="orderBy">排序字段</param>
+    /// <param name="desc">排序: <see langword="false"/> 为降序，<see langword="true"/> 为升序</param>
+    /// <param name="current"></param>
+    /// <param name="pageSize"></param>
+    /// <param name="cancellationToken"></param>
+    Task<PagedModel<AuthMessageRecordTableItem>> QueryAsync(
+        Guid? userId,
+        string? phoneNumber,
+        string? phoneNumberRegionCode,
+        string? nickName,
+        DateTimeOffset?[]? createTime,
+        string? email,
+        SmsCodeType? requestType,
+        bool? everCheck,
+        bool? checkSuccess,
+        string? orderBy,
+        bool? desc,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
 }

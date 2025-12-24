@@ -131,6 +131,7 @@
 		<PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.0.0" />
 		<PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.0.2" />
 		<PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.0.2" />
+		<PackageVersion Include="Aspire.Hosting.Yarp" Version="13.0.2" />
 		<PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
 	</ItemGroup>
 	<!-- 👇 Docker -->
@@ -161,5 +162,9 @@
 	<!-- 👇 腾讯云 -->
 	<ItemGroup>
 		<PackageVersion Include="Tencent.QCloud.Cos.Sdk" Version="5.4.49" />
+	</ItemGroup>
+	<!-- 👇 Mapper -->
+	<ItemGroup>
+		<PackageVersion Include="AutoMapper" Version="16.0.0" />
 	</ItemGroup>
 </Project>
