@@ -14,6 +14,15 @@ public static partial class ProfileExtensions
     {
         p.CreateMap<AuthMessageRecord, AuthMessageRecordTableItem>()
             .ForMember(d => d.UserInfo, opt => opt.MapFrom(s => s.User));
+        p.CreateMap<ExternalAccount, ExternalAccountTableItem>();
+        p.CreateMap<UserDelete, UserDeleteTableItem>()
+            .ForMember(d => d.UserInfo, opt => opt.MapFrom(s => s.User))
+            .ForMember(d => d.ExternalAccounts, opt => opt.MapFrom(s => s.ExternalAccounts));
+        p.CreateMap<UserDevice, UserDeviceTableItem>();
+        p.CreateMap<User, UserTableItem>();
+        p.CreateMap<User, UserEdit>();
+        p.CreateMap<UserWallet, UserWalletModel>();
+        p.CreateMap<UserWalletChangeRecord, UserWalletChangeRecordModel>();
     }
 }
 

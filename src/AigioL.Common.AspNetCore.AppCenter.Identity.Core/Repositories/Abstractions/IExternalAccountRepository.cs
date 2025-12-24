@@ -25,7 +25,7 @@ partial interface IExternalAccountRepository // 管理后台
     /// <param name="gender"></param>
     /// <param name="email"></param>
     /// <param name="userNickName"></param>
-    /// <param name="creationTime"></param>
+    /// <param name="createTime"></param>
     /// <param name="updateTime"></param>
     /// <param name="orderBy">排序字段</param>
     /// <param name="desc">排序: false 为降序，true 为升序 </param>
@@ -43,7 +43,7 @@ partial interface IExternalAccountRepository // 管理后台
         Gender? gender,
         string? email,
         string? userNickName,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         DateTimeOffset?[]? updateTime,
         string? orderBy,
         bool? desc,

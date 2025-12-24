@@ -35,7 +35,7 @@ partial class ExternalAccountRepository<TDbContext> // 管理后台
         Gender? gender,
         string? email,
         string? userNickName,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         DateTimeOffset?[]? updateTime,
         string? orderBy,
         bool? desc,
@@ -65,12 +65,12 @@ partial class ExternalAccountRepository<TDbContext> // 管理后台
         if (!string.IsNullOrEmpty(userNickName))
             query = query.Where(a => a.User!.NickName!.Contains(userNickName));
 
-        if (creationTime != null && creationTime.Length == 2)
+        if (createTime != null && createTime.Length == 2)
         {
-            if (creationTime[0].HasValue)
-                query = query.Where(x => x.CreateTime >= creationTime[0]);
-            if (creationTime[1].HasValue)
-                query = query.Where(x => x.CreateTime < creationTime[1]);
+            if (createTime[0].HasValue)
+                query = query.Where(x => x.CreateTime >= createTime[0]);
+            if (createTime[1].HasValue)
+                query = query.Where(x => x.CreateTime < createTime[1]);
         }
         if (updateTime != null && updateTime.Length == 2)
         {

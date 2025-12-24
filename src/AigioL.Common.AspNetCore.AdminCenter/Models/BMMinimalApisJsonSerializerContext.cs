@@ -1,5 +1,8 @@
 using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Primitives.Models;
 using System.Text.Json;
@@ -71,6 +74,32 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 [JsonSerializable(typeof(BMApiRsp<PagedModel<BMUserTableItem>>))]
 [JsonSerializable(typeof(AddBMUserModel))]
 [JsonSerializable(typeof(EditBMUserModel))]
+#endregion
+#region AuthMessageRecordController
+[JsonSerializable(typeof(BMApiRsp<PagedModel<AuthMessageRecordTableItem>?>))]
+#endregion
+#region ExternalAccountsController
+[JsonSerializable(typeof(BMApiRsp<PagedModel<ExternalAccountTableItem>?>))]
+#endregion
+#region UserCancelsController
+[JsonSerializable(typeof(BMApiRsp<PagedModel<UserDeleteTableItem>?>))]
+#endregion
+#region UserDevicesController
+[JsonSerializable(typeof(BMApiRsp<PagedModel<UserDeviceTableItem>?>))]
+#endregion
+#region UsersController
+[JsonSerializable(typeof(BMApiRsp<PagedModel<UserTableItem>?>))]
+[JsonSerializable(typeof(UserEdit))]
+[JsonSerializable(typeof(BMApiRsp<UserEdit?>))]
+[JsonSerializable(typeof(BMApiRsp<UserWalletModel?>))]
+[JsonSerializable(typeof(BMApiRsp<UserSearchModel?>))]
+[JsonSerializable(typeof(BMApiRsp<PagedModel<UserWalletChangeRecordModel>?>))]
+#endregion
+#region KomaasharuController
+[JsonSerializable(typeof(BMApiRsp<PagedModel<KomaasharuTableItem>?>))]
+[JsonSerializable(typeof(KomaasharuEdit))]
+[JsonSerializable(typeof(BMApiRsp<KomaasharuEdit?>))]
+[JsonSerializable(typeof(BMApiRsp<StatisticsKomaasharuResponse[]?>))]
 #endregion
 [JsonSourceGenerationOptions]
 public sealed partial class BMMinimalApisJsonSerializerContext : JsonSerializerContext

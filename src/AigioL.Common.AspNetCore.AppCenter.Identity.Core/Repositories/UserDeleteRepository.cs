@@ -99,7 +99,7 @@ partial class UserDeleteRepository<TDbContext> // 管理后台
         Gender? gender,
         DateTimeOffset?[]? birthDate,
         int? areaId,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         string? orderBy,
         bool? desc,
         int current = IPagedModel.DefaultCurrent,
@@ -128,12 +128,12 @@ partial class UserDeleteRepository<TDbContext> // 管理后台
         }
         if (areaId.HasValue)
             query = query.Where(a => a.AreaId == areaId);
-        if (creationTime != null && creationTime.Length == 2)
+        if (createTime != null && createTime.Length == 2)
         {
-            if (creationTime[0].HasValue)
-                query = query.Where(x => x.CreateTime >= creationTime[0]);
-            if (creationTime[1].HasValue)
-                query = query.Where(x => x.CreateTime < creationTime[1]);
+            if (createTime[0].HasValue)
+                query = query.Where(x => x.CreateTime >= createTime[0]);
+            if (createTime[1].HasValue)
+                query = query.Where(x => x.CreateTime < createTime[1]);
         }
         if (!string.IsNullOrEmpty(orderBy))
         {

@@ -48,6 +48,7 @@ public static partial class KomaasharuController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("分页查询广告");
+
         routeGroup.MapGet("{id}", async (HttpContext context,
             [FromRoute] Guid id) =>
         {
@@ -56,6 +57,7 @@ public static partial class KomaasharuController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("查询广告详情");
+
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] AddOrEditM model) =>
         {
@@ -65,6 +67,7 @@ public static partial class KomaasharuController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增广告项");
+
         routeGroup.MapPut("", async (HttpContext context,
             [FromBody] AddOrEditM model) =>
         {
@@ -74,6 +77,7 @@ public static partial class KomaasharuController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("修改广告项");
+
         routeGroup.MapDelete("{id}", async (HttpContext context,
             [FromRoute] Guid id) =>
         {
@@ -83,6 +87,7 @@ public static partial class KomaasharuController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Delete)
         .WithDescription("查询广告详情");
+
         routeGroup.MapPut("setdisable/{id}/{disable}", async (HttpContext context,
             [FromRoute] Guid id,
             [FromRoute] bool disable) =>
@@ -93,6 +98,7 @@ public static partial class KomaasharuController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("设置广告禁用或启用");
+
         routeGroup.MapGet("perDay/{id}", async (HttpContext context,
             [FromRoute] Guid id) =>
         {

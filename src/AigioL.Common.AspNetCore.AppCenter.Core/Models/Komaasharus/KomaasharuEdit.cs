@@ -51,7 +51,7 @@ public sealed partial record class KomaasharuEdit : IReadOnlyId<Guid>
     /// </summary>
     public KomaasharuOrientation Orientation { get; set; }
 
-    [Obsolete("use Sort", true)]
+    [Obsolete("use Sort")]
     public long Order
     {
         get => Sort;

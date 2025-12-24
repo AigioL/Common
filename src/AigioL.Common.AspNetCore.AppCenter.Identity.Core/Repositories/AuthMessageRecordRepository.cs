@@ -160,7 +160,7 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
     //    if (!string.IsNullOrWhiteSpace(phoneNumber))
     //        query = query.Where(x => x.PhoneNumber != null && x.PhoneNumber.Contains(phoneNumber));
     //    if (!string.IsNullOrWhiteSpace(nickName))
-    //        query = query.Where(a => a.User!.NickName!.ToLower().Contains(nickName.ToLower()));
+    //        query = query.Where(a => a.User!.NickName!.Contains(nickName));
     //    if (createTime != null && createTime.Length == 2)
     //    {
     //        if (createTime[0].HasValue)

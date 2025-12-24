@@ -16,7 +16,7 @@ public static partial class UserCancelsController
 {
     const string ControllerName = ControllerConstants.UserCancel;
 
-    public static void MapUserCancels(
+    public static void MapACUserCancels(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "ms/identity/usercancels")
     {
@@ -31,7 +31,7 @@ public static partial class UserCancelsController
             [FromQuery] Gender? gender,
             [FromQuery] DateTimeOffset?[]? birthDate,
             [FromQuery] int? areaId,
-            [FromQuery] DateTimeOffset?[]? creationTime,
+            [FromQuery] DateTimeOffset?[]? createTime,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
@@ -43,7 +43,7 @@ public static partial class UserCancelsController
             BMApiRsp<PagedModel<TableItemM>?> r = await userDeleteRepo.QueryAsync(
                 userId, phoneNumber, email,
                 nickName, gender, birthDate,
-                areaId, creationTime, orderBy,
+                areaId, createTime, orderBy,
                 desc, current, pageSize,
                 context.RequestAborted);
             return r;

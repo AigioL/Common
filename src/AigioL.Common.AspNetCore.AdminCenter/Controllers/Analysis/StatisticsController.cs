@@ -1,6 +1,12 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Statistics;
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
+using AigioL.Common.Primitives.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics.CodeAnalysis;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Analysis;
@@ -11,117 +17,99 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Analysis;
 public static partial class StatisticsController
 {
     const string ControllerName = ControllerConstants.StatisticsConsole;
+    const string ControllerNameAnalysisEvent = ControllerConstants.AnalysisEvent;
+    const string ControllerNameAnalysisLog = ControllerConstants.AnalysisLog;
+    const string ControllerNameOrderSummary = ControllerConstants.OrderSummary;
 
-    public static void MapKeyValuePair(
+    public static void MapAnalysisStatistics(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "ms/basics/statistics")
     {
         var routeGroup = b.MapGroup(pattern)
             .WithDescription("大数据统计管理");
+
+        routeGroup.MapGet("userstatistics", async (HttpContext context,
+            [FromQuery] bool refresh = false) =>
+        {
+            var memoryCache = context.RequestServices.GetRequiredService<IMemoryCache>();
+            const string Key = $"{nameof(StatisticsController)}_UserStatistics";
+            if (refresh)
+            {
+                memoryCache.Remove(Key);
+            }
+            BMApiRsp<CachedStatistics<StatisticsPieResponse[]>?> r = await memoryCache.GetOrCreateAsync(Key, async entry =>
+            {
+                var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
+                var r = await statisticsRepo.GetUserStatisticsAsync(context.RequestAborted);
+                return CachedStatistics.Create(r);
+            });
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("客户端用户注册比例统计（绑定的第三方平台账号比例）");
+
+        routeGroup.MapGet("registeruserstatistics", async (HttpContext context,
+            [FromQuery] DateTimeOffset startTime,
+            [FromQuery] DateTimeOffset endTime) =>
+        {
+            endTime = endTime.AddDays(1);
+            if (startTime.AddMonths(1) > endTime)
+            {
+                return "筛选天数不能大于 1 个月";
+            }
+            var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
+            BMApiRsp<StatisticsLineResponse[]?> r = await statisticsRepo.GetRegisterUserStatisticsAsync(startTime, endTime, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("客户端注册用户统计");
+
+        routeGroup.MapGet("activeusercountstatistics", async (HttpContext context,
+            [FromQuery] DateTimeOffset startTime,
+            [FromQuery] DateTimeOffset endTime) =>
+        {
+            endTime = endTime.AddDays(1);
+            var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
+            BMApiRsp<ActiveUserSumResponse[]?> r = await statisticsRepo.GetActiveUserStatisticsAsync(startTime, endTime, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("客户端活跃用户统计");
+
+        routeGroup.MapGet("platformuserstatistics/{platform?}", async (HttpContext context,
+#pragma warning disable CS0618 // 类型或成员已过时
+            [FromRoute] WebApiCompatDevicePlatform? platform,
+#pragma warning restore CS0618 // 类型或成员已过时
+            [FromQuery] DateTimeOffset startTime,
+            [FromQuery] DateTimeOffset endTime) =>
+        {
+            endTime = endTime.AddDays(1);
+            var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
+            BMApiRsp<StatisticsActiveUserOSResponse[]?> r = await statisticsRepo.GetActiveStatisticsAsync(platform, startTime, endTime, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("客户端用户使用的操作系统平台统计");
+
+        routeGroup.MapGet("osversionstatistics/{platform?}", async (HttpContext context,
+#pragma warning disable CS0618 // 类型或成员已过时
+            [FromRoute] WebApiCompatDevicePlatform? platform,
+#pragma warning restore CS0618 // 类型或成员已过时
+            [FromQuery] DateTimeOffset time) =>
+        {
+            var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
+            BMApiRsp<StatisticsChartActiveUserOSResponse[]?> r = await statisticsRepo.GetOsVersionStatisticsAsync(platform, time, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("查询某一天的客户端用户使用的操作系统平台分布");
+
+        routeGroup.MapGet("advertisementstatistics", async (HttpContext context,
+            [FromQuery] DateTimeOffset startTime,
+            [FromQuery] DateTimeOffset endTime) =>
+        {
+            endTime = endTime.AddDays(1);
+            var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
+            BMApiRsp<StatisticsKomaasharuResponse[]?> r = await statisticsRepo.GetAdvertisementStatisticsAsync(startTime, endTime, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("查询广告查看和点击统计");
     }
-
-    ///// <summary>
-    ///// 用户注册比例统计（用户所绑定的平台比例）
-    ///// </summary>
-    ///// <returns></returns>
-    //[HttpGet, PermissionFilter(ControllerName + nameof(BMButtonType.Query))]
-    //public async Task<BMApiRsp<CachedStatistics<StatisticsPieResponse[]>>> UserStatistics([FromQuery] bool refresh = false)
-    //{
-    //    const string Key = $"{nameof(StatisticsController)}_UserStatistics";
-
-    //    if (refresh)
-    //    {
-    //        memoryCache.Remove(Key);
-    //    }
-    //    var r = await memoryCache.GetOrCreateAsync(Key, async entry => CachedStatistics.Create(await statisticsRepo.GetUserStatisticsAsync()));
-
-    //    return r;
-    //}
-
-    ///// <summary>
-    ///// 注册用户统计
-    ///// </summary>
-    ///// <param name="startTime">开始时间</param>
-    ///// <param name="endTime">结束时间</param>
-    ///// <returns></returns>
-    //[HttpGet, PermissionFilter(ControllerName + nameof(BMButtonType.Query))]
-    //public async Task<BMApiRsp<IEnumerable<StatisticsLineResponse>>> RegisterUserStatistics(
-    //    [FromQuery] DateTimeOffset startTime,
-    //    [FromQuery] DateTimeOffset endTime)
-    //{
-    //    endTime = endTime.AddDays(1);
-    //    if (startTime.AddMonths(1) > endTime)
-    //        return "筛选天数不能大于1个月。";
-
-    //    var r = await statisticsRepo.GetRegisterUserStatisticsAsync(startTime, endTime);
-
-    //    return r;
-    //}
-
-    ///// <summary>
-    ///// 活跃用户统计
-    ///// </summary>
-    ///// <param name="startTime">开始时间</param>
-    ///// <param name="endTime">结束时间</param>
-    ///// <returns></returns>
-    //[HttpGet, PermissionFilter(ControllerName + nameof(BMButtonType.Query))]
-    //public async Task<BMApiRsp<IEnumerable<ActiveUserSumResponse>>> ActiveUserCountStatistics(
-    //    [FromQuery] DateTimeOffset startTime,
-    //    [FromQuery] DateTimeOffset endTime)
-    //{
-    //    endTime = endTime.AddDays(1);
-    //    var r = statisticsRepo.GetActiveUserStatisticsAsync(startTime, endTime);
-    //    return await r;
-    //}
-
-    ///// <summary>
-    ///// 获取活跃用户
-    ///// </summary>
-    ///// <param name="platform">平台</param>
-    ///// <param name="startTime">开始时间</param>
-    ///// <param name="endTime">结束时间</param>
-    ///// <returns></returns>
-    //[HttpGet("{platform?}"), PermissionFilter(ControllerName + nameof(BMButtonType.Query))]
-    //public async Task<BMApiRsp<StatisticsActiveUserOSResponse[]>> PlatformUserStatistics(
-    //    [FromRoute] SppWebApiCompatDevicePlatform? platform,
-    //    [FromQuery] DateTimeOffset startTime,
-    //    [FromQuery] DateTimeOffset endTime)
-    //{
-    //    endTime = endTime.AddDays(1);
-    //    var r = await statisticsRepo.GetActiveStatisticsAsync(platform, startTime, endTime);
-    //    return r;
-    //}
-
-    ///// <summary>
-    ///// 获取某天的用户系统分布
-    ///// </summary>
-    ///// <param name="platform">平台</param>
-    ///// <param name="time">时间</param>
-    ///// <returns></returns>
-    //[HttpGet("{platform?}"), PermissionFilter(ControllerName + nameof(BMButtonType.Query))]
-    //public async Task<BMApiRsp<StatisticsChartActiveUserOSResponse[]>> OsVersionStatistics(
-    //    [FromRoute] SppWebApiCompatDevicePlatform? platform,
-    //    [FromQuery] DateTimeOffset time)
-    //{
-    //    var r = await statisticsRepo.GetOsVersionStatisticsAsync(platform, time);
-    //    return r;
-    //}
-
-    ///// <summary>
-    ///// 获取广告查看和点击统计
-    ///// </summary>
-    ///// <param name="startTime">开始时间</param>
-    ///// <param name="endTime">结束时间</param>
-    ///// <returns></returns>
-    //[HttpGet, PermissionFilter(ControllerName + nameof(BMButtonType.Query))]
-    //public async Task<BMApiRsp<StatisticsAdvertisementResponse[]>> AdvertisementStatistics(
-    //    [FromQuery] DateTimeOffset startTime,
-    //    [FromQuery] DateTimeOffset endTime)
-    //{
-    //    endTime = endTime.AddDays(1);
-    //    var r = await statisticsRepo.GetAdvertisementStatisticsAsync(startTime, endTime);
-    //    return r;
-    //}
 
     ///// <summary>
     ///// 获取用户活跃度统计
@@ -441,12 +429,4 @@ public static partial class StatisticsController
     //    var r = await statisticsRepo.GetAppVerStatisticsData(startTime, endTime);
     //    return r;
     //}
-}
-
-
-file sealed partial record CachedStatistics<T>(T Data, DateTimeOffset CacheTime);
-
-file sealed partial record CachedStatistics
-{
-    public static CachedStatistics<T> Create<T>(T t) => new(t, DateTimeOffset.Now);
 }

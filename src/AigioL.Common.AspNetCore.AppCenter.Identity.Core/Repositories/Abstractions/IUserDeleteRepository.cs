@@ -27,7 +27,7 @@ partial interface IUserDeleteRepository // 管理后台
     /// <param name="gender"></param>
     /// <param name="birthDate"></param>
     /// <param name="areaId"></param>
-    /// <param name="creationTime"></param>
+    /// <param name="createTime"></param>
     /// <param name="current"></param>
     /// <param name="pageSize"></param>
     /// <param name="orderBy">排序字段</param>
@@ -42,7 +42,7 @@ partial interface IUserDeleteRepository // 管理后台
         Gender? gender,
         DateTimeOffset?[]? birthDate,
         int? areaId,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         string? orderBy,
         bool? desc,
         int current = IPagedModel.DefaultCurrent,

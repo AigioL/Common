@@ -17,7 +17,7 @@ public static partial class ExternalAccountsController
 {
     const string ControllerName = ControllerConstants.ExternalAccount;
 
-    public static void MapExternalAccounts(
+    public static void MapACUserExternalAccounts(
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "ms/identity/externalaccounts")
     {

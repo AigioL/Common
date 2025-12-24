@@ -60,7 +60,7 @@ public sealed partial record class UserDeleteTableItem : IReadOnlyId<Guid>
     /// <summary>
     /// 创建时间
     /// </summary>
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 用户信息

@@ -56,7 +56,7 @@ public sealed partial record class ExternalAccountTableItem : IReadOnlyId<Guid>
     /// <summary>
     /// 创建时间
     /// </summary>
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 更新时间

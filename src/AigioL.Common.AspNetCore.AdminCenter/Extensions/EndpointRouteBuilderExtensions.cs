@@ -1,4 +1,9 @@
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Analysis;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Basics;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Basics.Article;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Identity;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Komaasharu;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using System.Diagnostics.CodeAnalysis;
 
@@ -16,11 +21,43 @@ public static partial class EndpointRouteBuilderExtensions
         where TUser : BMUser, new()
         where TRole : BMRole, new()
     {
+        // Analysis
+        b.MapAnalysisStatistics();
+
+        // Basics/Article
+        b.MapArticleCategory();
+        b.MapArticle();
+        b.MapArticleTag();
+
+        // Basics
+        b.MapAppVersion();
+        b.MapKeyValuePair();
+        b.MapOfficialMessage();
+        b.MapStaticResource();
+
+        // Identity
+        b.MapAuthMessageRecord();
+        b.MapACUserExternalAccounts();
+        b.MapACUserCancels();
+        b.MapACUserClockInRecords();
+        b.MapACUserDevices();
+        b.MapACUserExpRecords();
+        b.MapACUsers();
+
+        // Infrastructure
         //b.MapPostInfo();
         b.MapBMLogin<TUser>();
         b.MapBMMenus();
         b.MapBMRoles<TRole>();
         b.MapBMUser<TUser>();
         b.MapBMUsers<TUser>();
+
+        // Komaasharu
+        b.MapKomaasharu();
+        b.MapKomaasharuPersonalizeds();
+
+        // Membership
+
+        // Ordering
     }
 }

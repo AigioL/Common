@@ -171,6 +171,8 @@ public struct ShortGuid
     /// </exception>
     public static Guid Decode(string value) => DecodeCore(value);
 
+    public static Guid Decode(ReadOnlySpan<char> value) => DecodeCore(value);
+
     static Guid DecodeCore(string? value)
     {
         // avoid parsing larger strings/blobs
@@ -178,6 +180,33 @@ public struct ShortGuid
         {
             throw new ArgumentException(
                 $"A ShortGuid must be exactly 22 characters long. Received a {value?.Length ?? 0} character string.",
+                paramName: nameof(value)
+            );
+        }
+
+        Span<byte> buffer = stackalloc byte[ByteArrayLength];
+        Base64Url.DecodeFromChars(value, buffer);
+        var guid = new Guid(buffer);
+
+        var sanityCheck = Encode(guid);
+        if (sanityCheck != value)
+        {
+            throw new FormatException(
+                $"Invalid strict ShortGuid encoded string. The string '{value}' is valid URL-safe Base64, " +
+                $"but failed a round-trip test expecting '{sanityCheck}'."
+            );
+        }
+
+        return guid;
+    }
+
+    static Guid DecodeCore(ReadOnlySpan<char> value)
+    {
+        // avoid parsing larger strings/blobs
+        if (value.Length != StringLength)
+        {
+            throw new ArgumentException(
+                $"A ShortGuid must be exactly 22 characters long. Received a {value.Length} character string.",
                 paramName: nameof(value)
             );
         }
@@ -241,6 +270,20 @@ public struct ShortGuid
         }
     }
 
+    public static bool TryDecode(ReadOnlySpan<char> value, out Guid guid)
+    {
+        try
+        {
+            guid = DecodeCore(value);
+            return true;
+        }
+        catch
+        {
+            guid = Guid.Empty;
+            return false;
+        }
+    }
+
     static bool Parse(string value, out Guid guid)
     {
         // Try a Guid string.
@@ -263,6 +306,51 @@ public struct ShortGuid
             case 38:
                 var f = value.FirstOrDefault();
                 var l = value.LastOrDefault();
+                if (f == '{' && l == '}')
+                {
+                    if (Guid.TryParseExact(value, "B", out var guidB))
+                    {
+                        guid = guidB;
+                        return true;
+                    }
+                }
+                else if (f == '(' && l == ')')
+                {
+                    if (Guid.TryParseExact(value, "P", out var guidP))
+                    {
+                        guid = guidP;
+                        return true;
+                    }
+                }
+                break;
+        }
+
+        guid = default;
+        return false;
+    }
+
+    static bool Parse(ReadOnlySpan<char> value, out Guid guid)
+    {
+        // Try a Guid string.
+        switch (value.Length)
+        {
+            case 32:
+                if (Guid.TryParseExact(value, "N", out var guidN))
+                {
+                    guid = guidN;
+                    return true;
+                }
+                break;
+            case 36:
+                if (Guid.TryParseExact(value, "D", out var guidD))
+                {
+                    guid = guidD;
+                    return true;
+                }
+                break;
+            case 38:
+                var f = value[0];
+                var l = value[^1];
                 if (f == '{' && l == '}')
                 {
                     if (Guid.TryParseExact(value, "B", out var guidB))
@@ -369,6 +457,26 @@ public struct ShortGuid
     public static bool TryParse(string? value, out Guid guid)
     {
         if (!string.IsNullOrWhiteSpace(value))
+        {
+            // Try a ShortGuid string.
+            if (TryDecode(value, out guid))
+                return true;
+
+            // Try a Guid string.
+            if (Parse(value!, out var guid2))
+            {
+                guid = guid2;
+                return true;
+            }
+        }
+
+        guid = Guid.Empty;
+        return false;
+    }
+
+    public static bool TryParse(ReadOnlySpan<char> value, out Guid guid)
+    {
+        if (!value.IsEmpty)
         {
             // Try a ShortGuid string.
             if (TryDecode(value, out guid))

@@ -57,6 +57,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisPageLogModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisStartServiceLogModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AppCenter\AnalysisStartSessionLogModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Statistics\CachedStatistics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Statistics\StatisticsResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IStatisticsRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\" />
