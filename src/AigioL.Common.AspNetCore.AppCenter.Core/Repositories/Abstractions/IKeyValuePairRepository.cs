@@ -45,7 +45,7 @@ public partial interface IKeyValuePairRepository : IRepository<KeyValuePair, str
     Task<T?> GetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         IDistributedCache cache,
         string key,
-        JsonTypeInfo<T> jsonTypeInfo,
+        JsonTypeInfo<T>? jsonTypeInfo,
         CancellationToken cancellationToken = default);
 
     /// <summary>

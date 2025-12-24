@@ -78,7 +78,7 @@ partial class KeyValuePairRepository<TDbContext>
     public async Task<T?> GetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         IDistributedCache cache,
         string key,
-        JsonTypeInfo<T> jsonTypeInfo,
+        JsonTypeInfo<T>? jsonTypeInfo,
         CancellationToken cancellationToken = default)
     {
         T? result = default;
@@ -100,7 +100,15 @@ partial class KeyValuePairRepository<TDbContext>
             var entry = await EntityNoTracking.FirstOrDefaultAsync(x => x.Id == key, cancellationToken);
             if (entry != null)
             {
-                result = JsonSerializer.Deserialize(entry.Value, jsonTypeInfo);
+                if (typeof(T) == typeof(string))
+                {
+                    result = (T)(object)entry.Value;
+                }
+                else
+                {
+                    ArgumentNullException.ThrowIfNull(jsonTypeInfo);
+                    result = JsonSerializer.Deserialize(entry.Value, jsonTypeInfo);
+                }
                 if (result != null)
                 {
                     bytes = MemoryPackSerializer.Serialize(result);
