@@ -14,6 +14,7 @@ namespace AigioL.Common.Storage.Services.Implementation.TencentCloud;
 /// </summary>
 sealed partial class TencentCloudStorageService<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TSettings> :
+    TencentCloudStorageService,
     IObjectStorageService
     where TSettings : class, IObjectStorageSettings
 {
@@ -58,16 +59,55 @@ partial class TencentCloudStorageService<TSettings>
 {
     public string GetCdnTempDownloadUrl(string resourceAccessPath, TimeSpan expiration)
     {
+        var cdnCustomKey = options.ObjectStorageOptions.TencentCloud.CdnCustomKey;
+        var cdnDomainName = options.ObjectStorageOptions.TencentCloud.CdnDomainName;
+        var r = GetCdnTempDownloadUrl(resourceAccessPath, expiration, cdnCustomKey, cdnDomainName);
+        return r;
+    }
+
+    //public string? GetTempDownloadUrl(string key, TimeSpan expiration)
+    //{
+    //    ArgumentNullException.ThrowIfNull(options.ObjectStorageOptions.TencentCloud);
+    //    var region = options.ObjectStorageOptions.TencentCloud.Region;
+    //    ArgumentNullException.ThrowIfNull(region);
+    //    var bucket = options.ObjectStorageOptions.TencentCloud.DefaultBucket;
+    //    ArgumentNullException.ThrowIfNull(bucket);
+    //    var appId = options.ObjectStorageOptions.TencentCloud.AppId;
+    //    ArgumentNullException.ThrowIfNull(appId);
+
+    //    // https://cloud.tencent.com/document/product/436/47238#85551bcf-db74-4280-be0c-fe03ffe0fc95
+
+    //    PreSignatureStruct preSignatureStruct = new PreSignatureStruct
+    //    {
+    //        appid = appId, // "1250000000"; //腾讯云账号 APPID
+    //        region = region, // "COS_REGION"; //存储桶地域
+    //        bucket = bucket, // "examplebucket-1250000000"; //存储桶
+    //        key = key, // 对象键
+    //        httpMethod = "GET", // HTTP 请求方法
+    //        isHttps = true, // 生成 HTTPS 请求 URL
+    //        signDurationSecond = (long)Math.Ceiling(expiration.TotalSeconds), // 请求签名时间
+    //        headers = null, // 签名中需要校验的 header
+    //        queryParameters = null // 签名中需要校验的 URL 中请求参数
+    //    };
+    //    var requestSignURL = cosXml.GenerateSignURL(preSignatureStruct);
+    //    return requestSignURL;
+    //}
+}
+
+public partial class TencentCloudStorageService
+{
+    public static string GetCdnTempDownloadUrl(
+        string resourceAccessPath,
+        TimeSpan expiration,
+        string? cdnCustomKey,
+        string? cdnDomainName)
+    {
         // https://cloud.tencent.com/document/product/228/76110
 
-        ArgumentNullException.ThrowIfNull(options.ObjectStorageOptions.TencentCloud);
-
         // 自定义密钥
-        var cdnCustomKey = options.ObjectStorageOptions.TencentCloud.CdnCustomKey;
         ArgumentNullException.ThrowIfNull(cdnCustomKey);
 
         // DomainName：CDN 域名
-        var cdnDomainName = options.ObjectStorageOptions.TencentCloud.CdnDomainName;
         ArgumentNullException.ThrowIfNull(cdnDomainName);
         var cdnDomainNameSpan = cdnDomainName.AsSpan().Trim();
         if (cdnDomainNameSpan.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
@@ -80,9 +120,15 @@ partial class TencentCloudStorageService<TSettings>
         }
 
         // Filename：资源访问路径
-        var filename = resourceAccessPath.AsSpan().Trim();
-        filename = filename.TrimStart('/');
-        filename = filename.TrimEnd('/');
+        ReadOnlySpan<char> filename;
+        try
+        {
+            filename = new Uri(resourceAccessPath).PathAndQuery.AsSpan().Trim();
+        }
+        catch
+        {
+            filename = resourceAccessPath.AsSpan().Trim();
+        }
 
         // rand：随机字符串，0 - 100位随机字符串，由大小写字母与数字组成
         var randLength = Random.Shared.Next(1, 100);
@@ -99,7 +145,7 @@ partial class TencentCloudStorageService<TSettings>
         SHA256.HashData(Encoding.UTF8.GetBytes($"{filename}-{timestamp}-{rand}-{uid}-{cdnCustomKey}"), hash);
         var hashHex = Convert.ToHexStringLower(hash);
 
-        var typeA = $"https://{cdnDomainNameSpan}/{filename}?sign={timestamp}-{rand}-{uid}-{hashHex}";
+        var typeA = $"https://{cdnDomainNameSpan}{filename}?sign={timestamp}-{rand}-{uid}-{hashHex}";
         return typeA;
     }
 
@@ -133,32 +179,4 @@ partial class TencentCloudStorageService<TSettings>
             chars[i] = temp;
         }
     }
-
-    //public string? GetTempDownloadUrl(string key, TimeSpan expiration)
-    //{
-    //    ArgumentNullException.ThrowIfNull(options.ObjectStorageOptions.TencentCloud);
-    //    var region = options.ObjectStorageOptions.TencentCloud.Region;
-    //    ArgumentNullException.ThrowIfNull(region);
-    //    var bucket = options.ObjectStorageOptions.TencentCloud.DefaultBucket;
-    //    ArgumentNullException.ThrowIfNull(bucket);
-    //    var appId = options.ObjectStorageOptions.TencentCloud.AppId;
-    //    ArgumentNullException.ThrowIfNull(appId);
-
-    //    // https://cloud.tencent.com/document/product/436/47238#85551bcf-db74-4280-be0c-fe03ffe0fc95
-
-    //    PreSignatureStruct preSignatureStruct = new PreSignatureStruct
-    //    {
-    //        appid = appId, // "1250000000"; //腾讯云账号 APPID
-    //        region = region, // "COS_REGION"; //存储桶地域
-    //        bucket = bucket, // "examplebucket-1250000000"; //存储桶
-    //        key = key, // 对象键
-    //        httpMethod = "GET", // HTTP 请求方法
-    //        isHttps = true, // 生成 HTTPS 请求 URL
-    //        signDurationSecond = (long)Math.Ceiling(expiration.TotalSeconds), // 请求签名时间
-    //        headers = null, // 签名中需要校验的 header
-    //        queryParameters = null // 签名中需要校验的 URL 中请求参数
-    //    };
-    //    var requestSignURL = cosXml.GenerateSignURL(preSignatureStruct);
-    //    return requestSignURL;
-    //}
 }
