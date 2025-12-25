@@ -37,13 +37,13 @@ public static partial class UsersController
             [FromQuery] string? phoneNumber,
             [FromQuery] string? nickName,
             [FromQuery] Gender? gender,
-            [FromQuery] DateTimeOffset?[]? lastLoginTime,
             [FromQuery] bool? isLockout,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
+            var lastLoginTime = context.GetQueryDateTimeRangeNullable("lastLoginTime");
             var startTime = context.GetQueryDateTimeRangeNullable("startTime");
             var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userRepo = context.RequestServices.GetRequiredService<IUserRepository>();
@@ -64,7 +64,7 @@ public static partial class UsersController
             BMApiRsp<EditM?> r = await userRepo.GetEditByIdAsync(userId, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
-        .WithDescription("查询客户端用户详情");
+        .WithDescription("获取客户端用户详情");
 
         routeGroup.MapGet("{userId}/wallet", async (HttpContext context,
             [FromRoute] Guid userId) =>
@@ -73,7 +73,7 @@ public static partial class UsersController
             BMApiRsp<UserWalletModel?> r = await userRepo.GetWalletByUserIdAsync(userId, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
-        .WithDescription("查询客户端用户钱包详情");
+        .WithDescription("获取客户端用户钱包详情");
 
         routeGroup.MapPut("", async (HttpContext context,
             [FromBody] EditM model) =>
@@ -127,10 +127,10 @@ public static partial class UsersController
             [FromQuery] string? note,
             [FromQuery] string? sourceId,
             [FromQuery] bool? noticeStatus,
-            [FromQuery] DateTimeOffset?[]? createTime,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
+            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
             var userWalletChangeRecordRepo = context.RequestServices.GetRequiredService<IUserWalletChangeRecordRepository>();
             BMApiRsp<PagedModel<UserWalletChangeRecordModel>?> r = await userWalletChangeRecordRepo.QueryAsync(
                 userId, @event, @type,

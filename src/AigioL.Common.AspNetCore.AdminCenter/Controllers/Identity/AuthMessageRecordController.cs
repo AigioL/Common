@@ -29,7 +29,6 @@ public static partial class AuthMessageRecordController
             [FromQuery] string? phoneNumber,
             [FromQuery] string? phoneNumberRegionCode,
             [FromQuery] string? nickName,
-            [FromQuery] DateTimeOffset?[]? createTime,
             [FromQuery] string? email,
             [FromQuery] SmsCodeType? requestType,
             [FromQuery] bool? everCheck,
@@ -39,6 +38,7 @@ public static partial class AuthMessageRecordController
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
+            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
             var startTime = context.GetQueryDateTimeRangeNullable("startTime");
             var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();

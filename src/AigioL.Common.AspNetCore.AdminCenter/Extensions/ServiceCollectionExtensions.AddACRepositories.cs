@@ -49,7 +49,7 @@ namespace Microsoft.AspNetCore.Http
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public static Guid GetACUserId(this HttpContext ctx)
+        public static Guid GetBMUserId(this HttpContext ctx)
         {
             var userManager = ctx.RequestServices.GetRequiredService<IUserManagerExtensions>();
             var userId = userManager.GetUserId(ctx);

@@ -34,13 +34,13 @@ public static partial class ExternalAccountsController
             [FromQuery] Gender? gender,
             [FromQuery] string? email,
             [FromQuery] string? userNickName,
-            [FromQuery] DateTimeOffset?[]? createTime,
-            [FromQuery] DateTimeOffset?[]? updateTime,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
+            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
+            var updateTime = context.GetQueryDateTimeRangeNullable("updateTime");
             var startTime = context.GetQueryDateTimeRangeNullable("startTime");
             var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userDeviceRepo = context.RequestServices.GetRequiredService<IExternalAccountRepository>();

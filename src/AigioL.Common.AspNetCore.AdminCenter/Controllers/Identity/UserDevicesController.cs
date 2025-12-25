@@ -28,7 +28,6 @@ public static partial class UserDevicesController
             [FromQuery] string? nickName,
             [FromQuery] string? deviceName,
             [FromQuery] string? deviceId,
-            [FromQuery] DateTimeOffset?[]? lastLoginTime,
             [FromQuery] bool? isTrust,
             [FromQuery] DevicePlatform2? platform,
             [FromQuery] string? orderBy = null,
@@ -36,6 +35,7 @@ public static partial class UserDevicesController
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
+            var lastLoginTime = context.GetQueryDateTimeRangeNullable("lastLoginTime");
             var startTime = context.GetQueryDateTimeRangeNullable("startTime");
             var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userDeviceRepo = context.RequestServices.GetRequiredService<IUserDeviceRepository>();

@@ -34,6 +34,7 @@ public static partial class ServiceCollectionServiceExtensions
         // Article
         services.TryAddScoped<IArticleCategoryRepository, ArticleCategoryRepository<TDbContext>>();
         services.TryAddScoped<IArticleRepository, ArticleRepository<TDbContext>>();
+        services.TryAddScoped<IArticleTagRepository, ArticleTagRepository<TDbContext>>();
 
         // OfficialMessage
         services.TryAddScoped<IOfficialMessageRepository, OfficialMessageRepository<TDbContext>>();

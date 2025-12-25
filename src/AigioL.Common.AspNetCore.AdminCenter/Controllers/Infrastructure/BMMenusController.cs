@@ -33,7 +33,7 @@ public static partial class BMMenusController
             var r = await Get(context, id);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
-        .WithDescription("查询管理后台菜单详情");
+        .WithDescription("获取管理后台菜单详情");
         routeGroup.MapPost("", async (HttpContext context, [FromBody] BMMenuEdit model) =>
         {
             var r = await PostOrPut(context, model);
@@ -128,7 +128,7 @@ public static partial class BMMenusController
     static async Task<BMApiRsp<int>> PostOrPut(HttpContext context, BMMenuEdit model)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var tenantId = TenantConstants.RootTenantIdG;
         var (rowCount, _) = await repo.InsertOrUpdateAsync(model, userId, tenantId);
         return new BMApiRsp<int>
@@ -203,7 +203,7 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<bool>> AddMenuButtons(HttpContext context, Guid roleId, Guid menuId, params IEnumerable<BMButtonModel> buttons)
     {
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var r = await repo.AddMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
         return new BMApiRsp<bool>
@@ -215,7 +215,7 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<bool>> EditMenuButtons(HttpContext context, Guid roleId, Guid menuId, string name, params IEnumerable<BMButtonModel> buttons)
     {
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var r = await repo.EditMenuButtonsAsync(name, userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
         return new BMApiRsp<bool>
@@ -227,7 +227,7 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<bool>> DeleteMenuButtons(HttpContext context, Guid roleId, Guid menuId)
     {
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var r = await repo.DeleteMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG);
         return new BMApiRsp<bool>

@@ -8,21 +8,16 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 
-/// <summary>
-/// 文章分类仓储接口
-/// </summary>
-public partial interface IArticleCategoryRepository : IRepository<ArticleCategory, Guid>, IEFRepository
+public partial interface IArticleTagRepository : IRepository<ArticleTag, Guid>, IEFRepository
 {
 }
 
-partial interface IArticleCategoryRepository // 管理后台
+partial interface IArticleTagRepository // 管理后台
 {
     /// <summary>
     /// 表格查询
     /// </summary>
-    /// <param name="parentId">父级 Id</param>
-    /// <param name="name">分类名</param>
-    /// <param name="sort">排序</param>
+    /// <param name="name">标签名</param>
     /// <param name="createTime">创建时间</param>
     /// <param name="updateTime">更新时间</param>
     /// <param name="createUser">创建人</param>
@@ -32,11 +27,9 @@ partial interface IArticleCategoryRepository // 管理后台
     /// <param name="current">当前页码，页码从 1 开始，默认值：<see cref="IPagedModel.DefaultCurrent"/></param>
     /// <param name="pageSize">页大小，如果为 0 必定返回空集合，默认值：<see cref="IPagedModel.DefaultPageSize"/></param>
     /// <param name="cancellationToken"></param>
-    /// <returns>ArticleCategory分页表格查询结果数据</returns>
-    Task<PagedModel<ArticleCategoryTableItemModel>> QueryAsync(
-        Guid? parentId,
+    /// <returns>ArticleTag分页表格查询结果数据</returns>
+    Task<PagedModel<ArticleTagTableItemModel>> QueryAsync(
         string? name,
-        long? sort,
         DateTimeOffset[]? createTime,
         DateTimeOffset[]? updateTime,
         string? createUser,
@@ -47,45 +40,26 @@ partial interface IArticleCategoryRepository // 管理后台
         int pageSize = IPagedModel.DefaultPageSize,
         CancellationToken cancellationToken = default);
 
-    Task<AddOrEditArticleCategoryModel?> GetEditByIdAsync(
+    Task<AddOrEditArticleTagModel?> GetEditByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// 更新一条数据
-    /// </summary>
-    /// <param name="operatorUserId">最后一次操作的人（记录后台管理员禁用或启用或编辑该条的操作）</param>
-    /// <param name="id">主键</param>
-    /// <param name="model">编辑模型</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>受影响的行数</returns>
     Task<ApiRsp> UpdateAsync(
         Guid? operatorUserId,
         Guid id,
-        AddOrEditArticleCategoryModel model,
+        AddOrEditArticleTagModel model,
         CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// 新增一条数据
-    /// </summary>
-    /// <param name="createUserId">创建人</param>
-    /// <param name="model">添加模型</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>受影响的行数</returns>
     Task<ApiRsp> InsertAsync(
         Guid? createUserId,
-        AddOrEditArticleCategoryModel model,
+        AddOrEditArticleTagModel model,
         CancellationToken cancellationToken = default);
 
-    Task<ArticleCategoryTreeNodeModel[]> GetTreeAsync(CancellationToken cancellationToken = default);
-}
+    Task<Guid[]> InsertAsync(
+        Guid? createUserId,
+        IReadOnlyCollection<string> tags,
+        CancellationToken cancellationToken = default);
 
-partial interface IArticleCategoryRepository // 微服务
-{
-    /// <summary>
-    /// 查询文章分类嵌套模型
-    /// </summary>
-    /// <param name="maxDepth">最大深度</param>
-    /// <returns></returns>
-    Task<ArticleCategoryTreeModel[]> QueryCategoryTreeAsync(short maxDepth = 4);
+    Task<ArticleTagOptionItemModel[]> QueryOptionsAsync(
+        CancellationToken cancellationToken = default);
 }

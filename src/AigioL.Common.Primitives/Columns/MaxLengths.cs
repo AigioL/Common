@@ -190,6 +190,8 @@ static partial class MaxLengths // 业务相关字段
 
     public const int ArticleCategoryName = 300;
 
+    public const string ArticleCategoryNameString = "300";
+
     public const int ArticleTagName = 30;
 
     /// <summary>

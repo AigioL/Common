@@ -29,14 +29,14 @@ public static partial class UserCancelsController
             [FromQuery] string? email,
             [FromQuery] string? nickName,
             [FromQuery] Gender? gender,
-            [FromQuery] DateTimeOffset?[]? birthDate,
             [FromQuery] int? areaId,
-            [FromQuery] DateTimeOffset?[]? createTime,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
+            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
+            var birthDate = context.GetQueryDateTimeRangeNullable("birthDate");
             var startTime = context.GetQueryDateTimeRangeNullable("startTime");
             var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userDeleteRepo = context.RequestServices.GetRequiredService<IUserDeleteRepository>();

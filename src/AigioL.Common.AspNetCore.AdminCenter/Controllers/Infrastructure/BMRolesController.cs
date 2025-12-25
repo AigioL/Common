@@ -84,7 +84,7 @@ public static partial class BMRolesController
     static async Task<BMApiRsp<bool>> Post<TRole>(HttpContext context, BMRoleModel model, Guid tenantId) where TRole : BMRole, new()
     {
         var roleManager = context.RequestServices.GetRequiredService<RoleManager<TRole>>();
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var role = await roleManager.FindByNameAsync(model.Name);
         if (role != null && role.TenantId != tenantId)
         {
