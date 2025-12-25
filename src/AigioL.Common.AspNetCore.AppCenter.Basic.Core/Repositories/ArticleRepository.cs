@@ -95,7 +95,7 @@ partial class ArticleRepository<TDbContext> // 管理后台
         }
         else
         {
-            query = query.OrderBy(x => x.CreateTime);
+            query = query.OrderByDescending(x => x.CreateTime);
         }
 
         var r = await query.ProjectTo<ArticleTableItemModel>(mapper.ConfigurationProvider)
@@ -135,6 +135,7 @@ partial class ArticleRepository<TDbContext> // 管理后台
 
         // 更新文章字段
         mapper.Map(model, entity);
+        entity.OperatorUserId = operatorUserId;
 
         // 为简单起见，删除文章原有的标签关系，重新添加新的
         await db.ArticleTagRelations
@@ -154,6 +155,8 @@ partial class ArticleRepository<TDbContext> // 管理后台
     {
         var mapper = serviceProvider.GetRequiredService<IMapper>();
         var entity = mapper.Map<Article>(model);
+        entity.Id = default;
+        entity.CreateUserId = createUserId;
         var addedTags = model.TagIds.Select(tagId => new ArticleTagRelation { Article = entity, TagId = tagId });
 
         await db.Articles.AddAsync(entity, CancellationToken.None);

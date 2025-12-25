@@ -1,4 +1,7 @@
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.Extensions.Caching.Distributed;
@@ -10,6 +13,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 
 public partial interface IKeyValuePairRepository : IRepository<KeyValuePair, string>, IEFRepository
 {
+    const string CacheKey = "KeyValuePairs";
+
     /// <summary>
     /// 查询指定键值对的值
     /// </summary>
@@ -65,4 +70,31 @@ public partial interface IKeyValuePairRepository : IRepository<KeyValuePair, str
         IDistributedCache? cache,
         TimeSpan absoluteExpirationRelativeToNow,
         JsonTypeInfo<T> jsonTypeInfo);
+}
+
+partial interface IKeyValuePairRepository // 管理后台
+{
+    Task<PagedModel<KeyValuePairTableItemModel>> QueryAsync(
+        string? id,
+        string? value,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> UpdateAsync(
+        Guid? operatorUserId,
+        AddOrEditKeyValuePairModel model,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> InsertAsync(
+        Guid? createUserId,
+        AddOrEditKeyValuePairModel model,
+        CancellationToken cancellationToken = default);
+
+    Task<int> SwitchAsync(string primaryKey,
+        bool? enable);
+
+    Task<int> DeleteAsync(string primaryKey);
+
+    Task<int> PhysicalDeleteAsync(string primaryKey);
 }

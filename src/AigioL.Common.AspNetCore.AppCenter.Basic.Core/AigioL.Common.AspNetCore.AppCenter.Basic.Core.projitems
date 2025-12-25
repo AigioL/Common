@@ -48,8 +48,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleTagModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BasicMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FileSystem\CloudFileType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageItemModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\KeyValuePairModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageItemModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StaticResourceModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StaticResourceUploadRecordItemModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StaticResourceUploadResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\UploadFileCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerBuildRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />

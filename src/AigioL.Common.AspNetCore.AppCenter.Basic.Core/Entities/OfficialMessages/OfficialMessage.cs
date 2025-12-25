@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions;
-using AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Notice;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;

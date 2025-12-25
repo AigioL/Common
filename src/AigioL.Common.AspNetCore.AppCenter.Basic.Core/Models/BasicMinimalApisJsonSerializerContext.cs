@@ -1,5 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Articles;
-using AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Notice;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using System.Text.Json;
