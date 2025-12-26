@@ -32,10 +32,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Summaries\OrderAmountQtySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\TransferOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserCouponInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ProfileExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Payment\PaymentHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillAddDto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillDetailModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipBusinessOrderTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementSignDeductReturnCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementStatus.cs" />

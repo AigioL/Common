@@ -21,6 +21,7 @@ public static partial class UserDevicesController
         [StringSyntax("Route")] string pattern = "ms/identity/userdevices")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("客户端用户设备管理");
 
         routeGroup.MapGet("", async (HttpContext context,

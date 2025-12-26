@@ -17,6 +17,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\Article\ArticleCategoryController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\Article\ArticleController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\Article\ArticleTagController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\ClashProxyController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\ExchangeRateController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\KeyValuePairController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\OfficialMessageController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Basics\StaticResourceController.cs" />

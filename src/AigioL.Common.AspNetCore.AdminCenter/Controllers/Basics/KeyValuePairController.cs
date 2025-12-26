@@ -22,6 +22,7 @@ public static partial class KeyValuePairController
         [StringSyntax("Route")] string pattern = "ms/basics/keyvaluepair")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("键值对管理");
 
         routeGroup.MapGet("", async (HttpContext context,

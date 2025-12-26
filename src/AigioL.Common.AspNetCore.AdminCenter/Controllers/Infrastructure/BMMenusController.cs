@@ -18,6 +18,7 @@ public static partial class BMMenusController
     public static void MapBMMenus(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/menus")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("管理后台的菜单管理");
 
         routeGroup.MapGet("/tree", async (HttpContext context) =>

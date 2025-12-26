@@ -16,6 +16,7 @@ public static partial class UserExpRecordsController
         [StringSyntax("Route")] string pattern = "ms/identity/authmessagerecord")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("客户端用户经验值记录管理");
     }
 }

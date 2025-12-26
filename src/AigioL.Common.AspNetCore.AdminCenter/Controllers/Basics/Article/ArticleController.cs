@@ -23,6 +23,7 @@ public static partial class ArticleController
         [StringSyntax("Route")] string pattern = "ms/basics/articles")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("文章管理");
 
         routeGroup.MapGet("", async (HttpContext context,

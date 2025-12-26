@@ -4,8 +4,10 @@ using AigioL.Common.AspNetCore.AdminCenter.Controllers.Basics.Article;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Identity;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Komaasharu;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Membership;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.AspNetCore.Builder;
@@ -31,6 +33,8 @@ public static partial class EndpointRouteBuilderExtensions
 
         // Basics
         b.MapAppVersion();
+        b.MapClashProxyController();
+        b.MapExchangeRate();
         b.MapKeyValuePair();
         b.MapOfficialMessage();
         b.MapStaticResource();
@@ -57,6 +61,7 @@ public static partial class EndpointRouteBuilderExtensions
         b.MapKomaasharuPersonalizeds();
 
         // Membership
+        b.MapMembershipBusinessOrder();
 
         // Ordering
     }

@@ -28,6 +28,7 @@ public static partial class UsersController
         [StringSyntax("Route")] string pattern = "ms/identity/users")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("客户端用户管理");
 
         routeGroup.MapGet("", async (HttpContext context,

@@ -1,6 +1,11 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +15,28 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.
 
 public partial interface IMembershipBusinessOrderRepository : IRepository<MembershipBusinessOrder, Guid>, IEFRepository
 {
+}
+
+partial interface IMembershipBusinessOrderRepository // 管理后台
+{
+    Task<PagedModel<MembershipBusinessOrderTableItem>> QueryAsync(
+        Guid? id,
+        string? goodsName,
+        string? goodsNo,
+        MembershipLicenseFlags? memberLicenseType,
+        string? genericOrderId,
+        OrderStatus? paymentStatus,
+        DateTimeOffset?[]? paymentTime,
+        DateTimeOffset?[]? rechargeCompletionTime,
+        MembershipBusinessSource? businessSource,
+        GoodsRechargeStatus? goodsRechargeStatus,
+        Guid? userId,
+        string? cdkey,
+        string? orderBy,
+        bool? desc,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
 }
 
 partial interface IMembershipBusinessOrderRepository

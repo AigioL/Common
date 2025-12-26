@@ -24,6 +24,7 @@ public static partial class KomaasharuController
         [StringSyntax("Route")] string pattern = "ms/komaasharu")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("广告管理");
 
         routeGroup.MapGet("", async (HttpContext context,

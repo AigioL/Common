@@ -16,6 +16,7 @@ public static partial class UserClockInRecordsController
         [StringSyntax("Route")] string pattern = "ms/identity/userclockinrecords")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("客户端用户签到纪录管理");
     }
 }

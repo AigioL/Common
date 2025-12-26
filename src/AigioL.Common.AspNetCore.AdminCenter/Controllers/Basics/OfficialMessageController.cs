@@ -23,6 +23,7 @@ public static partial class OfficialMessageController
         [StringSyntax("Route")] string pattern = "ms/basics/officialmessage")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("官方消息管理");
 
         routeGroup.MapGet("", async (HttpContext context,

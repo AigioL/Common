@@ -16,6 +16,7 @@ public static partial class KomaasharuPersonalizedsController
         [StringSyntax("Route")] string pattern = "ms/komaasharupersonalizedmanage")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("广告个性化推荐管理");
 
         // 业务设计未完善，暂不实现相关接口

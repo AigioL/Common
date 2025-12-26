@@ -10,15 +10,19 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
+using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq.Expressions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Membership;
 
-public class MembershipBusinessOrderRepository<TDbContext> :
+public partial class MembershipBusinessOrderRepository<TDbContext> :
     Repository<TDbContext, MembershipBusinessOrder, Guid>,
     IMembershipBusinessOrderRepository
     where TDbContext : DbContext, IPaymentDbContext, IIdentityDbContext
@@ -678,4 +682,80 @@ public class MembershipBusinessOrderRepository<TDbContext> :
     }
 
     #endregion
+}
+
+partial class MembershipBusinessOrderRepository<TDbContext> // 管理后台
+{
+    public async Task<PagedModel<MembershipBusinessOrderTableItem>> QueryAsync(
+        Guid? id,
+        string? goodsName,
+        string? goodsNo,
+        MembershipLicenseFlags? memberLicenseType,
+        string? genericOrderId,
+        OrderStatus? paymentStatus,
+        DateTimeOffset?[]? paymentTime,
+        DateTimeOffset?[]? rechargeCompletionTime,
+        MembershipBusinessSource? businessSource,
+        GoodsRechargeStatus? goodsRechargeStatus,
+        Guid? userId,
+        string? cdkey,
+        string? orderBy,
+        bool? desc,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var query = db.MembershipBusinessOrders
+            .AsNoTrackingWithIdentityResolution();
+
+        if (id.HasValue)
+            query = query.Where(x => x.Id == id.Value);
+        if (!string.IsNullOrEmpty(goodsName))
+            query = query.Where(x => x.GoodsName.Contains(goodsName));
+        if (!string.IsNullOrEmpty(goodsNo))
+            query = query.Where(x => x.GoodsNo.Contains(goodsNo));
+        if (memberLicenseType.HasValue)
+            query = query.Where(x => x.MemberLicenseType == memberLicenseType.Value);
+        if (!string.IsNullOrWhiteSpace(genericOrderId))
+            query = query.Where(x => x.OrderId == genericOrderId);
+        if (paymentStatus.HasValue)
+            query = query.Where(x => x.PaymentStatus == paymentStatus.Value);
+        if (businessSource.HasValue)
+            query = query.Where(x => x.BusinessSource == businessSource.Value);
+        if (userId.HasValue)
+            query = query.Where(x => x.UserId == userId.Value);
+
+        if (paymentTime != null && paymentTime.Length == 2)
+        {
+            if (paymentTime[0].HasValue)
+                query = query.Where(x => x.PaymentTime >= paymentTime[0]);
+            if (paymentTime[1].HasValue)
+                query = query.Where(x => x.PaymentTime <= paymentTime[1]);
+        }
+        if (rechargeCompletionTime != null && rechargeCompletionTime.Length == 2)
+        {
+            if (rechargeCompletionTime[0].HasValue)
+                query = query.Where(x => x.RechargeCompletionTime >= rechargeCompletionTime[0]);
+            if (rechargeCompletionTime[1].HasValue)
+                query = query.Where(x => x.RechargeCompletionTime <= rechargeCompletionTime[1]);
+        }
+
+        if (!string.IsNullOrEmpty(cdkey) && ShortGuid.TryParse(cdkey, out Guid productKeyId))
+            query = query.Where(x => x.ProductKeyRecordId == productKeyId);
+
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            query = query.OrderByPropertyName(orderBy, desc);
+        }
+        else
+        {
+            query = query.OrderByDescending(x => x.CreateTime);
+        }
+
+        var r = await query
+            .ProjectTo<MembershipBusinessOrderTableItem>(mapper.ConfigurationProvider)
+            .PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
 }

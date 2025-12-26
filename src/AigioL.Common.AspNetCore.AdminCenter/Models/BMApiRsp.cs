@@ -100,6 +100,12 @@ public partial record class BMApiRsp
         Code = unchecked((uint)HttpStatusCode.OK),
     };
 
+    public static BMApiRsp<TContent?> OK<TContent>(TContent? content = default) => new()
+    {
+        Code = unchecked((uint)HttpStatusCode.OK),
+        Content = content,
+    };
+
     public static BMApiRsp<bool> OkBoolean(bool content = true) => new()
     {
         Code = unchecked((uint)HttpStatusCode.OK),
@@ -188,9 +194,4 @@ public sealed partial record class BMApiRsp<TContent> : BMApiRsp
         r.SetIsSuccess(false);
         return r;
     }
-
-    public static new BMApiRsp<TContent> Ok => new()
-    {
-        Code = unchecked((uint)HttpStatusCode.OK),
-    };
 }

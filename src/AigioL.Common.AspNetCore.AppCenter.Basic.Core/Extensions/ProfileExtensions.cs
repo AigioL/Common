@@ -1,7 +1,9 @@
+using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.Articles;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.FileSystem;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.OfficialMessages;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Articles;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Notice;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Storage;
@@ -73,5 +75,13 @@ public static partial class ProfileExtensions
             .ForMember(d => d.User, opt => opt.MapFrom(s => s.User == null ? default : s.User.NickName))
             .ForMember(d => d.BMUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
             .ForMember(d => d.BMUserId, opt => opt.MapFrom(s => s.CreateUserId));
+
+        p.CreateMap<AppVer, AppVersionTableItemModel>()
+            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
+            .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
+             .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
+            .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
+        p.CreateMap<AppVer, AddOrEditAppVersionModel>()
+            .ReverseMap();
     }
 }

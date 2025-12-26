@@ -28,6 +28,7 @@ public static partial class StaticResourceController
         int multipartBodyLengthLimit = MaxLengths.OneGBInBytes)
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("静态资源管理");
 
         routeGroup.MapGet("", async (HttpContext context,

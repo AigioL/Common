@@ -29,6 +29,7 @@ public static partial class ControllerConstants
     public const string ArticleCategory = "ArticleCategory";
     public const string Article = "Article";
     public const string ArticleTag = "ArticleTag";
+    public const string ExchangeRate = "ExchangeRate";
     public const string KeyValuePair = "KeyValuePair";
     public const string StaticResource = "StaticResource";
     public const string OfficialMessage = "OfficialMessage";

@@ -21,6 +21,7 @@ public static partial class BMRolesController
     public static void MapBMRoles<TRole>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/roles") where TRole : BMRole, new()
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("管理后台的角色管理");
 
         routeGroup.MapGet("select", async (HttpContext context) =>

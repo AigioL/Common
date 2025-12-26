@@ -21,6 +21,7 @@ public static partial class UserCancelsController
         [StringSyntax("Route")] string pattern = "ms/identity/usercancels")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("客户端用户注销信息管理");
 
         routeGroup.MapGet("", async (HttpContext context,

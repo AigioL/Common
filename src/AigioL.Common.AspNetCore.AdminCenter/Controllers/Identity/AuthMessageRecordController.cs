@@ -22,6 +22,7 @@ public static partial class AuthMessageRecordController
         [StringSyntax("Route")] string pattern = "ms/identity/authmessagerecord")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("验证码记录管理");
 
         routeGroup.MapGet("", async (HttpContext context,
