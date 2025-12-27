@@ -21,10 +21,16 @@ public static partial class ServiceCollectionServiceExtensions
         this IServiceCollection services)
         where TDbContext : DbContext, IIdentityDbContext
     {
+        services.AddKeyValuePairRepositories<TDbContext>();
+
         services.TryAddScoped<IAuthMessageRecordRepository, AuthMessageRecordRepository<TDbContext>>();
         //services.TryAddScoped<IClockInRecordRepository, ClockInRecordRepository<TDbContext>>();
+        services.TryAddScoped<IExternalAccountRepository, ExternalAccountRepository<TDbContext>>();
         services.TryAddScoped<IUserDeleteRepository, UserDeleteRepository<TDbContext>>();
+        services.TryAddScoped<IUserDeviceRepository, UserDeviceRepository<TDbContext>>();
         services.TryAddScoped<IUserMembershipRepository, UserMembershipRepository<TDbContext>>();
+        services.TryAddScoped<IUserRepository, UserRepository<TDbContext>>();
+        services.TryAddScoped<IUserWalletChangeRecordRepository, UserWalletChangeRecordRepository<TDbContext>>();
         return services;
     }
 

@@ -1,6 +1,8 @@
+using AigioL.Common.Primitives.Columns;
+
 namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 
-public sealed class BMUserTableItem
+public sealed class BMUserTableItem : IReadOnlyId<Guid>
 {
     public Guid Id { get; set; }
 

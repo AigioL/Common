@@ -80,7 +80,7 @@ public sealed partial record class OrderDetailModel
     /// <summary>
     /// 创建时间
     /// </summary>
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     ///// <summary>
     ///// 业务订单信息

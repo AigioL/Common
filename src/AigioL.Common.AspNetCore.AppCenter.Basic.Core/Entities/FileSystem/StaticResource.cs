@@ -31,6 +31,7 @@ public partial class StaticResource :
     /// 文件指纹 SHA256
     /// </summary>
     [StringLength(MaxLengths.SHA256 + 3, MinimumLength = MaxLengths.SHA256)]
+    [Obsolete("use SHA384")]
     public string? SHA256 { get; set; }
 
     /// <inheritdoc/>

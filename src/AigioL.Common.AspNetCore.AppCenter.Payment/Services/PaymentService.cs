@@ -8,7 +8,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services;
 
 sealed partial class PaymentService(
     ILogger<PaymentService> logger,
-    PaymentMessageQueueService paymentMessageQueue,
+    IPaymentMessageQueueService paymentMessageQueue,
     IPaymentRepository paymentRepo,
     IMerchantDeductionAgreementRepository agreementRepo) : IPaymentService
 {
@@ -19,7 +19,7 @@ sealed partial class PaymentService(
 
     public async Task NotifyOrderComplete(string orderNumber, string tradeNo, PaymentType paymentType, decimal amountReceived, DateTimeOffset paymentTime)
     {
-        var orderInfo = await paymentRepo.GetOrderPayment(orderNumber, paymentType);
+        var orderInfo = await paymentRepo.GetOrderPaymentAsync(orderNumber, paymentType);
         if (orderInfo is not var (order, paymentComposition))
         {
             logger.LogError("平台支付完成回调通知，找不到订单信息");

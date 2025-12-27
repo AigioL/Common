@@ -116,9 +116,9 @@ static partial class QueryableExtensions
       this IQueryable<TEntity> source,
       int current = IPagedModel.DefaultCurrent,
       int pageSize = IPagedModel.DefaultPageSize,
-      CancellationToken cancellationToken = default) where TEntity : class, ICreationTime
+      CancellationToken cancellationToken = default) where TEntity : class, ICreateTime
     {
-        source = source.OrderByDescending(x => x.CreationTime);
+        source = source.OrderByDescending(x => x.CreateTime);
         return source.PagingAsync(current, pageSize, cancellationToken);
     }
 
@@ -134,12 +134,12 @@ static partial class QueryableExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<PagedModel<TEntity>> PagingSortAsync<TEntity>(
         this IQueryable<TEntity> source,
-        ICreationTime? anchor = null,
+        ICreateTime? anchor = null,
         int pageSize = IPagedModel.DefaultPageSize,
-        CancellationToken cancellationToken = default) where TEntity : class, ICreationTime
+        CancellationToken cancellationToken = default) where TEntity : class, ICreateTime
     {
-        var anchorCreationTime = anchor == null ? default : anchor.CreationTime;
-        return source.PagingSortAsync(anchorCreationTime, pageSize, cancellationToken);
+        var anchorCreateTime = anchor == null ? default : anchor.CreateTime;
+        return source.PagingSortAsync(anchorCreateTime, pageSize, cancellationToken);
     }
 
     /// <summary>
@@ -157,10 +157,10 @@ static partial class QueryableExtensions
        DateTimeOffset anchor = default,
        int pageSize = IPagedModel.DefaultPageSize,
        CancellationToken cancellationToken = default)
-        where TEntity : class, ICreationTime
+        where TEntity : class, ICreateTime
     {
-        if (anchor != default) source = source.Where(x => x.CreationTime > anchor);
-        source = source.OrderByDescending(x => x.CreationTime);
+        if (anchor != default) source = source.Where(x => x.CreateTime > anchor);
+        source = source.OrderByDescending(x => x.CreateTime);
         return await source.PagingOffsetAsync(0, pageSize, cancellationToken);
     }
 

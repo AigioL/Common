@@ -17,7 +17,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class ActiveUserAnonymousStatistic :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <summary>
@@ -102,7 +102,7 @@ public partial class ActiveUserAnonymousStatistic :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 是否已登录账号
@@ -139,7 +139,7 @@ public partial class ActiveUserAnonymousStatistic :
     {
         public void Configure(EntityTypeBuilder<ActiveUserAnonymousStatistic> builder)
         {
-            builder.HasIndex(x => x.CreationTime);
+            builder.HasIndex(x => x.CreateTime);
         }
     }
 }

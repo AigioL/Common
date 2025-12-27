@@ -7,7 +7,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Abstractions;
 /// </summary>
 public interface ICouponEntity :
     ICoupon,
-    ICreationTime,
+    ICreateTime,
     IOperatorUserId,
     IUpdateTime
 {

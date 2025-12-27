@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
@@ -18,7 +19,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class MembershipBusinessOrder :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     IUpdateTime,
     INote,
     INEWSEQUENTIALID
@@ -60,12 +61,11 @@ public partial class MembershipBusinessOrder :
     public int RechargeDays { get; set; }
 
     /// <summary>
-    /// 订单 Id
+    /// 通用订单 Id
     /// </summary>
-    [Required]
     [StringLength(MaxLengths.OrderId)]
-    [Comment("订单 Id")]
-    public required string OrderId { get; set; }
+    [Comment("通用订单 Id")]
+    public string? OrderId { get; set; }
 
     /// <summary>
     /// 应收金额
@@ -92,7 +92,7 @@ public partial class MembershipBusinessOrder :
     /// 商品充值状态
     /// </summary>
     [Comment("商品充值状态")]
-    public GoodRechargeStatus GoodsRechargeStatus { get; set; }
+    public GoodsRechargeStatus GoodsRechargeStatus { get; set; }
 
     /// <summary>
     /// 充值完成时间
@@ -107,7 +107,7 @@ public partial class MembershipBusinessOrder :
     public DateTimeOffset? PaymentTime { get; set; }
 
     /// <summary>
-    /// 业务来源(普通订单,Key激活)
+    /// 业务来源（普通订单，Key 激活）
     /// </summary>
     [Required]
     [Comment("业务来源")]
@@ -127,7 +127,7 @@ public partial class MembershipBusinessOrder :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("更新时间")]

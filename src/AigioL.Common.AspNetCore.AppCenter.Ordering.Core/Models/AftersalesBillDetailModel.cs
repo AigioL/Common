@@ -43,7 +43,7 @@ public sealed partial class AftersalesBillDetailModel
     /// <summary>
     /// 提交时间
     /// </summary>
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 更新时间

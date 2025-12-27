@@ -109,6 +109,11 @@ public static partial class MaxLengths
     /// Crc32 算法的哈希长度
     /// </summary>
     public const int Crc32 = 8;
+
+    /// <summary>
+    /// 1GiB => 字节数
+    /// </summary>
+    public const int OneGBInBytes = 1_073_741_824; // 1024 * 1024 * 1024
 }
 
 static partial class MaxLengths // 业务相关字段
@@ -189,6 +194,8 @@ static partial class MaxLengths // 业务相关字段
     public const int ArticleTitle = 200;
 
     public const int ArticleCategoryName = 300;
+
+    public const string ArticleCategoryNameString = "300";
 
     public const int ArticleTagName = 30;
 

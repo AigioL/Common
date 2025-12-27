@@ -1,6 +1,13 @@
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Analysis;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Basics;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Basics.Article;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Identity;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Komaasharu;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Membership;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.AspNetCore.Builder;
@@ -16,11 +23,46 @@ public static partial class EndpointRouteBuilderExtensions
         where TUser : BMUser, new()
         where TRole : BMRole, new()
     {
-        b.MapPostInfo();
+        // Analysis
+        b.MapAnalysisStatistics();
+
+        // Basics/Article
+        b.MapArticleCategory();
+        b.MapArticle();
+        b.MapArticleTag();
+
+        // Basics
+        b.MapAppVersion();
+        b.MapClashProxyController();
+        b.MapExchangeRate();
+        b.MapKeyValuePair();
+        b.MapOfficialMessage();
+        b.MapStaticResource();
+
+        // Identity
+        b.MapAuthMessageRecord();
+        b.MapACUserExternalAccounts();
+        b.MapACUserCancels();
+        b.MapACUserClockInRecords();
+        b.MapACUserDevices();
+        b.MapACUserExpRecords();
+        b.MapACUsers();
+
+        // Infrastructure
+        //b.MapPostInfo();
         b.MapBMLogin<TUser>();
         b.MapBMMenus();
         b.MapBMRoles<TRole>();
         b.MapBMUser<TUser>();
         b.MapBMUsers<TUser>();
+
+        // Komaasharu
+        b.MapKomaasharu();
+        b.MapKomaasharuPersonalizeds();
+
+        // Membership
+        b.MapMembershipBusinessOrder();
+
+        // Ordering
     }
 }

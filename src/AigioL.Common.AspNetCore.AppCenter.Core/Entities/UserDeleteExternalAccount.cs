@@ -22,15 +22,17 @@ public partial class UserDeleteExternalAccount
     public virtual UserDelete UserDelete { get; set; } = null!;
 
     /// <summary>
-    /// 外部账号 Id
+    /// 外部账号表 Id
     /// </summary>
-    [Comment("外部账号 Id")]
+    [Comment("外部账号表 Id")]
     public Guid ExternalAccountId { get; set; }
 
     /// <summary>
     /// 外部账号
     /// </summary>
     public virtual ExternalAccount ExternalAccount { get; set; } = null!;
+
+    // TODO: 改进为 ExternalAccount 记录表 record
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<UserDeleteExternalAccount>
     {

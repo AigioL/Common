@@ -1,3 +1,4 @@
+using AigioL.Common.Primitives.Columns;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 
@@ -8,7 +9,8 @@ namespace AigioL.Common.Primitives.Entities.Abstractions;
 /// 实体模型基类（数据库表）
 /// </summary>
 public abstract partial class Entity<[DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey> :
-    IEntity<TPrimaryKey> where TPrimaryKey : notnull, IEquatable<TPrimaryKey>
+    IEntity<TPrimaryKey>
+    where TPrimaryKey : notnull, IEquatable<TPrimaryKey>
 {
     [global::System.ComponentModel.DataAnnotations.Key]
     public virtual partial TPrimaryKey Id { get => field!; set; }

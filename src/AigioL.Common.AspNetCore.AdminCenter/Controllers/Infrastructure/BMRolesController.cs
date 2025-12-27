@@ -16,11 +16,12 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMRolesController
 {
-    const string ControllerName = "RoleManage";
+    const string ControllerName = ControllerConstants.RoleManage;
 
     public static void MapBMRoles<TRole>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/roles") where TRole : BMRole, new()
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("管理后台的角色管理");
 
         routeGroup.MapGet("select", async (HttpContext context) =>
@@ -84,7 +85,7 @@ public static partial class BMRolesController
     static async Task<BMApiRsp<bool>> Post<TRole>(HttpContext context, BMRoleModel model, Guid tenantId) where TRole : BMRole, new()
     {
         var roleManager = context.RequestServices.GetRequiredService<RoleManager<TRole>>();
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var role = await roleManager.FindByNameAsync(model.Name);
         if (role != null && role.TenantId != tenantId)
         {

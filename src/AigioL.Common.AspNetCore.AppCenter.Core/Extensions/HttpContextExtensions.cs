@@ -489,11 +489,10 @@ file static partial class DateTimeParseHelper
     {
         if (!string.IsNullOrWhiteSpace(s))
         {
-            if (DateTimeOffset.TryParseExact(s, "r", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces, out var value1))
+            if (DateTimeOffset.TryParseExact(s, "r", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces, out var value))
             {
-                // Microsoft.AspNetCore.Http.RequestDelegateGenerator 源生成
-                // if (global::System.DateTimeOffset.TryParse(status3_temp!, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces, out var status3_temp_parsed_non_nullable))
-                result = value1;
+                // RFC1123 pattern
+                result = value;
                 return true;
             }
             else if (s.Length <= MaximumEscapedDateTimeOffsetParseLength)

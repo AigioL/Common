@@ -208,7 +208,7 @@ sealed partial class PaymentRepository<TDbContext> :
         return Task.CompletedTask;
     }
 
-    public async Task<(Order Order, OrderPaymentComposition OrderPaymentComposition)?> GetOrderPayment(string orderNumber, PaymentType paymentType,
+    public async Task<(Order Order, OrderPaymentComposition OrderPaymentComposition)?> GetOrderPaymentAsync(string orderNumber, PaymentType paymentType,
         CancellationToken cancellationToken = default)
     {
         var info = await db.OrderPaymentCompositions
@@ -223,6 +223,42 @@ sealed partial class PaymentRepository<TDbContext> :
 
         return (info.Order!, info);
     }
+
+    public async Task<OrderPaymentComposition?> GetOnlinePaidCompositionAsync(string orderNumber, CancellationToken cancellationToken = default)
+    {
+        var query = db.OrderPaymentCompositions
+            .Where(o => o.Order!.OrderNumber == orderNumber)
+            .Where(a => a.PaymentStatus == PaymentStatus.Paid && a.PaymentMethod == PaymentMethod.Online);
+
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
+    public async Task<RefundBill?> GetRefundBillAsync(string refundNumber, CancellationToken cancellationToken = default)
+    {
+        var query = db.RefundBills
+            .Where(o => o.RefundNumber == refundNumber);
+
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
+    public async Task UpdateRefundBillAsync(string refundNumber, bool refunding, bool refundSuccess, string errorDesc)
+    {
+        var status = refunding && refundSuccess ?
+            RefundStatus.Refund :
+            refunding ?
+                RefundStatus.Refunding :
+                RefundStatus.Fail;
+
+        var query = db.RefundBills
+            .Where(a => a.RefundNumber == refundNumber);
+
+        await query.ExecuteUpdateAsync(a => a
+            .SetProperty(b => b.RefundStatus, status)
+            .SetProperty(b => b.RefundFailureReason, b => errorDesc)
+        );
+    }
 }
 
 file static class ProjectToMapper
@@ -236,6 +272,6 @@ file static class ProjectToMapper
         BusinessType = it.BusinessTypeId,
         Note = it.Note,
         Status = it.Status,
-        CreationTime = it.CreationTime,
+        CreateTime = it.CreateTime,
     };
 }

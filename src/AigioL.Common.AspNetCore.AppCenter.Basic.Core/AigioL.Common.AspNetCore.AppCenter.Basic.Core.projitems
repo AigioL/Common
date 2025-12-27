@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialCustomMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\OfficialMessages\OfficialMessageAppVerRelation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ProfileExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificatePackable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ApiGateway\ServerCertificateRawDataType.cs" />
@@ -47,25 +48,32 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Articles\ArticleTagModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BasicMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FileSystem\CloudFileType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageItemModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\OfficialMessages\OfficialMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\KeyValuePairModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageItemModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StaticResourceModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StaticResourceUploadRecordItemModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\StaticResourceUploadResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Storage\UploadFileCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerBuildRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAppVerRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleCategoryRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IArticleTagRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOfficialMessageRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IStaticResourceRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\AppVerBuildRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\AppVerRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleCategoryRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\ArticleTagRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\OfficialMessageRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\StaticResourceRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\AppVerCoreService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Models\Komaasharus\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

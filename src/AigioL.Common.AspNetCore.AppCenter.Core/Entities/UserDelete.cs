@@ -17,7 +17,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class UserDelete :
     Entity<Guid>, INEWSEQUENTIALID,
-    ICreationTime,
+    ICreateTime,
     IPhoneNumber,
     INickName
 {
@@ -120,7 +120,7 @@ public partial class UserDelete :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 修改人 Id
@@ -132,7 +132,7 @@ public partial class UserDelete :
     /// 用户创建（注册）时间
     /// </summary>
     [Comment("用户创建时间")]
-    public DateTimeOffset UserCreationTime { get; set; }
+    public DateTimeOffset UserCreateTime { get; set; }
 
     /// <summary>
     /// 关联的外部账号

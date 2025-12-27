@@ -1,7 +1,7 @@
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers.Summaries;
 
 /// <summary>
-/// 活跃用户统计响应
+/// 活跃用户汇总统计响应
 /// </summary>
 public record class ActiveUserSumResponse
 {

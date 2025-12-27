@@ -12,7 +12,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.AnalysisLogs.Sum
 [Table("ActiveUserLanguageSummaries")]
 public partial class ActiveUserLanguageSummary :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <summary>
@@ -55,5 +55,5 @@ public partial class ActiveUserLanguageSummary :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

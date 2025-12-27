@@ -12,7 +12,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.AnalysisLogs.Sum
 [Table("AnalysisEventLogSummaries")]
 public partial class AnalysisEventLogSummary :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <summary>
@@ -42,7 +42,7 @@ public partial class AnalysisEventLogSummary :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// AppVersion

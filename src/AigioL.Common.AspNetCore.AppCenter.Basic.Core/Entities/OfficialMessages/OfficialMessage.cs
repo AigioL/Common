@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.AppVersions;
-using AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Notice;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -14,7 +14,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.OfficialMessages;
 /// <summary>
 /// 官方消息实体类
 /// </summary>
-[Index(nameof(CreationTime), IsDescending = new[] { true })]
+[Index(nameof(CreateTime), IsDescending = new[] { true })]
 [Table(nameof(OfficialMessage) + "s")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class OfficialMessage :

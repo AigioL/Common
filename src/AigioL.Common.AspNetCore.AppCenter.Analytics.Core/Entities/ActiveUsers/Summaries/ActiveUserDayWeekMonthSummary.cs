@@ -15,7 +15,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summ
 [Table("ActiveUserDayWeekMonthSummaries")]
 public partial class ActiveUserDayWeekMonthSummary :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     public ActiveUserStatisticsType AUType { get; set; }
@@ -56,7 +56,7 @@ public partial class ActiveUserDayWeekMonthSummary :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     public static Expression<Func<ActiveUserDayWeekMonthSummary, UserActivityStatisticsResponse>> Expression => _.Expression;
 }

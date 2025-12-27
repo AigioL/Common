@@ -12,12 +12,12 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// </summary>
 public sealed partial class JobRecordResult :
     Entity<Guid>,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 名称

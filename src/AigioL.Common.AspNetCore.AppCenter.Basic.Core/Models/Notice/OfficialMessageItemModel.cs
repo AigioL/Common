@@ -1,4 +1,4 @@
-namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.OfficialMessages;
+namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.Notice;
 
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
 public sealed partial record class OfficialMessageItemModel

@@ -13,7 +13,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Entities.Articles;
 public partial class ArticleVisitStatistic :
     Entity<Guid>,
     IReadOnlyIPAddress,
-    ICreationTime,
+    ICreateTime,
     INEWSEQUENTIALID
 {
     /// <summary>
@@ -42,5 +42,5 @@ public partial class ArticleVisitStatistic :
 
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

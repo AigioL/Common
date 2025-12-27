@@ -371,8 +371,8 @@ partial class UserManager2<TDbContext> : IUserManager2
         //var (level, nextExperience) = User.GetLevel((uint)user.Experience);
 
         //var lastSignInTime = db.UserClockInRecords.Where(x => x.UserId == user.Id)
-        //    .OrderByDescending(x => x.CreationTime)
-        //    .Select(x => x.CreationTime)
+        //    .OrderByDescending(x => x.CreateTime)
+        //    .Select(x => x.CreateTime)
         //    .FirstOrDefault();
 
         (MembershipInfo? membershipInfo, var _) = await userMembershipRepo.GetUserMembershipCachePriorityAsync(
@@ -516,7 +516,7 @@ partial class UserManager2<TDbContext> : IUserManager2
         if (userId == default) // Register
         {
             var externalAccount = await db.ExternalAccounts
-                .OrderBy(x => x.CreationTime)
+                .OrderBy(x => x.CreateTime)
                 .FirstOrDefaultAsync(a => a.ExternalAccountId == externalAccountId &&
                     a.Type == channel);
             externalAccount ??= new ExternalAccount
@@ -675,7 +675,7 @@ partial class UserManager2<TDbContext> : IUserManager2
                     .Where(x => (x.UserId.HasValue && x.UserId == userId) &&
                         x.ExternalAccountId == externalAccountId &&
                         x.Type == channel)
-                    .OrderBy(x => x.CreationTime)
+                    .OrderBy(x => x.CreateTime)
                     .ToArrayAsync();
         if (externalAccounts != null && externalAccounts.Length != 0)
         {

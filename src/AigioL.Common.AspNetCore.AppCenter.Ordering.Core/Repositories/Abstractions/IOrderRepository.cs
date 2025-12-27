@@ -34,7 +34,7 @@ public partial interface IOrderRepository
         DateTimeOffset?[]? paymentTime,
         int? businessType,
         string? note,
-        DateTimeOffset?[]? creationTime,
+        DateTimeOffset?[]? createTime,
         int current,
         int pageSize,
         CancellationToken cancellationToken = default);
@@ -63,4 +63,13 @@ public partial interface IOrderRepository
         OrderStatus[]? status,
         int? businessType,
         CancellationToken cancellationToken = default);
+
+    Task<int?> GetBusinessTypeIdByOrderNumberAsync(string orderNumber, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 完成订单，用于已完成的业务订单同步完成通用订单状态
+    /// </summary>
+    /// <param name="orderNumber">订单号</param>
+    /// <returns></returns>
+    Task CompleteOrderAsync(string orderNumber);
 }

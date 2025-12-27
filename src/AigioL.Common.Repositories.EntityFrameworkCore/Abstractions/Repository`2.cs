@@ -101,8 +101,11 @@ public abstract class Repository<TDbContext, [DynamicallyAccessedMembers(IEntity
     /// <inheritdoc cref="RequestAborted"/>
     CancellationToken IEFRepository<TEntity>.RequestAborted => RequestAborted;
 
+    protected IServiceProvider serviceProvider;
+
     public Repository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext)
     {
+        this.serviceProvider = serviceProvider;
         Entity = dbContext.Set<TEntity>();
         requestAbortedProvider = serviceProvider.GetService<IRequestAbortedProvider>();
         if (requestAbortedProvider == null)

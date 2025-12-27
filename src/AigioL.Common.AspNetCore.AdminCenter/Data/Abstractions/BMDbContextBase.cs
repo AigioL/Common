@@ -1,5 +1,7 @@
+using AigioL.Common.AspNetCore.AdminCenter.Columns;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -33,8 +35,13 @@ public abstract partial class BMDbContextBase<
     /// <inheritdoc/>
     DatabaseFacade IDbContextBase.GetDatabase() => Database;
 
-    protected BMDbContextBase(DbContextOptions options) : base(options)
+    protected readonly IHttpContextAccessor httpContextAccessor;
+
+    protected BMDbContextBase(
+        DbContextOptions options,
+        IHttpContextAccessor httpContextAccessor) : base(options)
     {
+        this.httpContextAccessor = httpContextAccessor;
     }
 
     /// <inheritdoc/>
@@ -51,23 +58,6 @@ public abstract partial class BMDbContextBase<
         }
         return null;
     }
-
-    ///// <inheritdoc/>
-    //public virtual Guid? GetCurrentUserId()
-    //{
-    //    var ctx = httpContextAccessor?.HttpContext;
-    //    if (ctx != null)
-    //    {
-    //        var userId = GetUserId(ctx);
-    //        return userId;
-    //    }
-    //    return null;
-    //}
-
-    ///// <summary>
-    ///// 是否允许写入空的管理后台用户 Id，当 <see cref="GetCurrentUserId"/> 返回 <see langword="null"/> 时允许创建或修改表，默认值：不允许
-    ///// </summary>
-    //protected virtual bool AllowEmptyCurrentUserId { get; }
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -117,4 +107,70 @@ public abstract partial class BMDbContextBase<
 
     /// <inheritdoc cref="BMTenant"/>
     public DbSet<BMTenant> Tenants { get; set; }
+
+    sealed record UserIdM(Guid? UserId);
+
+    protected virtual void OnSaveChanges()
+    {
+        UserIdM? userIdM = null;
+        Guid? GetCurrentlyLoggedInUserId()
+        {
+            if (userIdM == null)
+            {
+                userIdM = new UserIdM(GetUserId(httpContextAccessor.HttpContext));
+            }
+            return userIdM?.UserId;
+        }
+
+        foreach (var entity in ChangeTracker.Entries())
+        {
+            switch (entity.State)
+            {
+                case EntityState.Modified:
+                    if (entity.Entity is IUpdateTime u) // 设置更新时间
+                    {
+                        u.UpdateTime = DateTimeOffset.Now;
+                    }
+                    if (entity.Entity is IOperatorUserId operatorUserId) // 设置操作人
+                    {
+                        var uid = GetCurrentlyLoggedInUserId();
+                        if (uid.HasValue)
+                        {
+                            operatorUserId.OperatorUserId = uid;
+                        }
+                    }
+                    break;
+                case EntityState.Added:
+                    if (entity.Entity is ICreateUserId createUserId) // 设置创建人
+                    {
+                        var uid = GetCurrentlyLoggedInUserId();
+                        if (uid.HasValue)
+                        {
+                            createUserId.CreateUserId = uid.Value;
+                        }
+                    }
+                    else if (entity.Entity is ICreateUserIdNullable createUserIdNullable)
+                    {
+                        var uid = GetCurrentlyLoggedInUserId();
+                        if (uid.HasValue)
+                        {
+                            createUserIdNullable.CreateUserId = uid.Value;
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        OnSaveChanges();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        OnSaveChanges();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
 }

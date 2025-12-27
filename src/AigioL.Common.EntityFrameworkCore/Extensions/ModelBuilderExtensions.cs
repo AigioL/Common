@@ -85,13 +85,13 @@ public static partial class ModelBuilderExtensions
 
             #endregion
 
-            #region 继承自 创建时间(ICreationTime) 接口的要设置默认值使用数据库当前时间
+            #region 继承自 创建时间(ICreateTime) 接口的要设置默认值使用数据库当前时间
 
-            if (PCreationTime.IsAssignableFrom(type))
+            if (PCreateTime.IsAssignableFrom(type))
             {
                 buildAction += p =>
                 {
-                    p.Property(nameof(ICreationTime.CreationTime)).HasDefaultValueSql(DateTimeOffsetDefaultValueSql).IsRequired();
+                    p.Property(nameof(ICreateTime.CreateTime)).HasDefaultValueSql(DateTimeOffsetDefaultValueSql).IsRequired();
                 };
             }
 

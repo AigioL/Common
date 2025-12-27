@@ -16,7 +16,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 public partial class ExternalAccount :
     Entity<Guid>,
     INEWSEQUENTIALID,
-    ICreationTime,
+    ICreateTime,
     INickName,
     IUpdateTime
 {
@@ -76,7 +76,7 @@ public partial class ExternalAccount :
     public string? AvatarUrl { get; set; }
 
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 更新时间

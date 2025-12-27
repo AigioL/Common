@@ -18,11 +18,11 @@ public partial class AuthMessageRecord :
     INEWSEQUENTIALID,
     IPhoneNumber,
     IReadOnlyIPAddress,
-    ICreationTime
+    ICreateTime
 {
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("手机号")]

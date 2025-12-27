@@ -1,5 +1,5 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.Primitives.Columns;
-using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,7 +14,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 [Table("KeyValuePairs")]
 [DebuggerDisplay("{DebuggerDisplay(),nq}")]
 public class KeyValuePair :
-    IEntity<string>,
+    OperatorBaseEntity<string>,
     ISoftDeleted
 {
     /// <summary>
@@ -22,7 +22,7 @@ public class KeyValuePair :
     /// </summary>
     [Key] // EF 主键
     [Comment("键")]
-    public required string Id { get; set; }
+    public override required string Id { get; set; }
 
     /// <summary>
     /// 值

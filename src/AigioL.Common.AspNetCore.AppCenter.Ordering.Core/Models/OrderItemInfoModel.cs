@@ -45,5 +45,5 @@ public class OrderItemInfoModel
     /// <summary>
     /// 创建时间
     /// </summary>
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 }

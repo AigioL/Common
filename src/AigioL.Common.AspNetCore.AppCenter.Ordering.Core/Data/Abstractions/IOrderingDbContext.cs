@@ -13,6 +13,4 @@ public interface IOrderingDbContext : IOrderingPaymentBaseDbContext, IDbContextB
     DbSet<UserCouponInfo> UserCouponInfos { get; }
 
     DbSet<AftersalesBill> AftersalesBills { get; }
-
-    DbSet<RefundBill> RefundBills { get; }
 }

@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -11,4 +12,6 @@ public interface IOrderingPaymentBaseDbContext : IDbContextBase
     DbSet<OrderPaymentComposition> OrderPaymentCompositions { get; }
 
     DbSet<TransferOrder> TransferOrders { get; }
+
+    DbSet<RefundBill> RefundBills { get; }
 }

@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus;
+using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -41,4 +42,42 @@ public partial interface IKomaasharuRepository : IRepository<Komaasharu, Guid>, 
 
 partial interface IKomaasharuRepository // 管理后台
 {
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    Task<PagedModel<KomaasharuTableItem>> QueryAsync(
+        string? name,
+        KomaasharuType? type,
+        KomaasharuOrientation? orientation,
+        DateTimeOffset?[]? startTime,
+        DateTimeOffset?[]? endTime,
+        bool? expired,
+        bool? disable,
+        string? orderBy,
+        bool? desc,
+        int current,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据编辑模型添加或更新一行数据
+    /// </summary>
+    Task<int> InsertOrUpdateAsync(KomaasharuEdit model);
+
+    /// <summary>
+    /// 根据主键获取编辑模型
+    /// </summary>
+    Task<KomaasharuEdit?> GetEditByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 设置禁用状态
+    /// </summary>
+    Task<int> SetDisableAsync(Guid id, bool disable);
+
+    /// <summary>
+    /// 展示记录按天统计
+    /// </summary>
+    Task<StatisticsKomaasharuResponse[]?> GetStatistics(
+        Guid id,
+        CancellationToken cancellationToken = default);
 }

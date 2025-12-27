@@ -1,9 +1,16 @@
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
+using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MemoryPack;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Json;
@@ -73,12 +80,181 @@ public sealed partial class KeyValuePairRepository<TDbContext>(TDbContext dbCont
     }
 }
 
+partial class KeyValuePairRepository<TDbContext> // 管理后台
+{
+    public async Task<PagedModel<KeyValuePairTableItemModel>> QueryAsync(
+        string? id,
+        string? value,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        IQueryable<KeyValuePair> query = EntityNoTracking
+            .IgnoreQueryFilters()
+            .OrderBy(static x => x.CreateTime);
+
+        if (!string.IsNullOrWhiteSpace(id))
+        {
+            query = query.Where(x => x.Id != null && x.Id == id);
+        }
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            query = query.Where(x => x.Value == value);
+        }
+
+        var query2 = query.ProjectTo<KeyValuePairTableItemModel>(mapper.ConfigurationProvider);
+
+        var r = await query2.PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
+
+    public async Task<bool> UpdateAsync(
+        Guid? operatorUserId,
+        AddOrEditKeyValuePairModel model,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(model.Id))
+        {
+            return false;
+        }
+
+        var entity = await Entity
+            .IgnoreQueryFilters()
+            .Where(x => x.Id == model.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (entity == null)
+        {
+            return false;
+        }
+
+        var connection = serviceProvider.GetRequiredService<IConnectionMultiplexer>();
+        var cache = serviceProvider.GetRequiredService<IDistributedCache>();
+
+        entity.Value = model.Value;
+        entity.OperatorUserId = operatorUserId;
+        entity.SoftDeleted = false;
+        await db.SaveChangesAsync(CancellationToken.None);
+
+        // 清除内存缓存
+        await ClearCacheAsync(connection, cache, model.Id);
+
+        return true;
+    }
+
+    public async Task<bool> InsertAsync(
+        Guid? createUserId,
+        AddOrEditKeyValuePairModel model,
+        CancellationToken cancellationToken = default)
+    {
+        var connection = serviceProvider.GetRequiredService<IConnectionMultiplexer>();
+        var cache = serviceProvider.GetRequiredService<IDistributedCache>();
+        var entity = await Entity
+            .IgnoreQueryFilters()
+            .Where(x => x.Id == model.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (entity == null)
+        {
+            entity = new()
+            {
+                Id = model.Id,
+                Value = model.Value,
+                CreateUserId = createUserId,
+            };
+            await db.AddAsync(entity, CancellationToken.None);
+        }
+        else
+        {
+            entity.Value = model.Value;
+            entity.OperatorUserId = createUserId;
+            entity.SoftDeleted = false;
+        }
+        await db.SaveChangesAsync(CancellationToken.None);
+
+        // 清除内存缓存
+        await ClearCacheAsync(connection, cache, model.Id);
+
+        return true;
+    }
+
+    public async Task<int> DeleteAsync(
+        string primaryKey)
+    {
+        var connection = serviceProvider.GetRequiredService<IConnectionMultiplexer>();
+        var cache = serviceProvider.GetRequiredService<IDistributedCache>();
+        var r = await base.DeleteAsync(primaryKey, CancellationToken.None);
+
+        // 清除内存缓存
+        await ClearCacheAsync(connection, cache, primaryKey);
+
+        return r;
+    }
+
+    public sealed override Task<int> DeleteAsync(
+        string primaryKey,
+        CancellationToken cancellationToken) => DeleteAsync(primaryKey);
+
+    public async Task<int> PhysicalDeleteAsync(
+        string primaryKey)
+    {
+        var connection = serviceProvider.GetRequiredService<IConnectionMultiplexer>();
+        var cache = serviceProvider.GetRequiredService<IDistributedCache>();
+
+        var query = Entity
+            .IgnoreQueryFilters()
+            .Where(x => x.Id == primaryKey);
+        var r = await query.ExecuteDeleteAsync();
+
+        // 清除内存缓存
+        await ClearCacheAsync(connection, cache, primaryKey);
+
+        return r;
+    }
+
+    public async Task<int> SwitchAsync(
+        string primaryKey,
+        bool? enable)
+    {
+        var connection = serviceProvider.GetRequiredService<IConnectionMultiplexer>();
+        var cache = serviceProvider.GetRequiredService<IDistributedCache>();
+
+        var query = Entity
+            .IgnoreQueryFilters()
+            .Where(x => x.Id == primaryKey);
+        int r;
+
+        if (enable.HasValue)
+        {
+            r = await query.ExecuteUpdateAsync(x => x.SetProperty(y => y.SoftDeleted, y => !enable.Value));
+        }
+        else
+        {
+            r = await query.ExecuteUpdateAsync(x => x.SetProperty(y => y.SoftDeleted, y => !y.SoftDeleted));
+        }
+
+        // 清除内存缓存
+        await ClearCacheAsync(connection, cache, primaryKey);
+
+        return r;
+    }
+
+    async Task ClearCacheAsync(
+        IConnectionMultiplexer connection,
+        IDistributedCache cache,
+        string key)
+    {
+        // 清除内存缓存
+        await connection.GetDatabase().HashDeleteAsync(CacheKey, key);
+        await cache.RemoveAsync(key, CancellationToken.None);
+    }
+}
+
 partial class KeyValuePairRepository<TDbContext>
 {
     public async Task<T?> GetAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         IDistributedCache cache,
         string key,
-        JsonTypeInfo<T> jsonTypeInfo,
+        JsonTypeInfo<T>? jsonTypeInfo,
         CancellationToken cancellationToken = default)
     {
         T? result = default;
@@ -100,7 +276,15 @@ partial class KeyValuePairRepository<TDbContext>
             var entry = await EntityNoTracking.FirstOrDefaultAsync(x => x.Id == key, cancellationToken);
             if (entry != null)
             {
-                result = JsonSerializer.Deserialize(entry.Value, jsonTypeInfo);
+                if (typeof(T) == typeof(string))
+                {
+                    result = (T)(object)entry.Value;
+                }
+                else
+                {
+                    ArgumentNullException.ThrowIfNull(jsonTypeInfo);
+                    result = JsonSerializer.Deserialize(entry.Value, jsonTypeInfo);
+                }
                 if (result != null)
                 {
                     bytes = MemoryPackSerializer.Serialize(result);

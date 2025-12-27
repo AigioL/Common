@@ -125,14 +125,14 @@ public static partial class ArticleController
             var r = await cache.GetOrCreateAsync(cacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(article_memory_timeout_minutes);
-                var r = await repo.QueryCategoryAsync(categoryId, current, pageSize);
+                var r = await repo.QueryCategoryAsync(categoryId, current, pageSize, cancellationToken);
                 return r;
             }, cancellationToken);
             return r;
         }
         else
         {
-            var r = await repo.QueryCategoryAsync(categoryId, current, pageSize);
+            var r = await repo.QueryCategoryAsync(categoryId, current, pageSize, cancellationToken);
             return r;
         }
     }
@@ -164,14 +164,14 @@ public static partial class ArticleController
             var r = await cache.GetOrCreateAsync(cacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(article_memory_timeout_minutes);
-                var r = await repo.QueryOrderByAsync(orderBy, categoryId, current, pageSize);
+                var r = await repo.QueryOrderByAsync(orderBy, categoryId, current, pageSize, cancellationToken);
                 return r;
             }, cancellationToken);
             return r;
         }
         else
         {
-            var r = await repo.QueryOrderByAsync(orderBy, categoryId, current, pageSize);
+            var r = await repo.QueryOrderByAsync(orderBy, categoryId, current, pageSize, cancellationToken);
             return r;
         }
     }
@@ -202,14 +202,14 @@ public static partial class ArticleController
                 r = await cache.GetOrCreateAsync(cacheKey, async entry =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(article_memory_timeout_minutes);
-                    var r = await repo.QueryInfoAsync(id);
+                    var r = await repo.QueryInfoAsync(id, cancellationToken);
                     return r;
                 }, cancellationToken);
                 return r;
             }
             else
             {
-                r = await repo.QueryInfoAsync(id);
+                r = await repo.QueryInfoAsync(id, cancellationToken);
                 return r;
             }
         }

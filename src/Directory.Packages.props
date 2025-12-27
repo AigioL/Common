@@ -36,7 +36,7 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="$(DotNet_Package_Version)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="$(DotNet_Package_Version)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(DotNet_Package_Version)" />
-		<PackageVersion Include="NLog" Version="6.0.6" />
+		<PackageVersion Include="NLog" Version="6.0.7" />
 		<PackageVersion Include="NLog.Extensions.Logging" Version="6.1.0" />
 		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.0" />
 	</ItemGroup>
@@ -49,13 +49,13 @@
 	</ItemGroup>
 	<!-- 👇 哈希算法 -->
 	<ItemGroup>
-		<PackageVersion Include="System.IO.Hashing" Version="$(DotNet_Package_Version)" />
+		<PackageVersion Include="System.IO.Hashing" Version="10.0.1" />
 	</ItemGroup>
 	<!-- 👇 JsonWebToken -->
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.15.0" />
 		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0" />
-		<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
 	</ItemGroup>
 	<!-- 👇 可回收内存流 -->
 	<ItemGroup>
@@ -63,14 +63,14 @@
 	</ItemGroup>
 	<!-- 👇 EF Core -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(DotNet_Package_Version)" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(DotNet_Package_Version)" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(DotNet_Package_Version)" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(DotNet_Package_Version)" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="$(DotNet_Package_Version)" />
-		<PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(DotNet_Package_Version)" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="10.0.1" />
+		<PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.1" />
 		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-		<PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.0.2" />
+		<PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.1.0" />
 	</ItemGroup>
 	<!-- 👇 序列化 -->
 	<ItemGroup>
@@ -79,12 +79,12 @@
 	</ItemGroup>
 	<!-- 👇 OpenApi -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(DotNet_Package_Version)" />
-		<PackageVersion Include="Scalar.AspNetCore" Version="2.11.2" />
+		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
+		<PackageVersion Include="Scalar.AspNetCore" Version="2.11.10" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.0" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.0" />
 		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.0" />
 		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.0" />
@@ -97,9 +97,9 @@
 	</ItemGroup>
 	<!-- 👇 Redis -->
 	<ItemGroup>
-		<PackageVersion Include="Aspire.Hosting.Redis" Version="13.0.2" />
+		<PackageVersion Include="Aspire.Hosting.Redis" Version="13.1.0" />
 		<PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.0.2" />
-		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.0.2" />
+		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.1.0" />
 	</ItemGroup>
 	<!-- 👇 Quartz -->
 	<ItemGroup>
@@ -118,19 +118,24 @@
 	</ItemGroup>
 	<!-- 👇 Aspire -->
 	<ItemGroup>
-		<PackageVersion Include="Aspire.Hosting.AppHost" Version="13.0.2" />
-		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.0.2" />
-		<PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
-		<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
+		<PackageVersion Include="Aspire.Hosting.AppHost" Version="13.1.0" />
+		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.1.0" />
+		<PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.1.0" />
+		<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.1.0" />
 		<PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
 		<PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0" />
 		<PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.14.0" />
 		<PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0" />
 		<PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.14.0" />
-		<PackageVersion Include="Aspire.Hosting.Testing" Version="13.0.2" />
-		<PackageVersion Include="Aspire.Hosting.Docker" Version="13.0.0-preview.1.25560.3" />
-		<PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="13.0.0" />
-		<PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.0.0" />
+		<PackageVersion Include="Aspire.Hosting.Testing" Version="13.1.0" />
+		<PackageVersion Include="Aspire.Hosting.Docker" Version="13.1.0-preview.1.25616.3" />
+		<PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.1.0-preview.1.25616.3" />
+		<PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="13.0.1-beta.468" />
+		<PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.0.1-beta.468" />
+		<PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.1.0" />
+		<PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.1.0" />
+		<PackageVersion Include="Aspire.Hosting.Yarp" Version="13.1.0" />
+		<PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
 	</ItemGroup>
 	<!-- 👇 Docker -->
 	<ItemGroup>
@@ -138,7 +143,7 @@
 	</ItemGroup>
 	<!-- 👇 Identity -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(DotNet_Package_Version)" />
+		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.1" />
 		<PackageVersion Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.8" />
 	</ItemGroup>
 	<!-- 👇 Bcl Compat -->
@@ -147,7 +152,7 @@
 	</ItemGroup>
 	<!-- 👇 CommandLine -->
 	<ItemGroup>
-		<PackageVersion Include="System.CommandLine" Version="2.0.0" />
+		<PackageVersion Include="System.CommandLine" Version="2.0.1" />
 	</ItemGroup>
 	<!-- 👇 ReverseProxy -->
 	<ItemGroup>
@@ -160,5 +165,9 @@
 	<!-- 👇 腾讯云 -->
 	<ItemGroup>
 		<PackageVersion Include="Tencent.QCloud.Cos.Sdk" Version="5.4.49" />
+	</ItemGroup>
+	<!-- 👇 Mapper -->
+	<ItemGroup>
+		<PackageVersion Include="AutoMapper" Version="16.0.0" />
 	</ItemGroup>
 </Project>

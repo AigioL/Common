@@ -19,7 +19,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMUsersController
 {
-    const string ControllerName = "SystemUser";
+    const string ControllerName = ControllerConstants.SystemUser;
 
     public static void MapBMUsers<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/users") where TUser : BMUser, new()
     {
@@ -125,7 +125,7 @@ public static partial class BMUsersController
 
     static async Task<BMApiRsp> Put<TUser>(HttpContext context, Guid id, EditBMUserModel model) where TUser : BMUser
     {
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         if (userId == id)
             return "不能编辑自己，请在个人中心修改用户名或密码";
 

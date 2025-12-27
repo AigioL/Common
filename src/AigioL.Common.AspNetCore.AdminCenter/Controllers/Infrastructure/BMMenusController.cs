@@ -13,11 +13,12 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMMenusController
 {
-    const string ControllerName = "SystemMenuManage";
+    const string ControllerName = ControllerConstants.SystemMenuManage;
 
     public static void MapBMMenus(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/menus")
     {
         var routeGroup = b.MapGroup(pattern)
+            .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("管理后台的菜单管理");
 
         routeGroup.MapGet("/tree", async (HttpContext context) =>
@@ -33,10 +34,10 @@ public static partial class BMMenusController
             var r = await Get(context, id);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
-        .WithDescription("查询管理后台菜单详情");
+        .WithDescription("获取管理后台菜单详情");
         routeGroup.MapPost("", async (HttpContext context, [FromBody] BMMenuEdit model) =>
         {
-            var r = await Post(context, model);
+            var r = await PostOrPut(context, model);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增管理后台菜单");
@@ -48,7 +49,7 @@ public static partial class BMMenusController
         .WithDescription("删除管理后台菜单");
         routeGroup.MapPut("", async (HttpContext context, [FromBody] BMMenuEdit model) =>
         {
-            var r = await Put(context, model);
+            var r = await PostOrPut(context, model);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("编辑管理后台菜单");
@@ -125,26 +126,15 @@ public static partial class BMMenusController
         return r;
     }
 
-    static async Task<BMApiRsp<int>> Post(HttpContext context, BMMenuEdit model)
-    {
-        if (model.Id != default)
-        {
-            return HttpStatusCode.BadRequest;
-        }
-
-        var r = await PostOrPut(context, model);
-        return r;
-    }
-
     static async Task<BMApiRsp<int>> PostOrPut(HttpContext context, BMMenuEdit model)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var tenantId = TenantConstants.RootTenantIdG;
         var (rowCount, _) = await repo.InsertOrUpdateAsync(model, userId, tenantId);
         return new BMApiRsp<int>
         {
-            Code = unchecked((uint)(rowCount > 0 ? StatusCodes.Status200OK : StatusCodes.Status404NotFound)),
+            Code = unchecked(StatusCodes.Status200OK),
             Content = rowCount,
         };
     }
@@ -152,24 +142,12 @@ public static partial class BMMenusController
     static async Task<BMApiRsp<bool>> Delete(HttpContext context, Guid id)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var userId = context.GetACUserId();
         var r = await repo.DeleteMenuAsync(id, TenantConstants.RootTenantIdG);
         return new BMApiRsp<bool>
         {
-            Code = StatusCodes.Status200OK,
+            Code = unchecked(StatusCodes.Status200OK),
             Content = r,
         };
-    }
-
-    static async Task<BMApiRsp<int>> Put(HttpContext context, BMMenuEdit model)
-    {
-        if (model.Id == default)
-        {
-            return HttpStatusCode.BadRequest;
-        }
-
-        var r = await PostOrPut(context, model);
-        return r;
     }
 
     #region 菜单权限
@@ -226,7 +204,7 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<bool>> AddMenuButtons(HttpContext context, Guid roleId, Guid menuId, params IEnumerable<BMButtonModel> buttons)
     {
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var r = await repo.AddMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
         return new BMApiRsp<bool>
@@ -238,7 +216,7 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<bool>> EditMenuButtons(HttpContext context, Guid roleId, Guid menuId, string name, params IEnumerable<BMButtonModel> buttons)
     {
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var r = await repo.EditMenuButtonsAsync(name, userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
         return new BMApiRsp<bool>
@@ -250,7 +228,7 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<bool>> DeleteMenuButtons(HttpContext context, Guid roleId, Guid menuId)
     {
-        var userId = context.GetACUserId();
+        var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var r = await repo.DeleteMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG);
         return new BMApiRsp<bool>

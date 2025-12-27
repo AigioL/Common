@@ -32,10 +32,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Summaries\OrderAmountQtySummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\TransferOrder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserCouponInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ProfileExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Payment\PaymentHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillAddDto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillDetailModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipBusinessOrderTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementSignDeductReturnCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementStatus.cs" />
@@ -45,7 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\CouponType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuditStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalLoginChannelWithNickName.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\GoodRechargeStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\GoodsRechargeStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipCDKeyRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipCreateAgreementSignDeductRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipGoodsModel.cs" />
@@ -60,6 +62,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\OrderType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderPaymentSuccessInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderRefundMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\OrderRefundSuccessInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PaymentAccessTokenEnum.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\PaymentMethod.cs" />
@@ -83,12 +86,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAftersalesBillRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Membership\IMembershipBusinessOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Membership\IMembershipGoodsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IMerchantDeductionAgreementRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Membership\IMembershipProductKeyRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IPaymentRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\AftersalesBillRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Membership\MembershipBusinessOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Membership\MembershipGoodsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Membership\MembershipProductKeyRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\OrderRepository.cs" />

@@ -1,8 +1,10 @@
+using AigioL.Common.Primitives.Columns;
+using AigioL.Common.Primitives.Entities.Abstractions;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 
-public sealed class BMMenuEdit
+public sealed class BMMenuEdit : IReadOnlyId<Guid>
 {
     public Guid Id { get; set; }
 

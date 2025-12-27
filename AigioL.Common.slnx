@@ -83,8 +83,12 @@
     <Project Path="src/AigioL.Common.JsonWebTokens.Services/AigioL.Common.JsonWebTokens.Services.shproj" Id="fe10fe98-b87c-4ee5-a793-ac0c22fd3bc0" />
   </Folder>
   <Folder Name="/2.Libraries/OpenAPI.Sdk/">
+    <Project Path="src/AigioL.Common.ClashProxy.Models/AigioL.Common.ClashProxy.Models.shproj" Id="a6af5765-e3aa-4b44-be1a-14c9e3de7de6" />
+    <Project Path="src/AigioL.Common.ClashProxy.Services/AigioL.Common.ClashProxy.Services.shproj" Id="0e236ec9-6349-4c3d-a348-3b128d51e4f0" />
     <Project Path="src/AigioL.Common.SmsSender.Models/AigioL.Common.SmsSender.Models.shproj" Id="f7a3e2fa-2830-4eb6-b797-a1a80d93f85e" />
     <Project Path="src/AigioL.Common.SmsSender.Services/AigioL.Common.SmsSender.Services.shproj" Id="5238362e-d36a-430f-a92e-b9b841cd5981" />
+    <Project Path="src/AigioL.Common.Storage.Models/AigioL.Common.Storage.Models.shproj" Id="bf2ae051-a657-4596-ae02-ea0b1939a55c" />
+    <Project Path="src/AigioL.Common.Storage.Services/AigioL.Common.Storage.Services.shproj" Id="96c82b06-78de-4a05-b59b-fe9a73a80794" />
   </Folder>
   <Folder Name="/2.Libraries/OpenAPI.Sdk/Feishu/">
     <Project Path="src/AigioL.Common.FeishuOApi.Sdk/AigioL.Common.FeishuOApi.Sdk.shproj" Id="8b693671-817b-4e46-b1df-0f81623e3eb1" />

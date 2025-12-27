@@ -17,6 +17,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class BMUser :
     IdentityUser<Guid>,
+    IEntity<Guid>,
     INEWSEQUENTIALID,
     INote,
     INickName,
@@ -130,7 +131,7 @@ partial class BMUser : ICreationBaseEntity<Guid>
 {
     /// <inheritdoc/>
     [Comment("创建时间")]
-    public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建人")]

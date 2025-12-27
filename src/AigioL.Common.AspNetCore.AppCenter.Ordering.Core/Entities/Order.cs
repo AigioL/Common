@@ -22,40 +22,41 @@ public partial class Order :
     INote
 {
     /// <summary>
-    /// 订单号
+    /// 通用订单号
     /// </summary>
     [StringLength(MaxLengths.OrderId)]
-    [Comment("订单号")]
+    [Comment("通用订单号")]
     public required override string Id { get; set; }
 
     /// <summary>
-    /// 订单号
+    /// 通用订单号
     /// </summary>
     [NotMapped]
+    [Obsolete("use string Id")]
     public string OrderNumber { get => Id; set => Id = value; }
 
     /// <summary>
-    /// 订单类型
+    /// 通用订单类型
     /// </summary>
-    [Comment("订单类型")]
+    [Comment("通用订单类型")]
     public OrderType Type { get; set; }
 
     /// <summary>
-    /// 订单来源终端
+    /// 通用订单来源终端
     /// </summary>
-    [Comment("订单来源终端")]
+    [Comment("通用订单来源终端")]
     public DevicePlatform2 Source { get; set; }
 
     /// <summary>
-    /// 订单超时时间
+    /// 通用订单超时时间
     /// </summary>
-    [Comment("订单超时时间")]
+    [Comment("通用订单超时时间")]
     public DateTimeOffset Timeout { get; set; }
 
     /// <summary>
-    /// 订单状态
+    /// 通用订单状态
     /// </summary>
-    [Comment("订单状态")]
+    [Comment("通用订单状态")]
     public OrderStatus Status { get; set; }
 
     /// <summary>
@@ -95,6 +96,12 @@ public partial class Order :
     /// </summary>
     [Comment("业务类型")]
     public int BusinessTypeId { get; set; }
+
+    /// <summary>
+    /// 业务订单 Id
+    /// </summary>
+    [Comment("业务订单 Id")]
+    public Guid BusinessOrderId { get; set; }
 
     /// <inheritdoc/>
     [Comment("备注")]
