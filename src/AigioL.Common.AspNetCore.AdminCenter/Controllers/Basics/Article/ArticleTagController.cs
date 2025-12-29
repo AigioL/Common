@@ -16,7 +16,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Basics.Article;
 /// </summary>
 public static partial class ArticleTagController
 {
-    const string ControllerName = ControllerConstants.ArticleCategory;
+    const string ControllerName = ControllerConstants.ArticleTag;
 
     public static void MapArticleTag(
         this IEndpointRouteBuilder b,

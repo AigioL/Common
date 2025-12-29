@@ -38,9 +38,9 @@ public sealed partial class MembershipBusinessOrderTableItem : IReadOnlyId<Guid>
     public int RechargeDays { get; set; }
 
     /// <summary>
-    /// 通用订单ID
+    /// 通用订单 Id
     /// </summary>
-    public Guid? GenericOrderId { get; set; }
+    public string? GenericOrderId { get; set; }
 
     /// <summary>
     /// 应收金额
@@ -78,14 +78,9 @@ public sealed partial class MembershipBusinessOrderTableItem : IReadOnlyId<Guid>
     public MembershipBusinessSource BusinessSource { get; set; }
 
     /// <summary>
-    /// 产品密钥记录ID
+    /// 产品密钥记录 Id
     /// </summary>
     public Guid? ProductKeyRecordId { get; set; }
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 备注
@@ -93,4 +88,14 @@ public sealed partial class MembershipBusinessOrderTableItem : IReadOnlyId<Guid>
     public string? Note { get; set; }
 
     public string? Cdkey { get; set; }
+
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTimeOffset CreateTime { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTimeOffset UpdateTime { get; set; }
 }

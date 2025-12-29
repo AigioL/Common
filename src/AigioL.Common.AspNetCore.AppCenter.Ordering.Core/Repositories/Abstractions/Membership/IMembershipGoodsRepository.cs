@@ -1,11 +1,14 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 
-public interface IMembershipGoodsRepository : IRepository<MembershipGoods, Guid>, IEFRepository
+public partial interface IMembershipGoodsRepository : IRepository<MembershipGoods, Guid>, IEFRepository
 {
     /// <summary>
     /// 获取上架的会员商品
@@ -21,4 +24,19 @@ public interface IMembershipGoodsRepository : IRepository<MembershipGoods, Guid>
     /// 检查用户是否使用过商品的首次优惠
     /// </summary>
     Task<bool> CheckUserUseFirstPriceOfGoodsAsync(Guid userId, Guid goodsId, CancellationToken cancellationToken = default);
+}
+
+partial interface IMembershipGoodsRepository
+{
+    Task<PagedModel<MembershipGoodsTableItem>> QueryAsync(
+        Guid? id,
+        string? goodsName,
+        string? goodsNo,
+        MembershipLicenseFlags? memberLicenseType,
+        int? rechargeDays,
+        decimal? currentPrice,
+        bool? enable,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
 }

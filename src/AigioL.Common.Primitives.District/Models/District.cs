@@ -39,7 +39,7 @@ public sealed partial class District : IDistrict
     {
         using var stream = R.AMap_adcode_citycode;
         var t = MemoryPackSerializer.DeserializeAsync<District[]>(stream);
-        return t.Result;
+        return t.Result!;
     }, LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>

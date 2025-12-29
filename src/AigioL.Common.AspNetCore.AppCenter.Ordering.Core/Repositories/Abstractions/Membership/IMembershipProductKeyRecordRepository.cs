@@ -7,7 +7,7 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 
-public interface IMembershipProductKeyRecordRepository : IRepository<MembershipProductKeyRecord, Guid>, IEFRepository
+public partial interface IMembershipProductKeyRecordRepository : IRepository<MembershipProductKeyRecord, Guid>, IEFRepository
 {
     //Task<(bool success, Guid[] keys, string msg)> BatchCreateProductKeyRecord(MembershipBatchCreateProductKeyRecordRequest request);
 
@@ -25,4 +25,19 @@ public interface IMembershipProductKeyRecordRepository : IRepository<MembershipP
     //    bool? desc = null);
 
     Task<MembershipProductKeyRecord?> GetProductKeyRecord(Guid recordId, bool? disable, bool? isUsed, CancellationToken cancellationToken = default);
+}
+
+partial interface IMembershipProductKeyRecordRepository // 管理后台
+{
+    Task<PagedModel<MembershipProductKeyRecordTableItem>> QueryAsync(
+        Guid? key = null,
+        int? rechargeDays = null,
+        Guid? membershipGoodsId = null,
+        bool? isUsed = null,
+        bool? disable = null,
+        string? orderBy = null,
+        bool? desc = null,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
 }

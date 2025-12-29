@@ -38,6 +38,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillAddDto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AftersalesBillDetailModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipBusinessOrderTableItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipGoodsTableItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Membership\MembershipProductKeyRecordTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementSignDeductReturnCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Payment\AgreementStatus.cs" />

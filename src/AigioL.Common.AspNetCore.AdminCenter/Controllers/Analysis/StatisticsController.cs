@@ -54,7 +54,6 @@ public static partial class StatisticsController
             [FromQuery] DateTimeOffset startTime,
             [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             if (startTime.AddMonths(1) > endTime)
             {
                 return "筛选天数不能大于 1 个月";
@@ -69,7 +68,6 @@ public static partial class StatisticsController
             [FromQuery] DateTimeOffset startTime,
             [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<ActiveUserSumResponse[]?> r = await statisticsRepo.GetActiveUserStatisticsAsync(startTime, endTime, context.RequestAborted);
             return r;
@@ -83,7 +81,6 @@ public static partial class StatisticsController
             [FromQuery] DateTimeOffset startTime,
             [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsActiveUserOSResponse[]?> r = await statisticsRepo.GetActiveStatisticsAsync(platform, startTime, endTime, context.RequestAborted);
             return r;
@@ -106,7 +103,6 @@ public static partial class StatisticsController
             [FromQuery] DateTimeOffset startTime,
             [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsKomaasharuResponse[]?> r = await statisticsRepo.GetAdvertisementStatisticsAsync(startTime, endTime, context.RequestAborted);
             return r;
@@ -120,7 +116,6 @@ public static partial class StatisticsController
              [FromQuery] DateTimeOffset startTime,
              [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<UserActivityStatisticsResponse[]?> r = await statisticsRepo.GetUserActivityStatisticsAsync(platform, startTime, endTime, context.RequestAborted);
             return r;
@@ -131,7 +126,6 @@ public static partial class StatisticsController
              [FromQuery] DateTimeOffset startTime,
              [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsSmsUsageTrendResponse[]?> r = await statisticsRepo.GetSmsUsageTrendStatisticsAsync(startTime, endTime, context.RequestAborted);
             return r;
@@ -142,7 +136,6 @@ public static partial class StatisticsController
              [FromQuery] DateTimeOffset startTime,
              [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsEmailUsageTrendResponse[]?> r = await statisticsRepo.GetEmailUsageTrendStatisticsAsync(startTime, endTime, context.RequestAborted);
             return r;
@@ -157,7 +150,6 @@ public static partial class StatisticsController
             [FromQuery] bool taxed = false,
             [FromQuery] bool pureProfit = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsOrderAmountQtyModel[]?> r = await statisticsRepo.GetOrderAmountQtyStatisticsAsync(startTime, endTime, unit, paymentType, taxed, pureProfit, context.RequestAborted);
             return r;
@@ -172,7 +164,6 @@ public static partial class StatisticsController
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<OrderAmountQtyTableModel[]?> r = await statisticsRepo.GetOrderSummaryTable(startTime, endTime, orderType, orderBusinessType, orderBy, desc, context.RequestAborted);
             return r;
@@ -186,7 +177,6 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<AnalysisResponse[]?> r = await statisticsRepo.GetStartServiceLogAnalysis(startTime, endTime, appVersion, appId, isMonth, context.RequestAborted);
             return r;
@@ -200,7 +190,6 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<AnalysisResponse[]?> r = await statisticsRepo.GetStartSessionLogAnalysis(startTime, endTime, appVersion, appId, isMonth, context.RequestAborted);
             return r;
@@ -214,7 +203,6 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisEvnetMenuList(startTime, endTime, appVersion, appId, isMonth, context.RequestAborted);
             return BMApiRsp.OK(r);
@@ -229,7 +217,6 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisPropertiesKeyMenuList(startTime, endTime, appVersion, eventNames, appId, isMonth, context.RequestAborted);
             return BMApiRsp.OK(r);
@@ -245,7 +232,6 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisPropertiesValueMenuList(startTime, endTime, appVersion, eventNames, key, appId, isMonth, context.RequestAborted);
             return BMApiRsp.OK(r);
@@ -262,18 +248,24 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisEventSummary(startTime, endTime, appVersion, eventNames, key, value, appId, isMonth, context.RequestAborted);
             return BMApiRsp.OK(r);
         }).PermissionFilter(ControllerNameAnalysisEvent, BMButtonType.Query)
         .WithDescription("事件统计数据");
 
+        routeGroup.MapGet("getappidlist", async (HttpContext context) =>
+        {
+            var analysisLogRropo = context.RequestServices.GetRequiredService<IAnalysisLogRepository>();
+            var r = await analysisLogRropo.GetAppIdListAsync(context.RequestAborted);
+            return BMApiRsp.OK(r);
+        }).PermissionFilter(ControllerNameAnalysisLog, BMButtonType.Query)
+        .WithDescription("获取统计的 App 平台数据");
+
         routeGroup.MapGet("getanalysisappver", async (HttpContext context,
             [FromQuery] DateTimeOffset startTime,
             [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisAppVer(startTime, endTime, context.RequestAborted);
             return BMApiRsp.OK(r);
@@ -286,7 +278,6 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisAppVerSummary(startTime, endTime, appId, isMonth, context.RequestAborted);
             return BMApiRsp.OK(r);
@@ -301,7 +292,6 @@ public static partial class StatisticsController
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisLocaleSummary(startTime, endTime, isall, appVersion, appId, isMonth, context.RequestAborted);
             return BMApiRsp.OK(r);
@@ -314,7 +304,6 @@ public static partial class StatisticsController
             [FromQuery] string? appVersion,
             [FromQuery] bool isMonth = false) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAnalysisEquipmentSummary(startTime, endTime, appVersion, isMonth, context.RequestAborted);
             return BMApiRsp.OK(r);
@@ -325,22 +314,10 @@ public static partial class StatisticsController
             [FromQuery] DateTimeOffset startTime,
             [FromQuery] DateTimeOffset endTime) =>
         {
-            endTime = endTime.AddDays(1);
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAppVerStatisticsData(startTime, endTime, context.RequestAborted);
             return BMApiRsp.OK(r);
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("活跃用户设备");
     }
-
-    ///// <summary>
-    ///// 获取平台数据
-    ///// </summary>
-    ///// <returns></returns>
-    //[HttpGet, PermissionFilter(ControllerNameAnalysisLog + nameof(BMButtonType.Query))]
-    //public async Task<BMApiRsp<OptionItem[]?>> GetAppIdList()
-    //{
-    //    var r = await analysisLogRropo.GetAppIdList();
-    //    return r;
-    //}
 }

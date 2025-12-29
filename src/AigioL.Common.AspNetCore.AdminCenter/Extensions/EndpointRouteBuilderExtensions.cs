@@ -5,6 +5,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Controllers.Identity;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Komaasharu;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Membership;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Ordering;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -62,7 +63,16 @@ public static partial class EndpointRouteBuilderExtensions
 
         // Membership
         b.MapMembershipBusinessOrder();
+        b.MapMembershipGoods();
+        b.MapMembershipProductKeyRecord();
 
         // Ordering
+        b.MapAftersalesBill();
+        b.MapCooperatorAccount();
+        b.MapMerchantDeductionAgreementConfiguration();
+        b.MapMerchantDeductionAgreement();
+        b.MapOrderBusinessPaymentConfiguration();
+        b.MapOrder();
+        b.MapRefundBill();
     }
 }

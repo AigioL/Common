@@ -1,9 +1,15 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
+using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -60,6 +66,49 @@ sealed partial class MembershipGoodsRepository<TDbContext> :
             .Where(x => x.UserId == userId && x.MembershipGoodsId == goodsId);
 
         var r = await query.AnyAsync(cancellationToken);
+        return r;
+    }
+}
+
+partial class MembershipGoodsRepository<TDbContext> // 管理后台
+{
+    public async Task<PagedModel<MembershipGoodsTableItem>> QueryAsync(
+        Guid? id,
+        string? goodsName,
+        string? goodsNo,
+        MembershipLicenseFlags? memberLicenseType,
+        int? rechargeDays,
+        decimal? currentPrice,
+        bool? enable,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        IQueryable<MembershipGoods> query = db.MembershipGoods
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.MerchantDeductionAgreementConfigurations);
+
+        if (id.HasValue)
+            query = query.Where(x => x.Id == id);
+        if (!string.IsNullOrWhiteSpace(goodsName))
+            query = query.Where(x => x.GoodsName.Contains(goodsName));
+        if (!string.IsNullOrWhiteSpace(goodsNo))
+            query = query.Where(x => x.GoodsNo.Contains(goodsNo));
+        if (memberLicenseType.HasValue)
+            query = query.Where(x => x.MemberLicenseType == memberLicenseType);
+        if (rechargeDays.HasValue)
+            query = query.Where(x => x.RechargeDays == rechargeDays);
+        if (currentPrice.HasValue)
+            query = query.Where(x => x.CurrentPrice == currentPrice);
+        if (enable.HasValue)
+            query = query.Where(x => x.Enable == enable);
+
+        query = query.OrderBy(x => x.CreateTime);
+
+        var query2 = query.ProjectTo<MembershipGoodsTableItem>(mapper.ConfigurationProvider);
+
+        var r = await query2.PagingAsync(current, pageSize, cancellationToken);
         return r;
     }
 }

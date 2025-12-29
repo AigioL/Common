@@ -13,5 +13,18 @@ public static partial class ProfileExtensions
     public static void AddOrderingProfile(this Profile p)
     {
         p.CreateMap<MembershipBusinessOrder, MembershipBusinessOrderTableItem>();
+
+        p.CreateMap<MembershipGoods, MembershipGoodsTableItem>()
+            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
+            .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
+            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
+            .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
+            .ForMember(d => d.Configurations, opt => opt.MapFrom(s => s.MerchantDeductionAgreementConfigurations != null ? s.MerchantDeductionAgreementConfigurations.Select(s => s.Id).ToList() : new()));
+
+        p.CreateMap<MembershipProductKeyRecord, MembershipProductKeyRecordTableItem>()
+            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
+            .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
+            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
+            .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
     }
 }
