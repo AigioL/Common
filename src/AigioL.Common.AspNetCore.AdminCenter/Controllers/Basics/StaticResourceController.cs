@@ -51,9 +51,14 @@ public static partial class StaticResourceController
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("分页查询静态资源");
 
-        routeGroup.MapPut("", async (HttpContext context,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] AddOrEditM model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var userId = context.GetBMUserId();
             var staticResourceRepo = context.RequestServices.GetRequiredService<IStaticResourceRepository>();
             BMApiRsp r = await staticResourceRepo.UpdateAsync(userId, model, context.RequestAborted);

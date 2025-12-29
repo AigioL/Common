@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
@@ -39,4 +40,23 @@ partial interface IMembershipGoodsRepository
         int current = IPagedModel.DefaultCurrent,
         int pageSize = IPagedModel.DefaultPageSize,
         CancellationToken cancellationToken = default);
+
+    Task<AddOrEditMembershipGoodsModel?> GetEditByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
+    Task<ApiRsp> UpdateAsync(
+        Guid? operatorUserId,
+        AddOrEditMembershipGoodsModel model,
+        CancellationToken cancellationToken = default);
+
+    Task<ApiRsp> InsertAsync(
+        Guid? createUserId,
+        AddOrEditMembershipGoodsModel model,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 上架或下架会员商品
+    /// </summary>
+    Task<int> EnabledMembershipGoodsAsync(Guid goodsId, bool enable, Guid operatorUserId);
 }

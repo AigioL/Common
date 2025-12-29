@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 
 #region AftersalesBillController
-[JsonSerializable(typeof(AftersalesBillAddDto))]
+[JsonSerializable(typeof(AftersalesBillAddModel))]
 [JsonSerializable(typeof(ApiRsp<AftersalesBillDetailModel?>))]
 #endregion
 #region OrderingController

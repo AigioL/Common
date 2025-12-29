@@ -64,6 +64,16 @@ partial interface IKomaasharuRepository // 管理后台
     /// </summary>
     Task<int> InsertOrUpdateAsync(KomaasharuEdit model);
 
+    Task<bool> UpdateAsync(
+        Guid? operatorUserId,
+        KomaasharuEdit model,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> InsertAsync(
+        Guid? createUserId,
+        KomaasharuEdit model,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
     /// 根据主键获取编辑模型
     /// </summary>

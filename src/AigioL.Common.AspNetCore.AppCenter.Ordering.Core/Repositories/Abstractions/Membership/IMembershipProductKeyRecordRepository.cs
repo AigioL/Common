@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
@@ -40,4 +41,20 @@ partial interface IMembershipProductKeyRecordRepository // 管理后台
         int current = IPagedModel.DefaultCurrent,
         int pageSize = IPagedModel.DefaultPageSize,
         CancellationToken cancellationToken = default);
+
+    Task<ApiRsp<string[]?>> BatchCreateProductKeyRecordAsync(
+        Guid createUserId,
+        Guid membershipGoodsId,
+        uint count,
+        CancellationToken cancellationToken = default);
+
+    Task<int> BatchDisableProductKeyRecordAsync(
+        Guid? operatorUserId,
+        bool disable,
+        params IEnumerable<string> keys);
+
+    Task<int> BatchDisableProductKeyRecordAsync(
+        Guid? operatorUserId,
+        bool disable,
+        params IEnumerable<Guid> keys);
 }

@@ -5,6 +5,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -109,6 +110,75 @@ partial class MembershipGoodsRepository<TDbContext> // 管理后台
         var query2 = query.ProjectTo<MembershipGoodsTableItem>(mapper.ConfigurationProvider);
 
         var r = await query2.PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
+
+    public async Task<AddOrEditMembershipGoodsModel?> GetEditByIdAsync(
+         Guid id,
+         CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var query = db.MembershipGoods
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.MerchantDeductionAgreementConfigurations)
+            .Where(x => x.Id == id)
+            .ProjectTo<AddOrEditMembershipGoodsModel>(mapper.ConfigurationProvider);
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
+    public async Task<ApiRsp> UpdateAsync(
+        Guid? operatorUserId,
+        AddOrEditMembershipGoodsModel model,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var entity = await FindAsync(model.Id, cancellationToken);
+
+        if (entity == null)
+        {
+            return false;
+        }
+
+        var configurations = await db.MerchantDeductionAgreementConfigurations
+          .Where(x => model.Configurations.Contains(x.Id))
+          .ToListAsync(cancellationToken);
+
+        mapper.Map(model, entity);
+        entity.OperatorUserId = operatorUserId;
+        entity.MerchantDeductionAgreementConfigurations = configurations;
+
+        await db.SaveChangesAsync(CancellationToken.None);
+        return true;
+    }
+
+    public async Task<ApiRsp> InsertAsync(
+        Guid? createUserId,
+        AddOrEditMembershipGoodsModel model,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var entity = mapper.Map<MembershipGoods>(model);
+        entity.Id = default;
+        entity.CreateUserId = createUserId;
+
+        var configurations = await db.MerchantDeductionAgreementConfigurations
+          .Where(x => model.Configurations.Contains(x.Id))
+          .ToListAsync(cancellationToken);
+        entity.MerchantDeductionAgreementConfigurations = configurations;
+
+        await db.SaveChangesAsync(CancellationToken.None);
+        return true;
+    }
+
+    public async Task<int> EnabledMembershipGoodsAsync(Guid goodsId, bool enable, Guid operatorUserId)
+    {
+        var query = db.MembershipGoods
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.Enable != enable && x.Id == goodsId);
+        var r = await query.ExecuteUpdateAsync(e =>
+            e.SetProperty(s => s.Enable, enable)
+            .SetProperty(s => s.OperatorUserId, operatorUserId));
         return r;
     }
 }

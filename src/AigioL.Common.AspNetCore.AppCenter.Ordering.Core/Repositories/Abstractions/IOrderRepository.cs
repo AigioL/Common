@@ -1,6 +1,8 @@
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
 
@@ -72,4 +74,26 @@ public partial interface IOrderRepository
     /// <param name="orderNumber">订单号</param>
     /// <returns></returns>
     Task CompleteOrderAsync(string orderNumber);
+}
+
+partial interface IOrderRepository // 管理后台
+{
+    Task<PagedModelEx<OrderTableItem, decimal>> QueryAsync(
+        string? id = null,
+        string? orderNumber = null,
+        OrderType? type = null,
+        DevicePlatform2? source = null,
+        OrderStatus[]? status = null,
+        Guid? userId = null,
+        int? businessType = null,
+        string? note = null,
+        DateTimeOffset?[]? paymentTime = null,
+        PaymentType? paymentType = null,
+        DateTimeOffset?[]? createTime = null,
+        Guid? agreementId = null,
+        string? orderBy = null,
+        bool? desc = null,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
 }

@@ -8,6 +8,8 @@ using AigioL.Common.AspNetCore.AppCenter.Repositories.Komaasharus.Abstractions;
 using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -102,7 +104,9 @@ partial class KomaasharuRepository<TDbContext>
 {
     public async Task<PagedModel<KomaasharuTableItem>> QueryAsync(string? name, KomaasharuType? type, KomaasharuOrientation? orientation, DateTimeOffset?[]? startTime, DateTimeOffset?[]? endTime, bool? expired, bool? disable, string? orderBy, bool? desc, int current, int pageSize, CancellationToken cancellationToken = default)
     {
-        var query = db.Komaasharus.AsNoTrackingWithIdentityResolution();
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var query = db.Komaasharus
+            .AsNoTrackingWithIdentityResolution();
 
         if (!string.IsNullOrEmpty(name))
             query = query.Where(a => a.Name.Contains(name));
@@ -148,7 +152,7 @@ partial class KomaasharuRepository<TDbContext>
             query = query.OrderBy(x => x.Sort).ThenByDescending(x => x.CreateTime);
         }
 
-        var query2 = query.Select(FExpressions.MapToKomaasharuTableItem);
+        var query2 = query.ProjectTo<KomaasharuTableItem>(mapper.ConfigurationProvider);
         var r = await query2.PagingAsync(current, pageSize, cancellationToken);
         return r;
     }
@@ -157,6 +161,40 @@ partial class KomaasharuRepository<TDbContext>
     {
         (int rowCount, _) = await base.InsertOrUpdateAsync(model);
         return rowCount;
+    }
+
+    public async Task<bool> UpdateAsync(
+        Guid? operatorUserId,
+        KomaasharuEdit model,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var entity = await FindAsync(model.Id, cancellationToken);
+
+        if (entity == null)
+        {
+            return false;
+        }
+
+        mapper.Map(model, entity);
+        entity.OperatorUserId = operatorUserId;
+
+        await db.SaveChangesAsync(CancellationToken.None);
+        return true;
+    }
+
+    public async Task<bool> InsertAsync(
+        Guid? createUserId,
+        KomaasharuEdit model,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var entity = mapper.Map<Komaasharu>(model);
+        entity.Id = default;
+        entity.CreateUserId = createUserId;
+
+        await db.SaveChangesAsync(CancellationToken.None);
+        return true;
     }
 
     public async Task<KomaasharuEdit?> GetEditByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -217,28 +255,6 @@ file static class FExpressions
         DeviceIdiom = x.DeviceIdiom,
         Platform = x.Platform,
         IsAuth = x.IsAuth,
-    };
-
-    internal static readonly Expression<Func<Komaasharu, KomaasharuTableItem>> MapToKomaasharuTableItem = x => new()
-    {
-        Id = x.Id,
-        Name = x.Name,
-        Describe = x.Description,
-        Url = x.Url,
-        JumpUrl = x.JumpUrl,
-        StartTime = x.StartTime,
-        EndTime = x.EndTime,
-        Type = x.Type,
-        TotalClick = x.TotalClick,
-        TotalDisplay = x.TotalDisplay,
-        Orientation = x.Orientation,
-        Order = x.Sort,
-        Platform = x.Platform,
-        DeviceIdiom = x.DeviceIdiom,
-        CreateTime = x.CreateTime,
-        UpdateTime = x.UpdateTime,
-        Disable = x.Disable,
-        Expired = DateTimeOffset.UtcNow >= x.EndTime,
     };
 
     internal static readonly Expression<Func<Komaasharu, KomaasharuEdit>> MapToEdit = x => new()

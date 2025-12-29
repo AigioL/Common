@@ -2,10 +2,12 @@ using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 
+[EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class CooperatorAccount :
     OperatorBaseEntity<Guid>,
     INote,
@@ -93,4 +95,12 @@ public partial class CooperatorAccount :
     /// </summary>
     [Comment("是否软删除")]
     public bool SoftDeleted { get; set; }
+
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<CooperatorAccount>
+    {
+        public sealed override void Configure(EntityTypeBuilder<CooperatorAccount> builder)
+        {
+            base.Configure(builder);
+        }
+    }
 }

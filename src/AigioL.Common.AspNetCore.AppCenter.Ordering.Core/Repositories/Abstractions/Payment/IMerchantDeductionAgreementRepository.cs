@@ -1,5 +1,8 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
@@ -7,64 +10,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.
 
 public partial interface IMerchantDeductionAgreementRepository : IRepository<MerchantDeductionAgreement, Guid>, IEFRepository
 {
-    ///// <summary>
-    ///// 分页查询商家扣款协议表格
-    ///// </summary>
-    ///// <param name="id">Id</param>
-    ///// <param name="userId">UserId</param>
-    ///// <param name="signingTime">签约时间</param>
-    ///// <param name="unSigningTime">解约时间</param>
-    ///// <param name="platform">平台类型</param>
-    ///// <param name="agreementNo">签约协议号</param>
-    ///// <param name="alipayUserId">支付宝用户 Id</param>
-    ///// <param name="alipayLoginAccount">支付宝登录账号</param>
-    ///// <param name="alipayAgreementNo">支付宝协议号</param>
-    ///// <param name="validTime">生效时间</param>
-    ///// <param name="invalidTime">失效时间</param>
-    ///// <param name="signScene">签约场景码</param>
-    ///// <param name="period">周期数</param>
-    ///// <param name="periodType">周期类型</param>
-    ///// <param name="executeTime">扣款执行日期</param>
-    ///// <param name="nextDeductionTime">下次扣款时间</param>
-    ///// <param name="singleAmount">单次扣款金额</param>
-    ///// <param name="status">状态</param>
-    ///// <param name="createTime">创建时间</param>
-    ///// <param name="updateTime">更新时间</param>
-    ///// <param name="remarks">备注</param>
-    ///// <param name="orderBy">排序字段</param>
-    ///// <param name="desc">排序: false 为降序，true 为升序 </param>
-    ///// <param name="businessType"></param>
-    ///// <param name="current">当前页码，页码从 1 开始，默认值：<see cref="IPagedModel.DefaultCurrent"/></param>
-    ///// <param name="pageSize">页大小，如果为 0 必定返回空集合，默认值：<see cref="IPagedModel.DefaultPageSize"/></param>
-    ///// <returns>MerchantDeductionAgreement分页表格查询结果数据</returns>
-    //Task<PagedModel<TableMerchantDeductionAgreementDTO>> QueryAsync(
-    //    Guid? id,
-    //    Guid? userId,
-    //    DateTimeOffset?[]? signingTime,
-    //    DateTimeOffset?[]? unSigningTime,
-    //    PaymentType? platform,
-    //    string? agreementNo,
-    //    string? alipayUserId,
-    //    string? alipayLoginAccount,
-    //    string? alipayAgreementNo,
-    //    DateTimeOffset? validTime,
-    //    DateTimeOffset? invalidTime,
-    //    string? signScene,
-    //    long? period,
-    //    string? periodType,
-    //    DateTimeOffset?[]? executeTime,
-    //    DateTimeOffset?[]? nextDeductionTime,
-    //    decimal? singleAmount,
-    //    AgreementStatus? status,
-    //    DateTimeOffset[]? createTime,
-    //    DateTimeOffset[]? updateTime,
-    //    string? remarks,
-    //    string? orderBy,
-    //    bool? desc,
-    //    OrderBusinessType? businessType,
-    //    int current = IPagedModel.DefaultCurrent,
-    //    int pageSize = IPagedModel.DefaultPageSize);
-
     ///// <summary>
     ///// 添加业务商家扣款协议
     ///// </summary>
@@ -203,4 +148,67 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     /// 获取扣款超时的商家扣款协议
     /// </summary>
     Task<List<MerchantDeductionAgreement>> GetMerchantAgreementOfDeductionTimeout(CancellationToken cancellationToken = default);
+}
+
+partial interface IMerchantDeductionAgreementRepository // 管理后台
+{
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    /// <param name="id">Id</param>
+    /// <param name="userId">UserId</param>
+    /// <param name="signingTime">签约时间</param>
+    /// <param name="unSigningTime">解约时间</param>
+    /// <param name="platform">平台类型</param>
+    /// <param name="agreementNo">签约协议号</param>
+    /// <param name="alipayUserId">支付宝用户 Id</param>
+    /// <param name="alipayLoginAccount">支付宝登录账号</param>
+    /// <param name="alipayAgreementNo">支付宝协议号</param>
+    /// <param name="validTime">生效时间</param>
+    /// <param name="invalidTime">失效时间</param>
+    /// <param name="signScene">签约场景码</param>
+    /// <param name="period">周期数</param>
+    /// <param name="periodType">周期类型</param>
+    /// <param name="executeTime">扣款执行日期</param>
+    /// <param name="nextDeductionTime">下次扣款时间</param>
+    /// <param name="singleAmount">单次扣款金额</param>
+    /// <param name="status">状态</param>
+    /// <param name="createTime">创建时间</param>
+    /// <param name="updateTime">更新时间</param>
+    /// <param name="note">备注</param>
+    /// <param name="orderBy">排序字段</param>
+    /// <param name="desc">排序: false 为降序，true 为升序 </param>
+    /// <param name="businessType"></param>
+    /// <param name="current">当前页码，页码从 1 开始，默认值：<see cref="IPagedModel.DefaultCurrent"/></param>
+    /// <param name="pageSize">页大小，如果为 0 必定返回空集合，默认值：<see cref="IPagedModel.DefaultPageSize"/></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>MerchantDeductionAgreement分页表格查询结果数据</returns>
+    Task<PagedModel<MerchantDeductionAgreementTableItemModel>> QueryAsync(
+        Guid? id,
+        Guid? userId,
+        DateTimeOffset?[]? signingTime,
+        DateTimeOffset?[]? unSigningTime,
+        PaymentType? platform,
+        string? agreementNo,
+        string? alipayUserId,
+        string? alipayLoginAccount,
+        string? alipayAgreementNo,
+        DateTimeOffset? validTime,
+        DateTimeOffset? invalidTime,
+        string? signScene,
+        long? period,
+        string? periodType,
+        DateTimeOffset?[]? executeTime,
+        DateTimeOffset?[]? nextDeductionTime,
+        decimal? singleAmount,
+        AgreementStatus? status,
+        DateTimeOffset[]? createTime,
+        DateTimeOffset[]? updateTime,
+        string? note,
+        string? orderBy,
+        bool? desc,
+        int? businessType,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
 }

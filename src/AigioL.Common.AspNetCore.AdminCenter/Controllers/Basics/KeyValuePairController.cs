@@ -40,9 +40,14 @@ public static partial class KeyValuePairController
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("分页查询键值对");
 
-        routeGroup.MapPut("", async (HttpContext context,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] string? id,
             [FromBody] AddOrEditM model) =>
         {
+            if (id != null)
+            {
+                model.Id = id;
+            }
             var userId = context.GetBMUserId();
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
             BMApiRsp r = await keyValuePairRepo.UpdateAsync(userId, model, context.RequestAborted);

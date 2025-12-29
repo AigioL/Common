@@ -51,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpContextExtensions.GetValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\OpenApiOptionsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ProfileExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\RoutingEndpointConventionBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\SecurityKeyBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddCorsByViewUrl.cs" />

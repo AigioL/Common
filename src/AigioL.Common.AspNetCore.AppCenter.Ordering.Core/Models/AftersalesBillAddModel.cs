@@ -3,7 +3,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 /// <summary>
 /// 创建售后单模型
 /// </summary>
-public sealed partial class AftersalesBillAddDto
+public sealed partial class AftersalesBillAddModel
 {
     /// <summary>
     /// 订单 Id

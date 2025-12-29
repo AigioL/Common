@@ -18,10 +18,12 @@ public partial interface IKeyValuePairRepository : IRepository<KeyValuePair, str
     /// <summary>
     /// 查询指定键值对的值
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     Task<KeyValuePair?> QueryAsync(string id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 查询指定键值对的值
+    /// </summary>
+    Task<string?> QueryValueAsync(string id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取视图布局模型，优先从缓存中获取

@@ -17,12 +17,6 @@ static partial class QueryableExtensions
     /// <summary>
     /// 根据页码进行分页查询，调用此方法前 必须 进行排序
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <param name="source"></param>
-    /// <param name="current"></param>
-    /// <param name="pageSize"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<PagedModel<TEntity>> PagingAsync<TEntity>(
         this IQueryable<TEntity> source,
@@ -67,6 +61,63 @@ static partial class QueryableExtensions
 #endif
         dataSource = await query.ToArrayAsync(cancellationToken);
         pagedModel = new PagedModel<TEntity>
+        {
+            Current = current,
+            PageSize = pageSize,
+            Total = total,
+            DataSource = dataSource,
+        };
+        return pagedModel;
+    }
+
+    /// <summary>
+    /// 根据页码进行分页查询，调用此方法前 必须 进行排序
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static async Task<TPagedModel> PagingAsync<TEntity, TPagedModel>(
+        this IQueryable<TEntity> source,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+        where TPagedModel : PagedModel<TEntity>, new()
+    {
+        int skipCount, total;
+        IQueryable<TEntity> query;
+        TEntity[] dataSource;
+        TPagedModel pagedModel;
+        if (SqlStringHelper.ZPlusEnable)
+        {
+#if USE_ZPLUS
+            skipCount = (current - 1) * pageSize;
+            var futureTotal = source.DeferredCount().FutureValue();
+            query = source.Skip(skipCount).Take(pageSize);
+#if DEBUG
+            var sqlString = query.ToQueryString();
+#endif
+            var futureDataSource = query.Future();
+            total = await futureTotal.ValueAsync(cancellationToken);
+            dataSource = await futureDataSource.ToArrayAsync(cancellationToken);
+            pagedModel = new PagedModel<TEntity>
+            {
+                Current = current,
+                PageSize = pageSize,
+                Total = total,
+                DataSource = dataSource,
+            };
+            return pagedModel;
+#else
+            throw new InvalidOperationException("Z.EntityFramework.Plus is not enabled.");
+#endif
+
+        }
+        skipCount = (current - 1) * pageSize;
+        total = await source.CountAsync(cancellationToken);
+        query = source.Skip(skipCount).Take(pageSize);
+#if DEBUG
+        var sqlString2 = query.ToQueryString();
+#endif
+        dataSource = await query.ToArrayAsync(cancellationToken);
+        pagedModel = new TPagedModel
         {
             Current = current,
             PageSize = pageSize,

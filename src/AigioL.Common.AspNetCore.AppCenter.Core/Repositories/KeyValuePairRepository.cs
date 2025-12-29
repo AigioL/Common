@@ -34,6 +34,12 @@ public sealed partial class KeyValuePairRepository<TDbContext>(TDbContext dbCont
         return r;
     }
 
+    public async Task<string?> QueryValueAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var r = await EntityNoTracking.Where(x => x.Id == id).Select(x => x.Value).FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
     public async Task<(ViewLayoutModel? m, string langKey)> GetViewLayoutModelAsync(CancellationToken cancellationToken = default)
     {
         var ls = serviceProvider.GetService<ILocalizationService>();
@@ -157,7 +163,7 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
         {
             entity = new()
             {
-                Id = model.Id,
+                Id = model.Id, // 非自增主键使用传递的值
                 Value = model.Value,
                 CreateUserId = createUserId,
             };

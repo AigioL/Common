@@ -77,8 +77,13 @@ public static partial class UsersController
         .WithDescription("获取客户端用户钱包详情");
 
         routeGroup.MapPut("", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] EditM model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
             var authorizationService = context.RequestServices.GetRequiredService<IAuthorizationService>();
             var userRepo = context.RequestServices.GetRequiredService<IUserRepository>();

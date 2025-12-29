@@ -105,25 +105,24 @@ partial class ArticleCategoryRepository<TDbContext> // 管理后台
 
     public async Task<ApiRsp> UpdateAsync(
         Guid? operatorUserId,
-        Guid id,
         AddOrEditArticleCategoryModel model,
         CancellationToken cancellationToken = default)
     {
         if (model.ParentId.HasValue)
         {
             var existing = await db.ArticleCategories
-                .Where(a => a.ParentId == model.ParentId && a.Id != id)
+                .Where(a => a.ParentId == model.ParentId && a.Id != model.Id)
                 .AnyAsync(a => a.Name == model.Name, cancellationToken);
             if (existing)
             {
                 return "已存在相同名称的分类";
             }
         }
-        if (model.ParentId == id)
+        if (model.ParentId == model.Id)
         {
             return "父分类不能是自己";
         }
-        var entity = await FindAsync(id, cancellationToken);
+        var entity = await FindAsync(model.Id, cancellationToken);
         if (entity is null)
         {
             return "找不到需要更新的数据";
@@ -148,6 +147,8 @@ partial class ArticleCategoryRepository<TDbContext> // 管理后台
     public async Task<ApiRsp> InsertAsync(Guid? createUserId, AddOrEditArticleCategoryModel model,
         CancellationToken cancellationToken = default)
     {
+        model.Id = default;
+
         if (model.ParentId.HasValue)
         {
             var existing = await db.ArticleCategories

@@ -55,13 +55,11 @@ partial interface IArticleCategoryRepository // 管理后台
     /// 更新一条数据
     /// </summary>
     /// <param name="operatorUserId">最后一次操作的人（记录后台管理员禁用或启用或编辑该条的操作）</param>
-    /// <param name="id">主键</param>
     /// <param name="model">编辑模型</param>
     /// <param name="cancellationToken"></param>
     /// <returns>受影响的行数</returns>
     Task<ApiRsp> UpdateAsync(
         Guid? operatorUserId,
-        Guid id,
         AddOrEditArticleCategoryModel model,
         CancellationToken cancellationToken = default);
 

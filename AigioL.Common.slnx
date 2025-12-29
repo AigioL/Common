@@ -26,6 +26,7 @@
   </Folder>
   <Folder Name="/2.Document/" />
   <Folder Name="/2.Libraries/">
+    <Project Path="src/AigioL.Common.Bcl.Base58Guid/AigioL.Common.Bcl.Base58Guid.shproj" Id="b360a377-0d52-447b-ad5a-5547cf6e329f" />
     <Project Path="src/AigioL.Common.Bcl.LogInit/AigioL.Common.Bcl.LogInit.shproj" Id="78490a57-3c48-4dbb-893b-a8724b6a94a7" />
     <Project Path="src/AigioL.Common.Bcl/AigioL.Common.Bcl.shproj" Id="86dfc3a4-0f30-40f0-af39-6e76e46d78f1" />
     <Project Path="src/AigioL.Common.EntityFrameworkCore/AigioL.Common.EntityFrameworkCore.shproj" Id="a39bde5d-77a9-4136-a88e-0e2d2b0701d0" />

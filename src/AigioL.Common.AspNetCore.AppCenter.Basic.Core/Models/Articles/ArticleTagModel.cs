@@ -27,8 +27,10 @@ public partial class ArticleTagModel
     protected const int LastMKeyIndex = 1;
 }
 
-public sealed partial class AddOrEditArticleTagModel
+public sealed partial class AddOrEditArticleTagModel : IReadOnlyId<Guid>
 {
+    public Guid Id { get; set; }
+
     /// <summary>
     /// 标签名
     /// </summary>

@@ -119,11 +119,10 @@ partial class ArticleRepository<TDbContext> // 管理后台
 
     public async Task<ApiRsp> UpdateAsync(
         Guid? operatorUserId,
-        Guid id,
         AddOrEditArticleModel model,
         CancellationToken cancellationToken = default)
     {
-        var entity = await FindAsync(id, cancellationToken);
+        var entity = await FindAsync(model.Id, cancellationToken);
 
         if (entity == null)
         {
@@ -131,7 +130,7 @@ partial class ArticleRepository<TDbContext> // 管理后台
         }
 
         var mapper = serviceProvider.GetRequiredService<IMapper>();
-        var addedTags = model.TagIds.Select(tagId => new ArticleTagRelation { ArticleId = id, TagId = tagId });
+        var addedTags = model.TagIds.Select(tagId => new ArticleTagRelation { ArticleId = model.Id, TagId = tagId });
 
         // 更新文章字段
         mapper.Map(model, entity);
@@ -139,7 +138,7 @@ partial class ArticleRepository<TDbContext> // 管理后台
 
         // 为简单起见，删除文章原有的标签关系，重新添加新的
         await db.ArticleTagRelations
-            .Where(r => r.ArticleId == id)
+            .Where(r => r.ArticleId == model.Id)
             .ExecuteDeleteAsync(CancellationToken.None);
         await db.ArticleTagRelations
             .AddRangeAsync(addedTags, CancellationToken.None);

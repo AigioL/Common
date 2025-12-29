@@ -26,6 +26,7 @@ public static partial class ServiceCollectionServiceExtensions
     {
         services.TryAddScoped<IAftersalesBillRepository, AftersalesBillRepository<TDbContext>>();
         services.TryAddScoped<IOrderRepository, OrderRepository<TDbContext>>();
+        services.TryAddScoped<IRefundBillRepository, RefundBillRepository<TDbContext>>();
         return services;
     }
 
@@ -36,6 +37,8 @@ public static partial class ServiceCollectionServiceExtensions
     {
         services.TryAddScoped<IPaymentRepository, PaymentRepository<TDbContext>>();
         services.TryAddScoped<IMerchantDeductionAgreementRepository, MerchantDeductionAgreementRepository<TDbContext>>();
+        services.TryAddScoped<IMerchantDeductionAgreementConfigurationRepository, MerchantDeductionAgreementConfigurationRepository<TDbContext>>();
+        services.TryAddScoped<IOrderBusinessPaymentConfigurationRepository, OrderBusinessPaymentConfigurationRepository<TDbContext>>();
         AddMembershipRepositories<TDbContext>(services);
         return services;
     }

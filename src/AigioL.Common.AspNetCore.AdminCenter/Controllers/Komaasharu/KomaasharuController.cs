@@ -62,19 +62,25 @@ public static partial class KomaasharuController
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] AddOrEditM model) =>
         {
+            model.Id = default;
+            var userId = context.GetBMUserId();
             var advertisementRepo = context.RequestServices.GetRequiredService<IKomaasharuRepository>();
-            var rowCount = await advertisementRepo.InsertOrUpdateAsync(model);
-            BMApiRsp<bool> r = BMApiRsp.OkBoolean(rowCount > 0);
+            BMApiRsp r = await advertisementRepo.InsertAsync(userId, model, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增广告项");
 
-        routeGroup.MapPut("", async (HttpContext context,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] AddOrEditM model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
+            var userId = context.GetBMUserId();
             var advertisementRepo = context.RequestServices.GetRequiredService<IKomaasharuRepository>();
-            var rowCount = await advertisementRepo.InsertOrUpdateAsync(model);
-            BMApiRsp<bool> r = BMApiRsp.OkBoolean(rowCount > 0);
+            BMApiRsp r = await advertisementRepo.UpdateAsync(userId, model, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("修改广告项");
@@ -87,7 +93,7 @@ public static partial class KomaasharuController
             BMApiRsp<bool> r = BMApiRsp.OkBoolean(rowCount > 0);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Delete)
-        .WithDescription("获取广告详情");
+        .WithDescription("删除广告");
 
         routeGroup.MapPut("setdisable/{id}/{disable}", async (HttpContext context,
             [FromRoute] Guid id,

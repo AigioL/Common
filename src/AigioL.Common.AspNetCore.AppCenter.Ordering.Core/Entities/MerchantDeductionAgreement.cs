@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
@@ -16,7 +17,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 [Table("MerchantDeductionAgreements")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class MerchantDeductionAgreement :
-    Entity<Guid>,
+    OperatorBaseEntity<Guid>,
     ICreateTime,
     IUpdateTime,
     INote,
@@ -132,16 +133,6 @@ public partial class MerchantDeductionAgreement :
     /// </summary>
     [Comment("协议状态")]
     public AgreementStatus Status { get; set; }
-
-    /// <inheritdoc/>
-    [Comment("创建时间")]
-    public DateTimeOffset CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    [Comment("更新时间")]
-    public DateTimeOffset UpdateTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("备注")]

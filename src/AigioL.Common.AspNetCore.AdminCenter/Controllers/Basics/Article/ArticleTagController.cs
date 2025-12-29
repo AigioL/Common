@@ -56,13 +56,17 @@ public static partial class ArticleTagController
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("获取文章标签详情");
 
-        routeGroup.MapPut("{id}", async (HttpContext context,
-            [FromRoute] Guid id,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] AddOrEditM model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var userId = context.GetBMUserId();
             var articleTagRepo = context.RequestServices.GetRequiredService<IArticleTagRepository>();
-            BMApiRsp r = await articleTagRepo.UpdateAsync(userId, id, model, context.RequestAborted);
+            BMApiRsp r = await articleTagRepo.UpdateAsync(userId, model, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("修改文章标签");

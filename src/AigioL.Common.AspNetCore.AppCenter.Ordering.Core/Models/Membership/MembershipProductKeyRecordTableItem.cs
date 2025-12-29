@@ -1,4 +1,3 @@
-using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.Primitives.Columns;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
@@ -6,6 +5,18 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 public sealed partial class MembershipProductKeyRecordTableItem : IReadOnlyId<Guid>, ICreateTime
 {
     public Guid Id { get; set; }
+
+    /// <summary>
+    /// <see cref="Id"/> 的 Base58 编码值
+    /// </summary>
+    public string IdBase58
+    {
+        get
+        {
+            field ??= Base58Guid.Encode(Id);
+            return field;
+        }
+    }
 
     public string Key { get; set; } = default!;
 

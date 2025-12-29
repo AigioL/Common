@@ -120,6 +120,11 @@ public static partial class CacheKeys
     public const string PaymentRefundRequest = "PaymentRefundRequestMessage";
 
     /// <summary>
+    /// 要求支付模块执行协议解约通知
+    /// </summary>
+    public const string AgreementUnSignRequest = "AgreementUnSignRequestMessage";
+
+    /// <summary>
     /// 协议签约成功通知
     /// </summary>
     public const string AgreementSignSuccessInfo = "AgreementSignSuccessInfo";

@@ -100,11 +100,10 @@ partial class ArticleTagRepository<TDbContext> // 管理后台
 
     public async Task<ApiRsp> UpdateAsync(
         Guid? operatorUserId,
-        Guid id,
         AddOrEditArticleTagModel model,
         CancellationToken cancellationToken = default)
     {
-        var exists = await ExistsAsync(model.Name, id, cancellationToken: cancellationToken);
+        var exists = await ExistsAsync(model.Name, model.Id, cancellationToken: cancellationToken);
         if (exists)
         {
             return "相同的标签名已存在";
@@ -112,7 +111,7 @@ partial class ArticleTagRepository<TDbContext> // 管理后台
 
         var rowCount = await db.ArticleTags
             .AsNoTrackingWithIdentityResolution()
-            .Where(x => x.Id == id)
+            .Where(x => x.Id == model.Id)
             .ExecuteUpdateAsync(x => x
                 .SetProperty(y => y.UpdateTime, y => DateTimeOffset.Now)
                 .SetProperty(y => y.OperatorUserId, y => operatorUserId)
@@ -126,17 +125,21 @@ partial class ArticleTagRepository<TDbContext> // 管理后台
         AddOrEditArticleTagModel model,
         CancellationToken cancellationToken = default)
     {
+        model.Id = default;
+
         var exists = await ExistsAsync(model.Name, cancellationToken: cancellationToken);
         if (exists)
         {
             return "相同的标签名已存在";
         }
 
-        await db.ArticleTags.AddAsync(new()
+        ArticleTag entity = new()
         {
             Name = model.Name,
             CreateUserId = createUserId,
-        }, CancellationToken.None);
+        };
+
+        await db.ArticleTags.AddAsync(entity, CancellationToken.None);
         await db.SaveChangesAsync(CancellationToken.None);
         return true;
     }

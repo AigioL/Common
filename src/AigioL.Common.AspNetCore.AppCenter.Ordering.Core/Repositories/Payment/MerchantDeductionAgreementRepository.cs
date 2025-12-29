@@ -3,7 +3,12 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
+using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -172,6 +177,129 @@ sealed partial class MerchantDeductionAgreementRepository<TDbContext> :
             .Where(a => a.Orders!.Any(o => o.Status == OrderStatus.Expired && o.Timeout >= a.NextDeductionTime!.Value.AddDays(1)));
 
         var r = await query.ToListAsync(cancellationToken);
+        return r;
+    }
+}
+
+partial class MerchantDeductionAgreementRepository<TDbContext>
+{
+    public async Task<PagedModel<MerchantDeductionAgreementTableItemModel>> QueryAsync(
+        Guid? id,
+        Guid? userId,
+        DateTimeOffset?[]? signingTime,
+        DateTimeOffset?[]? unSigningTime,
+        PaymentType? platform,
+        string? agreementNo,
+        string? alipayUserId,
+        string? alipayLoginAccount,
+        string? alipayAgreementNo,
+        DateTimeOffset? validTime,
+        DateTimeOffset? invalidTime,
+        string? signScene,
+        long? period,
+        string? periodType,
+        DateTimeOffset?[]? executeTime,
+        DateTimeOffset?[]? nextDeductionTime,
+        decimal? singleAmount,
+        AgreementStatus? status,
+        DateTimeOffset[]? createTime,
+        DateTimeOffset[]? updateTime,
+        string? note,
+        string? orderBy,
+        bool? desc,
+        int? businessType,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var query = db.MerchantDeductionAgreements
+            .AsNoTrackingWithIdentityResolution();
+
+        if (businessType.HasValue)
+            query = query.Where(x => x.BusinessTypeId == businessType.Value);
+        if (id.HasValue)
+            query = query.Where(x => x.Id == id.Value);
+        if (userId.HasValue)
+            query = query.Where(x => x.UserId == userId.Value);
+        if (platform.HasValue)
+            query = query.Where(x => x.Platform == platform.Value);
+        if (!string.IsNullOrEmpty(agreementNo))
+            query = query.Where(x => x.AgreementNo.Contains(agreementNo));
+        if (!string.IsNullOrEmpty(alipayUserId))
+            query = query.Where(x => x.UserOpenId!.Contains(alipayUserId));
+        if (!string.IsNullOrEmpty(alipayLoginAccount))
+            query = query.Where(x => x.UserLoginAccount!.Contains(alipayLoginAccount));
+        if (!string.IsNullOrEmpty(alipayAgreementNo))
+            query = query.Where(x => x.ExtAgreementNo.Contains(alipayAgreementNo));
+        if (validTime.HasValue)
+            query = query.Where(x => x.ValidTime == validTime.Value);
+        if (invalidTime.HasValue)
+            query = query.Where(x => x.InvalidTime == invalidTime.Value);
+        if (period.HasValue)
+            query = query.Where(x => x.Period == period.Value);
+        if (!string.IsNullOrEmpty(periodType))
+            query = query.Where(x => x.PeriodType.Contains(periodType));
+        if (singleAmount.HasValue)
+            query = query.Where(x => x.SingleAmount == singleAmount.Value);
+        if (status.HasValue)
+            query = query.Where(x => x.Status == status);
+        query = signingTime switch
+        {
+            [DateTimeOffset sta, DateTimeOffset end] => query.Where(x => x.SigningTime >= sta && x.SigningTime <= end),
+            [DateTimeOffset sta, null] => query.Where(x => x.SigningTime >= sta),
+            [null, DateTimeOffset end] => query.Where(x => x.SigningTime <= end),
+            _ => query,
+        };
+        query = unSigningTime switch
+        {
+            [DateTimeOffset sta, DateTimeOffset end] => query.Where(x => x.UnSigningTime >= sta && x.UnSigningTime <= end),
+            [DateTimeOffset sta, null] => query.Where(x => x.UnSigningTime >= sta),
+            [null, DateTimeOffset end] => query.Where(x => x.UnSigningTime <= end),
+            _ => query,
+        };
+        query = executeTime switch
+        {
+            [DateTimeOffset sta, DateTimeOffset end] => query.Where(x => x.ExecuteTime >= sta && x.ExecuteTime <= end),
+            [DateTimeOffset sta, null] => query.Where(x => x.ExecuteTime >= sta),
+            [null, DateTimeOffset end] => query.Where(x => x.ExecuteTime <= end),
+            _ => query,
+        };
+        query = nextDeductionTime switch
+        {
+            [DateTimeOffset sta, DateTimeOffset end] => query.Where(x => x.NextDeductionTime >= sta && x.NextDeductionTime <= end),
+            [DateTimeOffset sta, null] => query.Where(x => x.NextDeductionTime >= sta),
+            [null, DateTimeOffset end] => query.Where(x => x.NextDeductionTime <= end),
+            _ => query,
+        };
+
+        if (createTime != null)
+            query = createTime.Length switch
+            {
+                1 => query.Where(x => x.CreateTime >= createTime[0]),
+                2 => query.Where(x => x.CreateTime >= createTime[0] && x.CreateTime <= createTime[1]),
+                _ => query,
+            };
+        if (updateTime != null)
+            query = updateTime.Length switch
+            {
+                1 => query.Where(x => x.UpdateTime >= updateTime[0]),
+                2 => query.Where(x => x.UpdateTime >= updateTime[0] && x.UpdateTime <= updateTime[1]),
+                _ => query,
+            };
+        if (!string.IsNullOrEmpty(note))
+            query = query.Where(x => x.Note!.Contains(note));
+
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            query = query.OrderByPropertyName(orderBy, desc);
+        }
+        else
+        {
+            query = query.OrderByDescending(x => x.CreateTime).ThenBy(x => x.Id);
+        }
+        var r = await query.ProjectTo<MerchantDeductionAgreementTableItemModel>(mapper.ConfigurationProvider)
+            .PagingAsync(current, pageSize, cancellationToken);
         return r;
     }
 }

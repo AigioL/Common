@@ -19,7 +19,7 @@ public static class AftersalesBillController
             .RequireAuthorization(MSMinimalApis.ApiControllerBaseAuthorize);
 
         routeGroup.MapPost("", async (HttpContext context,
-            [FromBody] AftersalesBillAddDto m) =>
+            [FromBody] AftersalesBillAddModel m) =>
         {
             var userId = context.GetUserIdThrowIfNull();
             var repo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
@@ -37,7 +37,7 @@ public static class AftersalesBillController
         Guid userId,
         IAftersalesBillRepository repo,
         IConnection rabbitmqConn,
-        AftersalesBillAddDto m,
+        AftersalesBillAddModel m,
         CancellationToken cancellationToken = default)
     {
         var result = await repo.CreateAftersalesBill(m.OrderId, m.RefundReason, userId, cancellationToken);

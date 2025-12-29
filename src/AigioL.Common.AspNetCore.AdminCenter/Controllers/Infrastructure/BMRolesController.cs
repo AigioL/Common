@@ -49,9 +49,14 @@ public static partial class BMRolesController
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增管理后台的角色");
-        routeGroup.MapPut("", async (HttpContext context,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] BMRoleModel model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var tenantId = TenantConstants.RootTenantIdG;
             var r = await Put<TRole>(context, model, tenantId);
             return r.SetHttpContext(context);

@@ -1,14 +1,12 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
-using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
-using TableItemM = AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership.MembershipBusinessOrderTableItem;
+using TableItemM = AigioL.Common.AspNetCore.AppCenter.Ordering.Models.OrderBusinessPaymentConfigurationTableItemModel;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Ordering;
 
@@ -28,33 +26,28 @@ public static partial class OrderBusinessPaymentConfigurationController
             .WithDescription("业务订单支付配置管理");
 
         routeGroup.MapGet("", async (HttpContext context,
-            [FromQuery] Guid? id,
-            [FromQuery] string? goodsName,
-            [FromQuery] string? goodsNo,
-            [FromQuery] MembershipLicenseFlags? memberLicenseType,
-            [FromQuery] string? genericOrderId,
-            [FromQuery] OrderStatus? paymentStatus,
-            [FromQuery] MembershipBusinessSource? businessSource,
-            [FromQuery] GoodsRechargeStatus? goodsRechargeStatus,
-            [FromQuery] Guid? userId,
-            [FromQuery] string? cdkey,
-            [FromQuery] string? orderBy,
-            [FromQuery] bool? desc,
+            [FromQuery] int? businessType = null,
+            [FromQuery] PaymentMethod? paymentMethod = null,
+            [FromQuery] PaymentType? paymentType = null,
+            [FromQuery] bool? disable = null,
+            [FromQuery] string? createUser = null,
+            [FromQuery] string? operatorUser = null,
+            [FromQuery] string? orderBy = null,
+            [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var paymentTime = context.GetQueryDateTimeRangeNullable("paymentTime");
-            var rechargeCompletionTime = context.GetQueryDateTimeRangeNullable("rechargeCompletionTime");
-            var membershipBusinessOrderRepo = context.RequestServices.GetRequiredService<IMembershipBusinessOrderRepository>();
-            BMApiRsp<PagedModel<TableItemM>?> r = await membershipBusinessOrderRepo.QueryAsync(
-                id, goodsName, goodsNo,
-                memberLicenseType, genericOrderId, paymentStatus,
-                paymentTime, rechargeCompletionTime, businessSource,
-                goodsRechargeStatus, userId, cdkey,
-                orderBy, desc, current,
-                pageSize, context.RequestAborted);
+            var createTime = context.GetQueryDateTimeRange("createTime");
+            var updateTime = context.GetQueryDateTimeRange("updateTime");
+            var orderBusinessPaymentConfigurationRepo = context.RequestServices.GetRequiredService<IOrderBusinessPaymentConfigurationRepository>();
+            BMApiRsp<PagedModel<TableItemM>?> r = await orderBusinessPaymentConfigurationRepo.QueryAsync(
+                businessType, paymentMethod, paymentType,
+                disable, createTime, updateTime,
+                createUser, operatorUser, orderBy,
+                desc, current, pageSize,
+                context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
-        .WithDescription("分页查询会员业务订单");
+        .WithDescription("分页查询业务订单支付配置");
     }
 }

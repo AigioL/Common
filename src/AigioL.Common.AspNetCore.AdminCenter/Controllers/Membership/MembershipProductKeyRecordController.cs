@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
@@ -47,5 +48,26 @@ public static partial class MembershipProductKeyRecordController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("分页查询会员产品密钥（CDKey）记录");
+
+        routeGroup.MapPost("create/batch", async (HttpContext context,
+            [FromBody] MembershipBatchCreateProductKeyRecordRequest model) =>
+        {
+            var userId = context.GetBMUserId();
+            var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
+            BMApiRsp<string[]?> r = await membershipProductKeyRecordRepo.BatchCreateProductKeyRecordAsync(userId, model.MembershipGoodsId, model.Count, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("批量创建会员产品密钥（CDKey）");
+
+        routeGroup.MapPut("disable/batch", async (HttpContext context,
+            [FromBody] string[] productKeys) =>
+        {
+            var userId = context.GetBMUserId();
+            var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
+            var rowCount = await membershipProductKeyRecordRepo.BatchDisableProductKeyRecordAsync(userId, true, productKeys);
+            BMApiRsp<bool> r = BMApiRsp.OkBoolean(rowCount > 0);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("批量禁用会员产品密钥（CDKey）");
     }
 }

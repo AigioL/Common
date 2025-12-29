@@ -64,13 +64,17 @@ public static partial class ArticleController
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("获取文章详情");
 
-        routeGroup.MapPut("{id}", async (HttpContext context,
-            [FromRoute] Guid id,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] AddOrEditM model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var userId = context.GetBMUserId();
             var articleRepo = context.RequestServices.GetRequiredService<IArticleRepository>();
-            BMApiRsp r = await articleRepo.UpdateAsync(userId, id, model, context.RequestAborted);
+            BMApiRsp r = await articleRepo.UpdateAsync(userId, model, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("修改文章");

@@ -3,12 +3,14 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using SimpleBase;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Membership;
 
@@ -86,6 +88,80 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
              .ProjectTo<MembershipProductKeyRecordTableItem>(mapper.ConfigurationProvider)
              .PagingAsync(current, pageSize, RequestAborted);
 
+        return r;
+    }
+
+    public async Task<ApiRsp<string[]?>> BatchCreateProductKeyRecordAsync(
+        Guid createUserId,
+        Guid membershipGoodsId,
+        uint count,
+        CancellationToken cancellationToken = default)
+    {
+        if (membershipGoodsId == default)
+        {
+            return "商品 Id 不能为空";
+        }
+        var membershipGoods = await db.MembershipGoods.Select(x => new
+        {
+            x.Id,
+            x.RechargeDays,
+        }).FirstOrDefaultAsync(x => x.Id == membershipGoodsId, cancellationToken);
+        if (membershipGoods == null)
+        {
+            return "找不到商品 Id";
+        }
+
+        var records = new MembershipProductKeyRecord[count];
+        for (long i = 0; i < records.LongLength; i++)
+        {
+            records[i] = new MembershipProductKeyRecord()
+            {
+                Id = Guid.NewGuid(), // 这里要保证随机性，不要使用 Guid v7
+                RechargeDays = membershipGoods.RechargeDays,
+                MembershipGoodsId = membershipGoods.Id,
+                IsUsed = false,
+                UsageTime = null,
+                Disable = false,
+                CreateUserId = createUserId,
+            };
+        }
+
+        await db.MembershipProductKeyRecords.AddRangeAsync(records, cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
+
+        var query = from m in records
+                    let s = Base58Guid.Encode(m.Id)
+                    select s;
+        return query.ToArray();
+    }
+
+    public async Task<int> BatchDisableProductKeyRecordAsync(
+        Guid? operatorUserId,
+        bool disable,
+        params IEnumerable<Guid> keys)
+    {
+        var query = db.MembershipProductKeyRecords
+            .IgnoreQueryFilters()
+            .Where(x => keys.Contains(x.Id));
+
+        var r = await query.ExecuteUpdateAsync(e =>
+            e.SetProperty(p => p.Disable, disable)
+            .SetProperty(p => p.OperatorUserId, operatorUserId));
+        return r;
+    }
+
+    public async Task<int> BatchDisableProductKeyRecordAsync(
+        Guid? operatorUserId,
+        bool disable,
+        params IEnumerable<string> keys)
+    {
+        var keysQuery = from m in keys
+                        let g = Base58Guid.Decode(m)
+                        where g.HasValue
+                        select g.Value;
+        var keysG = keysQuery.ToArray();
+
+        var r = await BatchDisableProductKeyRecordAsync(operatorUserId, disable, keysG);
         return r;
     }
 }

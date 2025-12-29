@@ -1,19 +1,23 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 
 [Table("MerchantDeductionAgreementConfigurations")]
+[EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class MerchantDeductionAgreementConfiguration :
-    Entity<Guid>,
+    OperatorBaseEntity<Guid>,
     ICreateTime,
     IUpdateTime,
     INote,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ISoftDeleted
 {
     /// <summary>
     /// 编号
@@ -84,18 +88,19 @@ public partial class MerchantDeductionAgreementConfiguration :
     public string? Note { get; set; }
 
     /// <inheritdoc/>
-    [Comment("创建时间")]
-    public DateTimeOffset CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    [Comment("更新时间")]
-    public DateTimeOffset UpdateTime { get; set; }
+    public bool SoftDeleted { get; set; }
 
     public virtual List<MerchantDeductionAgreement> MerchantDeductionAgreements { get; set; } = null!;
 
     //public virtual List<XunYouGood> XunYouGoods { get; set; } = null!;
 
     //public virtual List<XunYouGoodMDACRelation> XunYouGoodMDACRelations { get; set; } = null!;
+
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<MerchantDeductionAgreementConfiguration>
+    {
+        public sealed override void Configure(EntityTypeBuilder<MerchantDeductionAgreementConfiguration> builder)
+        {
+            base.Configure(builder);
+        }
+    }
 }

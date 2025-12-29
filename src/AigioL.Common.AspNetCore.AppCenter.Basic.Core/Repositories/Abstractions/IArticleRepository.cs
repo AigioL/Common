@@ -58,7 +58,6 @@ partial interface IArticleRepository // 管理后台
 
     Task<ApiRsp> UpdateAsync(
         Guid? operatorUserId,
-        Guid id,
         AddOrEditArticleModel model,
         CancellationToken cancellationToken = default);
 

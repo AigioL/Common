@@ -53,9 +53,14 @@ public static partial class AppVersionController
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("获取客户端版本详情");
 
-        routeGroup.MapPut("", async (HttpContext context,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] AddOrEditM model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var userId = context.GetBMUserId();
             var appVerRepo = context.RequestServices.GetRequiredService<IAppVerRepository>();
             BMApiRsp r = await appVerRepo.UpdateAsync(userId, model, context.RequestAborted);

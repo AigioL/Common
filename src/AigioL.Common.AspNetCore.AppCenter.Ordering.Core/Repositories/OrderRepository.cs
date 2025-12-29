@@ -2,10 +2,14 @@ using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions;
 using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -102,10 +106,20 @@ sealed partial class OrderRepository<TDbContext> :
             .OrderByDescending(x => x.CreateTime)
             .ThenBy(x => x.Id);
 
-        if (status is { Length: > 0 }) query = query.Where(x => status.Contains(x.Status));
-        if (businessType.HasValue) query = query.Where(x => x.BusinessTypeId == businessType.Value);
+        if (status is { Length: > 0 })
+        {
+            query = query.Where(x => status.Contains(x.Status));
+        }
+        if (businessType.HasValue)
+        {
+            query = query.Where(x => x.BusinessTypeId == businessType.Value);
+        }
 
-        if (orderNumber.HasValue) query = query.Where(x => x.OrderNumber.Contains(orderNumber.ToString()!));
+        if (orderNumber.HasValue)
+        {
+            var orderNumberStr = orderNumber.Value.ToString();
+            query = query.Where(x => x.Id.Contains(orderNumberStr));
+        }
         if (!string.IsNullOrEmpty(note)) query = query.Where(x => x.Note!.Contains(note));
 
         if (paymentTime != null && paymentTime.Length == 2)
@@ -186,6 +200,87 @@ sealed partial class OrderRepository<TDbContext> :
         {
             throw new ApplicationException("完成订单失败，改订单不是已付款状态");
         }
+    }
+}
+
+partial class OrderRepository<TDbContext>
+{
+    public async Task<PagedModelEx<OrderTableItem, decimal>> QueryAsync(
+        string? id = null,
+        string? orderNumber = null,
+        OrderType? type = null,
+        DevicePlatform2? source = null,
+        OrderStatus[]? status = null,
+        Guid? userId = null,
+        int? businessType = null,
+        string? note = null,
+        DateTimeOffset?[]? paymentTime = null,
+        PaymentType? paymentType = null,
+        DateTimeOffset?[]? createTime = null,
+        Guid? agreementId = null,
+        string? orderBy = null,
+        bool? desc = null,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        IQueryable<Order> query = db.Orders
+            .AsNoTrackingWithIdentityResolution();
+
+        if (!string.IsNullOrWhiteSpace(id))
+            query = query.Where(x => x.Id == id);
+        else if (!string.IsNullOrEmpty(orderNumber))
+            query = query.Where(x => x.Id.Contains(orderNumber));
+
+        if (type.HasValue)
+            query = query.Where(x => x.Type == type.Value);
+        if (source.HasValue)
+            query = query.Where(x => x.Source == source.Value);
+        if (status is { Length: > 0 })
+            query = query.Where(x => status.Contains(x.Status));
+        if (businessType.HasValue)
+            query = query.Where(x => x.BusinessTypeId == businessType.Value);
+        if (paymentType.HasValue)
+            query = query.Where(x => x.PaymentType == paymentType.Value);
+
+        if (userId.HasValue)
+            query = query.Where(x => x.UserId == userId.Value);
+        if (!string.IsNullOrEmpty(note))
+            query = query.Where(x => x.Note!.Contains(note));
+        if (agreementId.HasValue)
+            query = query.Where(x => x.MerchantDeductionAgreementId == agreementId.Value);
+
+        if (paymentTime != null && paymentTime.Length == 2)
+        {
+            if (paymentTime[0].HasValue)
+                query = query.Where(x => x.PaymentTime >= paymentTime[0]);
+            if (paymentTime[1].HasValue)
+                query = query.Where(x => x.PaymentTime < paymentTime[1]);
+        }
+        if (createTime != null && createTime.Length == 2)
+        {
+            if (createTime[0].HasValue)
+                query = query.Where(x => x.CreateTime >= createTime[0]);
+            if (createTime[1].HasValue)
+                query = query.Where(x => x.CreateTime < createTime[1]);
+        }
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            query = query.OrderByPropertyName(orderBy, desc);
+        }
+        else
+        {
+            query = query.OrderByDescending(x => x.CreateTime).ThenBy(x => x.Id);
+        }
+
+        var totalAmountReceived = await query
+            .Where(a => a.Status == OrderStatus.Paid || a.Status == OrderStatus.Completed)
+            .SumAsync(a => a.AmountReceived, cancellationToken);
+        var r = await query.ProjectTo<OrderTableItem>(mapper.ConfigurationProvider)
+            .PagingAsync<OrderTableItem, PagedModelEx<OrderTableItem, decimal>>(current, pageSize, cancellationToken);
+        r.ExData = totalAmountReceived;
+        return r;
     }
 }
 

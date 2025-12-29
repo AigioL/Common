@@ -66,12 +66,17 @@ public partial class PagedModel<T> : IPagedModel<T>, IReadOnlyPagedModel<T>
     /// 获取或设置总记录数
     /// </summary>
 #if ENABLE_MP
-    [global::MessagePack.Key(3)]
+    [global::MessagePack.Key(LastMKeyIndex)]
 #endif
 #if !DISABLE_MP2
-    [global::MemoryPack.MemoryPackOrder(3)]
+    [global::MemoryPack.MemoryPackOrder(LastMKeyIndex)]
 #endif
     public int Total { get; set; }
+
+    /// <summary>
+    /// 最后一个 MessagePack 序列化 下标，继承自此类，新增需要序列化的字段/属性，标记此值+1，+2
+    /// </summary>
+    protected const int LastMKeyIndex = 3;
 
     /// <inheritdoc/>
     bool IExplicitHasValue.ExplicitHasValue()
@@ -97,4 +102,22 @@ public partial class PagedModel<T> : IPagedModel<T>, IReadOnlyPagedModel<T>
         get => DataSource;
         set => DataSource = value is IList<T> list ? list : [.. value];
     }
+}
+
+/// <inheritdoc cref="IPagedModel"/>
+#if ENABLE_MP
+[global::MessagePack.MessagePackObject]
+#endif
+#if !DISABLE_MP2
+[global::MemoryPack.MemoryPackable(global::MemoryPack.SerializeLayout.Explicit)]
+#endif
+public partial class PagedModelEx<T, T2> : PagedModel<T>
+{
+#if ENABLE_MP
+    [global::MessagePack.Key(LastMKeyIndex + 1)]
+#endif
+#if !DISABLE_MP2
+    [global::MemoryPack.MemoryPackOrder(LastMKeyIndex + 1)]
+#endif
+    public T2? ExData { get; set; }
 }

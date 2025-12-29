@@ -18,7 +18,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 public partial class RefundBill :
     OperatorBaseEntity<Guid>,
     ITenantId,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ISoftDeleted
 {
     /// <summary>
     /// 售后单 Id
@@ -81,6 +82,9 @@ public partial class RefundBill :
     /// </summary>
     [Comment("退款失败原因")]
     public string? RefundFailureReason { get; set; }
+
+    /// <inheritdoc/>
+    public bool SoftDeleted { get; set; }
 
     public virtual AftersalesBill? AftersalesBill { get; set; } = null!;
 

@@ -59,13 +59,17 @@ public static partial class ArticleCategoryController
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("获取文章分类详情");
 
-        routeGroup.MapPut("{id}", async (HttpContext context,
-            [FromRoute] Guid id,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
+            [FromRoute] Guid? id,
             [FromBody] AddOrEditM model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var userId = context.GetBMUserId();
             var articleCategoryRepo = context.RequestServices.GetRequiredService<IArticleCategoryRepository>();
-            BMApiRsp r = await articleCategoryRepo.UpdateAsync(userId, id, model, context.RequestAborted);
+            BMApiRsp r = await articleCategoryRepo.UpdateAsync(userId, model, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("修改文章分类");
@@ -97,6 +101,6 @@ public static partial class ArticleCategoryController
             BMApiRsp<ArticleCategoryTreeNodeModel[]> r = await articleCategoryRepo.GetTreeAsync(context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
-        .WithDescription("获取文章分类详情");
+        .WithDescription("获取文章分类树节点");
     }
 }

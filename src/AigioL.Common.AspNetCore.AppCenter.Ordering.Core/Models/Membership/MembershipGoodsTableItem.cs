@@ -89,3 +89,63 @@ public sealed partial class MembershipGoodsTableItem : IReadOnlyId<Guid>, ICreat
     /// </summary>
     public string? OperatorUser { get; set; }
 }
+
+public sealed partial class AddOrEditMembershipGoodsModel : IReadOnlyId<Guid>
+{
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// 商品名称
+    /// </summary>
+    public required string GoodsName { get; set; }
+
+    /// <summary>
+    /// 商品编号
+    /// </summary>
+    public required string GoodsNo { get; set; }
+
+    /// <summary>
+    /// 会员订阅类型
+    /// </summary>
+    public MembershipLicenseFlags MemberLicenseType { get; set; }
+
+    /// <summary>
+    /// 充值天数
+    /// </summary>
+    public int RechargeDays { get; set; }
+
+    /// <summary>
+    /// 首次优惠价格 原价
+    /// </summary>
+    public decimal? FirstPrice { get; set; }
+
+    /// <summary>
+    /// 首次优惠价格 当前价格
+    /// </summary>
+    public decimal? FirstCurrentPrice { get; set; }
+
+    /// <summary>
+    /// 原价
+    /// </summary>
+    public decimal Price { get; set; }
+
+    /// <summary>
+    /// 当前价格
+    /// </summary>
+    public decimal CurrentPrice { get; set; }
+
+    /// <summary>
+    /// 是否上架
+    /// </summary>
+    public bool Enable { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    public string? Note { get; set; }
+
+    /// <summary>
+    /// 配置的扣款协议
+    /// </summary>
+    public List<Guid> Configurations { get; set; } = [];
+}

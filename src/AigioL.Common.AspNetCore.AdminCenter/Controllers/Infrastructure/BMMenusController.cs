@@ -29,26 +29,35 @@ public static partial class BMMenusController
         .WithDescription("查询管理后台菜单树结构（仅支持二级）");
 
         // 增删改查
-        routeGroup.MapGet("/{id}", async (HttpContext context, [FromRoute] Guid id) =>
+        routeGroup.MapGet("/{id}", async (HttpContext context,
+            [FromRoute] Guid id) =>
         {
             var r = await Get(context, id);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("获取管理后台菜单详情");
-        routeGroup.MapPost("", async (HttpContext context, [FromBody] BMMenuEdit model) =>
+        routeGroup.MapPost("", async (HttpContext context,
+            [FromBody] BMMenuEdit model) =>
         {
             var r = await PostOrPut(context, model);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增管理后台菜单");
-        routeGroup.MapDelete("/{id}", async (HttpContext context, [FromRoute] Guid id) =>
+        routeGroup.MapDelete("/{id}", async (HttpContext context,
+            [FromRoute] Guid id) =>
         {
             var r = await Delete(context, id);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Delete)
         .WithDescription("删除管理后台菜单");
-        routeGroup.MapPut("", async (HttpContext context, [FromBody] BMMenuEdit model) =>
+        routeGroup.MapPut("", async (HttpContext context,
+            [FromRoute] Guid? id,
+            [FromBody] BMMenuEdit model) =>
         {
+            if (id.HasValue)
+            {
+                model.Id = id.Value;
+            }
             var r = await PostOrPut(context, model);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
@@ -67,44 +76,58 @@ public static partial class BMMenusController
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("获取管理后台按钮列表");
-        routeGroup.MapGet("bottons/{menuId}", async (HttpContext context, [FromRoute] Guid menuId) =>
+        routeGroup.MapGet("bottons/{menuId}", async (HttpContext context,
+            [FromRoute] Guid menuId) =>
         {
             var r = await GetMenuButtons(context, menuId);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("获取管理后台菜单的按钮列表");
-        routeGroup.MapPost("bottons/{menuId}", async (HttpContext context, [FromRoute] Guid menuId) =>
+        routeGroup.MapPost("bottons/{menuId}", async (HttpContext context,
+            [FromRoute] Guid menuId) =>
         {
             var r = await AddMenuButtons(context, menuId);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增管理后台菜单的按钮");
-        routeGroup.MapPut("bottons/{menuId}", async (HttpContext context, [FromRoute] Guid menuId) =>
+        routeGroup.MapPut("bottons/{menuId}", async (HttpContext context,
+            [FromRoute] Guid menuId) =>
         {
             var r = await EditMenuButtons(context, menuId);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("编辑管理后台菜单的按钮");
 
-        routeGroup.MapGet("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId) =>
+        routeGroup.MapGet("bottons/{roleId}/{menuId}", async (HttpContext context,
+            [FromRoute] Guid roleId,
+            [FromRoute] Guid menuId) =>
         {
             var r = await GetRoleMenuButtonsAsync(context, roleId, menuId);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("获取管理后台菜单权限按钮列表");
-        routeGroup.MapPost("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId, [FromBody] IEnumerable<BMButtonModel> buttons) =>
+        routeGroup.MapPost("bottons/{roleId}/{menuId}", async (HttpContext context,
+            [FromRoute] Guid roleId,
+            [FromRoute] Guid menuId,
+            [FromBody] IEnumerable<BMButtonModel> buttons) =>
         {
             var r = await AddMenuButtons(context, roleId, menuId, buttons);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增管理后台菜单权限按钮");
-        routeGroup.MapPut("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId, [FromQuery] string name, [FromBody] IEnumerable<BMButtonModel> buttons) =>
+        routeGroup.MapPut("bottons/{roleId}/{menuId}", async (HttpContext context,
+            [FromRoute] Guid roleId,
+            [FromRoute] Guid menuId,
+            [FromQuery] string name,
+            [FromBody] IEnumerable<BMButtonModel> buttons) =>
         {
             var r = await EditMenuButtons(context, roleId, menuId, name, buttons);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("编辑管理后台菜单权限按钮");
-        routeGroup.MapDelete("bottons/{roleId}/{menuId}", async (HttpContext context, [FromRoute] Guid roleId, [FromRoute] Guid menuId) =>
+        routeGroup.MapDelete("bottons/{roleId}/{menuId}", async (HttpContext context,
+            [FromRoute] Guid roleId,
+            [FromRoute] Guid menuId) =>
         {
             var r = await DeleteMenuButtons(context, roleId, menuId);
             return r.SetHttpContext(context);

@@ -170,4 +170,8 @@
 	<ItemGroup>
 		<PackageVersion Include="AutoMapper" Version="16.0.0" />
 	</ItemGroup>
+	<!-- 👇 Base58 -->
+	<ItemGroup>
+		<PackageVersion Include="SimpleBase" Version="5.6.0" />
+	</ItemGroup>
 </Project>

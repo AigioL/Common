@@ -3,6 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
@@ -11,11 +12,14 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 /// 业务类型支付配置表实体类
 /// </summary>
 [Table("OrderBusinessPaymentConfigurations")]
+[EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class OrderBusinessPaymentConfiguration :
     OperatorBaseEntity<Guid>,
     ITenantId,
     IDisable,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ISoftDeleted,
+    ISort
 {
     /// <inheritdoc/>
     [Comment("租户 Id")]
@@ -42,4 +46,18 @@ public partial class OrderBusinessPaymentConfiguration :
     /// <inheritdoc/>
     [Comment("是否禁用")]
     public bool Disable { get; set; }
+
+    /// <inheritdoc/>
+    public bool SoftDeleted { get; set; }
+
+    /// <inheritdoc/>
+    public long Sort { get; set; }
+
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<OrderBusinessPaymentConfiguration>
+    {
+        public sealed override void Configure(EntityTypeBuilder<OrderBusinessPaymentConfiguration> builder)
+        {
+            base.Configure(builder);
+        }
+    }
 }

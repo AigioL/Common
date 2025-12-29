@@ -50,8 +50,13 @@ public sealed partial class ArticleModel : IReadOnlyId<Guid>
     public DateTimeOffset CreateTime { get; set; }
 }
 
-public sealed partial class AddOrEditArticleModel
+public sealed partial class AddOrEditArticleModel : IReadOnlyId<Guid>
 {
+    /// <summary>
+    /// 主键 Id
+    /// </summary>
+    public Guid Id { get; set; }
+
     /// <summary>
     /// 分类 Id
     /// </summary>

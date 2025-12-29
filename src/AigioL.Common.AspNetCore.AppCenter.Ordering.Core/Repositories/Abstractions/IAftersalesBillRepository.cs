@@ -1,6 +1,8 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.Models;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 
@@ -21,4 +23,31 @@ public partial interface IAftersalesBillRepository : IRepository<AftersalesBill,
         string refundReason,
         Guid userId,
         CancellationToken cancellationToken = default);
+}
+
+partial interface IAftersalesBillRepository
+{
+    Task<PagedModel<AftersalesBillTableItem>> QueryAsync(
+        string? orderNumber,
+        string? aftersalesNumber,
+        int? businessType,
+        Guid? userId,
+        decimal? refundAmount,
+        AuditStatus[]? auditStatus,
+        string? refundReason,
+        string? sellerNote,
+        DateTimeOffset?[]? createTime,
+        DateTimeOffset?[]? updateTime,
+        string? createUser,
+        string? operatorUser,
+        string? orderBy,
+        bool? desc,
+        int current = IPagedModel.DefaultCurrent,
+        int pageSize = IPagedModel.DefaultPageSize,
+        CancellationToken cancellationToken = default);
+
+    Task<ApiRsp> AuditAsync(
+        Guid? operatorUserId,
+        Guid id,
+        EditAftersalesBillAuditModel model);
 }
