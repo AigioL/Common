@@ -18,7 +18,9 @@
 		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.259" />
 		<PackageVersion Include="System.Management" Version="9.0.8" />
 		<PackageVersion Include="WmiLight" Version="6.16.0" />
-		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(DotNet_Package_Version)" />
+		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.1" />
+		<PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.1" />
+		<PackageVersion Include="System.Drawing.Common" Version="10.0.1" />
 	</ItemGroup>
 	<!-- 👇 WinUI3 -->
 	<ItemGroup>
@@ -35,6 +37,7 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="$(DotNet_Package_Version)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(DotNet_Package_Version)" />
 		<PackageVersion Include="NLog" Version="6.0.7" />
+		<PackageVersion Include="NLog.Extensions.Logging" Version="6.1.0" />
 		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.0" />
 	</ItemGroup>
 	<!-- 👇 xunit 单元测试 -->

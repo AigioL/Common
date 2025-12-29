@@ -1,7 +1,9 @@
 using MemoryPack;
 using MemoryPack.Compression;
+using MemoryPack.Formatters;
 using Microsoft.IO;
 using System.Buffers;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using PreferencesDictionary = System.Collections.Concurrent.ConcurrentDictionary<string, System.Collections.Concurrent.ConcurrentDictionary<string, byte[]>>;
@@ -149,6 +151,20 @@ sealed class UnpackagedPreferencesImplementation : IPreferences
 
     readonly Lock lockSave = new();
 
+    static void Serialize<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TKey,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TValue,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TFormatter>(
+        in BrotliCompressor bufferWriter,
+        ConcurrentDictionary<TKey, TValue>? value,
+        MemoryPackSerializerOptions? options = null)
+        where TKey : notnull
+    {
+        // 修复裁剪导致缺少类型 ConcurrentDictionaryFormatter
+        // Unhandled exception: System.MissingMethodException: No parameterless constructor defined for type 'MemoryPack.Formatters.ConcurrentDictionaryFormatter`2[System.String,System.Collections.Concurrent.ConcurrentDictionary`2[System.String,System.Byte[]]]'.
+        MemoryPackSerializer.Serialize(typeof(PreferencesDictionary), in bufferWriter, value, options);
+    }
+
     void Save()
     {
         lock (lockSave)
@@ -165,7 +181,7 @@ sealed class UnpackagedPreferencesImplementation : IPreferences
             try
             {
                 // https://github.com/Cysharp/MemoryPack/blob/1.21.4/src/MemoryPack.AspNetCoreMvcFormatter/MemoryPackOutputFormatter.cs#L54
-                MemoryPackSerializer.Serialize(typeof(PreferencesDictionary), compressor, _preferences);
+                Serialize<string, ConcurrentDictionary<string, byte[]>, ConcurrentDictionaryFormatter<string, ConcurrentDictionary<string, byte[]>>>(in compressor, _preferences);
                 compressor.CopyTo(buffer);
             }
             catch (MemoryPackSerializationException e)
