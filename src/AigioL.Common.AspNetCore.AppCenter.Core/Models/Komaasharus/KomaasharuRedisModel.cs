@@ -21,7 +21,7 @@ public sealed partial record class KomaasharuRedisModel
     /// 广告描述
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(2)]
-    public string? Desc { get; set; }
+    public string? Description { get; set; }
 
     /// <inheritdoc cref="KomaasharuType"/>
     [global::MemoryPack.MemoryPackOrder(3)]

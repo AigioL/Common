@@ -18,7 +18,7 @@ public sealed partial record class KomaasharuModel
     /// <summary>
     /// 广告描述
     /// </summary>
-    public string? Desc { get; set; }
+    public string? Description { get; set; }
 
     /// <inheritdoc cref="KomaasharuType"/>
     public KomaasharuType Type { get; set; }

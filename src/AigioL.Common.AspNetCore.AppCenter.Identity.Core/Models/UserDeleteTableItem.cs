@@ -45,7 +45,7 @@ public sealed partial record class UserDeleteTableItem : IReadOnlyId<Guid>
     /// <summary>
     /// 出生日期
     /// </summary>
-    public DateTime? BirthDate { get; set; }
+    public DateTimeOffset? BirthDate { get; set; }
 
     /// <summary>
     /// 出生日期纪录的客户端所在时区

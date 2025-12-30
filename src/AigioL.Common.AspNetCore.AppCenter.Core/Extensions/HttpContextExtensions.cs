@@ -489,10 +489,15 @@ file static partial class DateTimeParseHelper
     {
         if (!string.IsNullOrWhiteSpace(s))
         {
-            if (DateTimeOffset.TryParseExact(s, "r", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces, out var value))
+            if (DateTimeOffset.TryParse(s, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces, out var value))
+            {
+                result = value;
+                return true;
+            }
+            else if (DateTimeOffset.TryParseExact(s, "r", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces, out var value3))
             {
                 // RFC1123 pattern
-                result = value;
+                result = value3;
                 return true;
             }
             else if (s.Length <= MaximumEscapedDateTimeOffsetParseLength)

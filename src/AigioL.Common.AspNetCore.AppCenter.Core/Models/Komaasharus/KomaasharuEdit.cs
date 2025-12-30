@@ -17,7 +17,7 @@ public sealed partial record class KomaasharuEdit : IReadOnlyId<Guid>
     /// <summary>
     /// 备注
     /// </summary>
-    public string? Describe { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// 图片地址
@@ -73,6 +73,7 @@ public sealed partial record class KomaasharuEdit : IReadOnlyId<Guid>
     /// <summary>
     /// 推送的设备
     /// </summary>
+    public DeviceIdiom DeviceIdiom { get; set; }
 
     /// <summary>
     /// IsAuth

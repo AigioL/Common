@@ -5,6 +5,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.JsonWebTokens.Services.Abstractions;
 using AigioL.Common.Models;
+using AntDesign;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -252,7 +253,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
                 .Where(x => x.Children != null)
                 .SelectMany(x => x.Children!)))
             {
-                if (menu.Key == nameof(Titles.dashboard) ||
+                if (menu.Key == "dashboard" ||
                     (menu.Children != null && menu.Children.Count != 0))
                 {
                     menuButtons.Add(new BMMenuButton
@@ -324,52 +325,276 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         return result = HttpStatusCode.OK;
     }
 
+    static Guid GetGuid(int seed)
+    {
+        Span<char> chars = stackalloc char[32];
+        chars.Fill('0');
+        var seedStr = seed.ToString();
+
+        var index = chars.Length - 1;
+        for (int i = seedStr.Length - 1; i >= 0; i--)
+        {
+            chars[index--] = seedStr[i];
+        }
+
+        return Guid.ParseExact(chars, "N");
+    }
+
     protected virtual IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
     {
-        //yield return new BMMenu
-        //{
-        //    Url = "/",
-        //    Name = Titles.dashboard,
-        //    Key = nameof(Titles.dashboard),
-        //    //Icon = IconType.Outline.Dashboard,
-        //};
-
-        //if (isAdmin)
-        //{
+        int seed = 1000;
         yield return new BMMenu
         {
-            Url = "/" + nameof(MenuTitles.SystemManage),
-            Name = MenuTitles.SystemManage,
-            Key = nameof(MenuTitles.SystemManage),
-            //Icon = IconType.Outline.Cloud,
-            Children = [.. GetSystemManage()],
+            //Id = GetGuid(seed),
+            Url = "/Statistics",
+            Name = "统计分析",
+            Key = "Statistics",
+            IconUrl = IconType.Outline.AreaChart,
         };
-        //}
 
-        IEnumerable<BMMenu> GetSystemManage()
+        yield return new BMMenu
+        {
+            //Id = GetGuid(seed += 100),
+            Url = "/Komaasharu",
+            Name = "广告管理",
+            Key = "Komaasharu",
+            IconUrl = IconType.Outline.Crown,
+            Children = [.. GetKomaasharuManage(seed)],
+        };
+
+        yield return new BMMenu
+        {
+            //Id = GetGuid(seed += 100),
+            Url = "/Identity",
+            Name = "用户管理",
+            Key = "Identity",
+            IconUrl = IconType.Outline.User,
+            Children = [.. GetUserManage(seed)],
+        };
+
+        yield return new BMMenu
+        {
+            //Id = GetGuid(seed += 100),
+            Url = "/Basics",
+            Name = "通用管理",
+            Key = "Basics",
+            IconUrl = IconType.Outline.Profile,
+            Children = [.. GetBasicsManage(seed)],
+        };
+
+        yield return new BMMenu
+        {
+            //Id = GetGuid(seed += 100),
+            Url = "/Ordering",
+            Name = "订单管理",
+            Key = "Ordering",
+            IconUrl = IconType.Outline.ShoppingCart,
+            Children = [.. GetOrderingManage(seed)],
+        };
+
+        yield return new BMMenu
+        {
+            //Id = GetGuid(seed += 100),
+            Url = "/Role",
+            Name = "角色管理",
+            Key = "RoleManageMenu",
+            IconUrl = IconType.Outline.UserSwitch,
+            Children = [.. GetRoleManage(seed)],
+        };
+
+        yield return new BMMenu
+        {
+            //Id = GetGuid(seed += 100),
+            Url = "/SystemManage",
+            Name = "系统管理",
+            Key = "SystemManage",
+            IconUrl = IconType.Outline.Control,
+            Children = [.. GetSystemManage(seed)],
+        };
+
+        IEnumerable<BMMenu> GetKomaasharuManage(int seed)
         {
             yield return new BMMenu
             {
-                Url = "/" + nameof(Titles.bm_users),
-                Name = Titles.bm_users,
+                //Id = GetGuid(seed + 5),
+                Url = "/Komaasharu/Manage",
+                Name = "广告管理",
+                Key = ControllerConstants.AdvertisementManage,
+                IconUrl = IconType.Outline.Crown,
+            };
+        }
+
+        IEnumerable<BMMenu> GetUserManage(int seed)
+        {
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 5),
+                Url = "/Identity/UserList",
+                Name = "用户列表",
+                Key = ControllerConstants.ClientUser,
+                IconUrl = IconType.Outline.User,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 10),
+                Url = "/Identity/UserDeviceList",
+                Name = "用户设备列表",
+                Key = ControllerConstants.UserDevice,
+                IconUrl = IconType.Outline.Mobile,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 15),
+                Url = "/Identity/ExternalAccountList",
+                Name = "外部账号列表",
+                Key = ControllerConstants.ExternalAccount,
+                IconUrl = IconType.Outline.Twitter,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 20),
+                Url = "/Identity/UserCancelList",
+                Name = "注销用户列表",
+                Key = ControllerConstants.UserCancel,
+                IconUrl = IconType.Outline.UserDelete,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 25),
+                Url = "/Identity/AuthMessageRecord",
+                Name = "短信记录查询",
+                Key = ControllerConstants.AuthMessageRecord,
+                IconUrl = IconType.Outline.Send,
+            };
+        }
+
+        IEnumerable<BMMenu> GetBasicsManage(int seed)
+        {
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 5),
+                Url = "/Basics/KeyValuePair",
+                Name = "键值对管理",
+                Key = ControllerConstants.KeyValuePair,
+                IconUrl = IconType.Outline.Profile,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 10),
+                Url = "/Basics/StaticResource",
+                Name = "静态资源与记录管理",
+                Key = ControllerConstants.StaticResource,
+                IconUrl = IconType.Outline.FileImage,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 15),
+                Url = "/Basics/Article",
+                Name = "文章管理",
+                Key = ControllerConstants.Article,
+                IconUrl = IconType.Outline.FilePdf,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 20),
+                Url = "/Basics/ArticleCategory",
+                Name = "文章标签管理",
+                Key = ControllerConstants.ArticleCategory,
+                IconUrl = IconType.Outline.Tags,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 25),
+                Url = "/Basics/ArticleCategory",
+                Name = "文章分类管理",
+                Key = ControllerConstants.ArticleCategory,
+                IconUrl = IconType.Outline.Group,
+            };
+        }
+
+        IEnumerable<BMMenu> GetOrderingManage(int seed)
+        {
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 5),
+                Url = "/Ordering/OrderManage",
+                Name = "订单列表",
+                Key = ControllerConstants.Order,
+                IconUrl = IconType.Outline.ShoppingCart,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 10),
+                Url = "/Ordering/AftersalesBillManage",
+                Name = "售后列表",
+                Key = ControllerConstants.AftersalesBill,
+                IconUrl = IconType.Outline.Backward,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 15),
+                Url = "/Ordering/RefundBillManage",
+                Name = "退款列表",
+                Key = ControllerConstants.RefundBill,
+                IconUrl = IconType.Outline.Rollback,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 25),
+                Url = "/Ordering/MerchantDeductionAgreementConfigurationManage",
+                Name = "扣款协议配置",
+                Key = ControllerConstants.MerchantDeductionAgreementConfiguration,
+                IconUrl = IconType.Outline.PayCircle,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 25),
+                Url = "/Ordering/OrderBusinessPaymentConfigurationManage",
+                Name = "业务类型支付配置",
+                Key = ControllerConstants.OrderBusinessPaymentConfiguration,
+                IconUrl = IconType.Outline.Alipay,
+            };
+        }
+
+        IEnumerable<BMMenu> GetSystemManage(int seed)
+        {
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 5),
+                Url = "/System/User",
+                Name = "后台用户",
                 Key = ControllerConstants.SystemUser,
-                //Icon = IconType.Outline.User,
+                IconUrl = IconType.Outline.User,
             };
 
             yield return new BMMenu
             {
-                Url = "/" + nameof(Titles.bm_roles),
-                Name = Titles.bm_roles,
-                Key = ControllerConstants.RoleManage,
-                //Icon = IconType.Outline.Apartment,
-            };
-
-            yield return new BMMenu
-            {
-                Url = "/" + nameof(Titles.bm_menubuttonroles),
-                Name = Titles.bm_menubuttonroles,
+                //Id = GetGuid(seed + 10),
+                Url = "/System/MenuManage",
+                Name = "系统菜单管理",
                 Key = ControllerConstants.SystemMenuManage,
-                //Icon = IconType.Outline.Menu,
+                IconUrl = IconType.Outline.Menu,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 15),
+                Url = "/System/Info",
+                Name = "系统信息",
+                Key = "SystemInfo",
+                IconUrl = IconType.Outline.Info,
             };
 
             //if (isRootTenant)
@@ -399,6 +624,27 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             //    };
             //}
         }
+
+        IEnumerable<BMMenu> GetRoleManage(int seed)
+        {
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 5),
+                Url = "/Role/Manage",
+                Name = "角色管理",
+                Key = ControllerConstants.RoleManage,
+                IconUrl = IconType.Outline.UserSwitch,
+            };
+
+            yield return new BMMenu
+            {
+                //Id = GetGuid(seed + 10),
+                Url = "/Role/Menu",
+                Name = "角色菜单管理",
+                Key = "RoleMenu",
+                IconUrl = IconType.Outline.Menu,
+            };
+        }
     }
 
     protected virtual void SetUserIdAndTenantId(IEnumerable<BMMenu>? menus, Guid userId, Guid tenantId, long? sort = null)
@@ -417,28 +663,8 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             menu.CreateUserId = userId;
             menu.TenantId = tenantId;
             menu.Sort = sort.Value;
-            sort--;
+            sort -= 10;
             SetUserIdAndTenantId(menu.Children, userId, tenantId, sort);
         }
-    }
-
-    public static partial class Titles
-    {
-        public const string home = "主页";
-        public const string dashboard = "仪表盘";
-        public const string welcome = "欢迎页";
-        public const string bm_users = "后台用户";
-        public const string bm_roles = "角色管理";
-        public const string bm_menubuttonroles = "菜单权限管理";
-
-        //public const string tenants = "租户管理";
-        //public const string tenantproductkeybalances = "租户套餐管理";
-        //public const string tenantproductkeybalancerecords = "租户套餐记录";
-    }
-
-
-    public static partial class MenuTitles
-    {
-        public const string SystemManage = "系统管理";
     }
 }

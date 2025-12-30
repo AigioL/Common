@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.Functions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\CacheKeys.KV.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\IconType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\MediaTypeNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants\SMSConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\AppDbContextBase.cs" />

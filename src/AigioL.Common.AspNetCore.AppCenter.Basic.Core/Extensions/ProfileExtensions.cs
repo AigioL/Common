@@ -38,7 +38,7 @@ public static partial class ProfileExtensions
             .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.TagIds, opt => opt.MapFrom(s => s.Tags.Select(static x => x.Id).ToArray()));
-        p.CreateMap<Article, AddOrEditArticleCategoryModel>()
+        p.CreateMap<Article, AddOrEditArticleModel>()
             .ReverseMap();
 
         p.CreateMap<ArticleTag, ArticleTagTableItemModel>()

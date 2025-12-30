@@ -63,7 +63,9 @@ public partial class BMMenu :
     [Comment("图标 Url")]
     public string? IconUrl { get; set; }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// OrderByDescending 此字段排序
+    /// </summary>
     [Comment("排序")]
     public long Sort { get; set; }
 

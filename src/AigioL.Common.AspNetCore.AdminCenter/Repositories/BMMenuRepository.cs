@@ -153,7 +153,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
             .ThenInclude(x => x.Children)
             .Where(x => !x.ParentId.HasValue)
             .Where(x => x.TenantId == tenantId)
-            .OrderBy(x => x.Sort);
+            .OrderByDescending(x => x.Sort);
 
         var menus = await q4.ToListAsync(RequestAborted);
 
@@ -202,7 +202,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
             .Include(x => x.Children)
             .Where(x => !x.SoftDeleted)
             .Distinct()
-            .OrderBy(x => x.Sort)
+            .OrderByDescending(x => x.Sort)
             .Select(_.MenuExpr);
 
         var r = await query.ToListAsync(RequestAborted);

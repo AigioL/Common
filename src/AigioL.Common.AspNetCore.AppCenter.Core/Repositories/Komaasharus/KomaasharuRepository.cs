@@ -200,9 +200,10 @@ partial class KomaasharuRepository<TDbContext>
 
     public async Task<KomaasharuEdit?> GetEditByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
         var query = db.Komaasharus.AsNoTrackingWithIdentityResolution()
                .Where(x => x.Id == id)
-               .Select(FExpressions.MapToEdit);
+               .ProjectTo<KomaasharuEdit>(mapper.ConfigurationProvider);
         var r = await query.FirstOrDefaultAsync(cancellationToken);
         return r;
     }
@@ -237,7 +238,7 @@ file static class FExpressions
     {
         Id = x.Id,
         Name = x.Name,
-        Desc = x.Description,
+        Description = x.Description,
         Orientation = x.Orientation,
         Type = x.Type,
         Sort = x.Sort,
@@ -247,29 +248,13 @@ file static class FExpressions
     {
         Id = x.Id,
         Name = x.Name,
-        Desc = x.Description,
+        Description = x.Description,
         Orientation = x.Orientation,
         Type = x.Type,
         Sort = x.Sort,
         ImageUrl = x.Url,
         JumpUrl = x.JumpUrl,
         DeviceIdiom = x.DeviceIdiom,
-        Platform = x.Platform,
-        IsAuth = x.IsAuth,
-    };
-
-    internal static readonly Expression<Func<Komaasharu, KomaasharuEdit>> MapToEdit = x => new()
-    {
-        Id = x.Id,
-        Name = x.Name,
-        Describe = x.Description,
-        Url = x.Url,
-        JumpUrl = x.JumpUrl,
-        StartTime = x.StartTime,
-        EndTime = x.EndTime,
-        Type = x.Type,
-        Orientation = x.Orientation,
-        Sort = x.Sort,
         Platform = x.Platform,
         IsAuth = x.IsAuth,
     };

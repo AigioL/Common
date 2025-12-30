@@ -33,7 +33,7 @@ public sealed partial record class EditUserProfileRequest : IValidatableObject
     /// 出生日期
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(3)]
-    public DateTime? BirthDate { get; set; }
+    public DateTimeOffset? BirthDate { get; set; }
 
     [global::MemoryPack.MemoryPackOrder(4)]
     public sbyte BirthDateTimeZone { get; set; }
