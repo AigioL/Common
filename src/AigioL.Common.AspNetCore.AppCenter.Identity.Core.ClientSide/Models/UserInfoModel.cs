@@ -63,7 +63,7 @@ public sealed partial class UserInfoModel : IPhoneNumber, IId<Guid>
     /// 出生日期
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(8)]
-    public DateTime? BirthDate { get; set; }
+    public DateTimeOffset? BirthDate { get; set; }
 
     /// <summary>
     /// 出生日期时区

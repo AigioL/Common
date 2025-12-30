@@ -114,6 +114,13 @@ public static partial class MaxLengths
     /// 1GiB => 字节数
     /// </summary>
     public const int OneGBInBytes = 1_073_741_824; // 1024 * 1024 * 1024
+
+    public const int PhoneNumberRegionCode = 8;
+
+    /// <summary>
+    /// 地理上的地址
+    /// </summary>
+    public const int GeographicalAddress = 500;
 }
 
 static partial class MaxLengths // 业务相关字段
@@ -213,4 +220,24 @@ static partial class MaxLengths // 业务相关字段
     /// 控制器名称最大长度限制
     /// </summary>
     public const int BMControllerName = 128;
+
+    /// <summary>
+    /// 身份证号
+    /// </summary>
+    public const int CNIDNumber = 18;
+
+    /// <summary>
+    /// 公民姓名
+    /// </summary>
+    public const int CNCitizenName = 50;
+
+    public const int AliPayAccountId = 100;
+
+    public const int WechatPayAccountId = 100;
+
+    /// <summary>
+    /// 银行卡号
+    /// <para>https://www.pbc.gov.cn/eportal/fileDir/image_public/rhwg/001801f1.html</para>
+    /// </summary>
+    public const int BankCardNumber = 19;
 }

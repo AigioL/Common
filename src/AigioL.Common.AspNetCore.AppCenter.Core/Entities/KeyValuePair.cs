@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.Primitives.Columns;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// </summary>
 [Table("KeyValuePairs")]
 [DebuggerDisplay("{DebuggerDisplay(),nq}")]
+[EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public class KeyValuePair :
     OperatorBaseEntity<string>,
     ISoftDeleted
@@ -36,4 +38,12 @@ public class KeyValuePair :
     public bool SoftDeleted { get; set; }
 
     string DebuggerDisplay() => $"{Id}, {Value}";
+
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<KeyValuePair>
+    {
+        public sealed override void Configure(EntityTypeBuilder<KeyValuePair> builder)
+        {
+            base.Configure(builder);
+        }
+    }
 }

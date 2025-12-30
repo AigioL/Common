@@ -158,8 +158,8 @@ partial class ArticleRepository<TDbContext> // 管理后台
         entity.CreateUserId = createUserId;
         var addedTags = model.TagIds.Select(tagId => new ArticleTagRelation { Article = entity, TagId = tagId });
 
-        await db.Articles.AddAsync(entity, CancellationToken.None);
-        await db.ArticleTagRelations.AddRangeAsync(addedTags, CancellationToken.None);
+        await db.Articles.AddAsync(entity, cancellationToken);
+        await db.ArticleTagRelations.AddRangeAsync(addedTags, cancellationToken);
 
         await db.SaveChangesAsync(CancellationToken.None);
         return true;

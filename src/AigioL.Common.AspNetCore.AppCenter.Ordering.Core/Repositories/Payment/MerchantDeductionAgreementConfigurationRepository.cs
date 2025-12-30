@@ -142,6 +142,7 @@ partial class MerchantDeductionAgreementConfigurationRepository<TDbContext> // ç
         entity.Id = default;
         entity.CreateUserId = createUserId;
 
+        await db.AddAsync(entity, cancellationToken);
         await db.SaveChangesAsync(CancellationToken.None);
         return true;
     }

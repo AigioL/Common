@@ -193,6 +193,7 @@ partial class KomaasharuRepository<TDbContext>
         entity.Id = default;
         entity.CreateUserId = createUserId;
 
+        await db.AddAsync(entity, cancellationToken);
         await db.SaveChangesAsync(CancellationToken.None);
         return true;
     }

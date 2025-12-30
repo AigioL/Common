@@ -80,6 +80,7 @@ public partial class User :
 
     /// <inheritdoc/>
     [Comment("手机号国家或地区代码")]
+    [StringLength(MaxLengths.PhoneNumberRegionCode)]
     public string? PhoneNumberRegionCode { get; set; }
 
     /// <summary>

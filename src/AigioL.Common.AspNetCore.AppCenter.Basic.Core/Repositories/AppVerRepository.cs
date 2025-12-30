@@ -110,6 +110,7 @@ partial class AppVerRepository<TDbContext> // 管理后台
         entity.Id = default;
         entity.CreateUserId = createUserId;
 
+        await db.AddAsync(entity, cancellationToken);
         await db.SaveChangesAsync(CancellationToken.None);
         return true;
     }

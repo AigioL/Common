@@ -9,11 +9,8 @@ using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IO;
 using RabbitMQ.Client;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using System.Text.Json;
 using AddM = AigioL.Common.AspNetCore.AppCenter.Ordering.Models.AddRefundBillModel;
 using TableItemM = AigioL.Common.AspNetCore.AppCenter.Ordering.Models.RefundBillTableItemModel;
 
@@ -118,7 +115,7 @@ public static partial class RefundBillController
             var rabbitmqConn = context.RequestServices.GetRequiredService<IConnection>();
             var refundBillRepo = context.RequestServices.GetRequiredService<IRefundBillRepository>();
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
-            var r = await PushRefundMessageAsync(refundBillRepo, rabbitmqConn, keyValuePairRepo, id);
+            BMApiRsp r = await PushRefundMessageAsync(refundBillRepo, rabbitmqConn, keyValuePairRepo, id);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("重试发送退款单通知");

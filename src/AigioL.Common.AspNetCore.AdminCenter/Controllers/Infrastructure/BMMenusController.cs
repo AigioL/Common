@@ -50,7 +50,7 @@ public static partial class BMMenusController
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Delete)
         .WithDescription("删除管理后台菜单");
-        routeGroup.MapPut("", async (HttpContext context,
+        routeGroup.MapPut("{id?}", async (HttpContext context,
             [FromRoute] Guid? id,
             [FromBody] BMMenuEdit model) =>
         {

@@ -167,6 +167,7 @@ partial class MembershipGoodsRepository<TDbContext> // 管理后台
           .ToListAsync(cancellationToken);
         entity.MerchantDeductionAgreementConfigurations = configurations;
 
+        await db.AddAsync(entity, cancellationToken);
         await db.SaveChangesAsync(CancellationToken.None);
         return true;
     }

@@ -94,8 +94,7 @@ public static partial class ArticleCategoryController
         }).PermissionFilter(ControllerName, BMButtonType.Delete)
         .WithDescription("删除文章分类");
 
-        routeGroup.MapGet("tree", async (HttpContext context,
-            [FromRoute] Guid id) =>
+        routeGroup.MapGet("tree", async (HttpContext context) =>
         {
             var articleCategoryRepo = context.RequestServices.GetRequiredService<IArticleCategoryRepository>();
             BMApiRsp<ArticleCategoryTreeNodeModel[]> r = await articleCategoryRepo.GetTreeAsync(context.RequestAborted);
