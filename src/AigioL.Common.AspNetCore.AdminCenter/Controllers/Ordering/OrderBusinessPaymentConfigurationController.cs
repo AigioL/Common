@@ -6,6 +6,7 @@ using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
+using AddOrEditM = AigioL.Common.AspNetCore.AppCenter.Ordering.Models.AddOrEditOrderBusinessPaymentConfigurationModel;
 using TableItemM = AigioL.Common.AspNetCore.AppCenter.Ordering.Models.OrderBusinessPaymentConfigurationTableItemModel;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Ordering;
@@ -49,5 +50,37 @@ public static partial class OrderBusinessPaymentConfigurationController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("分页查询业务订单支付配置");
+
+        routeGroup.MapPost("", async (HttpContext context,
+            [FromBody] AddOrEditM model) =>
+        {
+            var userId = context.GetBMUserId();
+            var orderBusinessPaymentConfigurationRepo = context.RequestServices.GetRequiredService<IOrderBusinessPaymentConfigurationRepository>();
+            BMApiRsp r = await orderBusinessPaymentConfigurationRepo.InsertAsync(userId, model, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Add)
+        .WithDescription("新增业务订单支付配置");
+
+        routeGroup.MapDelete("{id}", async (HttpContext context,
+            [FromRoute] Guid id) =>
+        {
+            var orderBusinessPaymentConfigurationRepo = context.RequestServices.GetRequiredService<IOrderBusinessPaymentConfigurationRepository>();
+            var rowCount = await orderBusinessPaymentConfigurationRepo.DeleteAsync(id);
+            BMApiRsp<bool> r = BMApiRsp.OkBoolean(rowCount > 0);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Delete)
+        .WithDescription("删除业务订单支付配置");
+
+        routeGroup.MapPut("disable/{id}/{disable}", async (HttpContext context,
+            [FromRoute] Guid id,
+            [FromRoute] bool disable) =>
+        {
+            var userId = context.GetBMUserId();
+            var orderBusinessPaymentConfigurationRepo = context.RequestServices.GetRequiredService<IOrderBusinessPaymentConfigurationRepository>();
+            var rowCount = await orderBusinessPaymentConfigurationRepo.DisableAsync(userId, id, disable);
+            BMApiRsp<bool> r = BMApiRsp.OkBoolean(rowCount > 0);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Edit)
+        .WithDescription("禁用或启用业务订单支付配置");
     }
 }

@@ -1,9 +1,15 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Models;
 using MemoryPack;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.IO;
+using RabbitMQ.Client;
 using StackExchange.Redis;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
+using System.Text.Json;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Constants;
 
@@ -64,8 +70,29 @@ static partial class CacheKeys
     /// <returns></returns>
     public static async Task<bool> GetPaymentServiceStatus(IDistributedCache distributedCache)
     {
-        bool enable = await distributedCache.GetAsync(PaymentServiceStopped) is null;
+        bool enable = (await distributedCache.GetAsync(PaymentServiceStopped)) is null;
         return enable;
+    }
+
+    /// <summary>
+    /// 设置支付服务状态
+    /// </summary>
+    /// <param name="distributedCache"></param>
+    /// <param name="enable">是否启用</param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public static async Task SetPaymentServiceStatus(IDistributedCache distributedCache, bool enable)
+    {
+        if (enable)
+        {
+            // 移除停止标记
+            await distributedCache.RemoveAsync(PaymentServiceStopped);
+        }
+        else
+        {
+            // 添加停止标记
+            await distributedCache.SetAsync(PaymentServiceStopped, [1]);
+        }
     }
 
     /// <summary>
@@ -167,5 +194,44 @@ static partial class CacheKeys
         }
 
         return r;
+    }
+
+    /// <summary>
+    /// 推送订单申请退款消息
+    /// </summary>
+    public static async Task PushOrderRefundRequestMessageAsync(
+        IConnection rabbitmqConn,
+        OrderRefundMessage message)
+    {
+        using var stream = m.GetStream();
+        await JsonSerializer.SerializeAsync(stream, message,
+            PaymentMinimalApisJsonSerializerContext.Default.OrderRefundMessage);
+        var value = stream.GetMemory();
+        await ListRightPushAsync(rabbitmqConn, PaymentRefundRequest, value, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// 推送【协议解约申请】通知
+    /// </summary>
+    public static async Task PushAgreementUnSignRequestMessageAsync(
+        IConnection rabbitmqConn,
+        string agreementNo)
+    {
+        var value = Encoding.UTF8.GetBytes(agreementNo);
+        await ListRightPushAsync(rabbitmqConn, AgreementUnSignRequest, value, CancellationToken.None);
+    }
+
+    static readonly RecyclableMemoryStreamManager m = new();
+
+    const string exchangeName = ""; // 默认交换机
+
+    public static async Task ListRightPushAsync(
+        IConnection rabbitmqConn,
+        string routingKey,
+        ReadOnlyMemory<byte> body,
+        CancellationToken cancellationToken = default)
+    {
+        using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
+        await channel.BasicPublishAsync(exchangeName, routingKey, body, cancellationToken);
     }
 }

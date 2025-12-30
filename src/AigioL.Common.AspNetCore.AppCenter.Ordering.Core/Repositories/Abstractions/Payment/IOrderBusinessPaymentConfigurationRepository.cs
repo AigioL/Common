@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
@@ -45,4 +46,14 @@ partial interface IOrderBusinessPaymentConfigurationRepository // 管理后台
         int current = IPagedModel.DefaultCurrent,
         int pageSize = IPagedModel.DefaultPageSize,
         CancellationToken cancellationToken = default);
+
+    Task<ApiRsp> InsertAsync(
+        Guid? createUserId,
+        AddOrEditOrderBusinessPaymentConfigurationModel model,
+        CancellationToken cancellationToken = default);
+
+    Task<int> DisableAsync(
+        Guid? operatorUserId,
+        Guid id,
+        bool disable);
 }

@@ -211,4 +211,22 @@ partial interface IMerchantDeductionAgreementRepository // 管理后台
         int current = IPagedModel.DefaultCurrent,
         int pageSize = IPagedModel.DefaultPageSize,
         CancellationToken cancellationToken = default);
+
+    Task<AgreementStatusAndNo?> GetAgreementStatusAndNoAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
+    Task<AgreementStatusAndNoAndNotice?> GetAgreementStatusAndNoAndNoticeStatusAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
+    sealed record class AgreementStatusAndNo(
+        AgreementStatus Status,
+        string AgreementNo);
+
+    sealed record class AgreementStatusAndNoAndNotice(
+        AgreementStatus Status,
+        string AgreementNo,
+        NoticeStatus NoticeStatus,
+        int NoticeCount);
 }

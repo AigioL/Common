@@ -11,6 +11,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using static AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment.IMerchantDeductionAgreementRepository;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Payment;
 
@@ -300,6 +301,32 @@ partial class MerchantDeductionAgreementRepository<TDbContext>
         }
         var r = await query.ProjectTo<MerchantDeductionAgreementTableItemModel>(mapper.ConfigurationProvider)
             .PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
+
+    public async Task<AgreementStatusAndNo?> GetAgreementStatusAndNoAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var query = db.MerchantDeductionAgreements
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.Id == id)
+            .Select(x => new AgreementStatusAndNo(x.Status, x.AgreementNo));
+
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
+    public async Task<AgreementStatusAndNoAndNotice?> GetAgreementStatusAndNoAndNoticeStatusAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var query = db.MerchantDeductionAgreements
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.Id == id)
+            .Select(x => new AgreementStatusAndNoAndNotice(x.Status, x.AgreementNo, x.NoticeStatus, x.NoticeCount));
+
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
         return r;
     }
 }

@@ -157,10 +157,12 @@ public partial class MerchantDeductionAgreement :
     public NoticeStatus NoticeStatus { get; set; }
 
     /// <summary>
-    /// 通知次数
+    /// 通知次数，超过 <see cref="MaxNoticeCount"/> 后需要减少此值才能继续通知
     /// </summary>
     [Comment("通知次数")]
     public int NoticeCount { get; set; }
+
+    public const int MaxNoticeCount = 5; // 与 OrderSubscribe 中的一致
 
     /// <summary>
     /// 通知完成时间

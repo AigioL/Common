@@ -4,6 +4,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -93,6 +94,47 @@ partial class OrderBusinessPaymentConfigurationRepository<TDbContext> // 管理�
 
         var r = await query.ProjectTo<OrderBusinessPaymentConfigurationTableItemModel>(mapper.ConfigurationProvider)
             .PagingAsync(current, pageSize, cancellationToken);
+        return r;
+    }
+
+    public async Task<ApiRsp> InsertAsync(
+        Guid? createUserId,
+        AddOrEditOrderBusinessPaymentConfigurationModel model,
+        CancellationToken cancellationToken = default)
+    {
+        var query = db.OrderBusinessPaymentConfigurations
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.BusinessTypeId == model.BusinessTypeId &&
+                x.PaymentMethod == model.PaymentMethod &&
+                x.PaymentType == model.PaymentType);
+
+        var any = await query.AnyAsync(cancellationToken);
+        if (any)
+        {
+            return "该业务订单支付配置已存在";
+        }
+
+        OrderBusinessPaymentConfiguration entity = new()
+        {
+            BusinessTypeId = model.BusinessTypeId,
+            PaymentMethod = model.PaymentMethod,
+            PaymentType = model.PaymentType,
+            Disable = model.Disable,
+            CreateUserId = createUserId,
+        };
+        await db.OrderBusinessPaymentConfigurations.AddAsync(entity, cancellationToken);
+        var rowCount = await db.SaveChangesAsync(CancellationToken.None);
+        return rowCount > 0;
+    }
+
+    public async Task<int> DisableAsync(Guid? operatorUserId, Guid id, bool disable)
+    {
+        var r = await db.OrderBusinessPaymentConfigurations.Where(x => x.Id == id)
+           .ExecuteUpdateAsync(x => x
+               .SetProperty(y => y.Disable, y => disable)
+               .SetProperty(y => y.UpdateTime, y => DateTimeOffset.Now)
+               .SetProperty(y => y.OperatorUserId, y => operatorUserId)
+           );
         return r;
     }
 }

@@ -16,7 +16,12 @@ using System.Text;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 
-public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEnum>
+public partial class InfoController
+{
+    public const string RoleNameAdministrator = "Administrator";
+}
+
+public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEnum> : InfoController
     where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>, IBMDbContextBase
     where TUser : BMUser, new()
     where TRole : BMRole, new()
@@ -50,7 +55,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         .WithDescription("创建一个默认系统管理员账号");
     }
 
-    protected virtual string RoleNameAdministrator => "Administrator";
+    protected new virtual string RoleNameAdministrator => InfoController.RoleNameAdministrator;
 
     protected virtual Guid RootTenantIdG => TenantConstants.RootTenantIdG;
 

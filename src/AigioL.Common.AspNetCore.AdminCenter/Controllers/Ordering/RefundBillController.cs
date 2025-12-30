@@ -146,7 +146,7 @@ public static partial class RefundBillController
 
 
         var message = new OrderRefundMessage(info.OrderNumber, info.RefundNumber);
-        await PushOrderRefundRequestMessageAsync(rabbitmqConn, message);
+        await CacheKeys.PushOrderRefundRequestMessageAsync(rabbitmqConn, message);
 
         // 如果业务类型需要退款时需要解约协议
         if (info.MerchantDeductionAgreementStatus == AgreementStatus.Signed &&
@@ -155,7 +155,7 @@ public static partial class RefundBillController
             var kvValue = await keyValuePairRepo.QueryValueAsync($"业务订单退款时自动解约扣款协议_{info.BusinessTypeId}");
             if (kvValue == "1" || (bool.TryParse(kvValue, out var kvValueB) && kvValueB))
             {
-                await PushAgreementUnSignRequestMessageAsync(rabbitmqConn, info.MerchantDeductionAgreementNo);
+                await CacheKeys.PushAgreementUnSignRequestMessageAsync(rabbitmqConn, info.MerchantDeductionAgreementNo);
             }
         }
 
@@ -167,45 +167,7 @@ public static partial class RefundBillController
     /// </summary>
     static bool IsRefundAndUnSignMerchantDeductionAgreement(int businessTypeId)
     {
+        // 改为非静态类由业务项目可重写此函数实现，或依赖注入接口更改配置逻辑
         return false;
-    }
-
-    static async Task PushOrderRefundRequestMessageAsync(
-        IConnection rabbitmqConn,
-        OrderRefundMessage message)
-    {
-        using var stream = m.GetStream();
-        await JsonSerializer.SerializeAsync(stream, message,
-            PaymentMinimalApisJsonSerializerContext.Default.OrderRefundMessage);
-        var value = stream.GetMemory();
-        await ListRightPushAsync(rabbitmqConn, CacheKeys.PaymentRefundRequest, value, CancellationToken.None);
-    }
-
-    /// <summary>
-    /// 推送【协议解约申请】通知
-    /// </summary>
-    /// <param name="rabbitmqConn"></param>
-    /// <param name="agreementNo"></param>
-    /// <returns></returns>
-    static async Task PushAgreementUnSignRequestMessageAsync(
-        IConnection rabbitmqConn,
-        string agreementNo)
-    {
-        var value = Encoding.UTF8.GetBytes(agreementNo);
-        await ListRightPushAsync(rabbitmqConn, CacheKeys.AgreementUnSignRequest, value, CancellationToken.None);
-    }
-
-    static readonly RecyclableMemoryStreamManager m = new();
-
-    const string exchangeName = ""; // 默认交换机
-
-    static async Task ListRightPushAsync(
-        IConnection rabbitmqConn,
-        string routingKey,
-        ReadOnlyMemory<byte> body,
-        CancellationToken cancellationToken = default)
-    {
-        using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
-        await channel.BasicPublishAsync(exchangeName, routingKey, body, cancellationToken);
     }
 }
