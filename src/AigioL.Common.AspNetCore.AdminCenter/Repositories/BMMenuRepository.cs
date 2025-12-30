@@ -159,7 +159,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
 
         var q5 = menus.Select(x => MapToTreeModel(menuButtonDict, x))
             .Where(x => x != null && x.Buttons != null)
-            .OrderBy(x => x!.Sort)
+            .OrderByDescending(x => x!.Sort)
             .Select(x => x!);
         var r = q5.ToList();
         return r;
@@ -182,7 +182,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
             Buttons = btn?.ToList() ?? [],
             Children = m.Children?.Select(m2 => MapToTreeModel(dict, m2))
                 .Where(m2 => m2 != null && m2?.Buttons != null)
-                .OrderBy(x => x!.Sort)
+                .OrderByDescending(x => x!.Sort)
                 .Select(x => x!)
                 .ToList() ?? [],
         };
