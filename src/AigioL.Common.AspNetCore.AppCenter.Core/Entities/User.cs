@@ -8,6 +8,7 @@ using AigioL.Common.Primitives.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SimpleBase;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO.Hashing;
@@ -308,6 +309,11 @@ partial class User // EntityTypeConfiguration
     }
 }
 
+partial class User : IReadOnlyNickNameWithExternalAccounts
+{
+    IReadOnlyList<IReadOnlyNickName> IReadOnlyNickNameWithExternalAccounts.ExternalAccounts => ExternalAccounts;
+}
+
 public static partial class UserExtensions
 {
     /// <summary>
@@ -316,11 +322,13 @@ public static partial class UserExtensions
     /// <param name="user"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string GetNickName(this User user)
+    public static string GetNickName(this IReadOnlyNickNameWithExternalAccounts user)
     {
         var value = user.GetNickNameCore();
         if (value.Length > MaxLengths.CUserNickName)
+        {
             return value[..MaxLengths.CUserNickName];
+        }
         return value;
     }
 
@@ -358,39 +366,40 @@ public static partial class UserExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static string GetNickNameCore(this User user)
+    static string GetNickNameCore(this IReadOnlyNickNameWithExternalAccounts user)
     {
         var value = user.NickName;
 
         if (string.IsNullOrEmpty(value))
+        {
             if (user.ExternalAccounts != null) // 优先取第三方账号中的昵称
             {
                 value = user.ExternalAccounts
                     .Select(x => x.NickName)
                     .FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
-                if (value != null && value.Length > MaxLengths.CUserNickName)
-                {
-                    value = value[..MaxLengths.CUserNickName];
-                }
                 if (!string.IsNullOrEmpty(value))
                 {
                     return value;
                 }
             }
+        }
 
         if (string.IsNullOrEmpty(value)) // 根据主键或随机生成
         {
             if (user.Id != default)
             {
+                Span<byte> guidB = stackalloc byte[16];
+                user.Id.TryWriteBytes(guidB);
                 Span<byte> hash = stackalloc byte[4];
-                Crc32.Hash(user.Id.ToByteArray(), hash);
-                value = Convert.ToHexStringLower(hash);
+                Crc32.Hash(guidB, hash);
+                value = Base58.Bitcoin.Encode(hash);
             }
             else
             {
+                // 👇 userId 不可能为默认值
                 Span<byte> hash = stackalloc byte[4];
                 Random.Shared.NextBytes(hash);
-                value = Convert.ToHexStringLower(hash);
+                value = Base58.Bitcoin.Encode(hash);
             }
             return R.NewUserNickName_.Format(value);
         }

@@ -504,9 +504,9 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             yield return new BMMenu
             {
                 //Id = GetGuid(seed + 20),
-                Url = "/Basics/ArticleCategory",
+                Url = "/Basics/ArticleTag",
                 Name = "文章标签管理",
-                Key = ControllerConstants.ArticleCategory,
+                Key = ControllerConstants.ArticleTag,
                 IconUrl = IconType.Outline.Tags,
             };
 

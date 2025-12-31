@@ -13,6 +13,7 @@ using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
+using AutoMapper;
 using MemoryPack;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Services;
@@ -35,6 +35,7 @@ sealed partial class UserManager2<TDbContext> : UserManager
     readonly IUserMembershipRepository userMembershipRepo;
     readonly IKeyValuePairRepository keyValuePairRepo;
     readonly IDistributedCache cache;
+    readonly IServiceProvider serviceProvider;
 
     /// <inheritdoc/>
 #pragma warning disable IDE0290 // 使用主构造函数
@@ -54,6 +55,7 @@ sealed partial class UserManager2<TDbContext> : UserManager
         IUserMembershipRepository userMembershipRepo,
         IKeyValuePairRepository keyValuePairRepo,
         IDistributedCache cache,
+        IServiceProvider serviceProvider,
         ILogger<UserManager2<TDbContext>> logger) : base(
             store,
             optionsAccessor,
@@ -71,6 +73,7 @@ sealed partial class UserManager2<TDbContext> : UserManager
         this.userMembershipRepo = userMembershipRepo;
         this.keyValuePairRepo = keyValuePairRepo;
         this.cache = cache;
+        this.serviceProvider = serviceProvider;
     }
 }
 
@@ -375,43 +378,54 @@ partial class UserManager2<TDbContext> : IUserManager2
         //    .Select(x => x.CreateTime)
         //    .FirstOrDefault();
 
-        (MembershipInfo? membershipInfo, var _) = await userMembershipRepo.GetUserMembershipCachePriorityAsync(
-            logger,
-            connection,
-            user.Id,
-            false,
-            cancellationToken);
-
-        UserInfoModel r = new()
+        var mapper = serviceProvider.GetRequiredService<IMapper>();
+        var r = mapper.Map<UserInfoModel>(user);
+        if (r.MembershipInfo == null)
         {
-            Id = user.Id,
-            NickName = user.GetNickName(),
-            Avatar = Guid.Empty,
-            //Experience = (uint)user.Experience,
-            Balance = user.Wallet.AccountBalance,
-            //Level = level,
-            PersonalizedSignature = user.PersonalizedSignature,
-            PhoneNumber = user.PhoneNumber,
-            SteamAccountId = long.TryParse(user.ExternalAccounts!.FirstOrDefault(a => a.Type == ExternalLoginChannel.Steam)?.ExternalAccountId, out var steamId) ? steamId : null,
-            Gender = user.Gender,
-            BirthDate = user.BirthDate.HasValue ? user.BirthDate.Value.DateTime : null,
-            //BirthDateTimeZone = user.BirthDateTimeZone,
-            // 当前登录用户不返回计算年龄值，由客户端本地计算
-            AreaId = user.AreaId,
-            MicrosoftAccountEmail = user.ExternalAccounts!.FirstOrDefault(a => a.Type == ExternalLoginChannel.Microsoft)?.Email ?? string.Empty,
-            QQNickName = user.ExternalAccounts!.FirstOrDefault(a => a.Type == ExternalLoginChannel.QQ)?.NickName,
-            AvatarUrl = GetAvatarUrl(user),
-            UserType = user.UserType,
-            //IsSignIn = lastSignInTime != default && lastSignInTime.Date.AddDays(1) > DateTimeOffset.UtcNow,
-            //NextExperience = nextExperience,
-            Email = user.Email,
-            EmailConfirmed = user.EmailConfirmed,
-            HasPassword = await HasPasswordAsync(user),
-            PhoneNumberRegionCode = user.PhoneNumberRegionCode,
-            MembershipInfo = membershipInfo,
-        };
+            (MembershipInfo? membershipInfo, var _) = await userMembershipRepo.GetUserMembershipCachePriorityAsync(
+                logger,
+                connection,
+                user.Id,
+                false,
+                cancellationToken);
+            r.MembershipInfo = membershipInfo;
+        }
 
-        var isMembership = membershipInfo != null && membershipInfo.IsMembership;
+        if (string.IsNullOrWhiteSpace(r.NickName))
+        {
+            // 无昵称时生成一个默认昵称
+            r.NickName = user.GetNickName();
+        }
+
+        //UserInfoModel r = new()
+        //{
+        //    Id = user.Id,
+        //    NickName = user.GetNickName(),
+        //    //Experience = (uint)user.Experience,
+        //    Balance = user.Wallet.AccountBalance,
+        //    //Level = level,
+        //    PersonalizedSignature = user.PersonalizedSignature,
+        //    PhoneNumber = user.PhoneNumber,
+        //    SteamAccountId = long.TryParse(user.ExternalAccounts!.FirstOrDefault(a => a.Type == ExternalLoginChannel.Steam)?.ExternalAccountId, out var steamId) ? steamId : null,
+        //    Gender = user.Gender,
+        //    BirthDate = user.BirthDate.HasValue ? user.BirthDate.Value.DateTime : null,
+        //    //BirthDateTimeZone = user.BirthDateTimeZone,
+        //    // 当前登录用户不返回计算年龄值，由客户端本地计算
+        //    AreaId = user.AreaId,
+        //    MicrosoftAccountEmail = user.ExternalAccounts!.FirstOrDefault(a => a.Type == ExternalLoginChannel.Microsoft)?.Email ?? string.Empty,
+        //    QQNickName = user.ExternalAccounts!.FirstOrDefault(a => a.Type == ExternalLoginChannel.QQ)?.NickName,
+        //    AvatarUrl = user.AvatarUrl,
+        //    UserType = user.UserType,
+        //    //IsSignIn = lastSignInTime != default && lastSignInTime.Date.AddDays(1) > DateTimeOffset.UtcNow,
+        //    //NextExperience = nextExperience,
+        //    Email = user.Email,
+        //    EmailConfirmed = user.EmailConfirmed,
+        //    HasPassword = await HasPasswordAsync(user),
+        //    PhoneNumberRegionCode = user.PhoneNumberRegionCode,
+        //    MembershipInfo = membershipInfo,
+        //};
+
+        var isMembership = r.MembershipInfo != null && r.MembershipInfo.IsMembership;
         if (isMembership)
         {
             r.UserType |= UserType.Membership;
@@ -539,7 +553,7 @@ partial class UserManager2<TDbContext> : IUserManager2
                 await db.SaveChangesAsync();
                 await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, bindUserId.Value.ToByteArray());
                 await RefreshUserInfoCacheAsync(bindUser);
-                return GetBindRsp(externalAccount);
+                return await GetBindRspV2Async(userId);
             }
             else // 创建用户
             {
@@ -561,7 +575,7 @@ partial class UserManager2<TDbContext> : IUserManager2
                 var externalAccount = await UpdateExternalAccountAsync(externalAccountId,
                     channel, userId, setProperties);
                 setProperties?.Invoke(externalAccount);
-                return GetBindRsp(externalAccount);
+                return await GetBindRspV2Async(userId);
             }
             else if (bindUserId != default) // 该外部账号已被 userId 使用不可绑定
             {
@@ -582,49 +596,64 @@ partial class UserManager2<TDbContext> : IUserManager2
         }
     }
 
-    static LoginOrRegisterResponse GetBindRsp(ExternalAccount externalAccount)
+    //static LoginOrRegisterResponse GetBindRsp(ExternalAccount externalAccount)
+    //{
+    //    // 绑定快速登录账号时，将第三方平台可覆盖的信息，例如昵称，性别等，直接赋值在 DTO 上，由客户端比较原值为空时覆盖
+    //    var user = new UserInfoModel
+    //    {
+    //        ExternalAccounts = 
+    //    };
+
+    //    user.NickName = user.GetNickName();
+
+    //    switch (externalAccount.Type)
+    //    {
+    //        case ExternalLoginChannel.Microsoft:
+    //            if (!string.IsNullOrWhiteSpace(externalAccount.Email))
+    //                user.MicrosoftAccountEmail = externalAccount.Email;
+    //            break;
+    //        case ExternalLoginChannel.Apple:
+    //            if (!string.IsNullOrWhiteSpace(externalAccount.Email))
+    //                user.AppleAccountEmail = externalAccount.Email;
+    //            break;
+    //        case ExternalLoginChannel.QQ:
+    //            user.QQNickName = externalAccount.NickName;
+    //            break;
+    //        case ExternalLoginChannel.Steam:
+    //            user.SteamAccountId = long.TryParse(externalAccount.ExternalAccountId,
+    //                out var steamAccountId) ? steamAccountId : null;
+    //            break;
+    //    }
+
+    //    //if (Enum.IsDefined(externalAccount.Gender) && externalAccount.Gender != Gender.Unknown)
+    //    //{
+    //    //    user.Gender = externalAccount.Gender;
+    //    //}
+
+    //    //if (!string.IsNullOrWhiteSpace(externalAccount.AvatarUrl))
+    //    //{
+    //    //    user.AvatarUrl = new Dictionary<ExternalLoginChannel, string>
+    //    //    {
+    //    //        { externalAccount.Type, externalAccount.AvatarUrl },
+    //    //    };
+    //    //}
+
+    //    var r = new LoginOrRegisterResponse()
+    //    {
+    //        User = user,
+    //    };
+    //    return r;
+    //}
+
+    async Task<LoginOrRegisterResponse> GetBindRspV2Async(Guid userId)
     {
-        // 绑定快速登录账号时，将第三方平台可覆盖的信息，例如昵称，性别等，直接赋值在 DTO 上，由客户端比较原值为空时覆盖
-        var user = new UserInfoModel
-        {
-            NickName = externalAccount.NickName ?? string.Empty,
-        };
+        var user = await FindByIdAsync(userId);
+        ArgumentNullException.ThrowIfNull(user);
 
-        switch (externalAccount.Type)
-        {
-            case ExternalLoginChannel.Microsoft:
-                if (!string.IsNullOrWhiteSpace(externalAccount.Email))
-                    user.MicrosoftAccountEmail = externalAccount.Email;
-                break;
-            case ExternalLoginChannel.Apple:
-                if (!string.IsNullOrWhiteSpace(externalAccount.Email))
-                    user.AppleAccountEmail = externalAccount.Email;
-                break;
-            case ExternalLoginChannel.QQ:
-                user.QQNickName = externalAccount.NickName;
-                break;
-            case ExternalLoginChannel.Steam:
-                user.SteamAccountId = long.TryParse(externalAccount.ExternalAccountId,
-                    out var steamAccountId) ? steamAccountId : null;
-                break;
-        }
-
-        if (Enum.IsDefined(externalAccount.Gender) && externalAccount.Gender != Gender.Unknown)
-        {
-            user.Gender = externalAccount.Gender;
-        }
-
-        if (!string.IsNullOrWhiteSpace(externalAccount.AvatarUrl))
-        {
-            user.AvatarUrl = new Dictionary<ExternalLoginChannel, string>
-            {
-                { externalAccount.Type, externalAccount.AvatarUrl },
-            };
-        }
-
+        var userInfo = await GetUserInfoCacheAsync(user);
         var r = new LoginOrRegisterResponse()
         {
-            User = user,
+            User = userInfo,
         };
         return r;
     }

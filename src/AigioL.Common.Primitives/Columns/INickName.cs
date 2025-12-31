@@ -14,3 +14,8 @@ public interface IReadOnlyNickName
     /// <inheritdoc cref="INickName"/>
     string? NickName { get; }
 }
+
+public interface IReadOnlyNickNameWithExternalAccounts : IReadOnlyNickName, IReadOnlyId<Guid>
+{
+    IReadOnlyList<IReadOnlyNickName> ExternalAccounts { get; }
+}
