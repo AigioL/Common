@@ -41,12 +41,14 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
     {
         var routeGroup = b.MapGroup(pattern);
 
-        routeGroup.MapPost("", async (HttpContext context, [FromBody] BMInitSystemRequest model) =>
+        routeGroup.MapPost("", async (HttpContext context,
+            [FromBody] BMInitSystemRequest model,
+            [FromQuery] bool onlyMigrate) =>
         {
             BMApiRsp<JsonWebTokenValue> result;
             try
             {
-                result = await PostAsync(context, model);
+                result = await PostAsync(context, model, onlyMigrate);
             }
             catch (Exception ex)
             {
@@ -86,7 +88,8 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
 
     protected async Task<BMApiRsp<JsonWebTokenValue>> PostAsync(
         HttpContext context,
-        BMInitSystemRequest model)
+        BMInitSystemRequest model,
+        bool onlyMigrate)
     {
         BMApiRsp<JsonWebTokenValue> result;
 
@@ -95,17 +98,22 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         var jwtValueProvider = context.RequestServices.GetRequiredService<IJsonWebTokenValueProvider>();
         var settings = context.RequestServices.GetRequiredService<IOptions<BMAppSettings>>().Value;
 
-        // https://learn.microsoft.com/zh-cn/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime
-#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-        await db.Database.MigrateAsync(context.RequestAborted);
-#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-
         Span<byte> hash = stackalloc byte[SHA384.HashSizeInBytes];
         SHA384.HashData(Encoding.UTF8.GetBytes(DateTimeOffset.Now.ToString("yyyyMMdd") + settings.InitSystemSecuritySalt), hash);
         var hashPassword = Convert.ToHexString(hash);
         if (!string.Equals(hashPassword, model.InitPassword))
         {
             return result = HttpStatusCode.Unauthorized;
+        }
+
+        // https://learn.microsoft.com/zh-cn/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime
+#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+        await db.Database.MigrateAsync(context.RequestAborted);
+#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+
+        if (onlyMigrate)
+        {
+            return result = HttpStatusCode.OK;
         }
 
         if (!ShortGuid.TryParse(model.TenantId, out Guid tenantId))
@@ -116,6 +124,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         {
             return result = "租户名称不能为空或空白字符串";
         }
+
         var userName = model.UserName;
         if (string.IsNullOrWhiteSpace(userName) || userName == "string")
         {
