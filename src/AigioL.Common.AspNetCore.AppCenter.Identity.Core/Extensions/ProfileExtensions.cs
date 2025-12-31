@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using System.Linq.Expressions;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
@@ -18,6 +19,8 @@ public static partial class ProfileExtensions
             .ForMember(d => d.Balance, opt => opt.MapFrom(s => s.Wallet.AccountBalance))
             .ForMember(d => d.HasPassword, opt => opt.MapFrom(s => s.PasswordHash != null))
             .ForMember(d => d.ExternalAccounts, opt => opt.MapFrom(s => s.ExternalAccounts));
+
+        p.CreateMap<UserMembership, MembershipInfo>();
 
         p.CreateMap<AuthMessageRecord, AuthMessageRecordTableItem>()
             .ForMember(d => d.UserInfo, opt => opt.MapFrom(s => s.User));
