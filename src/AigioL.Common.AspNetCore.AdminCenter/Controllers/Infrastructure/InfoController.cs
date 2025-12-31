@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Security.Cryptography;
@@ -38,7 +39,9 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "api/info")
     {
-        b.MapPost(pattern, async (HttpContext context, [FromBody] BMInitSystemRequest model) =>
+        var routeGroup = b.MapGroup(pattern);
+
+        routeGroup.MapPost("", async (HttpContext context, [FromBody] BMInitSystemRequest model) =>
         {
             BMApiRsp<JsonWebTokenValue> result;
             try
@@ -54,6 +57,27 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         })
         .AllowAnonymous()
         .WithDescription("创建一个默认系统管理员账号");
+
+        //        routeGroup.MapPost("migrate", async (HttpContext context) =>
+        //        {
+        //            BMApiRsp result;
+        //            try
+        //            {
+        //                var db = context.RequestServices.GetRequiredService<TDbContext>();
+        //#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+        //                await db.Database.MigrateAsync(context.RequestAborted);
+        //#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+        //                result = true;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                result = new();
+        //                result.SetException(ex);
+        //            }
+        //            return Results.Json(result, BMMinimalApisJsonSerializerContext.Default.BMApiRsp);
+        //        })
+        //        .AllowAnonymous()
+        //        .WithDescription("运行时应用迁移");
     }
 
     protected new virtual string RoleNameAdministrator => InfoController.RoleNameAdministrator;
@@ -70,6 +94,11 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var jwtValueProvider = context.RequestServices.GetRequiredService<IJsonWebTokenValueProvider>();
         var settings = context.RequestServices.GetRequiredService<IOptions<BMAppSettings>>().Value;
+
+        // https://learn.microsoft.com/zh-cn/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime
+#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
+        await db.Database.MigrateAsync(context.RequestAborted);
+#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
 
         Span<byte> hash = stackalloc byte[SHA384.HashSizeInBytes];
         SHA384.HashData(Encoding.UTF8.GetBytes(DateTimeOffset.Now.ToString("yyyyMMdd") + settings.InitSystemSecuritySalt), hash);

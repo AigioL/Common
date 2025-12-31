@@ -17,7 +17,7 @@ public interface ICreationBaseEntity :
     ICreateUserIdNullable
 {
     static void Configure<[DynamicallyAccessedMembers(DAMT)] TEntity>(EntityTypeBuilder<TEntity> builder)
-        where TEntity : class, ICreationBaseEntity
+        where TEntity : class, ICreateTime, ICreateBMUser, ICreateUserIdNullable
     {
         builder.HasOne(x => x.CreateUser)
             .WithMany()

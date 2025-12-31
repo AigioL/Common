@@ -3,7 +3,7 @@ namespace AigioL.Common.Primitives.Columns;
 /// <summary>
 /// 最大长度
 /// </summary>
-public static partial class MaxLengths
+public static partial class MaxLengths // 通用字段
 {
     /// <summary>
     /// 颜色 16 进制值，#AARRGGBB
