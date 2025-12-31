@@ -303,7 +303,7 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
     }
 }
 
-file static class _
+file static class _StreamExtensions
 {
     internal static void WriteU8String(this Stream stream, string? value)
     {

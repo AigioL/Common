@@ -38,7 +38,7 @@ sealed partial class BMRoleRepository<
         query = query.OrderByDescending(static x => x.CreateTime);
 
         var q2 = query.OrderByDescending(static x => x.CreateTime)
-            .Select(_.RoleExpr);
+            .Select(_Expr.RoleExpr);
 
 #if DEBUG
         var sql = q2.ToQueryString();
@@ -76,7 +76,7 @@ sealed partial class BMRoleRepository<
     }
 }
 
-file static class _
+file static class _Expr
 {
     internal static readonly Expression<Func<BMRole, BMRoleModel>> RoleExpr = x => new()
     {

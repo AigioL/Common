@@ -20,7 +20,7 @@ public static partial class RSAExtensions
         ReadOnlySpan<char> separator = [' ', '\r', '\n'];
         var split = text.Split(separator);
 
-        using var stream = _.m.GetStream();
+        using var stream = _RSAEx.m.GetStream();
         foreach (var range in split)
         {
             var it = text[range];
@@ -28,7 +28,7 @@ public static partial class RSAExtensions
             {
                 continue;
             }
-            var data = _.DecryptHexStringToBytes(rsa, it, RSAEncryptionPadding.OaepSHA256);
+            var data = _RSAEx.DecryptHexStringToBytes(rsa, it, RSAEncryptionPadding.OaepSHA256);
             stream.Write(data);
         }
 
@@ -48,7 +48,7 @@ public static partial class RSAExtensions
         ReadOnlySpan<char> separator = [' ', '\r', '\n'];
         var split = text.Split(separator);
 
-        using var stream = _.m.GetStream();
+        using var stream = _RSAEx.m.GetStream();
         foreach (var range in split)
         {
             var it = text[range];
@@ -81,7 +81,7 @@ public static partial class RSAExtensions
     }
 }
 
-file static class _
+file static class _RSAEx
 {
     internal static readonly RecyclableMemoryStreamManager m = new();
 

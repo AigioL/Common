@@ -58,10 +58,10 @@ public partial class ActiveUserDayWeekMonthSummary :
     [Comment("创建时间")]
     public DateTimeOffset CreateTime { get; set; }
 
-    public static Expression<Func<ActiveUserDayWeekMonthSummary, UserActivityStatisticsResponse>> Expression => _.Expression;
+    public static Expression<Func<ActiveUserDayWeekMonthSummary, UserActivityStatisticsResponse>> Expression => _Expr.Expression;
 }
 
-file static class _
+file static class _Expr
 {
     internal static readonly Expression<Func<ActiveUserDayWeekMonthSummary, UserActivityStatisticsResponse>> Expression = x => new()
     {

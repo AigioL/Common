@@ -66,7 +66,7 @@ public partial class ActiveUserStatisticSummary :
     /// </summary>
     public virtual List<ActiveUserArchitectureSummary> Architectures { get; set; } = null!;
 
-    public static Expression<Func<ActiveUserStatisticSummary, ActiveUserSumResponse>> Expression => _.Expression;
+    public static Expression<Func<ActiveUserStatisticSummary, ActiveUserSumResponse>> Expression => _Expr.Expression;
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<ActiveUserStatisticSummary>
     {
@@ -96,7 +96,7 @@ public partial class ActiveUserStatisticSummary :
     }
 }
 
-file static class _
+file static class _Expr
 {
     internal static readonly Expression<Func<ActiveUserStatisticSummary, ActiveUserSumResponse>> Expression = x => new()
     {

@@ -41,10 +41,10 @@ public partial class ActiveUserPlatformSummary :
     /// </summary>
     public DateTimeOffset StatisticsTime { get; set; }
 
-    public static Expression<Func<ActiveUserPlatformSummary, StatisticsActiveUserOSResponse>> Expression => _.Expression;
+    public static Expression<Func<ActiveUserPlatformSummary, StatisticsActiveUserOSResponse>> Expression => _Expr.Expression;
 }
 
-file static class _
+file static class _Expr
 {
     internal static readonly Expression<Func<ActiveUserPlatformSummary, StatisticsActiveUserOSResponse>> Expression = x => new()
     {

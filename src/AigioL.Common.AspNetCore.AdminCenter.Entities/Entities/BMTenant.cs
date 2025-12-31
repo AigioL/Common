@@ -165,10 +165,10 @@ public partial class BMTenant :
     /// <summary>
     /// 管理员 TenantId
     /// </summary>
-    public static Guid AdministratorTenantId => _.AdministratorTenantId;
+    public static Guid AdministratorTenantId => _StaticFields.AdministratorTenantId;
 }
 
-file static class _
+file static class _StaticFields
 {
     internal static readonly Guid AdministratorTenantId = Guid.ParseExact("00000000000000000000000000000001", "N");
 }

@@ -232,7 +232,7 @@ partial record class AnalysisDeviceModel
 
     public string GetHash256()
     {
-        using var s = _.m.GetStream();
+        using var s = _RMSM.m.GetStream();
         var result = GetHash256(s);
         return result;
     }
@@ -248,7 +248,7 @@ partial record class AnalysisDeviceModel
     }
 }
 
-file static class _
+file static class _RMSM
 {
     internal static readonly RecyclableMemoryStreamManager m = new();
 }

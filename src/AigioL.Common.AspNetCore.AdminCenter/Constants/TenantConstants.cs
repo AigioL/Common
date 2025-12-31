@@ -13,10 +13,10 @@ public static partial class TenantConstants
     /// <summary>
     /// 根租户 Id
     /// </summary>
-    public static Guid RootTenantIdG => _.RootTenantIdG;
+    public static Guid RootTenantIdG => _StaticFields.RootTenantIdG;
 }
 
-file static class _
+file static class _StaticFields
 {
     internal static readonly Guid RootTenantIdG = Guid.ParseExact(TenantConstants.RootTenantId, "N");
 }

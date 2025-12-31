@@ -41,8 +41,8 @@ public static partial class SqlStringHelper
         get
         {
 #if USE_ZPLUS
-            if (_._ZPlusEnable.HasValue)
-                return _._ZPlusEnable.Value;
+            if (_StaticFields._ZPlusEnable.HasValue)
+                return _StaticFields._ZPlusEnable.Value;
             return DatabaseProvider switch
             {
                 SqlServer => true,
@@ -53,7 +53,7 @@ public static partial class SqlStringHelper
 #endif
         }
 #if USE_ZPLUS
-        set => _._ZPlusEnable = value;
+        set => _StaticFields._ZPlusEnable = value;
 #endif
     }
 
@@ -64,11 +64,11 @@ public static partial class SqlStringHelper
     {
         get
         {
-            if (_._PostgreSQL18Plus.HasValue)
-                return _._PostgreSQL18Plus.Value;
+            if (_StaticFields._PostgreSQL18Plus.HasValue)
+                return _StaticFields._PostgreSQL18Plus.Value;
             return false;
         }
-        set => _._PostgreSQL18Plus = value;
+        set => _StaticFields._PostgreSQL18Plus = value;
     }
 
     /// <summary>
@@ -239,7 +239,7 @@ public static partial class SqlStringHelper
     }
 }
 
-file static class _
+file static class _StaticFields
 {
     /// <summary>
     /// 是否开启 ZPlus 功能

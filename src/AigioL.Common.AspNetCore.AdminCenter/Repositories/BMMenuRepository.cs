@@ -33,6 +33,7 @@ sealed partial class BMMenuRepository<
     {
         // 查询顶级菜单（带上它的下一级子菜单列表）
         var query = db.Menus.AsNoTrackingWithIdentityResolution()
+            .OrderByDescending(static x => x.Sort)
             .Where(static x => !x.ParentId.HasValue)
             .Select(static x => new BMMenuTreeItem
             {
@@ -42,7 +43,7 @@ sealed partial class BMMenuRepository<
                 Sort = x.Sort,
                 Key = x.Key,
                 Url = x.Url,
-                Children = x.Children!.Select(static x => new BMMenuTreeItem
+                Children = x.Children!.OrderByDescending(static x => x.Sort).Select(static x => new BMMenuTreeItem
                 {
                     Id = x.Id,
                     ParentId = x.ParentId,
@@ -58,16 +59,13 @@ sealed partial class BMMenuRepository<
 #endif
 
         var r = await query.ToListAsync(RequestAborted);
-        r.Sort(_.menuComparisonBySort);
-        r.ForEach(static x => x.Children!.Sort(_.menuComparisonBySort));
-
         return r;
     }
 
     public async Task<BMMenuModel?> InfoAsync(Guid id)
     {
         var r = await db.Menus.AsNoTrackingWithIdentityResolution()
-           .Select(_.MenuExpr)
+           .Select(_Expr.MenuExpr)
            .FirstOrDefaultAsync(x => x.Id == id, RequestAborted);
         return r;
     }
@@ -203,7 +201,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
             .Where(x => !x.SoftDeleted)
             .Distinct()
             .OrderByDescending(x => x.Sort)
-            .Select(_.MenuExpr);
+            .Select(_Expr.MenuExpr);
 
         var r = await query.ToListAsync(RequestAborted);
         return r;
@@ -213,7 +211,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
     {
         var query = db.Buttons.AsNoTrackingWithIdentityResolution()
             .Where(x => !x.SoftDeleted)
-            .Select(_.BtnExpr);
+            .Select(_Expr.BtnExpr);
 
         var r = await query.ToListAsync(RequestAborted);
         return r;
@@ -242,7 +240,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
         query = query.Where(x => x.TenantId == tenantId);
 
         var r = await query
-            .Select(_.BtnExpr).ToListAsync(RequestAborted);
+            .Select(_Expr.BtnExpr).ToListAsync(RequestAborted);
         return r;
     }
 
@@ -519,10 +517,8 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
     }
 }
 
-file static class _
+file static class _Expr
 {
-    internal static readonly Comparison<BMMenuTreeItem> menuComparisonBySort = (a, b) => (int)(a.Sort - b.Sort);
-
     internal static readonly Expression<Func<BMButton, BMButtonModel>> BtnExpr = it => new()
     {
         Id = it.Id,
