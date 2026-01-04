@@ -162,8 +162,11 @@ public abstract partial class JobService<
             }
         }
 
-        await dbContext.JobRecordResults.AddAsync(jobRecordResult, cancellationToken);
-        await dbContext.GetDbContext().SaveChangesAsync(cancellationToken);
+        if (!isSuccess) // 仅在失败时记录
+        {
+            await dbContext.JobRecordResults.AddAsync(jobRecordResult, cancellationToken);
+            await dbContext.GetDbContext().SaveChangesAsync(cancellationToken);
+        }
     }
 
     /// <inheritdoc cref="IJob.Execute"/>
