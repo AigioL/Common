@@ -24,4 +24,10 @@ public enum PaymentType : byte
     /// </summary>
     [Description("云闪付支付")]
     UnionPay = 3,
+
+    /// <summary>
+    /// 微信支付（扫码支付）
+    /// </summary>
+    [Description("微信支付")]
+    WeChatPayNative = 4,
 }

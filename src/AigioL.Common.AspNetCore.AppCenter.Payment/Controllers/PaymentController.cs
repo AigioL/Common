@@ -137,11 +137,18 @@ public static class PaymentController
                                     orderPayInfo.Timeout);
                             }
                         case PaymentType.WeChatPay:
+                        case PaymentType.WeChatPayNative:
                             {
+                                var weChatPayTradeType = method.PaymentType switch
+                                {
+                                    PaymentType.WeChatPay => WeChatPayTradeType.JSAPI_OFFICIAL,
+                                    PaymentType.WeChatPayNative => WeChatPayTradeType.NATIVE,
+                                    _ => throw new ArgumentOutOfRangeException(nameof(method.PaymentType), method.PaymentType, null),
+                                };
                                 var weChatPayServices = context.RequestServices.GetRequiredService<IWeChatPayServices>();
                                 var remoteIpAddress = context.Connection.RemoteIpAddress;
                                 return await weChatPayServices.PubPay(
-                                    WeChatPayTradeType.NATIVE,
+                                    weChatPayTradeType,
                                     orderPayInfo.OrderNumber,
                                     orderPayInfo.Remarks ?? string.Empty,
                                     orderPayInfo.AmountReceivable,
