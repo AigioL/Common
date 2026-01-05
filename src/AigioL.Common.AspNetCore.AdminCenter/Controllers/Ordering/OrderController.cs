@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
-using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
@@ -26,6 +26,7 @@ public static partial class OrderController
         this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "ms/ordering/orders")
     {
+        var adminCenterService = b.ServiceProvider.GetRequiredService<IAdminCenterService>();
         var routeGroup = b.MapGroup(pattern)
             .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("通用订单管理");
@@ -87,7 +88,7 @@ public static partial class OrderController
         .RequireAuthorization(new AuthorizeAttribute()
         {
             AuthenticationSchemes = BMMinimalApis.BearerScheme,
-            Roles = InfoController.RoleNameAdministrator,
+            Roles = adminCenterService.RoleNameAdministrator,
         })
         .WithDescription("设置支付服务状态");
 
