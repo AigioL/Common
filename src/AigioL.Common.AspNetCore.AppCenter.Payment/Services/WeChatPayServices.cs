@@ -102,7 +102,6 @@ partial class WeChatPayServices<TAppSettings>
 [JsonSerializable(typeof(SortedDictionary<string, string>))]
 [JsonSerializable(typeof(WeChatPayTransactionsH5BodyModel))]
 [JsonSerializable(typeof(WeChatPayTransactionsNativeBodyModel))]
-[JsonSerializable(typeof(WeChatPayTransactionsJsApiBodyModel))]
 [JsonSerializable(typeof(WeChatPayRefundDomesticRefundsBodyModel))]
 [JsonSerializable(typeof(WeChatPayTransactionsOutTradeNoCloseBodyModel))]
 [JsonSerializable(typeof(WeChatPayContractOrderRequest))]
