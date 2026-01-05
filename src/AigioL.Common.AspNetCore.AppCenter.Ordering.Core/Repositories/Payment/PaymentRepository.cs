@@ -112,7 +112,7 @@ sealed partial class PaymentRepository<TDbContext> :
                         );
 
                 int payCoAffected = await db.OrderPaymentCompositions
-                    .Where(a => a.Order!.OrderNumber == refundInfo.OrderNumber &&
+                    .Where(a => a.Order!.Id == refundInfo.OrderNumber &&
                                 a.PaymentType == refundInfo.PaymentPlatform &&
                                 a.PaymentMethod == PaymentMethod.Online &&
                                 a.PaymentStatus == PaymentStatus.Paid)
@@ -215,7 +215,7 @@ sealed partial class PaymentRepository<TDbContext> :
             .AsNoTrackingWithIdentityResolution()
             .Include(c => c.Order)
             .ThenInclude(c => c!.MerchantDeductionAgreement)
-            .Where(c => c.Order!.OrderNumber == orderNumber && c.PaymentType == paymentType)
+            .Where(c => c.Order!.Id == orderNumber && c.PaymentType == paymentType)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (info == null)
@@ -227,7 +227,7 @@ sealed partial class PaymentRepository<TDbContext> :
     public async Task<OrderPaymentComposition?> GetOnlinePaidCompositionAsync(string orderNumber, CancellationToken cancellationToken = default)
     {
         var query = db.OrderPaymentCompositions
-            .Where(o => o.Order!.OrderNumber == orderNumber)
+            .Where(o => o.Order!.Id == orderNumber)
             .Where(a => a.PaymentStatus == PaymentStatus.Paid && a.PaymentMethod == PaymentMethod.Online);
 
         var r = await query.FirstOrDefaultAsync(cancellationToken);

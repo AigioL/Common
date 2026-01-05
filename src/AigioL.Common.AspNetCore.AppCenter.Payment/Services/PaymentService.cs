@@ -35,7 +35,7 @@ sealed partial class PaymentService(
             return;
         }
 
-        var info = new OrderPaymentSuccessInfo(paymentComposition.Id, order.OrderNumber, paymentType, tradeNo, amountReceived, paymentTime);
+        var info = new OrderPaymentSuccessInfo(paymentComposition.Id, order.Id, paymentType, tradeNo, amountReceived, paymentTime);
 
         // 完成订单支付并推送“支付完成”的消息
         await paymentRepo.CompletePaymentForOrder(info);

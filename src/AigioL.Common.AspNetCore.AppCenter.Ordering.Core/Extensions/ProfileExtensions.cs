@@ -17,16 +17,12 @@ public static partial class ProfileExtensions
         p.CreateMap<MembershipBusinessOrder, MembershipBusinessOrderTableItem>();
 
         p.CreateMap<MembershipGoods, MembershipGoodsTableItem>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.Configurations, opt => opt.MapFrom(s => s.MerchantDeductionAgreementConfigurations != null ? s.MerchantDeductionAgreementConfigurations.Select(s => s.Id).ToList() : new()));
 
         p.CreateMap<MembershipProductKeyRecord, MembershipProductKeyRecordTableItem>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
 
         p.CreateMap<AddOrEditMembershipGoodsModel, MembershipGoods>();
@@ -34,9 +30,7 @@ public static partial class ProfileExtensions
             .ForMember(d => d.Configurations, opt => opt.MapFrom(s => s.MerchantDeductionAgreementConfigurations != null ? s.MerchantDeductionAgreementConfigurations.Select(s => s.Id).ToList() : new()));
 
         p.CreateMap<AftersalesBill, AftersalesBillTableItem>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.UserNickName, opt => opt.MapFrom(s => s.User == null ? default : s.User.NickName))
             .ForMember(d => d.UserPhoneNumber, opt => opt.MapFrom(s => s.User == null ? default : s.User.PhoneNumber))
@@ -44,30 +38,22 @@ public static partial class ProfileExtensions
             .ForMember(d => d.UserEmail, opt => opt.MapFrom(s => s.User == null ? default : s.User.Email));
 
         p.CreateMap<MerchantDeductionAgreementConfiguration, MerchantDeductionAgreementConfigurationTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
 
         p.CreateMap<MerchantDeductionAgreementConfiguration, AddOrEditMerchantDeductionAgreementConfigurationModel>()
             .ReverseMap();
 
         p.CreateMap<MerchantDeductionAgreement, MerchantDeductionAgreementTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
 
         p.CreateMap<OrderBusinessPaymentConfiguration, OrderBusinessPaymentConfigurationTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
 
         p.CreateMap<Order, OrderTableItem>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.UserNickName, opt => opt.MapFrom(s => s.User == null ? default : s.User.NickName))
             .ForMember(d => d.UserPhoneNumber, opt => opt.MapFrom(s => s.User == null ? default : s.User.PhoneNumber))
@@ -75,16 +61,14 @@ public static partial class ProfileExtensions
             .ForMember(d => d.UserEmail, opt => opt.MapFrom(s => s.User == null ? default : s.User.Email));
 
         p.CreateMap<RefundBill, RefundBillTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.UserNickName, opt => opt.MapFrom(s => s.User == null ? default : s.User.NickName))
             .ForMember(d => d.UserPhoneNumber, opt => opt.MapFrom(s => s.User == null ? default : s.User.PhoneNumber))
             .ForMember(d => d.UserPhoneNumberRegionCode, opt => opt.MapFrom(s => s.User == null ? default : s.User.PhoneNumberRegionCode))
             .ForMember(d => d.AftersalesNumber, opt => opt.MapFrom(s => s.AftersalesBill == null ? default : s.AftersalesBill.AftersalesNumber))
             .ForMember(d => d.UserEmail, opt => opt.MapFrom(s => s.User == null ? default : s.User.Email))
-            .ForMember(d => d.OrderNumber, opt => opt.MapFrom(s => (s.AftersalesBill == null && s.AftersalesBill!.Order == null) ? default : s.AftersalesBill.Order.Id))
+            .ForMember(d => d.OrderNumber, opt => opt.MapFrom(s => (s.AftersalesBill == null ? null : s.AftersalesBill.OrderId)))
             .ForMember(d => d.BusinessTypeId, opt => opt.MapFrom(s => (s.AftersalesBill == null && s.AftersalesBill!.Order == null) ? default : s.AftersalesBill.Order.BusinessTypeId))
             .ForMember(d => d.AmountReceived, opt => opt.MapFrom(s => (s.AftersalesBill == null && s.AftersalesBill!.Order == null) ? default : s.AftersalesBill.Order.AmountReceived));
     }

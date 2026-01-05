@@ -9,5 +9,7 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Payment</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Jobs\AlipayTradePayQueryJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Jobs\MerchantDeductionAgreementUnSignJob.cs" />
   </ItemGroup>
 </Project>

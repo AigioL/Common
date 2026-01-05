@@ -39,6 +39,7 @@ public static partial class ServiceCollectionServiceExtensions
         services.TryAddScoped<IMerchantDeductionAgreementRepository, MerchantDeductionAgreementRepository<TDbContext>>();
         services.TryAddScoped<IMerchantDeductionAgreementConfigurationRepository, MerchantDeductionAgreementConfigurationRepository<TDbContext>>();
         services.TryAddScoped<IOrderBusinessPaymentConfigurationRepository, OrderBusinessPaymentConfigurationRepository<TDbContext>>();
+        services.TryAddScoped<ITransferOrderRepository, TransferOrderRepository<TDbContext>>();
         AddMembershipRepositories<TDbContext>(services);
         return services;
     }

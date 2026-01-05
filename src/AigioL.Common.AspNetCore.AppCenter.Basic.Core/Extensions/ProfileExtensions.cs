@@ -23,9 +23,7 @@ public static partial class ProfileExtensions
     public static void AddBasicProfile(this Profile p)
     {
         p.CreateMap<ArticleCategory, ArticleCategoryTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.ArticleCount, opt => opt.MapFrom(s => s.Articles == null ? default : s.Articles.Count));
         p.CreateMap<ArticleCategory, AddOrEditArticleCategoryModel>()
@@ -33,32 +31,24 @@ public static partial class ProfileExtensions
         p.CreateMap<ArticleCategory, ArticleCategoryTreeNodeModel>();
 
         p.CreateMap<Article, ArticleTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.TagIds, opt => opt.MapFrom(s => s.Tags.Select(static x => x.Id).ToArray()));
         p.CreateMap<Article, AddOrEditArticleModel>()
             .ReverseMap();
 
         p.CreateMap<ArticleTag, ArticleTagTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.ArticleCount, opt => opt.MapFrom(s => s.Articles == null ? default : s.Articles.Count));
         p.CreateMap<ArticleTag, ArticleTagOptionItemModel>();
 
         p.CreateMap<KeyValuePair, KeyValuePairTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
 
         p.CreateMap<OfficialMessage, OfficialMessageTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-             .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.UserViewable, opt => opt.MapFrom(s => s.PushTime <= DateTime.UtcNow && (!s.ExpireTime.HasValue || DateTime.UtcNow < s.ExpireTime)))
             .ForMember(d => d.PushAppVersions, opt => opt.MapFrom(s => s.TargetAppVers!.Select(a => a.Id)))
@@ -67,9 +57,7 @@ public static partial class ProfileExtensions
             .ReverseMap();
 
         p.CreateMap<StaticResource, StaticResourceTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-             .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
         p.CreateMap<StaticResource, AddOrEditStaticResourceModel>()
             .ReverseMap();
@@ -79,9 +67,7 @@ public static partial class ProfileExtensions
             .ForMember(d => d.BMUserId, opt => opt.MapFrom(s => s.CreateUserId));
 
         p.CreateMap<AppVer, AppVersionTableItemModel>()
-            .ForMember(d => d.CreateUserId, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.Id))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-             .ForMember(d => d.OperatorUserId, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.Id))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
         p.CreateMap<AppVer, AddOrEditAppVersionModel>()
             .ReverseMap();

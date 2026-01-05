@@ -85,12 +85,12 @@ partial class WeChatPayServices<TAppSettings>
         if (!success && logger.IsEnabled(LogLevel.Error))
         {
             var jsonRequestModal = JsonSerializer.Serialize(requestModel, jsonSerializerOptions.GetTypeInfo(typeof(T)));
-            var jsonResponseModal = JsonSerializer.Serialize(responseModel, jsonSerializerOptions.GetTypeInfo(typeof(T)));
+            var jsonResponseModal = JsonSerializer.Serialize(responseModel, jsonSerializerOptions.GetTypeInfo(typeof(T2)));
             logger.LogError("Request {RequestModel} Response {ResponseBody}", jsonRequestModal, jsonResponseModal);
         }
         else if (logger.IsEnabled(LogLevel.Information))
         {
-            var jsonResponseModal = JsonSerializer.Serialize(responseModel, jsonSerializerOptions.GetTypeInfo(typeof(T)));
+            var jsonResponseModal = JsonSerializer.Serialize(responseModel, jsonSerializerOptions.GetTypeInfo(typeof(T2)));
             logger.LogInformation("RequestIdentifier {RequestIdentifier} Response {ResponseBody}", requestIdentifier, jsonResponseModal);
         }
     }

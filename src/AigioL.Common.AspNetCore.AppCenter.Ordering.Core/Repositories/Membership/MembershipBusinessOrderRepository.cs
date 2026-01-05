@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Helpers.SnowFlake;
@@ -10,6 +11,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
 using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
@@ -28,19 +30,22 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     where TDbContext : DbContext, IPaymentDbContext, IIdentityDbContext
 {
     readonly ILogger logger;
+    readonly IOrderBusinessTypeService orderBusinessTypeService;
 
     public MembershipBusinessOrderRepository(
+        IOrderBusinessTypeService orderBusinessTypeService,
         ILogger<MembershipBusinessOrderRepository<TDbContext>> logger,
         TDbContext dbContext, IServiceProvider serviceProvider) :
         base(dbContext, serviceProvider)
     {
         this.logger = logger;
+        this.orderBusinessTypeService = orderBusinessTypeService;
     }
 
     /// <summary>
     /// 订单业务类型（会员业务）
     /// </summary>
-    protected virtual int OrderBusinessType => 7;
+    protected virtual int OrderBusinessType => orderBusinessTypeService.Membership;
 
     #region CreateMembershipBusinessOrder / 创建业务订单
 

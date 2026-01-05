@@ -29,10 +29,10 @@ public partial class Order :
     public required override string Id { get; set; }
 
     /// <summary>
-    /// 通用订单号
+    /// 通用订单号，已弃用，使用主键替代！！！
     /// </summary>
     [NotMapped]
-    [Obsolete("use string Id")]
+    [Obsolete("use string Id", true)]
     public string OrderNumber { get => Id; set => Id = value; }
 
     /// <summary>

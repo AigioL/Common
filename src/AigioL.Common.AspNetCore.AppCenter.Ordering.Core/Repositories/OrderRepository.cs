@@ -143,6 +143,16 @@ sealed partial class OrderRepository<TDbContext> :
         return r;
     }
 
+    public async Task<int> ProcessTimeoutOrderStatus()
+    {
+        // 把处于“待支付”状态且已超时的订单置为“已过期”状态
+        var query = db.Orders
+            .Where(x => x.Status == OrderStatus.WaitPay && x.Timeout <= DateTimeOffset.UtcNow);
+
+        var r = await query.ExecuteUpdateAsync(x => x.SetProperty(e => e.Status, e => OrderStatus.Expired));
+        return r;
+    }
+
     public async Task<(ExternalLoginChannel Channel, string? NickName)[]> GetExternalAccountInfoAsync(
         string orderNumber,
         string paymentNumber,

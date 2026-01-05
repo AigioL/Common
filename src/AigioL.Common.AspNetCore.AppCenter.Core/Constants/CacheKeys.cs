@@ -174,4 +174,12 @@ public static partial class CacheKeys
     #endregion
 
     public static string GetOrderUserRequestRefundMessageQueueKeyByBusinessType(int orderBusinessTypeId) => $"OrderBusinessType_{orderBusinessTypeId}";
+
+    public const string AgreementSign_Membership = "AgreementSign_Membership"; // 商家扣款协议签约成功消息通知（用户会员）
+    public const string AgreementUnSign_Membership = "AgreementUnSign_Membership"; // 商家扣款协议解约成功消息通知（用户会员）
+
+    /// <summary>
+    /// 转账申请
+    /// </summary>
+    public const string TransferRequest = "TransferRequestMessage";
 }

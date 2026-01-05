@@ -63,13 +63,13 @@ public sealed partial class PaymentRefundSubscribe : WorkerBackgroundService
             {
                 case PaymentType.Alipay:
                     var aliPayServices = container.ServiceProvider.GetRequiredService<IAliPayServices>();
-                    result = await aliPayServices.Refund(order.OrderNumber, refundBill.RefundNumber, refundBill.RefundAmount);
+                    result = await aliPayServices.Refund(order.Id, refundBill.RefundNumber, refundBill.RefundAmount);
                     break;
                 case PaymentType.WeChatPay:
                     // TODO: 微信支付v2版接口只能从查询接口中得到退款结果
                     //       (申请退款接口的返回仅代表业务的受理情况，具体退款是否成功，需要通过退款查询接口获取结果。)
                     var weChatPayServices = container.ServiceProvider.GetRequiredService<IWeChatPayServices>();
-                    result = await weChatPayServices.Refund(order.OrderNumber, refundBill.RefundNumber, refundBill.RefundAmount, paymentComposition.PaymentAmount);
+                    result = await weChatPayServices.Refund(order.Id, refundBill.RefundNumber, refundBill.RefundAmount, paymentComposition.PaymentAmount);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(paymentComposition.PaymentType), paymentComposition.PaymentType, null);
@@ -77,7 +77,7 @@ public sealed partial class PaymentRefundSubscribe : WorkerBackgroundService
 
             if (result.success && result.refundSuccess) // 申请退款并直接退款成功
             {
-                var refundInfo = new OrderRefundSuccessInfo(order.OrderNumber, refundBill.RefundNumber, paymentComposition.PaymentType);
+                var refundInfo = new OrderRefundSuccessInfo(order.Id, refundBill.RefundNumber, paymentComposition.PaymentType);
                 await paymentRepo.CompleteRefundForOrderAsync(refundInfo);    // 完成订单退款
                 await paymentMessageQueue.PushRefundSuccess(refundInfo); // 推送退款完成的消息
             }

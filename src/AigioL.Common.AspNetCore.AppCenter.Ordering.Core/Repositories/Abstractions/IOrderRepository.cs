@@ -42,6 +42,11 @@ public partial interface IOrderRepository
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 超时未付款的订单设置状态为过期
+    /// </summary>
+    Task<int> ProcessTimeoutOrderStatus();
+
+    /// <summary>
     /// 通过支付记录查询用户绑定外部平台信息
     /// </summary>
     /// <param name="orderNumber">商家订单号</param>

@@ -168,7 +168,20 @@ public abstract partial class WorkerBackgroundService(
         {
             if (!NotificationOnlyFail)
             {
-                var message = JsonSerializer.Serialize(r, MSMinimalApisJsonSerializerContext.Default.ApiRsp);
+                var message = r == null ? null : JsonSerializer.Serialize(r, MSMinimalApisJsonSerializerContext.Default.ApiRsp);
+                await OnNotificationAsync($"WorkerHandleErr: {workerName}", message);
+            }
+        }
+    }
+
+    protected virtual async Task OnHandleFailAsync(
+        string workerName,
+        string? message)
+    {
+        if (Notification)
+        {
+            if (!NotificationOnlyFail)
+            {
                 await OnNotificationAsync($"WorkerHandleErr: {workerName}", message);
             }
         }

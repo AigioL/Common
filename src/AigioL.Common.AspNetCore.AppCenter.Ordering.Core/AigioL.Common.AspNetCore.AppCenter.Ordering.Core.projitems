@@ -99,6 +99,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\TransferStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserCouponStatus.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WithdrawTransferModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAftersalesBillRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IRefundBillRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IMerchantDeductionAgreementConfigurationRepository.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Membership\IMembershipProductKeyRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IOrderBusinessPaymentConfigurationRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\IPaymentRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\Payment\ITransferOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\AftersalesBillRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Membership\MembershipBusinessOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Membership\MembershipGoodsRepository.cs" />
@@ -118,7 +120,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Payment\MerchantDeductionAgreementRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Payment\OrderBusinessPaymentConfigurationRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Payment\PaymentRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Payment\TransferOrderRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\RefundBillRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IOrderBusinessTypeService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\Membership\IUserMembershipService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Membership\UserMembershipService.cs" />
   </ItemGroup>

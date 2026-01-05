@@ -37,6 +37,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\WeChatPayServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\WeChatPayV2Services.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\WeChatPayV3Services.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\AgreementSubscribe.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\MembershipOrderSubscribe.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workers\PaymentRefundSubscribe.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\TransferSubscribe.cs" />
   </ItemGroup>
 </Project>
