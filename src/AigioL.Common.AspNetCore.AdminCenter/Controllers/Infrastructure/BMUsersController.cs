@@ -3,6 +3,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +37,8 @@ public static partial class BMUsersController
         .WithDescription("查询管理后台的用户");
         routeGroup.MapPost("", async (HttpContext context, [FromBody] AddBMUserModel model) =>
         {
-            var tenantId = TenantConstants.RootTenantIdG;
+            var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+            var tenantId = adminCenterService.RootTenantIdG;
             var r = await Post<TUser>(context, model, tenantId);
             return r.SetHttpContext(context);
         })

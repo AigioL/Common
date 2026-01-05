@@ -6,9 +6,9 @@ using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Komaasharu;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Membership;
 using AigioL.Common.AspNetCore.AdminCenter.Controllers.Ordering;
+using AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.AspNetCore.Builder;
@@ -19,10 +19,15 @@ public static partial class EndpointRouteBuilderExtensions
     /// 注册管理后台的最小 API 路由
     /// </summary>
     public static void MapBMMinimalApis<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole>(this IEndpointRouteBuilder b)
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TDbContext,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUser,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TRole,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserRole>(this IEndpointRouteBuilder b,
+        bool ignoreInfoController = false)
+        where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>, IBMDbContextBase
         where TUser : BMUser, new()
         where TRole : BMRole, new()
+        where TUserRole : BMUserRole
     {
         // Analysis
         b.MapAnalysisStatistics();
@@ -50,7 +55,10 @@ public static partial class EndpointRouteBuilderExtensions
         b.MapACUsers();
 
         // Infrastructure
-        //b.MapPostInfo();
+        if (!ignoreInfoController)
+        {
+            b.MapPostInfo<TDbContext, TUser, TRole, TUserRole>();
+        }
         b.MapBMLogin<TUser>();
         b.MapBMMenus();
         b.MapBMRoles<TRole>();

@@ -113,7 +113,11 @@ public partial class Order :
     [Comment("商家扣款协议 Id")]
     public Guid? MerchantDeductionAgreementId { get; set; }
 
-    public virtual MerchantDeductionAgreement MerchantDeductionAgreement { get; set; } = null!;
+    public virtual MerchantDeductionAgreement? MerchantDeductionAgreement { get; set; }
+
+    public Guid? ChannelPackageId { get; set; }
+
+    public virtual ChannelPackage? ChannelPackage { get; set; }
 
     public virtual User User { get; set; } = null!;
 
@@ -144,6 +148,11 @@ public partial class Order :
                 .WithOne(x => x.Order)
                 .HasForeignKey(x => x.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.ChannelPackage)
+                .WithMany()
+                .HasForeignKey(x => x.ChannelPackageId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

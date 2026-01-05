@@ -25,6 +25,7 @@ sealed partial class UserMembershipService(
     public async Task<string?> CreateMembershipOrderAsync(
         Guid userId,
         MembershipGoods goods,
+        Guid? channelPackageId,
         CancellationToken cancellationToken = default)
     {
         // 检查是否使用过首次优惠，使用过则按商品当前正常价格计算
@@ -47,6 +48,7 @@ sealed partial class UserMembershipService(
             MemberLicenseType = goods.MemberLicenseType,
             MembershipGoodsId = goods.Id,
             BusinessSource = MembershipBusinessSource.普通订单,
+            ChannelPackageId = channelPackageId,
         };
 
         var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder);

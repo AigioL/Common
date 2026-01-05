@@ -2,6 +2,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.JsonWebTokens.Services.Abstractions;
 using AigioL.Common.Models;
@@ -10,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Security.Cryptography;
@@ -18,26 +18,20 @@ using System.Text;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 
-public partial class InfoController
-{
-    public const string RoleNameAdministrator = "Administrator";
-}
-
-public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEnum> : InfoController
-    where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>, IBMDbContextBase
-    where TUser : BMUser, new()
-    where TRole : BMRole, new()
-    where TUserRole : BMUserRole
-    where TRoleEnum : struct, Enum
+public static partial class InfoController
 {
     /// <summary>
     /// 创建一个默认系统管理员账号，且在 DEBUG 下将返回 JsonWebToken，用于测试
     /// </summary>
     /// <param name="b"></param>
     /// <param name="pattern"></param>
-    public void MapPostInfo(
-        IEndpointRouteBuilder b,
+    public static void MapPostInfo<TDbContext, TUser, TRole, TUserRole>(
+        this IEndpointRouteBuilder b,
         [StringSyntax("Route")] string pattern = "api/info")
+        where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>, IBMDbContextBase
+        where TUser : BMUser, new()
+        where TRole : BMRole, new()
+        where TUserRole : BMUserRole
     {
         var routeGroup = b.MapGroup(pattern);
 
@@ -48,7 +42,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             BMApiRsp<JsonWebTokenValue> result;
             try
             {
-                result = await PostAsync(context, model, onlyMigrate);
+                result = await PostAsync<TDbContext, TUser, TRole, TUserRole>(context, model, onlyMigrate);
             }
             catch (Exception ex)
             {
@@ -82,17 +76,18 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         //        .WithDescription("运行时应用迁移");
     }
 
-    protected new virtual string RoleNameAdministrator => InfoController.RoleNameAdministrator;
-
-    protected virtual Guid RootTenantIdG => TenantConstants.RootTenantIdG;
-
-    protected async Task<BMApiRsp<JsonWebTokenValue>> PostAsync(
+    static async Task<BMApiRsp<JsonWebTokenValue>> PostAsync<TDbContext, TUser, TRole, TUserRole>(
         HttpContext context,
         BMInitSystemRequest model,
         bool onlyMigrate)
+        where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>, IBMDbContextBase
+        where TUser : BMUser, new()
+        where TRole : BMRole, new()
+        where TUserRole : BMUserRole
     {
         BMApiRsp<JsonWebTokenValue> result;
 
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var db = context.RequestServices.GetRequiredService<TDbContext>();
         var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var jwtValueProvider = context.RequestServices.GetRequiredService<IJsonWebTokenValueProvider>();
@@ -136,8 +131,8 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
 
         #region 添加管理员用户与预设角色
 
-        var adminRoleName = RoleNameAdministrator;
-        List<string> addRoles = [.. Enum.GetValues<TRoleEnum>().Select(x => x.ToString()).Where(x => x != RoleNameAdministrator)];
+        var adminRoleName = adminCenterService.RoleNameAdministrator;
+        List<string> addRoles = adminCenterService.AddRoles;
         var user = await userManager.FindByNameAsync(userName); // 查找默认初始管理员用户
         if (user == null)
         {
@@ -226,7 +221,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
 
         #endregion
 
-        var isRootTenant = tenantId == RootTenantIdG;
+        var isRootTenant = tenantId == adminCenterService.RootTenantIdG;
 
         #region 添加预设菜单
 
@@ -239,6 +234,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         async Task<List<BMMenu>> AddMenusAsync()
         {
             var menus = new List<BMMenu>(GetBMMenus(isRootTenant));
+            adminCenterService.HandleMenus(isRootTenant, menus);
             SetUserIdAndTenantId(menus, user.Id, tenantId);
 
             await db.Menus.AddRangeAsync(menus);
@@ -363,24 +359,24 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         return result = HttpStatusCode.OK;
     }
 
-    static Guid GetGuid(int seed)
+    //static Guid GetGuid(int seed)
+    //{
+    //    Span<char> chars = stackalloc char[32];
+    //    chars.Fill('0');
+    //    var seedStr = seed.ToString();
+
+    //    var index = chars.Length - 1;
+    //    for (int i = seedStr.Length - 1; i >= 0; i--)
+    //    {
+    //        chars[index--] = seedStr[i];
+    //    }
+
+    //    return Guid.ParseExact(chars, "N");
+    //}
+
+    static IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
     {
-        Span<char> chars = stackalloc char[32];
-        chars.Fill('0');
-        var seedStr = seed.ToString();
-
-        var index = chars.Length - 1;
-        for (int i = seedStr.Length - 1; i >= 0; i--)
-        {
-            chars[index--] = seedStr[i];
-        }
-
-        return Guid.ParseExact(chars, "N");
-    }
-
-    protected virtual IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
-    {
-        int seed = 1000;
+        //int seed = 1000;
         yield return new BMMenu
         {
             //Id = GetGuid(seed),
@@ -397,7 +393,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             Name = "广告管理",
             Key = "Komaasharu",
             IconUrl = IconType.Outline.Crown,
-            Children = [.. GetKomaasharuManage(seed)],
+            Children = [.. GetKomaasharuManage(/*seed*/)],
         };
 
         yield return new BMMenu
@@ -407,7 +403,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             Name = "用户管理",
             Key = "Identity",
             IconUrl = IconType.Outline.User,
-            Children = [.. GetUserManage(seed)],
+            Children = [.. GetUserManage(/*seed*/)],
         };
 
         yield return new BMMenu
@@ -417,7 +413,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             Name = "通用管理",
             Key = "Basics",
             IconUrl = IconType.Outline.Profile,
-            Children = [.. GetBasicsManage(seed)],
+            Children = [.. GetBasicsManage(/*seed*/)],
         };
 
         yield return new BMMenu
@@ -427,7 +423,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             Name = "订单管理",
             Key = "Ordering",
             IconUrl = IconType.Outline.ShoppingCart,
-            Children = [.. GetOrderingManage(seed)],
+            Children = [.. GetOrderingManage(/*seed*/)],
         };
 
         yield return new BMMenu
@@ -437,7 +433,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             Name = "角色管理",
             Key = "RoleManageMenu",
             IconUrl = IconType.Outline.UserSwitch,
-            Children = [.. GetRoleManage(seed)],
+            Children = [.. GetRoleManage(/*seed*/)],
         };
 
         yield return new BMMenu
@@ -447,10 +443,10 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             Name = "系统管理",
             Key = "SystemManage",
             IconUrl = IconType.Outline.Control,
-            Children = [.. GetSystemManage(seed)],
+            Children = [.. GetSystemManage(/*seed*/)],
         };
 
-        IEnumerable<BMMenu> GetKomaasharuManage(int seed)
+        IEnumerable<BMMenu> GetKomaasharuManage(/*int seed*/)
         {
             yield return new BMMenu
             {
@@ -462,7 +458,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             };
         }
 
-        IEnumerable<BMMenu> GetUserManage(int seed)
+        IEnumerable<BMMenu> GetUserManage(/*int seed*/)
         {
             yield return new BMMenu
             {
@@ -510,7 +506,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             };
         }
 
-        IEnumerable<BMMenu> GetBasicsManage(int seed)
+        IEnumerable<BMMenu> GetBasicsManage(/*int seed*/)
         {
             yield return new BMMenu
             {
@@ -558,7 +554,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             };
         }
 
-        IEnumerable<BMMenu> GetOrderingManage(int seed)
+        IEnumerable<BMMenu> GetOrderingManage(/*int seed*/)
         {
             yield return new BMMenu
             {
@@ -606,7 +602,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             };
         }
 
-        IEnumerable<BMMenu> GetSystemManage(int seed)
+        IEnumerable<BMMenu> GetSystemManage(/*int seed*/)
         {
             yield return new BMMenu
             {
@@ -663,7 +659,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
             //}
         }
 
-        IEnumerable<BMMenu> GetRoleManage(int seed)
+        IEnumerable<BMMenu> GetRoleManage(/*int seed*/)
         {
             yield return new BMMenu
             {
@@ -685,7 +681,7 @@ public partial class InfoController<TDbContext, TUser, TRole, TUserRole, TRoleEn
         }
     }
 
-    protected virtual void SetUserIdAndTenantId(IEnumerable<BMMenu>? menus, Guid userId, Guid tenantId, long? sort = null)
+    static void SetUserIdAndTenantId(IEnumerable<BMMenu>? menus, Guid userId, Guid tenantId, long? sort = null)
     {
         if (menus == null)
         {

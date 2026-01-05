@@ -524,6 +524,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                     BusinessTypeId = OrderBusinessType,
                     Note = business_order.Note,
                     MerchantDeductionAgreementId = null,
+                    ChannelPackageId = business_order.ChannelPackageId,
                 };
 
                 db.Orders.Add(order);
@@ -629,6 +630,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                     BusinessTypeId = OrderBusinessType,
                     Note = business_order.Note,
                     MerchantDeductionAgreementId = business_order.MerchantDeductionAgreementId,
+                    ChannelPackageId = business_order.ChannelPackageId,
                 };
                 // 添加订单支付组成
                 var composition = new OrderPaymentComposition

@@ -83,6 +83,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\BMMenuRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\BMRoleRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\BMUserRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAdminCenterService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

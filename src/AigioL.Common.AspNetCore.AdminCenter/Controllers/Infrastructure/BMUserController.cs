@@ -3,6 +3,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,8 @@ public static partial class BMUserController
 
         routeGroup.MapGet("", async (HttpContext context) =>
         {
-            var tenantId = TenantConstants.RootTenantIdG;
+            var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+            var tenantId = adminCenterService.RootTenantIdG;
             var r = await Get<TUser>(context, tenantId);
             return r.SetHttpContext(context);
         })
@@ -40,7 +42,8 @@ public static partial class BMUserController
         .WithDescription("编辑当前登录管理后台的用户个人资料");
         routeGroup.MapGet("menus", async (HttpContext context) =>
         {
-            var tenantId = TenantConstants.RootTenantIdG;
+            var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+            var tenantId = adminCenterService.RootTenantIdG;
             var r = await GetRoleMenus<TUser>(context, tenantId);
             return r.SetHttpContext(context);
         })

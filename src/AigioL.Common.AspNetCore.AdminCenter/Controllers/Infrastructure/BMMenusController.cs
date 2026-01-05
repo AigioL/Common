@@ -2,6 +2,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -153,7 +154,8 @@ public static partial class BMMenusController
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var userId = context.GetBMUserId();
-        var tenantId = TenantConstants.RootTenantIdG;
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
         var (rowCount, _) = await repo.InsertOrUpdateAsync(model, userId, tenantId);
         return new BMApiRsp<int>
         {
@@ -165,7 +167,9 @@ public static partial class BMMenusController
     static async Task<BMApiRsp<bool>> Delete(HttpContext context, Guid id)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.DeleteMenuAsync(id, TenantConstants.RootTenantIdG);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.DeleteMenuAsync(id, tenantId);
         return new BMApiRsp<bool>
         {
             Code = unchecked(StatusCodes.Status200OK),
@@ -192,14 +196,18 @@ public static partial class BMMenusController
     static async Task<BMApiRsp<List<Guid>?>> GetMenuButtons(HttpContext context, Guid menuId)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.GetMenuButtonsAsync(menuId, TenantConstants.RootTenantIdG);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.GetMenuButtonsAsync(menuId, tenantId);
         return r;
     }
 
     static async Task<BMApiRsp<bool>> AddMenuButtons(HttpContext context, Guid menuId, params IEnumerable<Guid> buttons)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.EditMenuButtonsAsync(menuId, TenantConstants.RootTenantIdG, buttons);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.EditMenuButtonsAsync(menuId, tenantId, buttons);
         return new BMApiRsp<bool>
         {
             Code = StatusCodes.Status200OK,
@@ -210,7 +218,9 @@ public static partial class BMMenusController
     static async Task<BMApiRsp<bool>> EditMenuButtons(HttpContext context, Guid menuId, params IEnumerable<Guid> buttons)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.EditMenuButtonsAsync(menuId, TenantConstants.RootTenantIdG, buttons);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.EditMenuButtonsAsync(menuId, tenantId, buttons);
         return new BMApiRsp<bool>
         {
             Code = StatusCodes.Status200OK,
@@ -221,7 +231,9 @@ public static partial class BMMenusController
     static async Task<BMApiRsp<List<BMButtonModel>?>> GetRoleMenuButtonsAsync(HttpContext context, Guid roleId, Guid menuId)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.GetRoleMenuButtonsAsync(roleId, menuId, TenantConstants.RootTenantIdG);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.GetRoleMenuButtonsAsync(roleId, menuId, tenantId);
         return r;
     }
 
@@ -229,7 +241,9 @@ public static partial class BMMenusController
     {
         var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.AddMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.AddMenuButtonsAsync(userId, roleId, menuId, tenantId, buttons);
         return new BMApiRsp<bool>
         {
             Code = StatusCodes.Status200OK,
@@ -241,7 +255,9 @@ public static partial class BMMenusController
     {
         var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.EditMenuButtonsAsync(name, userId, roleId, menuId, TenantConstants.RootTenantIdG, buttons);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.EditMenuButtonsAsync(name, userId, roleId, menuId, tenantId, buttons);
         return new BMApiRsp<bool>
         {
             Code = StatusCodes.Status200OK,
@@ -253,7 +269,9 @@ public static partial class BMMenusController
     {
         var userId = context.GetBMUserId();
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
-        var r = await repo.DeleteMenuButtonsAsync(userId, roleId, menuId, TenantConstants.RootTenantIdG);
+        var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+        var tenantId = adminCenterService.RootTenantIdG;
+        var r = await repo.DeleteMenuButtonsAsync(userId, roleId, menuId, tenantId);
         return new BMApiRsp<bool>
         {
             Code = StatusCodes.Status200OK,

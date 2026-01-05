@@ -11,6 +11,7 @@ public interface IUserMembershipService
     Task<string?> CreateMembershipOrderAsync(
         Guid userId,
         MembershipGoods goods,
+        Guid? channelPackageId,
         CancellationToken cancellationToken = default);
 
     /// <summary>

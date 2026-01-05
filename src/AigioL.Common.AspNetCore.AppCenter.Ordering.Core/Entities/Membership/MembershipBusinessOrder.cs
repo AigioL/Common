@@ -147,6 +147,10 @@ public partial class MembershipBusinessOrder :
 
     public virtual MembershipGoods MembershipGoods { get; set; } = null!;
 
+    public Guid? ChannelPackageId { get; set; }
+
+    public virtual ChannelPackage? ChannelPackage { get; set; }
+
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<MembershipBusinessOrder>
     {
         public void Configure(EntityTypeBuilder<MembershipBusinessOrder> builder)
@@ -175,6 +179,11 @@ public partial class MembershipBusinessOrder :
                 .WithMany()
                 .HasForeignKey(o => o.MerchantDeductionAgreementId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasOne(x => x.ChannelPackage)
+                .WithMany()
+                .HasForeignKey(x => x.ChannelPackageId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKeyValuePairsDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKomaasharuDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\AuthMessageRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\ChannelPackage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ExternalAccount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Identitys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\JobRecordResult.cs" />

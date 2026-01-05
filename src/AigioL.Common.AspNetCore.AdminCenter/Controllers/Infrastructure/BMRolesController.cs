@@ -2,6 +2,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Identity;
@@ -44,7 +45,8 @@ public static partial class BMRolesController
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] BMRoleModel model) =>
         {
-            var tenantId = TenantConstants.RootTenantIdG;
+            var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+            var tenantId = adminCenterService.RootTenantIdG;
             var r = await Post<TRole>(context, model, tenantId);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
@@ -57,7 +59,8 @@ public static partial class BMRolesController
             {
                 model.Id = id.Value;
             }
-            var tenantId = TenantConstants.RootTenantIdG;
+            var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+            var tenantId = adminCenterService.RootTenantIdG;
             var r = await Put<TRole>(context, model, tenantId);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
@@ -66,7 +69,8 @@ public static partial class BMRolesController
         routeGroup.MapGet("menus/{roleId}", async (HttpContext context,
             [FromRoute] Guid roleId) =>
         {
-            var tenantId = TenantConstants.RootTenantIdG;
+            var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+            var tenantId = adminCenterService.RootTenantIdG;
             var r = await GetRoleMenus(context, roleId, tenantId);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Query)
