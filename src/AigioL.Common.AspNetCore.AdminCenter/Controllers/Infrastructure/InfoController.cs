@@ -37,7 +37,7 @@ public static partial class InfoController
 
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] BMInitSystemRequest model,
-            [FromQuery] bool onlyMigrate) =>
+            [FromQuery] bool onlyMigrate = false) =>
         {
             BMApiRsp<JsonWebTokenValue> result;
             try
