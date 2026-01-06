@@ -39,11 +39,12 @@ public static class PaymentController
         });
         routeGroup.MapPost("{orderId}", async (HttpContext context,
             [FromRoute] string orderId,
+            [FromQuery] string? openId,
             [FromBody] OrderBusinessPaymentMethod method) =>
         {
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
             var r = await Pay(paymentRepo, context, orderId,
-                method, context.RequestAborted);
+                method, openId, context.RequestAborted);
             return r;
         });
         routeGroup.MapGet("method/{businessType}", async (HttpContext context,
@@ -100,6 +101,7 @@ public static class PaymentController
         HttpContext context,
         string orderId,
         OrderBusinessPaymentMethod method,
+        string? wxOpenId = null,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(orderId))
@@ -154,7 +156,8 @@ public static class PaymentController
                                     orderPayInfo.AmountReceivable,
                                     string.Empty,
                                     remoteIpAddress?.ToString() ?? string.Empty,
-                                    orderPayInfo.Timeout);
+                                    orderPayInfo.Timeout,
+                                    wxOpenId);
                             }
                     }
                     break;
