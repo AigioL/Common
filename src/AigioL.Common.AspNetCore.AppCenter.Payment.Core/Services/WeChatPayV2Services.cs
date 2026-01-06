@@ -21,7 +21,7 @@ partial class WeChatPayV2Services<
     IServiceProvider serviceProvider,
     IOptions<TAppSettings> options,
     IOptions<WeChatPayExOptions> weChatPayOptions,
-    ILogger<IWeChatPayServices> logger) : WeChatPayServices<TAppSettings>(serviceProvider, options, weChatPayOptions, logger)
+    ILogger<WeChatPayServices> logger) : WeChatPayServices<TAppSettings>(serviceProvider, options, weChatPayOptions, logger)
     where TAppSettings : class, IPaySettings
 {
     IWeChatPayClient ClientV2 => field ??= serviceProvider.GetRequiredService<IWeChatPayClient>();

@@ -18,7 +18,7 @@ sealed partial class WeChatPayV3Services<
     IWeChatPayClient client,
     IOptions<TAppSettings> options,
     IOptions<WeChatPayExOptions> weChatPayOptions,
-    ILogger<IWeChatPayServices> logger) :
+    ILogger<WeChatPayServices> logger) :
     WeChatPayV2Services<TAppSettings>(serviceProvider, options, weChatPayOptions, logger),
     IWeChatPayServices
     where TAppSettings : class, IPaySettings

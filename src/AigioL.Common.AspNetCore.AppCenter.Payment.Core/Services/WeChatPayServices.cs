@@ -22,7 +22,7 @@ partial class WeChatPayServices<
     IServiceProvider serviceProvider,
     IOptions<TAppSettings> options,
     IOptions<WeChatPayExOptions> weChatPayOptions,
-    ILogger<IWeChatPayServices> logger)
+    ILogger<WeChatPayServices> logger) : WeChatPayServices(logger)
     where TAppSettings : class, IPaySettings
 {
     protected readonly WeChatPayExOptions PaymentOptions = weChatPayOptions.Value;
@@ -93,6 +93,16 @@ partial class WeChatPayServices<TAppSettings>
             var jsonResponseModal = JsonSerializer.Serialize(responseModel, jsonSerializerOptions.GetTypeInfo(typeof(T2)));
             logger.LogInformation("RequestIdentifier {RequestIdentifier} Response {ResponseBody}", requestIdentifier, jsonResponseModal);
         }
+    }
+}
+
+partial class WeChatPayServices
+{
+    protected readonly ILogger<WeChatPayServices> logger;
+
+    protected WeChatPayServices(ILogger<WeChatPayServices> logger)
+    {
+        this.logger = logger;
     }
 }
 
