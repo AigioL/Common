@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>1ad0f240-d2e7-443c-adb6-0d9639a1becb</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Payment</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AlipayClientExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IAppSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IPaySettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IWeChatApiOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AlipayExOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatApiOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayExOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAliPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IPaymentMessageQueueService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IPaymentService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IUnSignAgreementServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IWeChatPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\AliPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\PaymentMessageQueueService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\PaymentService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\WeChatPayServices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\WeChatPayV2Services.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\WeChatPayV3Services.cs" />
+  </ItemGroup>
+</Project>

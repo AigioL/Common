@@ -6,26 +6,26 @@
 //namespace AigioL.Common.AspNetCore.AppCenter.Payment.Jobs;
 
 ///// <summary>
-///// 支付宝交易状态查询任务
+///// 微信支付交易状态查询任务
 ///// </summary>
-//public class AlipayTradePayQueryJob(
-//    IAliPayServices aliPayServices,
-//    IPaymentService paymentService,
+//public partial class WechatTradePayQueryJob(
+//    IWeChatPayServices weChatPayServices,
 //    IPaymentRepository paymentRepo,
-//    ILogger<AlipayTradePayQueryJob> logger,
+//    IPaymentService paymentService,
+//    ILogger<WechatTradePayQueryJob> logger,
 //    AppDbContext dbContext,
 //    IFeishuApiClient feishuApiClient) :
-//    JobService<AppDbContext, AlipayTradePayQueryJob>(logger, dbContext, feishuApiClient)
+//    JobService<AppDbContext, WechatTradePayQueryJob>(logger, dbContext, feishuApiClient)
 //{
 //    protected sealed override async Task<ApiRsp> HandleAsync(IJobExecutionContext? context, CancellationToken cancellationToken)
 //    {
 //        try
 //        {
-//            var paymentList = await paymentRepo.GetPaymentResultWaitingPaymentListAsync(PaymentType.Alipay);
+//            var paymentList = await paymentRepo.GetPaymentResultWaitingPaymentListAsync(PaymentType.WeChatPay);
 
 //            foreach (OrderPaymentComposition payment in paymentList)
 //            {
-//                var result = await aliPayServices.TradeQuery(payment.Order!.Id);
+//                var result = await weChatPayServices.OrderQuery(payment.Order!.Id);
 //                switch (result?.TradeStatus)
 //                {
 //                    // 交易创建，等待买家付款
@@ -40,7 +40,7 @@
 
 //                    // 交易支付成功
 //                    case TradeStatus.TradeSuccess:
-//                        await paymentService.NotifyOrderComplete(payment.Order.Id, result.TradeNo, PaymentType.Alipay, result.TotalAmount, result.SendPayDate);
+//                        await paymentService.NotifyOrderComplete(payment.Order.Id, result.TransactionId, PaymentType.WeChatPay, result.TotalAmount, result.TimeEnd);
 //                        break;
 
 //                    // 交易结束，不可退款
@@ -49,7 +49,7 @@
 //                        // 或者，商家签约的产品支持退款功能的前提下，交易已经成功并且已经超过可退款期限。
 //                        if (payment.PaymentStatus == PaymentStatus.WaitPay)
 //                        {
-//                            await paymentService.NotifyOrderComplete(payment.Order.Id, result.TradeNo, PaymentType.Alipay, result.TotalAmount, result.SendPayDate);
+//                            await paymentService.NotifyOrderComplete(payment.Order.Id, result.TransactionId, PaymentType.WeChatPay, result.TotalAmount, result.TimeEnd);
 //                        }
 //                        // TODO: 看要不要吧，交易完成且已过退款期限
 //                        //else if (payment.PaymentStatus == PaymentStatus.Paid)
@@ -62,7 +62,7 @@
 //        }
 //        catch (Exception ex)
 //        {
-//            logger.LogError(ex, "支付宝交易状态查询任务异常");
+//            logger.LogError(ex, "微信支付交易状态查询任务异常");
 //            throw;
 //        }
 //    }

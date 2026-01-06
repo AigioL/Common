@@ -5,6 +5,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Payment;
@@ -240,6 +241,17 @@ sealed partial class PaymentRepository<TDbContext> :
             .Where(o => o.RefundNumber == refundNumber);
 
         var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
+    public async Task<List<OrderPaymentComposition>> GetPaymentResultWaitingPaymentListAsync(PaymentType paymentType, CancellationToken cancellationToken = default)
+    {
+        var query = db.OrderPaymentCompositions
+             .AsNoTrackingWithIdentityResolution()
+             .Include(p => p.Order)
+             .Where(a => a.PaymentStatus == PaymentStatus.WaitPay);
+
+        var r = await query.ToListAsync(cancellationToken);
         return r;
     }
 

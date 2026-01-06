@@ -174,4 +174,8 @@
 	<ItemGroup>
 		<PackageVersion Include="SimpleBase" Version="5.6.0" />
 	</ItemGroup>
+	<!-- 👇 Polly -->
+	<ItemGroup>
+		<PackageVersion Include="Polly" Version="8.6.5" />
+	</ItemGroup>
 </Project>

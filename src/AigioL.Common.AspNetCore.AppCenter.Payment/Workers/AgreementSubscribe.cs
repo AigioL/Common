@@ -5,4 +5,5 @@ namespace AigioL.Common.AspNetCore.AppCenter.Payment.Workers;
 /// </summary>
 class AgreementSubscribe
 {
+    // TODO: xxxx
 }

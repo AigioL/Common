@@ -92,6 +92,14 @@ public partial interface IPaymentRepository
     Task<RefundBill?> GetRefundBillAsync(string refundNumber, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 获取等待支付结果中的支付组成
+    /// </summary>
+    /// <param name="paymentType">支付类型</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<OrderPaymentComposition>> GetPaymentResultWaitingPaymentListAsync(PaymentType paymentType, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// 更新退款单退款状态
     /// </summary>
     /// <param name="refundNumber">退款单号</param>
