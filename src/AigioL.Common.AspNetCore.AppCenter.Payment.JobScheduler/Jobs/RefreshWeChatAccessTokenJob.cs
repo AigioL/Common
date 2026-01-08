@@ -27,8 +27,17 @@ public partial class RefreshWeChatAccessTokenJob<
 {
     protected sealed override async Task<ApiRsp> HandleAsync(IJobExecutionContext? context, CancellationToken cancellationToken)
     {
-        var appIdWeChat = options.Value.WeChatApiOptions?.AppId;
-        var appSecretWeChat = options.Value.WeChatApiOptions?.AppSecret;
+        string? appIdWeChat, appSecretWeChat;
+
+        try
+        {
+            appIdWeChat = options.Value.WeChatApiOptions?.AppId;
+            appSecretWeChat = options.Value.WeChatApiOptions?.AppSecret;
+        }
+        catch (ArgumentNullException)
+        {
+            appIdWeChat = appSecretWeChat = null;
+        }
         if (string.IsNullOrWhiteSpace(appIdWeChat) || string.IsNullOrWhiteSpace(appSecretWeChat))
         {
             logger.LogWarning("获取 WeChatApiOptions.AppId 为空");
