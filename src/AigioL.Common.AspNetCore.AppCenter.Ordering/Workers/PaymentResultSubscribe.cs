@@ -50,6 +50,8 @@ public static partial class PaymentResultSubscribe
 
         protected override string RoutingKey => CacheKeys.OrderPaymentSuccess;
 
+        protected override string QueueName => CacheKeys.OrderQueueName;
+
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {
             string? orderNumber = null;
@@ -106,6 +108,8 @@ public static partial class PaymentResultSubscribe
         }
 
         protected override string RoutingKey => CacheKeys.OrderRefundSuccess;
+
+        protected override string QueueName => CacheKeys.OrderQueueName;
 
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {

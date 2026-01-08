@@ -179,4 +179,8 @@
 	<ItemGroup>
 		<PackageVersion Include="Polly" Version="8.6.5" />
 	</ItemGroup>
+	<!-- 👇 Magick 图片处理 -->
+	<ItemGroup>
+		<PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="14.10.1" />
+	</ItemGroup>
 </Project>

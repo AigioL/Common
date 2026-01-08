@@ -23,6 +23,9 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models;
 #endregion
 #region VersionsController
 #endregion
+#region ImageHandleSubscribe
+[JsonSerializable(typeof(ImageHandleRequestModel))]
+#endregion
 [JsonSourceGenerationOptions]
 public sealed partial class BasicMinimalApisJsonSerializerContext : JsonSerializerContext
 {
