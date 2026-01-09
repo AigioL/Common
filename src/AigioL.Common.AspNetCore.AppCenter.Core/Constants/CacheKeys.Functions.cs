@@ -208,7 +208,7 @@ static partial class CacheKeys
         using var stream = m.GetStream();
         await JsonSerializer.SerializeAsync(stream, message,
             PaymentMinimalApisJsonSerializerContext.Default.OrderRefundMessage);
-        var value = stream.GetMemory();
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
         await ListRightPushAsync(rabbitmqConn, PaymentRefundRequest, value, CancellationToken.None);
     }
 
@@ -224,8 +224,9 @@ static partial class CacheKeys
         await JsonSerializer.SerializeAsync(stream, message,
             BasicMinimalApisJsonSerializerContext.Default.ImageHandleRequestModel);
         var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
-        using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
-        await channel.BasicPublishAsync(COSQueueName, ImageHandleRequest, value, cancellationToken);
+        await ListRightPushAsync(rabbitmqConn, ImageHandleRequest, value, CancellationToken.None);
+        //using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
+        //await channel.BasicPublishAsync(COSQueueName, ImageHandleRequest, value, cancellationToken);
     }
 
     /// <summary>
@@ -241,7 +242,7 @@ static partial class CacheKeys
 
     static readonly RecyclableMemoryStreamManager m = new();
 
-    const string exchangeName = ""; // 默认交换机
+    const string exchangeName = "amq.direct"; // 默认交换机
 
     public static async Task ListRightPushAsync(
         IConnection rabbitmqConn,

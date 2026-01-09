@@ -75,7 +75,7 @@ public static partial class ArticleController
             var r = await Info(cache, repo, conn, id, context.RequestAborted);
             return r;
         }).WithDescription("获取文章");
-
+#if DEBUG
         routeGroup.MapGet("ImageHandleRequestMessage", async (IConnection rabbitmqConn, [FromQuery] string? url, [FromQuery] string? urlPath) =>
         {
             await CacheKeys.PushImageHandleRequestMessageAsync(rabbitmqConn, new ImageHandleRequestModel
@@ -87,6 +87,7 @@ public static partial class ArticleController
             });
             return Results.Ok();
         });
+#endif
     }
 
     static async Task<ApiRsp<ArticleCategoryTreeModel[]>> GetTypes(
