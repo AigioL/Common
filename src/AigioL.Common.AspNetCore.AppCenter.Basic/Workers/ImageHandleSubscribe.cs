@@ -81,9 +81,9 @@ public static partial class ImageHandleSubscribe
                         var imageStream = await imageResponse.Content.ReadAsStreamAsync();
                         using (MagickImage image = new MagickImage(imageStream))
                         {
-                            image.Format = MagickFormat.WebP;
+                            image.Format = (MagickFormat)imageHandleRequest.HandleType;
                             image.Resize(imageHandleRequest.Width, imageHandleRequest.Height);
-                            image.Quality = 80; // 设置WebP质量
+                            image.Quality = imageHandleRequest.Quality; // 设置WebP质量
                             using (MemoryStream memoryStream = new MemoryStream())
                             {
                                 await image.WriteAsync(memoryStream);
