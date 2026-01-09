@@ -240,6 +240,16 @@ public enum ApiRspCode : uint
     #region 通用状态码，1000~1999
 
     /// <summary>
+    /// 无响应正文内容
+    /// </summary>
+    NoApiRspContent = 1000,
+
+    /// <summary>
+    /// 无响应正文内容值, bool HasValue() 验证失败或值无效
+    /// </summary>
+    NoApiRspContentValue = 1001,
+
+    /// <summary>
     /// 找不到 HTTP 请求授权头
     /// </summary>
     MissingAuthorizationHeader = 1008,
