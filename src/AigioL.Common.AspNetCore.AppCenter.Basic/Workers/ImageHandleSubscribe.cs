@@ -1,5 +1,6 @@
 #pragma warning disable IDE0290 // 使用主构造函数
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Workers.Abstractions;
 using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
@@ -16,7 +17,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Redd.ApiService.Basic.Models;
 using System.IO;
 using System.Net;
 using System.Text.Json;
@@ -28,16 +28,17 @@ namespace AigioL.Common.AspNetCore.AppCenter.COS;
 /// </summary>
 public static partial class ImageHandleSubscribe
 {
-    public sealed partial class ImageHandleWorker : WorkerBackgroundService
+    public sealed partial class ImageHandleWorker<TAppSettings> : WorkerBackgroundService
+        where TAppSettings : class, IAppSettings
     {
         readonly IServiceProvider serviceProvider;
         readonly HttpClient httpClient;
-        readonly AppSettings appSettings;
+        readonly TAppSettings appSettings;
         readonly CosXml cosXml;
 
         public ImageHandleWorker(
-            ILogger<ImageHandleWorker> logger,
-            IOptions<AppSettings> options,
+            ILogger<ImageHandleWorker<TAppSettings>> logger,
+            IOptions<TAppSettings> options,
             IServiceProvider serviceProvider,
             IHttpClientFactory httpClientFactory,
             IOptions<JsonOptions> jsonOptions,
