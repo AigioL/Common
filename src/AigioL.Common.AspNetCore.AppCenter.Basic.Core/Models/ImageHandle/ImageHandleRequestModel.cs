@@ -30,5 +30,5 @@ public sealed partial class ImageHandleRequestModel
     /// <summary>
     /// 目标指令 默认 75
     /// </summary>
-    public int Quality { get; set; } = 75;
+    public uint Quality { get; set; } = 75;
 }
