@@ -228,8 +228,17 @@ public static class PaymentController
     {
         var redis = conn.GetDatabase(CacheKeys.RedisAccessTokenDb);
 
-        ReadOnlySpan<char> cache = await redis.HashGetAsync("AccessToken", $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}");
-        var weChatAccessToken = JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
+        var weChatAccessTokenRedisValue = await redis.HashGetAsync("AccessToken", $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}");
+        if (!weChatAccessTokenRedisValue.HasValue)
+        {
+            throw new InvalidOperationException("微信访问令牌不存在，无法获取 OpenId");
+        }
+        ReadOnlySpan<char> weChatAccessTokenCharsValue = weChatAccessTokenRedisValue;
+        if (weChatAccessTokenCharsValue.Length == 0)
+        {
+            throw new InvalidOperationException("微信访问令牌不正确，无法获取 OpenId");
+        }
+        var weChatAccessToken = JsonSerializer.Deserialize(weChatAccessTokenCharsValue, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
         ArgumentNullException.ThrowIfNull(weChatAccessToken?.AccessToken);
         var request = new SnsOAuth2AccessTokenRequest()
         {
