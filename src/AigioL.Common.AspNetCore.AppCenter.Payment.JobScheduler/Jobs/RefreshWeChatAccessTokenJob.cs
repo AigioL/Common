@@ -49,8 +49,18 @@ public partial class RefreshWeChatAccessTokenJob<
             const string redisKey = "AccessToken";
             var redisHashField = $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}";
             var redis = redisConnection.GetDatabase(CacheKeys.RedisAccessTokenDb);
-            ReadOnlySpan<char> cache = await redis.HashGetAsync(redisKey, redisHashField);
-            var accessToken = cache.Length > 0 ? JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken) : null;
+            var weChatAccessTokenRedisValue = await redis.HashGetAsync(redisKey, redisHashField);
+            WeChatAccessToken? accessToken = null;
+            if (weChatAccessTokenRedisValue.HasValue)
+            {
+                ReadOnlySpan<char> weChatAccessTokenCharsValue = weChatAccessTokenRedisValue;
+                if (weChatAccessTokenCharsValue.Length != 0)
+                {
+                    accessToken = JsonSerializer.Deserialize(
+                        weChatAccessTokenCharsValue,
+                        PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
+                }
+            }
             if (accessToken == null || accessToken.ExpireTimestamp <= DateTimeOffset.Now.ToUnixTimeSeconds())
             {
                 var client = CreateWeXinClient(appIdWeChat, appSecretWeChat);
