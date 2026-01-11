@@ -138,7 +138,7 @@ sealed partial class WeChatPayV3Services<
             {
                 qs.Add("redirectUrl", returnUrl);
             }
-            var ub = new UriBuilder(OfficialUrl) { Path = "wechatpay", Query = qs.ToString() };
+            var ub = new UriBuilder(OfficialUrl) { Path = "/pay/wechatpay", Query = qs.ToString() };
             paymentPageUrl = ub.ToString();
             return true;
         }

@@ -35,7 +35,7 @@ public partial class TransferSubscribe : WorkerBackgroundService
 
     protected override string RoutingKey => CacheKeys.TransferRequest;
 
-    protected override string QueueName => CacheKeys.OrderQueueName;
+    protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}";
 
     protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
     {

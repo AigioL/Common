@@ -229,7 +229,7 @@ public static class PaymentController
         var redis = conn.GetDatabase(CacheKeys.RedisAccessTokenDb);
 
         ReadOnlySpan<char> cache = await redis.HashGetAsync("AccessToken", $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}");
-        var weChatAccessToken = JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
+        var weChatAccessToken = cache.Length > 0 ? JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken) : null;
         ArgumentNullException.ThrowIfNull(weChatAccessToken?.AccessToken);
         var request = new SnsOAuth2AccessTokenRequest()
         {

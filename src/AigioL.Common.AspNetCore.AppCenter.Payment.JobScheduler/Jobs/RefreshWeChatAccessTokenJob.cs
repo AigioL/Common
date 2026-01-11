@@ -50,7 +50,7 @@ public partial class RefreshWeChatAccessTokenJob<
             var redisHashField = $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}";
             var redis = redisConnection.GetDatabase(CacheKeys.RedisAccessTokenDb);
             ReadOnlySpan<char> cache = await redis.HashGetAsync(redisKey, redisHashField);
-            var accessToken = JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
+            var accessToken = cache.Length > 0 ? JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken) : null;
             if (accessToken == null || accessToken.ExpireTimestamp <= DateTimeOffset.Now.ToUnixTimeSeconds())
             {
                 var client = CreateWeXinClient(appIdWeChat, appSecretWeChat);
