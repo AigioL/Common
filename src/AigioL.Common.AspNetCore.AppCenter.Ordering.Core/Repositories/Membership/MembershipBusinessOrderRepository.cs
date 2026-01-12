@@ -354,7 +354,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             {
                 UserId = userId,
                 MembershipChangeDirection = MembershipChangeDirection.In,
-                Days = rechargeTimeSpan,
+                Value = rechargeTimeSpan,
                 Note = membershipLicenseFlags.GetDescription(),
                 MemberLicenseType = membershipLicenseFlags,
                 CreateTime = now,
@@ -528,7 +528,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         {
             UserId = userId,
             MembershipChangeDirection = MembershipChangeDirection.Out,
-            Days = rechargeTimeSpan,
+            Value = rechargeTimeSpan,
             Note = "用户退款，撤回",
             CurrentRealExpireDate = currentRealExpireDate,
             CreateTime = now ?? DateTimeOffset.Now,
