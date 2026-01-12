@@ -13,7 +13,7 @@ sealed partial class PaymentMessageQueueService(IConnection rabbitmqConn) : IPay
 {
     readonly RecyclableMemoryStreamManager m = new();
 
-    const string exchangeName = ""; // 默认交换机
+    const string exchangeName = "amq.direct"; // 默认交换机
 
     async Task ListRightPushAsync(
         string routingKey,
@@ -29,7 +29,7 @@ sealed partial class PaymentMessageQueueService(IConnection rabbitmqConn) : IPay
         using var stream = m.GetStream();
         await JsonSerializer.SerializeAsync(stream, info,
             PaymentMinimalApisJsonSerializerContext.Default.OrderPaymentSuccessInfo);
-        var value = stream.GetMemory();
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
         await ListRightPushAsync(CacheKeys.OrderPaymentSuccess, value);
     }
 
@@ -38,7 +38,7 @@ sealed partial class PaymentMessageQueueService(IConnection rabbitmqConn) : IPay
         using var stream = m.GetStream();
         await JsonSerializer.SerializeAsync(stream, info,
             PaymentMinimalApisJsonSerializerContext.Default.OrderRefundSuccessInfo);
-        var value = stream.GetMemory();
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
         await ListRightPushAsync(CacheKeys.OrderRefundSuccess, value);
     }
 

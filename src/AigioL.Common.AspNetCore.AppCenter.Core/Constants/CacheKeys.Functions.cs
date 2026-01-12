@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Models;
@@ -10,6 +11,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Constants;
 
@@ -206,8 +208,25 @@ static partial class CacheKeys
         using var stream = m.GetStream();
         await JsonSerializer.SerializeAsync(stream, message,
             PaymentMinimalApisJsonSerializerContext.Default.OrderRefundMessage);
-        var value = stream.GetMemory();
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
         await ListRightPushAsync(rabbitmqConn, PaymentRefundRequest, value, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// 推送图片下载处理消息
+    /// </summary>
+    public static async Task PushImageHandleRequestMessageAsync(
+        IConnection rabbitmqConn,
+        ImageHandleRequestModel message,
+        CancellationToken cancellationToken = default)
+    {
+        using var stream = m.GetStream();
+        await JsonSerializer.SerializeAsync(stream, message,
+            BasicMinimalApisJsonSerializerContext.Default.ImageHandleRequestModel);
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
+        await ListRightPushAsync(rabbitmqConn, ImageHandleRequest, value, CancellationToken.None);
+        //using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
+        //await channel.BasicPublishAsync(COSQueueName, ImageHandleRequest, value, cancellationToken);
     }
 
     /// <summary>
@@ -223,7 +242,7 @@ static partial class CacheKeys
 
     static readonly RecyclableMemoryStreamManager m = new();
 
-    const string exchangeName = ""; // 默认交换机
+    const string exchangeName = "amq.direct"; // 默认交换机
 
     public static async Task ListRightPushAsync(
         IConnection rabbitmqConn,

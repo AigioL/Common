@@ -78,13 +78,13 @@ public partial record class ApiRsp
         return result;
     }
 
-    public static ApiRsp<TContent?> Create<TContent>(TContent content) where TContent : notnull
+    public static ApiRsp<TContent?> Create<TContent>(TContent? content) where TContent : notnull
     {
         var result = new ApiRsp<TContent?> { Content = content, };
         return result;
     }
 
-    public static ApiRsp<TContent?> Ok<TContent>(TContent content) where TContent : notnull
+    public static ApiRsp<TContent?> Ok<TContent>(TContent? content) where TContent : notnull
     {
         var result = new ApiRsp<TContent?> { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
         return result;

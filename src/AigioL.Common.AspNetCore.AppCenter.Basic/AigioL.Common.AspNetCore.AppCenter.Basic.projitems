@@ -21,5 +21,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VersionsController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IAppSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\ImageHandleSubscribe.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Workers\" />
   </ItemGroup>
 </Project>

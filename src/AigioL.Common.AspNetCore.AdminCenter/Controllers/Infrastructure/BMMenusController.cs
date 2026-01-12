@@ -85,16 +85,18 @@ public static partial class BMMenusController
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("获取管理后台菜单的按钮列表");
         routeGroup.MapPost("bottons/{menuId}", async (HttpContext context,
-            [FromRoute] Guid menuId) =>
+            [FromRoute] Guid menuId,
+            [FromBody] Guid[] buttons) =>
         {
-            var r = await AddMenuButtons(context, menuId);
+            var r = await AddMenuButtons(context, menuId, buttons);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增管理后台菜单的按钮");
         routeGroup.MapPut("bottons/{menuId}", async (HttpContext context,
-            [FromRoute] Guid menuId) =>
+            [FromRoute] Guid menuId,
+            [FromBody] Guid[] buttons) =>
         {
-            var r = await EditMenuButtons(context, menuId);
+            var r = await EditMenuButtons(context, menuId, buttons);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("编辑管理后台菜单的按钮");
