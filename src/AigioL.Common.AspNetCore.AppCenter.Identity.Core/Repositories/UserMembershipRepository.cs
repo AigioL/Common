@@ -85,7 +85,7 @@ sealed partial class UserMembershipRepository<TDbContext> :
                          StartDate = x.StartDate,
                          ExpireDate = x.ExpireDate,
                          FirstMembershipDate = x.FirstMembershipDate,
-                     }).Take(1);
+                     });
         var r = query.FirstOrDefaultAsync(cancellationToken);
         return r;
     }
