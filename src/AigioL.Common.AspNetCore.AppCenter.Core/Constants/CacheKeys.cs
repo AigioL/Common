@@ -46,9 +46,9 @@ public static partial class CacheKeys
         "AdvertisementCache";
 
     /// <summary>
-    /// Steam 充值用户操作并发锁
+    /// 用户充值操作并发锁
     /// </summary>
-    public static string GetSteamRechargeUserOperationLockKey(Guid userId) => $"SteamRechargeUserOperationHashKey:{userId:N}";
+    public static string GetUserRechargeOperationLockKey(Guid userId) => $"UserRechargeOperationLockHashKey:{userId:N}";
 
     #region HashKey
 

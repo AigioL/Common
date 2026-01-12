@@ -87,4 +87,15 @@ partial interface IMembershipBusinessOrderRepository
     Task<(bool isSuccess, decimal? firstAmount)> AddAgreementAndBindOrderAsync(
         MerchantDeductionAgreement agreement,
         string orderId);
+
+    /// <summary>
+    /// 创建或更新用户会员信息
+    /// </summary>
+    Task<bool> CreateOrUpdateUserMembershipAsync(
+       Guid businessOrderId,
+       TimeSpan rechargeTimeSpan,
+       Guid userId,
+       MembershipLicenseFlags membershipLicenseFlags,
+       MembershipBusinessSource membershipBusinessSource,
+       DateTimeOffset? now = null);
 }

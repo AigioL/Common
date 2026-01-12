@@ -60,4 +60,10 @@ public interface IUserMembershipService
     Task<bool> UnSignMerchantDeductionSuccessHandleAsync(string agreementNo);
 
     #endregion
+
+
+    /// <summary>
+    /// 刷新用户会员信息缓存
+    /// </summary>
+    Task<bool> RefreshUserMembershipCacheAsync(Guid userId);
 }

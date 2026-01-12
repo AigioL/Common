@@ -263,18 +263,28 @@ partial class KeyValuePairRepository<TDbContext>
         JsonTypeInfo<T>? jsonTypeInfo,
         CancellationToken cancellationToken = default)
     {
+        bool isStringType = typeof(T) == typeof(string);
+
         T? result = default;
         byte[]? bytes;
         bytes = await cache.GetAsync(key, cancellationToken);
-        if (bytes != null && bytes.Length > 0)
+        if (bytes != null)
         {
-            try
+            if (bytes.Length == 0)
             {
-                result = MemoryPackSerializer.Deserialize<T>(bytes);
-                return result;
+                // 空数组表示查询数据库无值，返回默认值
+                return default;
             }
-            catch
+            else
             {
+                try
+                {
+                    result = MemoryPackSerializer.Deserialize<T>(bytes);
+                    return result;
+                }
+                catch
+                {
+                }
             }
         }
         if (result is null)
@@ -282,20 +292,21 @@ partial class KeyValuePairRepository<TDbContext>
             var entry = await EntityNoTracking.FirstOrDefaultAsync(x => x.Id == key, cancellationToken);
             if (entry != null)
             {
-                if (typeof(T) == typeof(string))
+                if (isStringType)
                 {
+                    // 字符串类型直接转换
                     result = (T)(object)entry.Value;
                 }
                 else
                 {
+                    // 从数据库中取的值使用 Json 反序列化
                     ArgumentNullException.ThrowIfNull(jsonTypeInfo);
                     result = JsonSerializer.Deserialize(entry.Value, jsonTypeInfo);
                 }
-                if (result != null)
-                {
-                    bytes = MemoryPackSerializer.Serialize(result);
-                    await cache.SetAsync(key, bytes, CancellationToken.None);
-                }
+
+                // 从数据库中取的值为 null 时，缓存空数组表示无值
+                bytes = result == null ? [] : MemoryPackSerializer.Serialize(result);
+                await cache.SetAsync(key, bytes, CancellationToken.None);
                 return result;
             }
         }

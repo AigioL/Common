@@ -112,7 +112,7 @@ public static class MembershipController
         Guid membershipGoodsId,
         Guid? channelPackageId)
     {
-        var lockKey = CacheKeys.GetSteamRechargeUserOperationLockKey(userId);
+        var lockKey = CacheKeys.GetUserRechargeOperationLockKey(userId);
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
         return r;
 
@@ -167,7 +167,7 @@ public static class MembershipController
             return "CDKey 不合法";
         }
 
-        var lockKey = CacheKeys.GetSteamRechargeUserOperationLockKey(cdKey);
+        var lockKey = CacheKeys.GetUserRechargeOperationLockKey(cdKey);
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
         return r;
 

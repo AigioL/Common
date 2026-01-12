@@ -8,4 +8,5 @@ public enum MembershipBusinessSource : byte
     普通订单 = 0,
     CDK激活 = 1,
     协议扣款 = 2,
+    推广口令码 = 4,
 }

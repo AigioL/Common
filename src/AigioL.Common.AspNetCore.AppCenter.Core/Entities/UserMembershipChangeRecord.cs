@@ -5,6 +5,7 @@ using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 
@@ -41,8 +42,8 @@ public partial class UserMembershipChangeRecord :
     /// <summary>
     /// 变更值
     /// </summary>
-    [Comment("变更天数")]
-    public int Days { get; set; }
+    [Comment("变更值")]
+    public TimeSpan Value { get; set; }
 
     /// <inheritdoc/>
     [Comment("备注")]

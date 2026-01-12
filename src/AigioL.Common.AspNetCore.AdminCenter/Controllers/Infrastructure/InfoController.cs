@@ -192,8 +192,9 @@ public static partial class InfoController
                 if (roleName_ == adminRoleName)
                 {
                     identityResult = await userManager.AddToRoleAsync(user, roleName_);
-                    if (!identityResult.Succeeded)
+                    if (identityResult.Succeeded)
                     {
+                        // 补上租户 Id
                         await db.UserRoles
                             .Where(x => x.UserId == user.Id && x.RoleId == role.Id)
                             .ExecuteUpdateAsync(x => x.SetProperty(y => y.TenantId, tenantId));

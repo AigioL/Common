@@ -19,8 +19,10 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
 using System.Data;
 using System.Linq.Expressions;
+using static AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Membership.LogMembershipBusinessOrderRepository;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Membership;
 
@@ -287,35 +289,38 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         }
     }
 
-    #region Private Methods
-
-    /// <summary>
-    /// 创建或更新用户会员信息
-    /// </summary>
-    /// <param name="business_order"></param>
-    /// <param name="now"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    private async Task<bool> CreateOrUpdateUserMembershipAsync(MembershipBusinessOrder business_order, DateTimeOffset now)
+    public async Task<bool> CreateOrUpdateUserMembershipAsync(
+        Guid businessOrderId,
+        TimeSpan rechargeTimeSpan,
+        Guid userId,
+        MembershipLicenseFlags membershipLicenseFlags,
+        MembershipBusinessSource membershipBusinessSource,
+        DateTimeOffset? now_ = null)
     {
         if (db.Database.CurrentTransaction is null)
         {
             throw new InvalidOperationException("必须在事务中调用此方法");
         }
 
-        var rechargeDays = business_order.RechargeDays;
-        var userMembership = await db.UserMemberships.FirstOrDefaultAsync(x => x.Id == business_order.UserId);
+        var now = now_ ?? DateTimeOffset.Now;
+
+        var userMembership = await db.UserMemberships.FirstOrDefaultAsync(x => x.Id == userId);
 
         DateTimeOffset currentRealExpireDate;
 
         var userMembershipChangeSuccess = false;
         if (userMembership == null)
         {
-            currentRealExpireDate = now.AddDays(rechargeDays);
+            currentRealExpireDate = now.Add(rechargeTimeSpan);
 
-            userMembershipChangeSuccess =
-                await CreateNewUserMembership() &&
-                await ChangeUserType();
+            (bool flags, userMembership) = await CreateNewUserMembership(
+                userId, now, currentRealExpireDate,
+                membershipLicenseFlags);
+            if (flags)
+            {
+                flags = await AddUserTypeAsync(userId, UserType.Membership);
+                userMembershipChangeSuccess = flags;
+            }
         }
         else
         {
@@ -323,85 +328,120 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             // 之前的会员已经到期
             if (userMembership.ExpireDate <= now)
             {
-                currentRealExpireDate = now.AddDays(rechargeDays);
+                currentRealExpireDate = now.Add(rechargeTimeSpan);
                 userMembership.StartDate = now;
                 userMembership.ExpireDate = currentRealExpireDate;
-
-                changeUserTypeSuccess = await ChangeUserType();
             }
             else // 在会员期内购买会员
             {
-                currentRealExpireDate = userMembership.ExpireDate.AddDays(rechargeDays);
+                currentRealExpireDate = userMembership.ExpireDate.Add(rechargeTimeSpan);
                 userMembership.ExpireDate = currentRealExpireDate;
-                changeUserTypeSuccess = true;
             }
 
-            var membershipLicenseType = ConvertMembershipLicenseType(business_order.MemberLicenseType, business_order.BusinessSource);
+            changeUserTypeSuccess = await AddUserTypeAsync(userId, UserType.Membership);
+
+            var membershipLicenseType = ConvertMembershipLicenseType(membershipLicenseFlags, membershipBusinessSource);
             userMembership.MemberLicenseFlags |= membershipLicenseType;
             db.UserMemberships.Update(userMembership);
 
-            userMembershipChangeSuccess =
-                await db.SaveChangesAsync() > 0 &&
-                changeUserTypeSuccess;
+            var rowCount = await db.SaveChangesAsync();
+            userMembershipChangeSuccess = rowCount > 0 && changeUserTypeSuccess;
         }
 
         if (userMembershipChangeSuccess)
         {
             var userMembershipChangeRecord = new UserMembershipChangeRecord()
             {
-                UserId = business_order.UserId,
+                UserId = userId,
                 MembershipChangeDirection = MembershipChangeDirection.In,
-                Days = business_order.RechargeDays,
-                Note = business_order.MemberLicenseType.GetDescription(),
-                MemberLicenseType = business_order.MemberLicenseType,
-                CreateTime = DateTimeOffset.Now,
+                Value = rechargeTimeSpan,
+                Note = membershipLicenseFlags.GetDescription(),
+                MemberLicenseType = membershipLicenseFlags,
+                CreateTime = now,
                 CurrentRealExpireDate = currentRealExpireDate,
             };
 
             db.UserMembershipChangeRecords.Add(userMembershipChangeRecord);
-            return await db.SaveChangesAsync() > 0;
+            var rowCount = await db.SaveChangesAsync();
+            return rowCount > 0;
         }
 
         return false;
+    }
 
-        // 首次购买会员
-        async Task<bool> CreateNewUserMembership()
+    #region Private Methods
+
+    Task<bool> CreateOrUpdateUserMembershipAsync(MembershipBusinessOrder business_order, DateTimeOffset? now)
+    {
+        var rechargeDays = business_order.RechargeDays;
+        var rechargeTimeSpan = TimeSpan.FromDays(rechargeDays);
+        return CreateOrUpdateUserMembershipAsync(
+            business_order.Id, rechargeTimeSpan, business_order.UserId,
+            business_order.MemberLicenseType, business_order.BusinessSource);
+    }
+
+    /// <summary>
+    /// 首次购买会员
+    /// </summary>
+    async Task<(bool isOk, UserMembership userMembership)> CreateNewUserMembership(
+        Guid userId,
+        DateTimeOffset now,
+        DateTimeOffset currentRealExpireDate,
+        MembershipLicenseFlags membershipLicenseFlags)
+    {
+        var userMembership = new UserMembership()
         {
-            userMembership = new UserMembership()
-            {
-                Id = business_order.UserId,
-                StartDate = now,
-                ExpireDate = currentRealExpireDate,
-                MemberLicenseFlags = business_order.MemberLicenseType,
-                FirstMembershipDate = now,
-            };
-            db.UserMemberships.Add(userMembership);
-            return await db.SaveChangesAsync() > 0;
-        }
+            Id = userId,
+            StartDate = now,
+            ExpireDate = currentRealExpireDate,
+            MemberLicenseFlags = membershipLicenseFlags,
+            FirstMembershipDate = now,
+        };
+        await db.UserMemberships.AddAsync(userMembership);
+        var rowCount = await db.SaveChangesAsync();
+        return (rowCount > 0, userMembership);
+    }
 
-        // 添加会员用户类型，已经是会员则忽略修改
-        async Task<bool> ChangeUserType()
+    /// <summary>
+    /// 添加会员用户类型，已经是会员则忽略修改
+    /// </summary>
+    async Task<bool> AddUserTypeAsync(Guid userId, UserType userTypeVal = UserType.Membership)
+    {
+        var exists = await db.Users.AnyAsync(x => x.Id == userId && x.UserType.HasFlag(userTypeVal));
+        if (!exists)
         {
-            var exists = await db.Users.AsNoTracking().AnyAsync(x => x.Id == business_order.UserId && x.UserType.HasFlag(UserType.Membership));
-
-            if (!exists)
+            var userType = await GetUserQueryWithHasFlag(userId, userTypeVal)
+                .Select(x => (UserType?)x.UserType)
+                .FirstOrDefaultAsync();
+            if (userType.HasValue)
             {
-                exists = await db.Users.AsNoTracking().Where(x => x.Id == business_order.UserId)
-                   .Where(x => !x.UserType.HasFlag(UserType.Membership))
-                   .ExecuteUpdateAsync(s => s.SetProperty(e => e.UserType, e => e.UserType + (int)UserType.Membership)) > 0;
+                userType = userType.Value | userTypeVal;
+                var r = await GetUserQueryWithHasFlag(userId, userTypeVal)
+                    .ExecuteUpdateAsync(s => s.SetProperty(e => e.UserType, e => userType.Value));
             }
-
-            return exists;
         }
+
+        return true;
     }
 
     /// <summary>
     /// 根据业务订单撤销用户会员充值
     /// </summary>
-    /// <param name="business_order"></param>
-    /// <returns></returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    private async Task<bool> UserMembershipRechargeReturnAsync(MembershipBusinessOrder business_order)
+    Task<bool> UserMembershipRechargeReturnAsync(MembershipBusinessOrder business_order)
+    {
+        var rechargeDays = business_order.RechargeDays;
+        var rechargeTimeSpan = TimeSpan.FromDays(rechargeDays).Negate();
+        return UserMembershipRechargeReturnAsync(
+            business_order.Id, rechargeTimeSpan, business_order.UserId,
+            business_order.MemberLicenseType, business_order.BusinessSource);
+    }
+
+    async Task<bool> UserMembershipRechargeReturnAsync(
+        Guid businessOrderId,
+        TimeSpan rechargeTimeSpan,
+        Guid userId,
+        MembershipLicenseFlags membershipLicenseFlags,
+        MembershipBusinessSource membershipBusinessSource)
     {
         if (db.Database.CurrentTransaction is null)
         {
@@ -409,89 +449,126 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         }
 
         var now = DateTimeOffset.Now;
-        var rechargeDays = business_order.RechargeDays;
-        if (rechargeDays <= 0)
+        if (rechargeTimeSpan == default)
         {
-            logger.LogError($"充值天数必须大于零，充值撤销异常；businessOrderId: {business_order.Id}");
+            LogRechargeTimeSpanIsZero(logger, nameof(UserMembershipRechargeReturnAsync), businessOrderId);
+            return false;
+        }
+        else if (rechargeTimeSpan > TimeSpan.Zero)
+        {
+            // 取负值
+            rechargeTimeSpan = rechargeTimeSpan.Negate();
+        }
+        var membership = await db.UserMemberships.FirstOrDefaultAsync(x => x.Id == userId);
+        if (membership is null)
+        {
             return false;
         }
 
-        var returnDays = -rechargeDays;
+        var membershipLicenseType = ConvertMembershipLicenseType(membershipLicenseFlags, membershipBusinessSource);
+        var currentRealExpireDate = membership.ExpireDate.Add(rechargeTimeSpan);
+        var membershipExpired = currentRealExpireDate <= now; // 会员资格已过期
 
-        var membership = await db.UserMemberships.FirstOrDefaultAsync(x => x.Id == business_order.UserId);
-        if (membership is null)
-            return false;
-
-        var membershipLicenseType = ConvertMembershipLicenseType(business_order.MemberLicenseType, business_order.BusinessSource);
-        var currentRealExpireDate = membership.ExpireDate.AddDays(returnDays);
-        var membershipExpired = currentRealExpireDate <= now;
-
-        var r = await MembershipChangeAsync();
+        var r = await MembershipChangeAsync(businessOrderId, userId, currentRealExpireDate, membershipExpired, membership, membershipLicenseType);
         if (r)
         {
-            return
-                await AddMembershipRecordAsync() &&
-                await ChangeUserType(membershipExpired);
+            var flags = await AddMembershipRecordAsync(rechargeTimeSpan, userId, currentRealExpireDate, now);
+            if (flags)
+            {
+                flags = await RemoveUserTypeAsync(userId, membershipExpired, UserType.Membership);
+                return flags;
+            }
         }
 
         return false;
+    }
 
-        async Task<bool> MembershipChangeAsync()
+    async Task<bool> MembershipChangeAsync(
+        Guid businessOrderId,
+        Guid userId,
+        DateTimeOffset currentRealExpireDate,
+        bool membershipExpired,
+        UserMembership membership,
+        MembershipLicenseFlags membershipLicenseType)
+    {
+        if (membershipExpired) // 会员过期订阅类型清空
         {
-            if (membershipExpired) // 会员过期订阅类型清空
+            membership.MemberLicenseFlags = MembershipLicenseFlags.None;
+        }
+        else
+        {
+            // 检查当前会员订阅类型是否在当前会员期限内还存在，没有则未用户去除该订阅类型
+            var hasFlag = await Entity.AsNoTracking()
+                .AnyAsync(x =>
+                x.Id != businessOrderId &&
+                x.MemberLicenseType == membershipLicenseType &&
+                x.UserId == userId &&
+                x.RechargeCompletionTime >= membership.StartDate);
+
+            if (!hasFlag)
             {
-                membership.MemberLicenseFlags = MembershipLicenseFlags.None;
+                membership.MemberLicenseFlags -= membershipLicenseType;
             }
-            else
-            {
-                // 检查当前会员订阅类型是否在当前会员期限内还存在，没有则未用户去除该订阅类型
-                var hasFlag = await Entity.AsNoTracking()
-                    .AnyAsync(x =>
-                    x.Id != business_order.Id &&
-                    x.MemberLicenseType == membershipLicenseType &&
-                    x.UserId == business_order.UserId &&
-                    x.RechargeCompletionTime >= membership.StartDate);
-
-                if (!hasFlag)
-                    membership.MemberLicenseFlags -= membershipLicenseType;
-            }
-
-            membership.ExpireDate = currentRealExpireDate;
-
-            db.UserMemberships.Update(membership);
-            return await db.SaveChangesAsync() > 0;
         }
 
-        async Task<bool> AddMembershipRecordAsync()
+        membership.ExpireDate = currentRealExpireDate;
+
+        db.UserMemberships.Update(membership);
+        var r = await db.SaveChangesAsync();
+        return r > 0;
+    }
+
+    async Task<bool> AddMembershipRecordAsync(
+        TimeSpan rechargeTimeSpan,
+        Guid userId,
+        DateTimeOffset currentRealExpireDate,
+        DateTimeOffset? now = null)
+    {
+        var changeRecord = new UserMembershipChangeRecord()
         {
-            var changeRecord = new UserMembershipChangeRecord()
-            {
-                UserId = membership.Id,
-                MembershipChangeDirection = MembershipChangeDirection.Out,
-                Days = rechargeDays,
-                Note = "用户退款，撤回",
-                CurrentRealExpireDate = currentRealExpireDate,
-                CreateTime = now
-            };
+            UserId = userId,
+            MembershipChangeDirection = MembershipChangeDirection.Out,
+            Value = rechargeTimeSpan,
+            Note = "用户退款，撤回",
+            CurrentRealExpireDate = currentRealExpireDate,
+            CreateTime = now ?? DateTimeOffset.Now,
+        };
 
-            db.UserMembershipChangeRecords.Add(changeRecord);
-            return await db.SaveChangesAsync() > 0;
-        }
+        await db.UserMembershipChangeRecords.AddAsync(changeRecord);
+        var r = await db.SaveChangesAsync();
+        return r > 0;
+    }
 
-        // 撤回后会员已过期则回收用户会员类型
-        async Task<bool> ChangeUserType(bool membershipExpired)
+    /// <summary>
+    /// 撤回后会员已过期则回收用户会员类型
+    /// </summary>
+    async Task<bool> RemoveUserTypeAsync(Guid userId, bool membershipExpired, UserType userTypeVal = UserType.Membership)
+    {
+        if (membershipExpired)
         {
-            var exists = await db.Users.AsNoTracking().AnyAsync(x => x.Id == business_order.UserId && x.UserType.HasFlag(UserType.Membership));
-
-            if (membershipExpired && exists)
+            var exists = await db.Users.AnyAsync(x => x.Id == userId && x.UserType.HasFlag(userTypeVal));
+            if (exists)
             {
-                return await db.Users.Where(x => x.Id == business_order.UserId)
-                    .Where(x => x.UserType.HasFlag(UserType.Membership))
-                    .ExecuteUpdateAsync(s => s.SetProperty(e => e.UserType, e => e.UserType - (int)UserType.Membership)) > 0;
+                var userType = await GetUserQueryWithHasFlag(userId, userTypeVal)
+                    .Select(x => (UserType?)x.UserType)
+                    .FirstOrDefaultAsync();
+                if (userType.HasValue)
+                {
+                    userType &= ~userTypeVal;
+                    var r = await GetUserQueryWithHasFlag(userId, userTypeVal)
+                        .ExecuteUpdateAsync(s => s.SetProperty(e => e.UserType, e => userType.Value));
+                }
             }
-
-            return true;
         }
+
+        return true;
+    }
+
+    IQueryable<User> GetUserQueryWithHasFlag(Guid userId, UserType userTypeVal = UserType.Membership)
+    {
+        var query = db.Users
+            .Where(x => x.Id == userId && x.UserType.HasFlag(userTypeVal));
+        return query;
     }
 
     /// <summary>
@@ -507,7 +584,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
         async Task<Order?> CreateMembershipBusinessOrderCoreAsync()
         {
-            using var transaction = await db.Database.BeginTransactionAsync(RequestAborted);
+            using var transaction = await db.Database.BeginTransactionAsync();
             try
             {
                 // 创建业务订单
@@ -564,7 +641,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
         async Task<bool> CoreAsync()
         {
-            using var transaction = await db.Database.BeginTransactionAsync(RequestAborted);
+            using var transaction = await db.Database.BeginTransactionAsync();
             try
             {
                 // 创建已支付的业务订单
@@ -765,4 +842,12 @@ partial class MembershipBusinessOrderRepository<TDbContext> // 管理后台
             .PagingAsync(current, pageSize, cancellationToken);
         return r;
     }
+}
+
+static partial class LogMembershipBusinessOrderRepository
+{
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "充值天数必须不为零，充值 {method} 异常，businessOrderId: {businessOrderId}")]
+    internal static partial void LogRechargeTimeSpanIsZero(ILogger logger, string? method, Guid businessOrderId);
 }
