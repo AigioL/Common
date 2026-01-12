@@ -115,6 +115,10 @@ public partial class Order :
 
     public virtual MerchantDeductionAgreement? MerchantDeductionAgreement { get; set; }
 
+    /// <summary>
+    /// 渠道包 Id
+    /// </summary>
+    [Comment("渠道包 Id")]
     public Guid? ChannelPackageId { get; set; }
 
     public virtual ChannelPackage? ChannelPackage { get; set; }

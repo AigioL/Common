@@ -193,15 +193,11 @@ sealed partial class UserMembershipService(
 
     #endregion
 
-    /// <summary>
-    /// 刷新用户会员信息缓存
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <returns></returns>
-    async Task<bool> RefreshUserMembershipCacheAsync(Guid userId)
+    public async Task<bool> RefreshUserMembershipCacheAsync(Guid userId)
     {
         var database = connection.GetDatabase(CacheKeys.RedisMessagingDb);
         var cacheKey = CacheKeys.GetUserMembershipCacheKey(userId);
-        return await database.KeyDeleteAsync(cacheKey);
+        var r = await database.KeyDeleteAsync(cacheKey);
+        return r;
     }
 }

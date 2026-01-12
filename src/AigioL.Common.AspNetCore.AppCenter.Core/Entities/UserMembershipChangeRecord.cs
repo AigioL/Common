@@ -41,8 +41,8 @@ public partial class UserMembershipChangeRecord :
     /// <summary>
     /// 变更值
     /// </summary>
-    [Comment("变更天数")]
-    public int Days { get; set; }
+    [Comment("变更值")]
+    public TimeSpan Days { get; set; }
 
     /// <inheritdoc/>
     [Comment("备注")]
