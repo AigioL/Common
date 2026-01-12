@@ -61,6 +61,7 @@ partial class TencentCloudStorageService<TSettings>
     {
         var cdnCustomKey = options.ObjectStorageOptions.TencentCloud.CdnCustomKey;
         var cdnDomainName = options.ObjectStorageOptions.TencentCloud.CdnDomainName;
+
         var r = GetCdnTempDownloadUrl(resourceAccessPath, expiration, cdnCustomKey, cdnDomainName);
         return r;
     }
@@ -121,9 +122,16 @@ public partial class TencentCloudStorageService
 
         // Filename：资源访问路径
         ReadOnlySpan<char> filename;
+        bool queryExists = false;
         try
         {
-            filename = new Uri(resourceAccessPath).PathAndQuery.AsSpan().Trim();
+            // 支持参数 资源（支持二次验证）
+            var uriInfo = new Uri(resourceAccessPath);
+            filename = uriInfo.PathAndQuery.AsSpan().Trim();
+            if (!string.IsNullOrWhiteSpace(uriInfo.Query))
+            {
+                queryExists = true;
+            }
         }
         catch
         {
@@ -145,7 +153,8 @@ public partial class TencentCloudStorageService
         SHA256.HashData(Encoding.UTF8.GetBytes($"{filename}-{timestamp}-{rand}-{uid}-{cdnCustomKey}"), hash);
         var hashHex = Convert.ToHexStringLower(hash);
 
-        var typeA = $"https://{cdnDomainNameSpan}{filename}?sign={timestamp}-{rand}-{uid}-{hashHex}";
+        var typeA = $"https://{cdnDomainNameSpan}{filename}{(queryExists ? "&" : "?")}sign={timestamp}-{rand}-{uid}-{hashHex}";
+
         return typeA;
     }
 
