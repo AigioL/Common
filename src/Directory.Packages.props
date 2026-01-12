@@ -191,4 +191,13 @@
 	<ItemGroup>
 		<PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="14.10.1" />
 	</ItemGroup>
+	<!-- 👇 Steam -->
+	<ItemGroup>
+		<PackageVersion Include="SteamKit2" Version="3.3.1" />
+	</ItemGroup>
+	<!-- 👇 Protobuf -->
+	<ItemGroup>
+		<PackageVersion Include="Google.Protobuf" Version="3.33.3" />
+		<PackageVersion Include="Grpc.Tools" Version="2.76.0" />
+	</ItemGroup>
 </Project>
