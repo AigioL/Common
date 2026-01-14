@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace AigioL.Common.Extensions.Http.Models;
+namespace AigioL.Common.Extensions.Http.Proxy.Models;
 
 /// <summary>
 /// <see cref="CredentialCache"/> 的可序列化模型类

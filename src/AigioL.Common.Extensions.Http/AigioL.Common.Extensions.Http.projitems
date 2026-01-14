@@ -14,13 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpClientExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpResponseMessageExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\CredentialCacheModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\CredentialsModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicWebProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExHttpJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\HttpRequestMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\HttpResponseMessageRecord.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\NetworkCredentialModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\WebProxyModel.cs" />
   </ItemGroup>
 </Project>

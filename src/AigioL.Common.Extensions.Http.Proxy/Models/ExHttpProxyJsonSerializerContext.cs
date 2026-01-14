@@ -2,13 +2,12 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AigioL.Common.Extensions.Http.Models;
+namespace AigioL.Common.Extensions.Http.Proxy.Models;
 
-[JsonSerializable(typeof(HttpRequestMessageRecord))]
-[JsonSerializable(typeof(HttpResponseMessageRecord))]
-public sealed partial class ExHttpJsonSerializerContext : JsonSerializerContext
+[JsonSerializable(typeof(WebProxyModel))]
+public sealed partial class ExHttpProxyJsonSerializerContext : JsonSerializerContext
 {
-    static ExHttpJsonSerializerContext()
+    static ExHttpProxyJsonSerializerContext()
     {
         JsonSerializerOptions o = new()
         {
@@ -23,6 +22,6 @@ public sealed partial class ExHttpJsonSerializerContext : JsonSerializerContext
 
             #endregion
         };
-        Default = new ExHttpJsonSerializerContext(o);
+        Default = new ExHttpProxyJsonSerializerContext(o);
     }
 }

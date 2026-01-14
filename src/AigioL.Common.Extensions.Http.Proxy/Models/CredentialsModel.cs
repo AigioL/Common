@@ -2,7 +2,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AigioL.Common.Extensions.Http.Models;
+namespace AigioL.Common.Extensions.Http.Proxy.Models;
 
 /// <summary>
 /// <see cref="ICredentials"/> 的可序列化模型基类

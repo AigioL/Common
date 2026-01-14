@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace AigioL.Common.Extensions.Http.Models;
+namespace AigioL.Common.Extensions.Http.Proxy.Models;
 
 /// <summary>
 /// 包含 <see cref="HttpClient"/> 类的 HTTP 代理设置的可序列化模型类

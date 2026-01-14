@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace AigioL.Common.Extensions.Http.Models;
+namespace AigioL.Common.Extensions.Http.Proxy.Models;
 
 /// <summary>
 /// 可动态设置内部 <see cref="IWebProxy"/> 实例的 <see cref="WebProxy"/> 实现

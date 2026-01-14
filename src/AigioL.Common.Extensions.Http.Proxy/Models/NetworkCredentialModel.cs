@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace AigioL.Common.Extensions.Http.Models;
+namespace AigioL.Common.Extensions.Http.Proxy.Models;
 
 /// <summary>
 /// <see cref="NetworkCredential"/> 的可序列化模型类
