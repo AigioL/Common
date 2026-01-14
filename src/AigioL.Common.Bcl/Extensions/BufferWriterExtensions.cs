@@ -146,6 +146,51 @@ public static partial class BufferWriterExtensions
     }
 
     /// <summary>
+    /// 将字符串写入缓冲区
+    /// </summary>
+    public static void Write(this IBufferWriter<byte> writer, string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return;
+        }
+
+        writer.Write(value.AsSpan());
+    }
+
+    /// <summary>
+    /// 将字符 Span 写入缓冲区
+    /// </summary>
+    public static void Write(this IBufferWriter<byte> writer, ReadOnlySpan<char> value)
+    {
+        if (value.IsEmpty)
+        {
+            return;
+        }
+
+        int expectedByteCount = Encoding.UTF8.GetMaxByteCount(value.Length);
+
+        byte[]? array = null;
+        Span<byte> utf8Bytes = expectedByteCount <= StackallocByteThreshold ?
+            stackalloc byte[StackallocByteThreshold] :
+            (array = ArrayPool<byte>.Shared.Rent(expectedByteCount));
+
+        try
+        {
+            var actualByteCount = Encoding.UTF8.GetBytes(value, utf8Bytes);
+            utf8Bytes = utf8Bytes[..actualByteCount];
+            writer.Write(utf8Bytes);
+        }
+        finally
+        {
+            if (array is not null)
+            {
+                ArrayPool<byte>.Shared.Return(array);
+            }
+        }
+    }
+
+    /// <summary>
     /// 将字符串按 HTML 编码后写入缓冲区
     /// </summary>
     public static void WriteHtmlEncodedText(this IBufferWriter<byte> writer, string? value)
