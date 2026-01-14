@@ -6,6 +6,7 @@ namespace AigioL.Common.Extensions.Http.Models;
 
 [JsonSerializable(typeof(HttpRequestMessageRecord))]
 [JsonSerializable(typeof(HttpResponseMessageRecord))]
+[JsonSerializable(typeof(WebProxyModel))]
 public sealed partial class ExHttpJsonSerializerContext : JsonSerializerContext
 {
     static ExHttpJsonSerializerContext()

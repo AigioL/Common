@@ -15,7 +15,13 @@ public sealed class HttpNoProxy : IWebProxy
     HttpNoProxy() { }
 
     /// <inheritdoc/>
-    public ICredentials? Credentials { get; set; }
+    public ICredentials? Credentials
+    {
+        get => null;
+        set
+        {
+        }
+    }
 
     /// <inheritdoc/>
     public Uri? GetProxy(Uri destination) => null;
