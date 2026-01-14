@@ -12,6 +12,12 @@ public partial interface IBMMenuRepository
     Task<List<BMMenuTreeItem>> GetTreeAsync();
 
     /// <summary>
+    /// 设置菜单排序
+    /// </summary>
+    /// <returns></returns>
+    Task<bool> SetMenuSort(BMMenuSortItem[] items);
+
+    /// <summary>
     /// 查询详情
     /// </summary>
     /// <param name="id"></param>

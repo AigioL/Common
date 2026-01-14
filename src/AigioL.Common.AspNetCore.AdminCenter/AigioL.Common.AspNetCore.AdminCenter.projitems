@@ -65,6 +65,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuButtonModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuEdit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuSortItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuTreeItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMApiRspExtensions.cs" />

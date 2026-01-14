@@ -37,6 +37,15 @@ public static partial class BMMenusController
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("获取管理后台菜单详情");
+
+        routeGroup.MapPut("/sort", async (HttpContext context,
+            [FromBody] BMMenuSortItem[] items) =>
+        {
+            var r = await MenuSort(context, items);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, BMButtonType.Edit)
+        .WithDescription("设置菜单排序");
+
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] BMMenuEdit model) =>
         {
@@ -136,6 +145,20 @@ public static partial class BMMenusController
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("删除管理后台菜单权限按钮");
+    }
+
+    static async Task<BMApiRsp<bool>> MenuSort(HttpContext context, BMMenuSortItem[] items)
+    {
+        try
+        {
+            var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+            var r = await repo.SetMenuSort(items);
+            return BMApiRsp.OkBoolean(r);
+        }
+        catch
+        {
+            return BMApiRsp.OkBoolean(false);
+        }
     }
 
     static async Task<BMApiRsp<List<BMMenuTreeItem>?>> Tree(HttpContext context)
