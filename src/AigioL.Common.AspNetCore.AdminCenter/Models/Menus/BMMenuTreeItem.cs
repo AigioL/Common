@@ -8,6 +8,8 @@ public sealed class BMMenuTreeItem : IReadOnlyId<Guid>
 
     public Guid? ParentId { get; set; }
 
+    public string? IconUrl { get; set; }
+
     public string Name { get; set; } = null!;
 
     public string? Key { get; set; }

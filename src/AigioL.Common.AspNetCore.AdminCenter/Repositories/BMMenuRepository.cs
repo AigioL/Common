@@ -4,6 +4,8 @@ using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 using AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +43,7 @@ sealed partial class BMMenuRepository<
                 ParentId = x.ParentId,
                 Name = x.Name,
                 Sort = x.Sort,
+                IconUrl = x.IconUrl,
                 Key = x.Key,
                 Url = x.Url,
                 Children = x.Children!.OrderByDescending(static x => x.Sort).Select(static x => new BMMenuTreeItem
@@ -49,6 +52,7 @@ sealed partial class BMMenuRepository<
                     ParentId = x.ParentId,
                     Name = x.Name,
                     Sort = x.Sort,
+                    IconUrl = x.IconUrl,
                     Key = x.Key,
                     Url = x.Url,
                 }).ToList(),
@@ -81,6 +85,18 @@ sealed partial class BMMenuRepository<
             entity.OperatorUserId = userId;
         });
         return r;
+    }
+
+    public async Task<bool> SetMenuSort(BMMenuSortItem[] items)
+    {
+        foreach (var item in items)
+        {
+            await db.Menus
+                 .AsNoTrackingWithIdentityResolution()
+                 .Where(x => x.Id == item.Id)
+                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Sort, item.Sort), CancellationToken.None);
+        }
+        return true;
     }
 }
 
