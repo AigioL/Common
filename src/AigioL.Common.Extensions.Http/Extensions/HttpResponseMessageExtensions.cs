@@ -156,8 +156,10 @@ public static partial class HttpResponseMessageExtensions
             return;
         }
 
+        responseMessageRecord?.SetResponseMessage(response);
+
         Exception? exception = null;
-        var requestUri = response.RequestMessage?.RequestUri;
+        var requestUri = response.RequestMessage == null ? null : HttpRequestMessageRecord.GetOriginalRequestUri(response.RequestMessage);
         var requestUriHide = HttpRequestMessageRecord.GetRequestUriHideQuery(requestUri);
 
         var method = response.RequestMessage?.Method?.Method;

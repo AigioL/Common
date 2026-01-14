@@ -85,9 +85,24 @@ public partial class HttpRequestMessageRecord
 
 partial class HttpRequestMessageRecord
 {
+    /// <summary>
+    /// 获取请求的原始地址，请求地址 <see cref="HttpRequestMessage.RequestUri"/> 可能被重定向修改，必须通过 <see cref="HttpClientExtensions.UseDefaultSendAsync"/> 发送请求才能获取真实原始地址
+    /// </summary>
+    public static Uri? GetOriginalRequestUri(HttpRequestMessage request)
+    {
+        if (request.Options.TryGetValue<Uri>(new(nameof(HttpRequestMessage.RequestUri)), out var requestUri))
+        {
+            return requestUri;
+        }
+        else
+        {
+            return request.RequestUri;
+        }
+    }
+
     public virtual void SetRequestMessage(HttpRequestMessage request)
     {
-        RequestUri = request.RequestUri;
+        RequestUri = GetOriginalRequestUri(request);
         Method = request.Method.Method;
         Version = request.Version;
         VersionPolicy = request.VersionPolicy;

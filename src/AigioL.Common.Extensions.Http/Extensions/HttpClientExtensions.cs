@@ -13,6 +13,8 @@ public static partial class HttpClientExtensions
         request.Version = httpClient.DefaultRequestVersion;
         request.VersionPolicy = httpClient.DefaultVersionPolicy;
 #endif
+        // 将原始请求地址存储在请求选项中，在 30x 状态码重定向后可以使用次取出原始地址
+        request.Options.TryAdd(nameof(HttpRequestMessage.RequestUri), request.RequestUri);
     }
 
     /// <summary>

@@ -73,6 +73,8 @@ partial class HttpResponseMessageRecord
         {
             Request = CreateHttpRequestMessageRecord(request);
         }
+
+        // 这里不赋值 Content，由调用 XXXExAsync 时赋值响应正文内容
     }
 
     /// <inheritdoc cref="HttpContent.ReadAsStringAsync()"/>
