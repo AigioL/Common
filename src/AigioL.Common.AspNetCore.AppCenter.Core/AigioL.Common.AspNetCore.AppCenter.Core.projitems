@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharus\KomaasharuPersonalized.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharus\Summaries\KomaasharuStatistic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Komaasharus\Summaries\KomaasharuStatisticPerDaySummary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Net\WebProxyEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\User.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDelete.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserDeleteExternalAccount.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\MembershipChangeDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSMinimalApisJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Net\WebProxyCredentialsType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SmsCodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeviceIsTrustWithUserId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletPaymentDirection.cs" />
@@ -95,6 +97,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\KeyValuePairRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Komaasharus\Abstractions\IKomaasharuRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Komaasharus\KomaasharuRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Net\Abstractions\IWebProxyRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Net\WebProxyRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\UserManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\RequiredSecurityKeyAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\SecurityKeyAlgorithmType.cs" />

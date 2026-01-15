@@ -127,6 +127,7 @@ public static partial class InfoController
         }
         ArgumentNullException.ThrowIfNull(userName);
 
+        // 幂等的添加或更新逻辑 👇
         using var transaction = db.Database.BeginTransaction();
 
         #region 添加管理员用户与预设角色
@@ -211,7 +212,7 @@ public static partial class InfoController
         var tenant = await db.Tenants.FindAsync(tenantId);
         if (tenant == null)
         {
-            await db.Tenants.AddAsync(new()
+            await db.Tenants.AddAsync(tenant = new()
             {
                 Id = tenantId,
                 CreateUserId = user.Id,
@@ -226,132 +227,150 @@ public static partial class InfoController
 
         #region 添加预设菜单
 
-        var menus = await db.Menus.Where(x => x.TenantId == tenantId).ToListAsync();
-        if (menus.Count == 0)
-        {
-            menus = await AddMenusAsync();
-        }
+        var queryDbMenus = from m in db.Menus.IgnoreAutoIncludes()
+                           where m.TenantId == tenantId
+                           select m;
+        // 已有的菜单
+        var dbMenus = await queryDbMenus.ToListAsync();
 
-        async Task<List<BMMenu>> AddMenusAsync()
-        {
-            var menus = new List<BMMenu>(GetBMMenus(isRootTenant));
-            adminCenterService.HandleMenus(isRootTenant, menus);
-            SetUserIdAndTenantId(menus, user.Id, tenantId);
+        // 要添加或更新的菜单
+        var addMenus = new List<BMMenu>(GetBMMenus(isRootTenant));
+        adminCenterService.HandleMenus(isRootTenant, addMenus);
+        SetUserIdAndTenantId(addMenus, user.Id, tenantId);
 
-            await db.Menus.AddRangeAsync(menus);
+        if (dbMenus.Count == 0)
+        {
+            await db.Menus.AddRangeAsync(addMenus);
             await db.SaveChangesAsync();
-            return menus;
+        }
+        else
+        {
+            foreach (var menu in addMenus)
+            {
+                var dbMenu = dbMenus.FirstOrDefault(x => x.Key == menu.Key);
+                if (dbMenu == null)
+                {
+                    // 添加新菜单
+                    await db.Menus.AddRangeAsync(menu);
+                }
+                else
+                {
+                    // 更新数据库实体
+                    menu.Id = dbMenu.Id;
+                    dbMenu.Url = menu.Url;
+                    dbMenu.Name = menu.Name;
+                    dbMenu.IconUrl = menu.IconUrl;
+                }
+            }
+            await db.SaveChangesAsync();
         }
 
         #endregion
 
         #region 添加预设按钮
 
-        var btns = await db.Buttons.Where(x => x.TenantId == tenantId).ToListAsync();
-        if (btns.Count == 0) btns = await AddButtonsAsync();
+        var queryDbButtons = from b in db.Buttons.IgnoreAutoIncludes()
+                             where b.TenantId == tenantId
+                             select b;
+        // 已有的按钮
+        var dbButtons = await queryDbButtons.ToListAsync();
 
-        async Task<List<BMButton>> AddButtonsAsync()
+        // 预设的按钮组
+        var btnDict = new Dictionary<BMButtonType, string>
         {
-            var btnDict = new Dictionary<BMButtonType, string>
+            { BMButtonType.Edit, "编辑" },
+            { BMButtonType.Delete, "删除" },
+            { BMButtonType.Detail, "查看详情" },
+            { BMButtonType.Add, "新增" },
+            { BMButtonType.Query, "查询" },
+        };
+        foreach (var it in btnDict)
+        {
+            var dbButton = dbButtons.FirstOrDefault(x => x.Type == it.Key);
+            if (dbButton != null)
             {
-                { BMButtonType.Edit, "编辑" },
-                { BMButtonType.Delete, "删除" },
-                { BMButtonType.Detail, "查看详情" },
-                { BMButtonType.Add, "新增" },
-                { BMButtonType.Query, "查询" },
-            };
-            var btns = btnDict.Select(x => new BMButton
+                dbButton.Name = it.Value;
+            }
+            else
             {
-                CreateUserId = user.Id,
-                TenantId = user.TenantId,
-                Name = x.Value,
-                Type = x.Key,
-            }).ToList();
-
-            await db.Buttons.AddRangeAsync(btns);
-            await db.SaveChangesAsync();
-            return btns;
+                dbButton = new BMButton
+                {
+                    CreateUserId = user.Id,
+                    TenantId = tenantId,
+                    Name = it.Value,
+                    Type = it.Key,
+                };
+                dbButtons.Add(dbButton);
+                await db.Buttons.AddAsync(dbButton);
+            }
         }
+        await db.SaveChangesAsync();
 
         #endregion
 
         #region 添加预设菜单按钮关系
 
-        var menuButtons = await db.MenuButtons.Where(x => x.TenantId == tenantId).ToListAsync();
-        if (menuButtons.Count == 0) menuButtons = await AddMenuButtonsAsync();
-
-        async Task<List<BMMenuButton>> AddMenuButtonsAsync()
+        var expandBMMenus = new HashSet<BMMenu>();
+        ExpandBMMenus(expandBMMenus, addMenus);
+        foreach (var menu in expandBMMenus)
         {
-            var menuButtons = new List<BMMenuButton>();
-
-            foreach (var menu in menus.Concat(menus
-                .Where(x => x.Children != null)
-                .SelectMany(x => x.Children!)))
+            if (menu.Key == "dashboard" || (menu.Children != null && menu.Children.Count != 0))
             {
-                if (menu.Key == "dashboard" ||
-                    (menu.Children != null && menu.Children.Count != 0))
-                {
-                    menuButtons.Add(new BMMenuButton
-                    {
-                        TenantId = tenantId,
-                        MenuId = menu.Id,
-                        ButtonId = btns.First(x => x.Type == BMButtonType.Query).Id,
-                    });
-                    continue;
-                }
-
-                foreach (var btn in btns)
-                {
-                    menuButtons.Add(new BMMenuButton
-                    {
-                        TenantId = tenantId,
-                        MenuId = menu.Id,
-                        ButtonId = btn.Id,
-                    });
-                }
+                var btnId = dbButtons.First(x => x.Type == BMButtonType.Query).Id;
+                await TryAddAsync(tenantId, menu.Id, btnId, db.MenuButtons);
+                continue;
             }
 
-            await db.MenuButtons.AddRangeAsync(menuButtons);
-            await db.SaveChangesAsync();
-            return menuButtons;
+            foreach (var btn in dbButtons)
+            {
+                await TryAddAsync(tenantId, menu.Id, btn.Id, db.MenuButtons);
+            }
         }
+        await db.SaveChangesAsync();
 
         #endregion
 
         #region 添加预设菜单按钮角色关系
 
-        var menuButtonRoles = await db.MenuButtonRoles.Where(x => x.TenantId == tenantId).ToListAsync();
-        if (menuButtonRoles.Count == 0) await AddMenuButtonRolesAsync();
-
-        async Task AddMenuButtonRolesAsync()
+        // 仅处理管理员角色
+        var adminRole = await db.Roles.FirstOrDefaultAsync(x => x.Name == adminRoleName && x.TenantId == tenantId);
+        if (adminRole != null)
         {
-            if (addRoles.Count != 0)
+            var adminRoleMenus = await db.Menus
+                .AsNoTrackingWithIdentityResolution()
+                .Include(x => x.Buttons)
+                .Where(x => x.TenantId == tenantId)
+                .ToListAsync();
+            foreach (var menu in adminRoleMenus)
             {
-                // 添加 系统管理员 权限
-                var adminRole = await db.Roles.FirstOrDefaultAsync(x => x.Name == "Administrator" && x.TenantId == tenantId);
-                if (adminRole != null)
+                var btns = menu.Buttons;
+                if (btns != null)
                 {
-                    var adminRoleMenus = await db.Menus.Include(x => x.Buttons).Where(x => x.TenantId == tenantId)
-                        .AsNoTrackingWithIdentityResolution().ToListAsync();
-
-                    foreach (var menu in adminRoleMenus)
-                        foreach (var btn in menu.Buttons!)
+                    foreach (var btn in btns)
+                    {
+                        var controllerName = menu.Key + btn.Type;
+                        // 先查询是否已存在
+                        var any = await db.MenuButtonRoles.AnyAsync(x =>
+                            x.TenantId == tenantId &&
+                            x.RoleId == adminRole.Id &&
+                            x.MenuId == menu.Id &&
+                            x.ButtonId == btn.Id &&
+                            x.ControllerName == controllerName);
+                        if (!any)
+                        {
                             await db.MenuButtonRoles.AddAsync(new BMMenuButtonRole
                             {
                                 TenantId = tenantId,
                                 RoleId = adminRole.Id,
                                 MenuId = menu.Id,
                                 ButtonId = btn.Id,
-                                ControllerName = menu.Key + btn.Type,
+                                ControllerName = controllerName,
                             });
-
-                    if (isRootTenant)
-                    {
+                        }
                     }
                 }
-
-                await db.SaveChangesAsync();
             }
+            await db.SaveChangesAsync();
         }
 
         #endregion
@@ -360,27 +379,39 @@ public static partial class InfoController
         return result = HttpStatusCode.OK;
     }
 
-    //static Guid GetGuid(int seed)
-    //{
-    //    Span<char> chars = stackalloc char[32];
-    //    chars.Fill('0');
-    //    var seedStr = seed.ToString();
+    static async Task TryAddAsync(Guid tenantId, Guid menuId, Guid btnId, DbSet<BMMenuButton> dbSet)
+    {
+        var any = await dbSet.AnyAsync(x => x.TenantId == tenantId && x.MenuId == menuId && x.ButtonId == btnId);
+        if (!any)
+        {
+            await dbSet.AddAsync(new BMMenuButton
+            {
+                TenantId = tenantId,
+                MenuId = menuId,
+                ButtonId = btnId,
+            });
+        }
+    }
 
-    //    var index = chars.Length - 1;
-    //    for (int i = seedStr.Length - 1; i >= 0; i--)
-    //    {
-    //        chars[index--] = seedStr[i];
-    //    }
-
-    //    return Guid.ParseExact(chars, "N");
-    //}
+    /// <summary>
+    /// 将树状菜单展开为一级集合
+    /// </summary>
+    static void ExpandBMMenus(HashSet<BMMenu> hashSet, params IEnumerable<BMMenu> menus)
+    {
+        foreach (var menu in menus)
+        {
+            hashSet.Add(menu);
+            if (menu.Children != null && menu.Children.Count != 0)
+            {
+                ExpandBMMenus(hashSet, menu.Children);
+            }
+        }
+    }
 
     static IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
     {
-        //int seed = 1000;
         yield return new BMMenu
         {
-            //Id = GetGuid(seed),
             Url = "/Statistics",
             Name = "统计分析",
             Key = "Statistics",
@@ -389,69 +420,62 @@ public static partial class InfoController
 
         yield return new BMMenu
         {
-            //Id = GetGuid(seed += 100),
             Url = "/Komaasharu",
             Name = "广告管理",
             Key = "Komaasharu",
             IconUrl = IconType.Outline.Crown,
-            Children = [.. GetKomaasharuManage(/*seed*/)],
+            Children = [.. GetKomaasharuManage()],
         };
 
         yield return new BMMenu
         {
-            //Id = GetGuid(seed += 100),
             Url = "/Identity",
             Name = "用户管理",
             Key = "Identity",
             IconUrl = IconType.Outline.User,
-            Children = [.. GetUserManage(/*seed*/)],
+            Children = [.. GetUserManage()],
         };
 
         yield return new BMMenu
         {
-            //Id = GetGuid(seed += 100),
             Url = "/Basics",
             Name = "通用管理",
             Key = "Basics",
             IconUrl = IconType.Outline.Profile,
-            Children = [.. GetBasicsManage(/*seed*/)],
+            Children = [.. GetBasicsManage()],
         };
 
         yield return new BMMenu
         {
-            //Id = GetGuid(seed += 100),
             Url = "/Ordering",
             Name = "订单管理",
             Key = "Ordering",
             IconUrl = IconType.Outline.ShoppingCart,
-            Children = [.. GetOrderingManage(/*seed*/)],
+            Children = [.. GetOrderingManage()],
         };
 
         yield return new BMMenu
         {
-            //Id = GetGuid(seed += 100),
             Url = "/Role",
             Name = "角色管理",
             Key = "RoleManageMenu",
             IconUrl = IconType.Outline.UserSwitch,
-            Children = [.. GetRoleManage(/*seed*/)],
+            Children = [.. GetRoleManage()],
         };
 
         yield return new BMMenu
         {
-            //Id = GetGuid(seed += 100),
             Url = "/SystemManage",
             Name = "系统管理",
             Key = "SystemManage",
             IconUrl = IconType.Outline.Control,
-            Children = [.. GetSystemManage(/*seed*/)],
+            Children = [.. GetSystemManage()],
         };
 
-        IEnumerable<BMMenu> GetKomaasharuManage(/*int seed*/)
+        IEnumerable<BMMenu> GetKomaasharuManage()
         {
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 5),
                 Url = "/Komaasharu/Manage",
                 Name = "广告管理",
                 Key = ControllerConstants.AdvertisementManage,
@@ -459,11 +483,10 @@ public static partial class InfoController
             };
         }
 
-        IEnumerable<BMMenu> GetUserManage(/*int seed*/)
+        IEnumerable<BMMenu> GetUserManage()
         {
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 5),
                 Url = "/Identity/UserList",
                 Name = "用户列表",
                 Key = ControllerConstants.ClientUser,
@@ -472,7 +495,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 10),
                 Url = "/Identity/UserDeviceList",
                 Name = "用户设备列表",
                 Key = ControllerConstants.UserDevice,
@@ -481,7 +503,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 15),
                 Url = "/Identity/ExternalAccountList",
                 Name = "外部账号列表",
                 Key = ControllerConstants.ExternalAccount,
@@ -490,7 +511,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 20),
                 Url = "/Identity/UserCancelList",
                 Name = "注销用户列表",
                 Key = ControllerConstants.UserCancel,
@@ -499,7 +519,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 25),
                 Url = "/Identity/AuthMessageRecord",
                 Name = "短信记录查询",
                 Key = ControllerConstants.AuthMessageRecord,
@@ -507,11 +526,10 @@ public static partial class InfoController
             };
         }
 
-        IEnumerable<BMMenu> GetBasicsManage(/*int seed*/)
+        IEnumerable<BMMenu> GetBasicsManage()
         {
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 5),
                 Url = "/Basics/KeyValuePair",
                 Name = "键值对管理",
                 Key = ControllerConstants.KeyValuePair,
@@ -520,7 +538,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 10),
                 Url = "/Basics/StaticResource",
                 Name = "静态资源与记录管理",
                 Key = ControllerConstants.StaticResource,
@@ -529,7 +546,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 15),
                 Url = "/Basics/Article",
                 Name = "文章管理",
                 Key = ControllerConstants.Article,
@@ -538,7 +554,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 20),
                 Url = "/Basics/ArticleTag",
                 Name = "文章标签管理",
                 Key = ControllerConstants.ArticleTag,
@@ -547,19 +562,25 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 25),
                 Url = "/Basics/ArticleCategory",
                 Name = "文章分类管理",
                 Key = ControllerConstants.ArticleCategory,
                 IconUrl = IconType.Outline.Group,
             };
+
+            yield return new BMMenu
+            {
+                Url = "/Basics/WebProxys",
+                Name = "网络代理管理",
+                Key = ControllerConstants.WebProxys,
+                IconUrl = IconType.Outline.Ie,
+            };
         }
 
-        IEnumerable<BMMenu> GetOrderingManage(/*int seed*/)
+        IEnumerable<BMMenu> GetOrderingManage()
         {
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 5),
                 Url = "/Ordering/OrderManage",
                 Name = "订单列表",
                 Key = ControllerConstants.Order,
@@ -568,7 +589,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 10),
                 Url = "/Ordering/AftersalesBillManage",
                 Name = "售后列表",
                 Key = ControllerConstants.AftersalesBill,
@@ -577,7 +597,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 15),
                 Url = "/Ordering/RefundBillManage",
                 Name = "退款列表",
                 Key = ControllerConstants.RefundBill,
@@ -586,7 +605,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 25),
                 Url = "/Ordering/MerchantDeductionAgreementConfigurationManage",
                 Name = "扣款协议配置",
                 Key = ControllerConstants.MerchantDeductionAgreementConfiguration,
@@ -595,7 +613,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 25),
                 Url = "/Ordering/OrderBusinessPaymentConfigurationManage",
                 Name = "业务类型支付配置",
                 Key = ControllerConstants.OrderBusinessPaymentConfiguration,
@@ -603,11 +620,10 @@ public static partial class InfoController
             };
         }
 
-        IEnumerable<BMMenu> GetSystemManage(/*int seed*/)
+        IEnumerable<BMMenu> GetSystemManage()
         {
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 5),
                 Url = "/System/User",
                 Name = "后台用户",
                 Key = ControllerConstants.SystemUser,
@@ -616,7 +632,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 10),
                 Url = "/System/MenuManage",
                 Name = "系统菜单管理",
                 Key = ControllerConstants.SystemMenuManage,
@@ -625,7 +640,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 15),
                 Url = "/System/Info",
                 Name = "系统信息",
                 Key = "SystemInfo",
@@ -660,11 +674,10 @@ public static partial class InfoController
             //}
         }
 
-        IEnumerable<BMMenu> GetRoleManage(/*int seed*/)
+        IEnumerable<BMMenu> GetRoleManage()
         {
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 5),
                 Url = "/Role/Manage",
                 Name = "角色管理",
                 Key = ControllerConstants.RoleManage,
@@ -673,7 +686,6 @@ public static partial class InfoController
 
             yield return new BMMenu
             {
-                //Id = GetGuid(seed + 10),
                 Url = "/Role/Menu",
                 Name = "角色菜单管理",
                 Key = "RoleMenu",
