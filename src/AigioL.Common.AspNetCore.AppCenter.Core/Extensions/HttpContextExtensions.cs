@@ -3,7 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Primitives.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Primitives;
-using System.Buffers;
+using Microsoft.IO;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -463,6 +463,26 @@ public static partial class HttpContextExtensions
         }
         return false;
     }
+
+    public static async Task<(string? fileName, Stream stream)?> GetUploadSingleFileAsync(this HttpContext context)
+    {
+        if (string.Equals("application/octet-stream", context.Request.ContentType, StringComparison.InvariantCultureIgnoreCase)) // Apifox 上传文件
+        {
+            var stream = m.GetStream();
+            context.Response.RegisterForDispose(stream);
+            await context.Request.Body.CopyToAsync(stream, context.RequestAborted);
+            stream.Position = 0;
+            return (null, stream);
+        }
+        else if (context.Request.Form.Files.Count == 1) // 普通表单上传文件
+        {
+            var formFile = context.Request.Form.Files[0];
+            return (formFile.FileName, formFile.OpenReadStream());
+        }
+        return null;
+    }
+
+    static readonly RecyclableMemoryStreamManager m = new();
 }
 
 file static partial class DateTimeParseHelper
