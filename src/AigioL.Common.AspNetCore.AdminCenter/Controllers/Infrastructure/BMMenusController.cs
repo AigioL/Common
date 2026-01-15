@@ -177,6 +177,15 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<int>> PostOrPut(HttpContext context, BMMenuEdit model)
     {
+        if (model.ParentId == model.Id)
+        {
+            return new BMApiRsp<int>
+            {
+                Code = (int)HttpStatusCode.BadRequest,
+                Messages = new string[] { "上级菜单不能选择自己" },
+                Content = 0,
+            };
+        }
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var userId = context.GetBMUserId();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
