@@ -147,4 +147,9 @@ public static partial class ControllerConstants
     /// 退款单管理
     /// </summary>
     public const string RefundBill = "RefundBill";
+
+    /// <summary>
+    /// 网络代理管理
+    /// </summary>
+    public const string WebProxys = "WebProxys";
 }

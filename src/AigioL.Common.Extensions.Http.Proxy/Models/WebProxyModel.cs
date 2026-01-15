@@ -35,7 +35,7 @@ public partial record class WebProxyModel
 
     public override string ToString()
     {
-        var str = JsonSerializer.Serialize(this, ExHttpJsonSerializerContext.Default.WebProxyModel);
+        var str = JsonSerializer.Serialize(this, ExHttpProxyJsonSerializerContext.Default.WebProxyModel);
         return str;
     }
 
