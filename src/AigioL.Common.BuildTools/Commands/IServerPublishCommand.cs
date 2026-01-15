@@ -559,6 +559,46 @@ public partial interface IServerPublishCommand : ICommand
             await body(item, cancellationToken);
         }
     }
+
+    const string dockerfile_content_jit_template =
+"""
+# 请参阅 https://aka.ms/customizecontainer 以了解如何自定义调试容器，以及 Visual Studio 如何使用此 Dockerfile 生成映像以更快地进行调试。
+
+# 此阶段用于在快速模式(默认为调试配置)下从 VS 运行时
+FROM mcr.microsoft.com/dotnet/aspnet:[DotNetVersion] AS base
+USER $APP_UID
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# 此阶段在生产中使用，或在常规模式下从 VS 运行时使用(在不使用调试配置时为默认值)
+FROM base AS final
+WORKDIR /app
+COPY ["./src/artifacts/publish/[ProjectName]/output*", "/app"]
+ENTRYPOINT ["dotnet", "[ProjectName].dll"]
+""";
+
+    const string publish_args = // 依赖框架、无 AppHost 的快速发布参数配置项
+@"""
+publish -c {0} {1} --nologo -v q /property:WarningLevel=0 -p:AnalysisLevel=none -p:GeneratePackageOnBuild=false -p:DebugType=none -p:DebugSymbols=false -p:IsPackable=false -p:GenerateDocumentationFile=false -o {2} -f {3} -p:SelfContained=false -p:UseAppHost=false -p:PublishSingleFile=false -p:PublishReadyToRun=false -p:RuntimeIdentifier={4}
+""";
+
+    static string GetPublishArgs(string projName, bool isReleaseOrDebug = true, string rid = "linux-x64")
+    {
+        var csprojPath = Path.Combine(ProjPath, "src", projName, $"{projName}.csproj");
+        var outputPath = Path.Combine(ProjPath, "src", "artifacts", "publish", projName, "output");
+        var tfm = $"net{Environment.Version.Major}.{Environment.Version.Minor}";
+        var r = string.Format(publish_args, isReleaseOrDebug ? "Release" : "Debug", csprojPath, outputPath, tfm, rid);
+        return r;
+    }
+
+    static string GetDockerfile(string projName)
+    {
+        var r = dockerfile_content_jit_template
+            .Replace("[ProjectName]", projName)
+            .Replace("[DotNetVersion]", $"{Environment.Version.Major}.{Environment.Version.Minor}");
+        return r;
+    }
 }
 
 public sealed record class ServerPublishProject
