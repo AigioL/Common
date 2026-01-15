@@ -16,5 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\NetworkCredentialModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WebProxyModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IWebProxyPoolService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\WebProxyPoolService.cs" />
   </ItemGroup>
 </Project>

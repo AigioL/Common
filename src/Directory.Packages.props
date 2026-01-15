@@ -200,4 +200,8 @@
 		<PackageVersion Include="Google.Protobuf" Version="3.33.3" />
 		<PackageVersion Include="Grpc.Tools" Version="2.76.0" />
 	</ItemGroup>
+	<!-- 👇 Excel -->
+	<ItemGroup>
+		<PackageVersion Include="ExcelDataReader" Version="3.8.0" />
+	</ItemGroup>
 </Project>
