@@ -45,7 +45,7 @@ public static class PaymentController
             [FromRoute] string orderId,
             [FromQuery] string? openId,
             [FromQuery] string? wxCode,
-            [FromBody] OrderBusinessPaymentMethod method) =>
+            [FromBody] OrderBusinessLaunchPaymentMethod method) =>
         {
             var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
@@ -107,7 +107,7 @@ public static class PaymentController
         IConnectionMultiplexer conn,
         HttpContext context,
         string orderId,
-        OrderBusinessPaymentMethod method,
+        OrderBusinessLaunchPaymentMethod method,
         string? wxOpenId = null,
         string? wxCode = null,
         CancellationToken cancellationToken = default)
@@ -151,10 +151,11 @@ public static class PaymentController
         {
             return ApiRspCode.NotFound;
         }
-        var isMethodValid = await paymentRepo.IsPaymentMethodValidAsync(orderPayInfo.BusinessType, method, cancellationToken);
+        var paymentType = method.PaymentType.ToPaymentType();
+        var isMethodValid = await paymentRepo.IsPaymentMethodValidAsync(orderPayInfo.BusinessType, method.PaymentMethod, paymentType, cancellationToken);
         if (isMethodValid)
         {
-            var paymentMethod = await paymentRepo.AddOrGetPayMethodAsync(orderPayInfo.Id, orderPayInfo.AmountReceivable, method);
+            var paymentMethod = await paymentRepo.AddOrGetPayMethodAsync(orderPayInfo.Id, orderPayInfo.AmountReceivable, method.PaymentMethod, paymentType);
             if (paymentMethod == null)
             {
                 return "添加支付方式失败";
@@ -164,13 +165,13 @@ public static class PaymentController
                 case PaymentMethod.Online:
                     switch (method.PaymentType)
                     {
-                        case PaymentType.Alipay:
-                        case PaymentType.AlipayMWEB:
+                        case WebPaymentType.Alipay:
+                        case WebPaymentType.AlipayMWEB:
                             {
                                 var payTradeType = method.PaymentType switch
                                 {
-                                    PaymentType.Alipay => AliPayPayTradeType.JSAPI_PC,
-                                    PaymentType.AlipayMWEB => AliPayPayTradeType.MWEB,
+                                    WebPaymentType.Alipay => AliPayPayTradeType.JSAPI_PC,
+                                    WebPaymentType.AlipayMWEB => AliPayPayTradeType.MWEB,
                                     _ => throw new ArgumentOutOfRangeException(nameof(method.PaymentType), method.PaymentType, null),
                                 };
                                 var aliPayServices = context.RequestServices.GetRequiredService<IAliPayServices>();
@@ -183,13 +184,13 @@ public static class PaymentController
                                     string.Empty,
                                     orderPayInfo.Timeout);
                             }
-                        case PaymentType.WeChatPay:
-                        case PaymentType.WeChatPayNative:
+                        case WebPaymentType.WeChatPay:
+                        case WebPaymentType.WeChatPayNative:
                             {
                                 var weChatPayTradeType = method.PaymentType switch
                                 {
-                                    PaymentType.WeChatPay => WeChatPayTradeType.JSAPI_OFFICIAL,
-                                    PaymentType.WeChatPayNative => WeChatPayTradeType.NATIVE,
+                                    WebPaymentType.WeChatPay => WeChatPayTradeType.JSAPI_OFFICIAL,
+                                    WebPaymentType.WeChatPayNative => WeChatPayTradeType.NATIVE,
                                     _ => throw new ArgumentOutOfRangeException(nameof(method.PaymentType), method.PaymentType, null),
                                 };
                                 if (string.IsNullOrWhiteSpace(wxOpenId) && !string.IsNullOrWhiteSpace(wxCode))
