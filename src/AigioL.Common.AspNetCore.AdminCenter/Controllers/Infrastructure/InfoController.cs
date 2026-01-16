@@ -408,7 +408,7 @@ public static partial class InfoController
         }
     }
 
-    static IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
+    internal static IEnumerable<BMMenu> GetBMMenus(bool isRootTenant)
     {
         yield return new BMMenu
         {
@@ -694,7 +694,7 @@ public static partial class InfoController
         }
     }
 
-    static void SetUserIdAndTenantId(IEnumerable<BMMenu>? menus, Guid userId, Guid tenantId, long? sort = null)
+    internal static void SetUserIdAndTenantId(IEnumerable<BMMenu>? menus, Guid userId, Guid tenantId, long? sort = null)
     {
         if (menus == null)
         {

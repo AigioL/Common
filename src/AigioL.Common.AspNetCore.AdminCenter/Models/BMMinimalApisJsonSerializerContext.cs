@@ -144,6 +144,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 [JsonSerializable(typeof(BMApiRsp<List<Guid>?>))]
 [JsonSerializable(typeof(IEnumerable<Guid>))]
 [JsonSerializable(typeof(IEnumerable<BMButtonModel>))]
+[JsonSerializable(typeof(BMApiRsp<BMMenuInitModel[]?>))]
 #endregion
 #region BMRolesController
 [JsonSerializable(typeof(BMApiRsp<List<SelectItemModel<Guid>>?>))]

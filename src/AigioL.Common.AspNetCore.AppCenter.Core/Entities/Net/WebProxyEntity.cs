@@ -8,11 +8,14 @@ using System.Net;
 namespace AigioL.Common.AspNetCore.AppCenter.Entities.Net;
 
 public partial class WebProxyEntity :
-    Entity<Guid>,
-    INEWSEQUENTIALID,
+    IEntity<string>,
     IDisable,
     INote
 {
+    [Comment("主键")]
+    [StringLength(MaxLengths.Url)]
+    public required string Id { get; set; }
+
     [Comment("是否禁用")]
     public bool Disable { get; set; }
 

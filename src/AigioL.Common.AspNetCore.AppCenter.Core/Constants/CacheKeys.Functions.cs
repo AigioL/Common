@@ -11,7 +11,6 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Constants;
 
@@ -139,8 +138,9 @@ static partial class CacheKeys
     /// <param name="cacheKey"></param>
     /// <param name="getData"></param>
     /// <param name="semaphoreSlim"></param>
-    /// <param name="expireSpan">缓存数据过期时间，默认 1 小时</param>
-    /// <param name="millisecondsTimeout">获取锁超时时间</param>
+    /// <param name="expiry">缓存数据过期时间，默认 1 小时</param>
+    /// <param name="semaphoreSlimWaitMsTimeout">获取锁超时时间</param>
+    /// <param name="expiryIsNull"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static async ValueTask<T?> GetCacheDataAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
@@ -148,8 +148,9 @@ static partial class CacheKeys
         string cacheKey,
         Func<CancellationToken, Task<T>> getData,
         SemaphoreSlim? semaphoreSlim = null,
-        TimeSpan? expireSpan = null,
-        int millisecondsTimeout = 30,
+        TimeSpan? expiry = null,
+        int semaphoreSlimWaitMsTimeout = 30,
+        bool expiryIsNull = false,
         CancellationToken cancellationToken = default)
     {
         ReadOnlyMemory<byte> data = await database.StringGetAsync(cacheKey);
@@ -158,7 +159,7 @@ static partial class CacheKeys
         if (data.Length <= 0)
         {
             if (semaphoreSlim is null ||
-                (semaphoreSlim is not null && await semaphoreSlim.WaitAsync(millisecondsTimeout)))
+                (semaphoreSlim is not null && await semaphoreSlim.WaitAsync(semaphoreSlimWaitMsTimeout, cancellationToken)))
             {
                 try
                 {
@@ -172,8 +173,15 @@ static partial class CacheKeys
                         {
                             var serializeData = MemoryPackSerializer.Serialize(r);
 
-                            expireSpan ??= TimeSpan.FromHours(1);
-                            await database.StringSetAsync(cacheKey, serializeData, expireSpan);
+                            if (expiryIsNull)
+                            {
+                                expiry = null;
+                            }
+                            else
+                            {
+                                expiry ??= TimeSpan.FromHours(1);
+                            }
+                            await database.StringSetAsync(cacheKey, serializeData, expiry);
                             return r;
                         }
                     }
