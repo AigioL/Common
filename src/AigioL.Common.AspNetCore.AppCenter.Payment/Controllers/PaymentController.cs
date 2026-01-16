@@ -1,10 +1,15 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 using AigioL.Common.Models;
+using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SKIT.FlurlHttpClient.Wechat.Api;
@@ -42,8 +47,9 @@ public static class PaymentController
             [FromQuery] string? wxCode,
             [FromBody] OrderBusinessPaymentMethod method) =>
         {
+            var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
-            var r = await Pay<TAppSettings>(paymentRepo, context, orderId,
+            var r = await Pay<TAppSettings>(paymentRepo, conn, context, orderId,
                 method, openId, wxCode, context.RequestAborted);
             return r;
         });
@@ -98,6 +104,7 @@ public static class PaymentController
 
     static async Task<ApiRsp<PubPayState?>> Pay<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
         IPaymentRepository paymentRepo,
+        IConnectionMultiplexer conn,
         HttpContext context,
         string orderId,
         OrderBusinessPaymentMethod method,
@@ -110,6 +117,35 @@ public static class PaymentController
         {
             return ApiRspCode.NotFound;
         }
+
+        // 延迟创建订单模式
+        {
+            var database = conn.GetDatabase(CacheKeys.RedisMessagingDb);
+            var lazyModelValue = await database.StringGetAsync($"OrderIdTemp-{orderId}");
+            if (!lazyModelValue.HasValue)
+            {
+                return ApiRspCode.NotFound;
+            }
+            var lazyModel = MemoryPackSerializer.Deserialize<LazyCreateMembershipOrderModel>(lazyModelValue);
+            if (lazyModel == null)
+            {
+                return ApiRspCode.NotFound;
+            }
+            var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
+            var membershipGoodsRepo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
+            var goods = await membershipGoodsRepo.FindAsync(lazyModel.MembershipGoodsId, cancellationToken);
+            if (goods == null)
+            {
+                return ApiRspCode.NotFound;
+            }
+            var orderId2 = await userMembershipService.CreateMembershipOrderAsync(lazyModel.UserId, goods, lazyModel.ChannelPackageId, orderId, cancellationToken);
+            if (string.IsNullOrWhiteSpace(orderId2))
+            {
+                return ApiRspCode.NotFound;
+            }
+            orderId = orderId2;
+        }
+
         var orderPayInfo = await paymentRepo.GetOrderPaymentInfoAsync(orderId, true, cancellationToken);
         if (orderPayInfo == null)
         {
@@ -162,7 +198,6 @@ public static class PaymentController
                                     var settings = context.RequestServices.GetRequiredService<IOptions<TAppSettings>>().Value;
                                     var appIdWeChat = settings.WeChatApiOptions.AppId;
                                     var appSecretWeChat = settings.WeChatApiOptions.AppSecret;
-                                    var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
                                     var response = await GetAuth2AccessTokenResponse(
                                         wxCode, appIdWeChat, appSecretWeChat,
                                         conn, cancellationToken);

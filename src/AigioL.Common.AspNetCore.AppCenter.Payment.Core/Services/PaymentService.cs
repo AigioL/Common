@@ -22,7 +22,7 @@ sealed partial class PaymentService(
         var orderInfo = await paymentRepo.GetOrderPaymentAsync(orderNumber, paymentType);
         if (orderInfo is not var (order, paymentComposition))
         {
-            logger.LogError("平台支付完成回调通知，找不到订单信息");
+            logger.LogError("平台支付完成回调通知，找不到订单信息，orderNumber: {orderNumber}, tradeNo: {tradeNo}, paymentType: {paymentType}", orderNumber, tradeNo, paymentType);
             return;
         }
 
