@@ -30,4 +30,10 @@ public enum PaymentType : byte
     /// </summary>
     [Description("微信支付")]
     WeChatPayNative = 4,
+
+    /// <summary>
+    /// 支付宝（移动端页面）
+    /// </summary>
+    [Description("支付宝")]
+    AlipayMWEB = 5,
 }

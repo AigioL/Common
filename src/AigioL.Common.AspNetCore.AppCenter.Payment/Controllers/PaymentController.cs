@@ -129,10 +129,17 @@ public static class PaymentController
                     switch (method.PaymentType)
                     {
                         case PaymentType.Alipay:
+                        case PaymentType.AlipayMWEB:
                             {
+                                var payTradeType = method.PaymentType switch
+                                {
+                                    PaymentType.Alipay => AliPayPayTradeType.JSAPI_PC,
+                                    PaymentType.AlipayMWEB => AliPayPayTradeType.MWEB,
+                                    _ => throw new ArgumentOutOfRangeException(nameof(method.PaymentType), method.PaymentType, null),
+                                };
                                 var aliPayServices = context.RequestServices.GetRequiredService<IAliPayServices>();
                                 return await aliPayServices.PubPay(
-                                    AliPayPayTradeType.JSAPI_PC,
+                                    payTradeType,
                                     orderId,
                                     orderPayInfo.OrderNumber,
                                     orderPayInfo.Remarks ?? string.Empty,
