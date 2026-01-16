@@ -67,11 +67,14 @@ https://tauri.org.cn/v1/guides/distribution/updater
             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent);
 
-        routeGroup.MapGet("f3766644", async (HttpContext context) =>
+        routeGroup.MapGet("f3766644/{target}/{arch}", async (HttpContext context,
+            [FromRoute] string target,
+            [FromRoute] string arch) =>
         {
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
-            var json = await keyValuePairRepo.GetAsync<string>(cache, CacheKeys.TauriUpdaterStaticJSONFile, null, context.RequestAborted);
+            var key = string.Format(CacheKeys.TauriUpdaterStaticJSONFile, target, arch);
+            var json = await keyValuePairRepo.GetAsync<string>(cache, key, null, context.RequestAborted);
             return Results.Text(json, "application/json");
         })
             .WithDescription(

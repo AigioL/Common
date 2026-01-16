@@ -207,5 +207,5 @@ public static partial class CacheKeys
     /// Tauri 的应用程序更新静态 JSON 文件缓存键
     /// <para>https://tauri.app/plugin/updater/#static-json-file</para>
     /// </summary>
-    public const string TauriUpdaterStaticJSONFile = "TauriUpdaterStaticJSONFile";
+    public const string TauriUpdaterStaticJSONFile = "TauriUpdaterStaticJSONFile_{0}_{1}";
 }
