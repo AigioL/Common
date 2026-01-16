@@ -197,7 +197,14 @@ sealed partial class UserMembershipService(
     {
         var database = connection.GetDatabase(CacheKeys.RedisMessagingDb);
         var cacheKey = CacheKeys.GetUserMembershipCacheKey(userId);
-        var r = await database.KeyDeleteAsync(cacheKey);
-        return r;
+        await database.KeyDeleteAsync(cacheKey);
+
+        {
+            // 刷新 UserInfoModel
+            var hashKey = ShortGuid.Encode(userId);
+            await database.KeyDeleteAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{hashKey}");
+        }
+
+        return true;
     }
 }
