@@ -202,4 +202,10 @@ public static partial class CacheKeys
     /// 转账申请
     /// </summary>
     public const string TransferRequest = "TransferRequestMessage";
+
+    /// <summary>
+    /// Tauri 的应用程序更新静态 JSON 文件缓存键
+    /// <para>https://tauri.app/plugin/updater/#static-json-file</para>
+    /// </summary>
+    public const string TauriUpdaterStaticJSONFile = "TauriUpdaterStaticJSONFile";
 }

@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Models;
@@ -62,6 +63,21 @@ public static partial class VersionsController
 """
 检查更新（Tauri）
 https://tauri.org.cn/v1/guides/distribution/updater
+""")
+            .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status204NoContent);
+
+        routeGroup.MapGet("f3766644", async (HttpContext context) =>
+        {
+            var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
+            var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
+            var json = await keyValuePairRepo.GetAsync<string>(cache, CacheKeys.TauriUpdaterStaticJSONFile, null, context.RequestAborted);
+            return Results.Text(json, "application/json");
+        })
+            .WithDescription(
+"""
+检查更新（Tauri）静态 JSON 文件
+https://tauri.app/plugin/updater/#static-json-file
 """)
             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent);
