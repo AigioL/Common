@@ -56,7 +56,7 @@ partial class StaticResourceRepository<TDbContext> // 管理后台
 
         var query = EntityNoTracking
             .Include(x => x.StaticResourceUploadRecords!.Take(takeIncludeCount))
-            .Where(x => !x.SoftDeleted);
+            .Where(x => x.DeleteTime == null);
         if (!string.IsNullOrEmpty(fileName))
             query = query.Where(x => x.FileName == fileName);
         if (!string.IsNullOrEmpty(filePath))

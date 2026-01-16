@@ -63,39 +63,51 @@ public abstract class Repository<TDbContext, [DynamicallyAccessedMembers(IEntity
     /// <summary>
     /// 根据条件常规删除（批量删除或软删除），根据实体是否继承了 <see cref="ISoftDeleted"/> 自动检测
     /// </summary>
-    protected virtual async Task<int> ExecuteDeleteAsync(IQueryable<TEntity> query, CancellationToken cancellationToken = default)
+    protected virtual async Task<int> ExecuteDeleteAsync(IQueryable<TEntity> query, Guid? operatorUserId = null, CancellationToken cancellationToken = default)
     {
-        var r = await query.GeneralDeleteAsync(cancellationToken);
+        var r = await query.GeneralDeleteAsync(operatorUserId, cancellationToken);
         return r;
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(TPrimaryKey primaryKey, CancellationToken cancellationToken = default)
+    public virtual async Task<int> DeleteAsync(
+        TPrimaryKey primaryKey,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default)
     {
-        var r = await Entity.GeneralDeleteByIdAsync(primaryKey, cancellationToken);
+        var r = await Entity.GeneralDeleteByIdAsync(primaryKey, operatorUserId, cancellationToken);
         return r;
     }
 
     /// <summary>
     /// 根据多个主键常规删除（批量删除或软删除），根据实体是否继承了 <see cref="ISoftDeleted"/> 自动检测
     /// </summary>
-    public virtual async Task<int> DeleteAsync(IEnumerable<TPrimaryKey> primaryKeys, CancellationToken cancellationToken = default)
+    public virtual async Task<int> DeleteAsync(
+        IEnumerable<TPrimaryKey> primaryKeys,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default)
     {
-        var r = await Entity.GeneralDeleteByIdAsync(primaryKeys, cancellationToken);
+        var r = await Entity.GeneralDeleteByIdAsync(primaryKeys, operatorUserId, cancellationToken);
         return r;
     }
 
     /// <inheritdoc/>
-    public override async Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public override async Task<int> DeleteAsync(
+        TEntity entity,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default)
     {
-        var r = await Entity.GeneralDeleteAsync<TEntity, TPrimaryKey>(entity, cancellationToken);
+        var r = await Entity.GeneralDeleteAsync<TEntity, TPrimaryKey>(entity, operatorUserId, cancellationToken);
         return r;
     }
 
     /// <inheritdoc/>
-    public override async Task<int> DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+    public override async Task<int> DeleteRangeAsync(
+        IEnumerable<TEntity> entities,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default)
     {
-        var r = await Entity.GeneralDeleteAsync<TEntity, TPrimaryKey>(entities, cancellationToken);
+        var r = await Entity.GeneralDeleteAsync<TEntity, TPrimaryKey>(entities, operatorUserId, cancellationToken);
         return r;
     }
 

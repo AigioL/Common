@@ -135,11 +135,14 @@ public abstract class Repository<TDbContext, [DynamicallyAccessedMembers(IEntity
     #region 删(Delete Funs) 立即执行并返回受影响的行数
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<int> DeleteAsync(
+        TEntity entity,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default)
     {
         if (IsSoftDeleted && entity is ISoftDeleted softDeleted)
         {
-            softDeleted.SoftDeleted = true;
+            softDeleted.DeleteTime = DateTimeOffset.UtcNow;
             Entity.Update(entity);
         }
         else
@@ -150,13 +153,16 @@ public abstract class Repository<TDbContext, [DynamicallyAccessedMembers(IEntity
     }
 
     /// <inheritdoc/>
-    public virtual async Task<int> DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
+    public virtual async Task<int> DeleteRangeAsync(
+        IEnumerable<TEntity> entities,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default)
     {
         if (IsSoftDeleted && entities is IEnumerable<ISoftDeleted> softDeleted)
         {
             foreach (var item in softDeleted)
             {
-                item.SoftDeleted = true;
+                item.DeleteTime = DateTimeOffset.UtcNow;
             }
             Entity.UpdateRange(entities);
         }

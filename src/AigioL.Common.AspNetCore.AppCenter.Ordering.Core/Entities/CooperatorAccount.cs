@@ -94,7 +94,7 @@ public partial class CooperatorAccount :
     /// 是否软删除
     /// </summary>
     [Comment("是否软删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<CooperatorAccount>
     {

@@ -36,7 +36,7 @@ public partial class ArticleCategory :
 
     /// <inheritdoc/>
     [Comment("是否软删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("排序")]

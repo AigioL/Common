@@ -35,24 +35,35 @@ public interface IRepository<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity,
     /// 根据主键将实体从数据库中删除
     /// </summary>
     /// <param name="primaryKey">要删除的实体主键</param>
+    /// <param name="operatorUserId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>受影响的行数</returns>
-    Task<int> DeleteAsync(TPrimaryKey primaryKey, CancellationToken cancellationToken = default);
+    Task<int> DeleteAsync(
+        TPrimaryKey primaryKey,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 根据主键将多个实体从数据库中删除
     /// </summary>
     /// <param name="primaryKeys">要删除的多个实体主键</param>
+    /// <param name="operatorUserId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>受影响的行数</returns>
-    Task<int> DeleteRangeAsync(IEnumerable<TPrimaryKey> primaryKeys, CancellationToken cancellationToken = default) => OperateRangeAsync(primaryKeys, DeleteAsync, cancellationToken);
+    Task<int> DeleteRangeAsync(
+        IEnumerable<TPrimaryKey> primaryKeys,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default) => OperateRangeAsync(primaryKeys, x => DeleteAsync(x, operatorUserId, cancellationToken));
 
     /// <summary>
     /// 根据主键将多个实体从数据库中删除
     /// </summary>
+    /// <param name="operatorUserId"></param>
     /// <param name="primaryKeys">要删除的多个实体主键</param>
     /// <returns>受影响的行数</returns>
-    Task<int> DeleteRangeAsync(params TPrimaryKey[] primaryKeys) => DeleteRangeAsync(primaryKeys.AsEnumerable());
+    Task<int> DeleteRangeAsync(
+        Guid? operatorUserId = null,
+        params TPrimaryKey[] primaryKeys) => DeleteRangeAsync(primaryKeys.AsEnumerable());
 
     #endregion
 

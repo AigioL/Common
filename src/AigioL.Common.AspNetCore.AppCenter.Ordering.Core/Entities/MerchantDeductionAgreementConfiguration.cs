@@ -89,7 +89,7 @@ public partial class MerchantDeductionAgreementConfiguration :
 
     /// <inheritdoc/>
     [Comment("是否软删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     public virtual List<MerchantDeductionAgreement> MerchantDeductionAgreements { get; set; } = null!;
 
