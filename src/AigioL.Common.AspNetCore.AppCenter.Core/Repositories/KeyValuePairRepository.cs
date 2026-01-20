@@ -99,7 +99,6 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
     {
         var mapper = serviceProvider.GetRequiredService<IMapper>();
         IQueryable<KeyValuePair> query = EntityNoTracking
-            .IgnoreQueryFilters()
             .OrderBy(static x => x.CreateTime);
 
         if (!string.IsNullOrWhiteSpace(id))

@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IPaySettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IWeChatApiOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AlipayExOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\LazyCreateMembershipOrderModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatApiOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayExOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAliPayServices.cs" />
