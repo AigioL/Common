@@ -176,7 +176,7 @@ public partial class User :
     /// 然后由一个 Job 在注销账号 x 个月后真实执行删除以及触发级联删除所有该用户的数据
     /// </summary>
     [Comment("是否删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("是否禁用")]

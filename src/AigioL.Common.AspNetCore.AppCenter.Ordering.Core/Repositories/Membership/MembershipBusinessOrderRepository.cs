@@ -51,7 +51,11 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
     #region CreateMembershipBusinessOrder / 创建业务订单
 
-    public async Task<(bool Success, Order? Order)> CreateBusinessOrder(MembershipBusinessOrder business_order, bool isAgreementDeduction = false, PaymentType? paymentType = null)
+    public async Task<(bool Success, Order? Order)> CreateBusinessOrder(
+        MembershipBusinessOrder business_order,
+        bool isAgreementDeduction = false,
+        PaymentType? paymentType = null,
+        string? orderId = null)
     {
         // 自动续费订单
         if (isAgreementDeduction)
@@ -59,7 +63,10 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             if (paymentType is null)
                 throw new ArgumentNullException(nameof(paymentType));
 
-            var order = await CreateMembershipBusinessOrderByAgreementAsync(business_order, paymentType!.Value);
+            var order = await CreateMembershipBusinessOrderByAgreementAsync(
+                business_order,
+                paymentType!.Value,
+                orderId);
             return (order != null, order);
         }
         // CDKey 兑换
@@ -71,7 +78,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         // 普通订单
         else
         {
-            var order = await CreateMembershipBusinessOrderAsync(business_order);
+            var order = await CreateMembershipBusinessOrderAsync(business_order, orderId);
             return (order != null, order);
         }
     }
@@ -574,9 +581,9 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// 创建普通会员业务订单
     /// </summary>
-    /// <param name="business_order"></param>
-    /// <returns></returns>
-    async Task<Order?> CreateMembershipBusinessOrderAsync(MembershipBusinessOrder business_order)
+    async Task<Order?> CreateMembershipBusinessOrderAsync(
+        MembershipBusinessOrder business_order,
+        string? orderId = null)
     {
         var timeout = DateTimeOffset.Now.AddMinutes(15);
 
@@ -596,7 +603,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 // 创建通用支付订单
                 var order = new Order
                 {
-                    Id = IdGeneratorHelper.GetNextId(),
+                    Id = orderId ?? IdGeneratorHelper.GetNextId(),
                     Type = OrderType.GeneralOrder,
                     Source = DevicePlatform2.Windows,
                     Timeout = timeout,
@@ -632,9 +639,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// CDKey 渠道创建会员业务订单
     /// </summary>
-    /// <param name="business_order"></param>
-    /// <returns></returns>
-    async Task<bool> CreateMembershipBusinessOrderByCDKeyAsync(MembershipBusinessOrder business_order)
+    async Task<bool> CreateMembershipBusinessOrderByCDKeyAsync(
+        MembershipBusinessOrder business_order)
     {
         var now = DateTimeOffset.Now;
         return await db.Database.CreateExecutionStrategy().ExecuteAsync(CoreAsync);
@@ -681,10 +687,10 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// 用户订阅自动续费会员业务订单
     /// </summary>
-    /// <param name="business_order"></param>
-    /// <param name="paymentType"></param>
-    /// <returns></returns>
-    async Task<Order?> CreateMembershipBusinessOrderByAgreementAsync(MembershipBusinessOrder business_order, PaymentType paymentType)
+    async Task<Order?> CreateMembershipBusinessOrderByAgreementAsync(
+        MembershipBusinessOrder business_order,
+        PaymentType paymentType,
+        string? orderId = null)
     {
         var nextDeductionTime = await db.Set<MerchantDeductionAgreement>()
             .Where(a => a.Id == business_order.MerchantDeductionAgreementId)
@@ -702,7 +708,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 // 添加订单
                 var order = new Order
                 {
-                    Id = IdGeneratorHelper.GetNextId(),
+                    Id = orderId ?? IdGeneratorHelper.GetNextId(),
                     Type = OrderType.RenewalOrder,
                     Source = DevicePlatform2.Windows,
                     Timeout = timeout,

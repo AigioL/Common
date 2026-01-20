@@ -62,7 +62,7 @@ public partial class AppVer :
 
     /// <inheritdoc/>
     [Comment("是否删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     /// <summary>
     /// 客户端构建

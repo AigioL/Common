@@ -35,7 +35,7 @@ public class KeyValuePair :
 
     /// <inheritdoc/>
     [Comment("是否软删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     string DebuggerDisplay() => $"{Id}, {Value}";
 

@@ -226,17 +226,17 @@ public static partial class SqlStringHelper
         return FormattableStringFactory.Create(sql, id);
     }
 
-    /// <summary>
-    /// "update from {tableName} set IsSoftDeleted = 1 where Id = {0}"
-    /// </summary>
-    /// <param name="tableName"></param>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public static FormattableString SoftDeleteFromTableNameWhereIdEqual(string tableName, object id)
-    {
-        var sql = Update + tableName + " set " + nameof(ISoftDeleted.SoftDeleted) + " = 1" + WhereIdEqual_0;
-        return FormattableStringFactory.Create(sql, id);
-    }
+    ///// <summary>
+    ///// "update from {tableName} set IsSoftDeleted = 1 where Id = {0}"
+    ///// </summary>
+    ///// <param name="tableName"></param>
+    ///// <param name="id"></param>
+    ///// <returns></returns>
+    //public static FormattableString SoftDeleteFromTableNameWhereIdEqual(string tableName, object id)
+    //{
+    //    var sql = Update + tableName + " set " + nameof(ISoftDeleted.SoftDeleted) + " = 1" + WhereIdEqual_0;
+    //    return FormattableStringFactory.Create(sql, id);
+    //}
 }
 
 file static class _StaticFields

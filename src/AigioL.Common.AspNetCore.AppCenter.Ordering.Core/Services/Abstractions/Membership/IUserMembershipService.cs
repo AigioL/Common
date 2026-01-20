@@ -12,6 +12,7 @@ public interface IUserMembershipService
         Guid userId,
         MembershipGoods goods,
         Guid? channelPackageId,
+        string? orderId = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>

@@ -99,7 +99,6 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
     {
         var mapper = serviceProvider.GetRequiredService<IMapper>();
         IQueryable<KeyValuePair> query = EntityNoTracking
-            .IgnoreQueryFilters()
             .OrderBy(static x => x.CreateTime);
 
         if (!string.IsNullOrWhiteSpace(id))
@@ -141,7 +140,7 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
 
         entity.Value = model.Value;
         entity.OperatorUserId = operatorUserId;
-        entity.SoftDeleted = false;
+        entity.DeleteTime = null;
         await db.SaveChangesAsync(CancellationToken.None);
 
         // 清除内存缓存
@@ -175,7 +174,7 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
         {
             entity.Value = model.Value;
             entity.OperatorUserId = createUserId;
-            entity.SoftDeleted = false;
+            entity.DeleteTime = null;
         }
         await db.SaveChangesAsync(CancellationToken.None);
 
@@ -186,11 +185,12 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
     }
 
     public async Task<int> DeleteAsync(
-        string primaryKey)
+        string primaryKey,
+        Guid? operatorUserId = null)
     {
         var connection = serviceProvider.GetRequiredService<IConnectionMultiplexer>();
         var cache = serviceProvider.GetRequiredService<IDistributedCache>();
-        var r = await base.DeleteAsync(primaryKey, CancellationToken.None);
+        var r = await base.DeleteAsync(primaryKey, operatorUserId, CancellationToken.None);
 
         // 清除内存缓存
         await ClearCacheAsync(connection, cache, primaryKey);
@@ -200,7 +200,8 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
 
     public sealed override Task<int> DeleteAsync(
         string primaryKey,
-        CancellationToken cancellationToken) => DeleteAsync(primaryKey);
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default) => DeleteAsync(primaryKey, operatorUserId);
 
     public async Task<int> PhysicalDeleteAsync(
         string primaryKey)
@@ -221,6 +222,7 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
 
     public async Task<int> SwitchAsync(
         string primaryKey,
+        Guid? operatorUserId,
         bool? enable)
     {
         var connection = serviceProvider.GetRequiredService<IConnectionMultiplexer>();
@@ -233,11 +235,17 @@ partial class KeyValuePairRepository<TDbContext> // 管理后台
 
         if (enable.HasValue)
         {
-            r = await query.ExecuteUpdateAsync(x => x.SetProperty(y => y.SoftDeleted, y => !enable.Value));
+            r = await query.ExecuteUpdateAsync(x => x
+                .SetProperty(y => y.DeleteTime, y => enable.Value ? null : DateTimeOffset.UtcNow)
+                .SetProperty(y => y.OperatorUserId, y => operatorUserId)
+                );
         }
         else
         {
-            r = await query.ExecuteUpdateAsync(x => x.SetProperty(y => y.SoftDeleted, y => !y.SoftDeleted));
+            r = await query.ExecuteUpdateAsync(x => x
+                .SetProperty(y => y.DeleteTime, y => y.DeleteTime == null ? DateTimeOffset.UtcNow : null)
+                .SetProperty(y => y.OperatorUserId, y => operatorUserId)
+                );
         }
 
         // 清除内存缓存

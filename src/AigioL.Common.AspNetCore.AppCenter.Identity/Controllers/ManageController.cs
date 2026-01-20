@@ -224,7 +224,7 @@ public static partial class ManageController
         IDistributedCache cache,
         IConnectionMultiplexer connection)
     {
-        await SignOutSharedAsync(jwtUserId, db, cache, connection);
+        await SignOutSharedAsync(jwtUserId, userId, db, cache, connection);
         var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
 
         var query = from m in db.ExternalAccounts
@@ -436,24 +436,27 @@ public static partial class ManageController
         var jwtUserId = context.GetJwtUserId();
         if (jwtUserId.HasValue)
         {
+            var userId = context.GetUserIdThrowIfNull();
             var db = context.RequestServices.GetRequiredService<TIdentityDbContext>();
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
-            await SignOutSharedAsync(jwtUserId.Value, db, cache, connection);
+            await SignOutSharedAsync(jwtUserId.Value, userId, db, cache, connection);
         }
         return true;
     }
 
     static async Task SignOutSharedAsync(
         Guid jwtUserId,
+        Guid userId,
         IIdentityDbContext db,
         IDistributedCache cache,
         IConnectionMultiplexer connection)
     {
         var jwtUserIdS = ShortGuid.Encode(jwtUserId);
+        var userIdS = ShortGuid.Encode(userId);
         await db.UserJsonWebTokens.Where(x => x.Id == jwtUserId).ExecuteDeleteAsync();
         var redisdb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
-        await redisdb.KeyDeleteAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{jwtUserIdS}");
+        await redisdb.KeyDeleteAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{userIdS}");
         await redisdb.KeyDeleteAsync($"{CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey}:{jwtUserIdS}");
         await cache.RemoveAsync(jwtUserIdS);
         await db.UserRefreshJsonWebTokens.Where(x => x.Id == jwtUserId).ExecuteDeleteAsync();

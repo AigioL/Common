@@ -89,8 +89,9 @@ public static partial class KeyValuePairController
             [FromRoute] string id,
             [FromRoute] bool? enable) =>
         {
+            var userId = context.GetBMUserId();
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
-            var rowCount = await keyValuePairRepo.SwitchAsync(id, enable);
+            var rowCount = await keyValuePairRepo.SwitchAsync(id, userId, enable);
             BMApiRsp<bool> r = BMApiRsp.OkBoolean(rowCount > 0);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)

@@ -71,7 +71,7 @@ public partial class Komaasharu :
 
     /// <inheritdoc/>
     [Comment("是否软删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     /// <summary>
     /// 广告类型

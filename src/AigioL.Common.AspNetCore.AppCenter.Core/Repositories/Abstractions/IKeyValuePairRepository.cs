@@ -94,9 +94,11 @@ partial interface IKeyValuePairRepository // 管理后台
         CancellationToken cancellationToken = default);
 
     Task<int> SwitchAsync(string primaryKey,
+        Guid? operatorUserId,
         bool? enable);
 
-    Task<int> DeleteAsync(string primaryKey);
+    Task<int> DeleteAsync(string primaryKey,
+        Guid? operatorUserId);
 
     Task<int> PhysicalDeleteAsync(string primaryKey);
 }

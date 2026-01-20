@@ -84,7 +84,7 @@ public partial class RefundBill :
     public string? RefundFailureReason { get; set; }
 
     /// <inheritdoc/>
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     public virtual AftersalesBill? AftersalesBill { get; set; } = null!;
 

@@ -6,12 +6,12 @@ namespace AigioL.Common.Primitives.Columns;
 public interface ISoftDeleted : IReadOnlySoftDeleted
 {
     /// <inheritdoc cref="ISoftDeleted"/>
-    new bool SoftDeleted { get; set; }
+    new DateTimeOffset? DeleteTime { get; set; }
 }
 
 /// <inheritdoc cref="ISoftDeleted"/>
 public interface IReadOnlySoftDeleted
 {
     /// <inheritdoc cref="ISoftDeleted"/>
-    bool SoftDeleted { get; }
+    DateTimeOffset? DeleteTime { get; }
 }

@@ -8,6 +8,8 @@ namespace AigioL.Common.Extensions.Http.Proxy.Models;
 /// </summary>
 public partial record class WebProxyModel
 {
+    public required string Id { get; set; }
+
     /// <summary>
     /// 获取或设置代理服务器的地址
     /// </summary>

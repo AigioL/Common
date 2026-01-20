@@ -28,5 +28,5 @@ public sealed class BMMenuEdit : IReadOnlyId<Guid>
 
     public string Url { get; set; } = null!;
 
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 }

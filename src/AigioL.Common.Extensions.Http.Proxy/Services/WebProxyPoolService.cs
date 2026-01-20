@@ -1,11 +1,21 @@
+using AigioL.Common.Extensions.Http.Proxy.Models;
 using AigioL.Common.Extensions.Http.Proxy.Services.Abstractions;
 using AigioL.Common.Models;
+using MemoryPack;
+using StackExchange.Redis;
 using System.Diagnostics;
 using System.Net;
+using static AigioL.Common.Extensions.Http.Proxy.Services.Abstractions.IWebProxyPoolService;
 
 namespace AigioL.Common.Extensions.Http.Proxy.Services;
 
-partial class WebProxyPoolService : IWebProxyPoolService
+/// <summary>
+/// 由 Redis 实现的高性能 Web 代理池服务
+/// </summary>
+/// <param name="connection"></param>
+public abstract partial class WebProxyPoolService(
+    IConnectionMultiplexer connection) :
+    IWebProxyPoolService
 {
     protected string ConnectionTestUrl => "http://www.msftconnecttest.com/connecttest.txt";
 
@@ -29,5 +39,209 @@ partial class WebProxyPoolService : IWebProxyPoolService
         sw.Stop();
 
         return sw.Elapsed;
+    }
+
+    protected abstract Task<WebProxyModel[]> GetWebProxiesAsync(
+        CancellationToken cancellationToken = default);
+
+    public async Task<ReadOnlyMemory<WebProxyModel>> GetWebProxiesByCacheAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+        var all = await db.HashGetAllAsync(KeyWebProxies);
+
+        if (all == null || all.Length == 0)
+        {
+            var proxies = await UpdateWebProxiesToCacheCoreAsync(db, cancellationToken);
+            return proxies;
+        }
+        else
+        {
+            var proxies = new WebProxyModel[all.Length];
+            int index = 0;
+            for (int i = 0; i < all.Length; i++)
+            {
+                var it = all[i];
+                if (it.Value.HasValue)
+                {
+                    var proxy = MemoryPackSerializer.Deserialize<WebProxyModel>(it.Value);
+                    if (proxy != null)
+                    {
+                        proxies[index++] = proxy;
+                    }
+                }
+                index++;
+            }
+            return proxies.AsMemory(0, index);
+        }
+
+    }
+
+    public async Task<WebProxyModel?> GetWebProxyByCacheAsync(
+        string proxyId,
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+        var proxy = await db.HashGetAsync(KeyWebProxies, proxyId);
+        if (proxy.HasValue)
+        {
+            var m = MemoryPackSerializer.Deserialize<WebProxyModel>(proxy);
+            if (m != null)
+            {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public Task UpdateWebProxiesToCacheAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+        return UpdateWebProxiesToCacheCoreAsync(db, cancellationToken);
+    }
+
+    async Task<WebProxyModel[]> UpdateWebProxiesToCacheCoreAsync(
+        IDatabase db,
+        CancellationToken cancellationToken = default)
+    {
+        var proxies = await GetWebProxiesAsync(cancellationToken);
+        if (proxies == null || proxies.Length == 0)
+        {
+            await db.HashSetAsync(KeyWebProxies, [new HashEntry(RedisValue.Null, RedisValue.Null)]);
+        }
+        else
+        {
+            var entries = new HashEntry[proxies.Length];
+            for (int i = 0; i < proxies.Length; i++)
+            {
+                var proxy = proxies[i];
+                var data = MemoryPackSerializer.Serialize(proxy);
+                entries[i] = new HashEntry(proxy.Id, data);
+            }
+            await db.HashSetAsync(KeyWebProxies, entries);
+        }
+        return proxies ?? [];
+    }
+
+    public async Task ClearAllCacheAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+        await db.KeyDeleteAsync(KeyWebProxies);
+        await db.KeyDeleteAsync(KeyUserIdToProxyId);
+        await db.KeyDeleteAsync(KeySortedSetProxyOccupy);
+        await db.KeyDeleteAsync(KeySortedSetProxyFailCount);
+    }
+
+    public async Task<string?> GetProxyIdAsync(
+        Guid userId,
+        TimeSpan expiry,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdS = userId.ToString();
+        var db = connection.GetDatabase();
+
+        // 有占用的直接返回
+        var proxyIdByOccupy = await db.HashGetAsync(KeySortedSetProxyOccupy, userIdS);
+        if (proxyIdByOccupy.HasValue)
+        {
+            string? proxyIdByOccupyS = proxyIdByOccupy;
+            if (!string.IsNullOrWhiteSpace(proxyIdByOccupyS))
+            {
+                return proxyIdByOccupyS;
+            }
+        }
+
+        var array = await db.SortedSetRangeByScoreAsync(KeySortedSetProxyOccupy, take: 1);
+        if (array == null || array.Length == 0 || !array[0].HasValue)
+        {
+            return null;
+        }
+
+        string? proxyId = array[0];
+        if (string.IsNullOrEmpty(proxyId))
+        {
+            return null;
+        }
+
+        // 增加占用计数
+        await db.SortedSetIncrementAsync(KeySortedSetProxyOccupy, proxyId, 1);
+
+        // 设置用户 Id 到代理 Id 的映射
+        await db.HashFieldSetAndSetExpiryAsync(
+            KeyUserIdToProxyId,
+            userIdS,
+            proxyId,
+            expiry);
+
+        return proxyId;
+    }
+
+    public async Task<int> MarkFailCountAsync(
+        string proxyId,
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+        var newCount = await db.SortedSetIncrementAsync(KeySortedSetProxyFailCount, proxyId, 1);
+        return (int)newCount;
+    }
+
+    public async Task<Dictionary<string, int>> GetSortedSetProxyOccupyAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+
+        var array = await db.SortedSetRangeByScoreWithScoresAsync(KeySortedSetProxyOccupy);
+        if (array == null || array.Length == 0)
+        {
+            return [];
+        }
+        else
+        {
+            var results = new Dictionary<string, int>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                var it = array[i];
+                if (it.Element.HasValue)
+                {
+                    string? proxyIdS = it.Element;
+                    if (!string.IsNullOrEmpty(proxyIdS))
+                    {
+                        results.Add(proxyIdS, (int)it.Score);
+                    }
+                }
+            }
+            return results;
+        }
+    }
+
+    public async Task<Dictionary<string, int>> GetSortedSetProxyFailCountAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+
+        var array = await db.SortedSetRangeByScoreWithScoresAsync(KeySortedSetProxyFailCount);
+        if (array == null || array.Length == 0)
+        {
+            return [];
+        }
+        else
+        {
+            var results = new Dictionary<string, int>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                var it = array[i];
+                if (it.Element.HasValue)
+                {
+                    string? proxyIdS = it.Element;
+                    if (!string.IsNullOrEmpty(proxyIdS))
+                    {
+                        results.Add(proxyIdS, (int)it.Score);
+                    }
+                }
+            }
+            return results;
+        }
     }
 }

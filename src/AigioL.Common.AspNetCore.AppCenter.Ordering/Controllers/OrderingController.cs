@@ -23,7 +23,7 @@ public static class OrderingController
             return r;
         }).WithDescription("获取订单支付信息");
         routeGroup.MapGet("status/{id}", async (HttpContext context,
-        [FromRoute] string id) =>
+            [FromRoute] string id) =>
         {
             var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
             var r = await GetOrderPaymentInfo(repo, id, context.RequestAborted);

@@ -64,6 +64,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMUserTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuButtonModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuEdit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuInitModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuSortItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\BMMenuTreeItem.cs" />

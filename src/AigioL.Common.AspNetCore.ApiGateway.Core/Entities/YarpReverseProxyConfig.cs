@@ -31,5 +31,5 @@ public sealed partial class YarpReverseProxyConfig : Entity<Guid>, IDisable, ISo
 
     /// <inheritdoc/>
     [Comment("是否软删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 }

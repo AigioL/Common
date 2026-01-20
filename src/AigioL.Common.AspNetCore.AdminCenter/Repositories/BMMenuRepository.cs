@@ -214,7 +214,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
     {
         var query = db.Menus.AsNoTrackingWithIdentityResolution()
             .Include(x => x.Children)
-            .Where(x => !x.SoftDeleted)
+            .Where(x => x.DeleteTime == null)
             .Distinct()
             .OrderByDescending(x => x.Sort)
             .Select(_Expr.MenuExpr);
@@ -226,7 +226,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
     public async Task<List<BMButtonModel>> GetButtonsAsync()
     {
         var query = db.Buttons.AsNoTrackingWithIdentityResolution()
-            .Where(x => !x.SoftDeleted)
+            .Where(x => x.DeleteTime == null)
             .Select(_Expr.BtnExpr);
 
         var r = await query.ToListAsync(RequestAborted);
@@ -248,7 +248,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
     {
         var query = from button in db.Buttons.AsNoTrackingWithIdentityResolution()
                     join menuRol in db.MenuButtonRoles.AsNoTrackingWithIdentityResolution() on button.Id equals menuRol.ButtonId
-                    where !button.SoftDeleted &&
+                    where button.DeleteTime == null &&
                     menuRol.MenuId == menuId &&
                     menuRol.RoleId == roleId
                     select button;
@@ -302,7 +302,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
             {
                 var parentMenu = await db.Menus
                     .AsNoTrackingWithIdentityResolution()
-                    .FirstOrDefaultAsync(x => x.Id == menu.ParentId.Value && !x.SoftDeleted);
+                    .FirstOrDefaultAsync(x => x.Id == menu.ParentId.Value && x.DeleteTime == null);
                 if (parentMenu == null)
                 {
                     return false;
@@ -322,7 +322,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
         {
             // 判断是否父菜单下有其他子菜单
             var isParentMenu = await (from menuItem in db.Menus.AsNoTrackingWithIdentityResolution()
-                                      where !menuItem.SoftDeleted &&
+                                      where menuItem.DeleteTime == null &&
                                       menuItem.ParentId == menuId
                                       && menuItem.TenantId == tenantId
                                       select menuItem).AnyAsync(CancellationToken.None);
@@ -331,7 +331,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
             {
                 var query = (from menuItem in db.Menus.AsNoTrackingWithIdentityResolution()
                              where
-                             !menuItem.SoftDeleted &&
+                             menuItem.DeleteTime == null &&
                              menuItem.ParentId == menuId
                              && menuItem.TenantId == tenantId
                              select menuItem).Distinct();
@@ -379,7 +379,7 @@ partial class BMMenuRepository<TDbContext, TUser, TRole, TUserRole> // 菜单权
         await db.Menus
             .AsNoTrackingWithIdentityResolution()
             .Where(x => x.Id == menuId &&
-            !x.SoftDeleted
+            x.DeleteTime == null
             && x.TenantId == tenantId
             )
             .ExecuteUpdateAsync(s => s.SetProperty(x => x.Name, name), CancellationToken.None);

@@ -25,9 +25,25 @@ public static partial class ModelBuilderExtensions
     [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "MakeGenericType is safe because IEntity<TPrimaryKey>.LambdaEqualId is a reference type.")]
     static LambdaExpression SoftDeletedQueryFilter([DynamicallyAccessedMembers(IEntity.DAMT)] Type type)
     {
-        var parameter = Expression.Parameter(type);
-        var left = Expression.Property(parameter, type, nameof(ISoftDeleted.SoftDeleted));
-        var body = Expression.Not(left);
+        //var parameter = Expression.Parameter(type);
+        //var left = Expression.Property(parameter, type, nameof(ISoftDeleted.SoftDeleted));
+        //var body = Expression.Not(left);
+        //return Expression.Lambda(typeof(Func<,>).MakeGenericType(type, typeof(bool)), body, parameter);
+
+        // 1. 创建参数: entity => ...
+        var parameter = Expression.Parameter(type, "e");
+
+        // 2. 获取属性: entity.DeleteTime
+        // 假设你的接口属性名为 DeleteTime，类型为 DateTime? 或 DateTimeOffset?
+        var property = Expression.Property(parameter, type, nameof(ISoftDeleted.DeleteTime));
+
+        // 3. 创建 null 常量，并确保其类型与属性类型一致
+        var nullConstant = Expression.Constant(null, property.Type);
+
+        // 4. 构造比较表达式: entity.DeleteTime == null
+        var body = Expression.Equal(property, nullConstant);
+
+        // 5. 构造 Lambda: Expression<Func<TEntity, bool>>
         return Expression.Lambda(typeof(Func<,>).MakeGenericType(type, typeof(bool)), body, parameter);
     }
 
@@ -77,7 +93,7 @@ public static partial class ModelBuilderExtensions
                 // https://docs.microsoft.com/zh-cn/ef/core/querying/filters
                 buildAction += p =>
                 {
-                    p.HasIndex(nameof(ISoftDeleted.SoftDeleted));
+                    p.HasIndex(nameof(ISoftDeleted.DeleteTime)).HasFilter($"\"{nameof(ISoftDeleted.DeleteTime)}\" IS NULL");
                     p.HasQueryFilter(SoftDeletedQueryFilter(type));
                     SoftDeleted.Add(type);
                 };
