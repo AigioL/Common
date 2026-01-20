@@ -40,6 +40,33 @@ public partial interface IWebProxyPoolService
     /// </summary>
     Task ClearAllCacheAsync(
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据用户 Id 获取分配的代理 Id
+    /// </summary>
+    Task<string?> GetProxyIdAsync(
+        Guid userId,
+        TimeSpan expiry,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 标记代理使用失败次数加 1，原子操作，返回当前失败次数
+    /// </summary>
+    Task<int> MarkFailCountAsync(
+        string proxyId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取代理被占用次数有序集合
+    /// </summary>
+    Task<Dictionary<string, int>> GetSortedSetProxyOccupyAsync(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取代理使用失败的次数有序集合
+    /// </summary>
+    Task<Dictionary<string, int>> GetSortedSetProxyFailCountAsync(
+        CancellationToken cancellationToken = default);
 }
 
 partial interface IWebProxyPoolService
