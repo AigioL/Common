@@ -12,6 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text.Json.Nodes;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Controllers;
 
@@ -84,6 +85,37 @@ https://tauri.app/plugin/updater/#static-json-file
 """)
             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent);
+
+        routeGroup.MapGet("f3766645/{target}/{arch}", async (HttpContext context,
+            [FromRoute] string target,
+            [FromRoute] string arch) =>
+        {
+            var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
+            var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
+            var key = string.Format(CacheKeys.TauriUpdaterStaticJSONFile, target, arch);
+            var json = await keyValuePairRepo.GetAsync<string>(cache, key, null, context.RequestAborted);
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                if (JsonNode.Parse(json) is JsonObject jobj)
+                {
+                    if (jobj.TryGetPropertyValue("url", out var urlNode))
+                    {
+                        if (urlNode != null && urlNode.GetValue<string>() is string urlStr)
+                        {
+                            return Results.Redirect(urlStr);
+                        }
+                    }
+                }
+            }
+            return Results.NotFound();
+        })
+            .WithDescription(
+"""
+检查更新（Tauri）静态 JSON 文件中的下载地址重定向
+https://tauri.app/plugin/updater/#static-json-file
+""")
+            .Produces(StatusCodes.Status302Found)
+            .Produces(StatusCodes.Status404NotFound);
 
         routeGroup.MapGet("{platform}/{osVersionMajor}/{osVersionMinor}/{osVersionBuild}/{deploymentMode=0}", async (HttpContext context,
             [FromRoute] ClientPlatform platform,
