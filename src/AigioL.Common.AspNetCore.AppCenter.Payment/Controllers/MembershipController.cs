@@ -183,7 +183,13 @@ public static class MembershipController
         IUserMembershipService userMembershipService,
         MembershipCDKeyRequest cdKeyRequest)
     {
-        if (!ShortGuid.TryParse(cdKeyRequest.CDKey, out Guid cdKey))
+        Guid cdKey;
+        var cdKeyB58 = Base58Guid.Decode(cdKeyRequest.CDKey);
+        if (cdKeyB58.HasValue)
+        {
+            cdKey = cdKeyB58.Value;
+        }
+        else if (!ShortGuid.TryParse(cdKeyRequest.CDKey, out cdKey))
         {
             return "CDKey 不合法";
         }
