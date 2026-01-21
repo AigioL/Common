@@ -146,7 +146,8 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
 
         var r = await query.ExecuteUpdateAsync(e =>
             e.SetProperty(p => p.Disable, disable)
-            .SetProperty(p => p.OperatorUserId, operatorUserId));
+            .SetProperty(p => p.OperatorUserId, operatorUserId)
+            .SetProperty(p => p.UpdateTime, DateTimeOffset.UtcNow));
         return r;
     }
 
