@@ -13,7 +13,9 @@ namespace AigioL.Common.Extensions.Http.Proxy.Services;
 /// 由 Redis 实现的高性能 Web 代理池服务
 /// </summary>
 /// <param name="connection"></param>
-public abstract partial class WebProxyPoolService(IConnectionMultiplexer connection) : IWebProxyPoolService
+public abstract partial class WebProxyPoolService(
+    IConnectionMultiplexer connection) :
+    IWebProxyPoolService
 {
     protected string ConnectionTestUrl => "http://www.msftconnecttest.com/connecttest.txt";
 
@@ -130,5 +132,116 @@ public abstract partial class WebProxyPoolService(IConnectionMultiplexer connect
         await db.KeyDeleteAsync(KeyUserIdToProxyId);
         await db.KeyDeleteAsync(KeySortedSetProxyOccupy);
         await db.KeyDeleteAsync(KeySortedSetProxyFailCount);
+    }
+
+    public async Task<string?> GetProxyIdAsync(
+        Guid userId,
+        TimeSpan expiry,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdS = userId.ToString();
+        var db = connection.GetDatabase();
+
+        // 有占用的直接返回
+        var proxyIdByOccupy = await db.HashGetAsync(KeySortedSetProxyOccupy, userIdS);
+        if (proxyIdByOccupy.HasValue)
+        {
+            string? proxyIdByOccupyS = proxyIdByOccupy;
+            if (!string.IsNullOrWhiteSpace(proxyIdByOccupyS))
+            {
+                return proxyIdByOccupyS;
+            }
+        }
+
+        var array = await db.SortedSetRangeByScoreAsync(KeySortedSetProxyOccupy, take: 1);
+        if (array == null || array.Length == 0 || !array[0].HasValue)
+        {
+            return null;
+        }
+
+        string? proxyId = array[0];
+        if (string.IsNullOrEmpty(proxyId))
+        {
+            return null;
+        }
+
+        // 增加占用计数
+        await db.SortedSetIncrementAsync(KeySortedSetProxyOccupy, proxyId, 1);
+
+        // 设置用户 Id 到代理 Id 的映射
+        await db.HashFieldSetAndSetExpiryAsync(
+            KeyUserIdToProxyId,
+            userIdS,
+            proxyId,
+            expiry);
+
+        return proxyId;
+    }
+
+    public async Task<int> MarkFailCountAsync(
+        string proxyId,
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+        var newCount = await db.SortedSetIncrementAsync(KeySortedSetProxyFailCount, proxyId, 1);
+        return (int)newCount;
+    }
+
+    public async Task<Dictionary<string, int>> GetSortedSetProxyOccupyAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+
+        var array = await db.SortedSetRangeByScoreWithScoresAsync(KeySortedSetProxyOccupy);
+        if (array == null || array.Length == 0)
+        {
+            return [];
+        }
+        else
+        {
+            var results = new Dictionary<string, int>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                var it = array[i];
+                if (it.Element.HasValue)
+                {
+                    string? proxyIdS = it.Element;
+                    if (!string.IsNullOrEmpty(proxyIdS))
+                    {
+                        results.Add(proxyIdS, (int)it.Score);
+                    }
+                }
+            }
+            return results;
+        }
+    }
+
+    public async Task<Dictionary<string, int>> GetSortedSetProxyFailCountAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+
+        var array = await db.SortedSetRangeByScoreWithScoresAsync(KeySortedSetProxyFailCount);
+        if (array == null || array.Length == 0)
+        {
+            return [];
+        }
+        else
+        {
+            var results = new Dictionary<string, int>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                var it = array[i];
+                if (it.Element.HasValue)
+                {
+                    string? proxyIdS = it.Element;
+                    if (!string.IsNullOrEmpty(proxyIdS))
+                    {
+                        results.Add(proxyIdS, (int)it.Score);
+                    }
+                }
+            }
+            return results;
+        }
     }
 }
