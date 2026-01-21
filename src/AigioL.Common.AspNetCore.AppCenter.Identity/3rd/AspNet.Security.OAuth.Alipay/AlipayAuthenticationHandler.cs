@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
@@ -25,10 +24,10 @@ namespace AspNet.Security.OAuth.Alipay;
 /// <summary>
 /// Defines a handler for authentication using Alipay.
 /// </summary>
-public partial class Alipay2AuthenticationHandler : OAuthHandler<Alipay2AuthenticationOptions>
+public partial class AlipayAuthenticationHandler2 : OAuthHandler<AlipayAuthenticationOptions2>
 {
-    public Alipay2AuthenticationHandler(
-        IOptionsMonitor<Alipay2AuthenticationOptions> options,
+    public AlipayAuthenticationHandler2(
+        IOptionsMonitor<AlipayAuthenticationOptions2> options,
         ILoggerFactory logger,
         UrlEncoder encoder)
         : base(options, logger, encoder)
@@ -49,17 +48,12 @@ public partial class Alipay2AuthenticationHandler : OAuthHandler<Alipay2Authenti
 
     private const string SignType = "RSA2";
 
-    private async Task AddCertSignatureParametersAsync(SortedDictionary<string, string?> parameters)
+    private void AddCertificateSignatureParameters(SortedDictionary<string, string?> parameters)
     {
-        ArgumentNullException.ThrowIfNull(Options.PrivateKey);
-        ArgumentNullException.ThrowIfNull(Options.AppCertSNKeyId);
-        ArgumentNullException.ThrowIfNull(Options.RootCertSNKeyId);
-
-        var app_cert_sn = await Options.PrivateKey(Options.AppCertSNKeyId, Context.RequestAborted);
-        var alipay_root_cert_sn = await Options.PrivateKey(Options.RootCertSNKeyId, Context.RequestAborted);
-
-        parameters["app_cert_sn"] = AntCertificationUtil.GetCertSN(app_cert_sn.Span);
-        parameters["alipay_root_cert_sn"] = AntCertificationUtil.GetRootCertSN(alipay_root_cert_sn.Span, SignType);
+        ArgumentNullException.ThrowIfNull(Options.ApplicationCertificateSn);
+        ArgumentNullException.ThrowIfNull(Options.RootCertificateSn);
+        parameters["app_cert_sn"] = Options.ApplicationCertificateSn;
+        parameters["alipay_root_cert_sn"] = Options.RootCertificateSn;
     }
 
     protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(OAuthCodeExchangeContext context)
@@ -78,9 +72,9 @@ public partial class Alipay2AuthenticationHandler : OAuthHandler<Alipay2Authenti
             ["version"] = "1.0",
         };
 
-        if (Options.EnableCertSignature)
+        if (Options.UseCertificateSignatures)
         {
-            await AddCertSignatureParametersAsync(tokenRequestParameters);
+            AddCertificateSignatureParameters(tokenRequestParameters);
         }
 
         tokenRequestParameters.Add("sign", GetRSA2Signature(tokenRequestParameters));
@@ -132,9 +126,9 @@ public partial class Alipay2AuthenticationHandler : OAuthHandler<Alipay2Authenti
             ["version"] = "1.0",
         };
 
-        if (Options.EnableCertSignature)
+        if (Options.UseCertificateSignatures)
         {
-            await AddCertSignatureParametersAsync(parameters);
+            AddCertificateSignatureParameters(parameters);
         }
 
         parameters.Add("sign", GetRSA2Signature(parameters));

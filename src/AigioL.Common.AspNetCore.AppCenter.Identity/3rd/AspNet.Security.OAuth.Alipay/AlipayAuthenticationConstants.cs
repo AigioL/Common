@@ -7,33 +7,34 @@
 namespace AspNet.Security.OAuth.Alipay;
 
 /// <summary>
-/// Contains constants specific to the <see cref="Alipay2AuthenticationHandler"/>.
+/// Contains constants specific to the <see cref="AlipayAuthenticationHandler"/>.
 /// </summary>
-public static class Alipay2AuthenticationConstants
+public static class AlipayAuthenticationConstants2
 {
     public static class Claims
     {
-        public const string Avatar = AlipayAuthenticationConstants.Claims.Avatar;
+        public const string Avatar = "urn:alipay:avatar";
 
-        public const string Province = AlipayAuthenticationConstants.Claims.Province;
+        public const string Province = "urn:alipay:province";
 
-        public const string City = AlipayAuthenticationConstants.Claims.City;
+        public const string City = "urn:alipay:city";
 
-        public const string Nickname = AlipayAuthenticationConstants.Claims.Nickname;
+        public const string Nickname = "urn:alipay:nick_name";
 
         /// <summary>
         /// The user's gender. F: Female; M: Male.
         /// </summary>
-        public const string Gender = AlipayAuthenticationConstants.Claims.Gender;
+        public const string Gender = "urn:alipay:gender";
 
         /// <summary>
-        /// OpenID is the unique identifier of Alipay users in the application dimension.
+        /// OpenID is the unique identifier for Alipay users at the application level.
         /// See https://opendocs.alipay.com/mini/0ai2i6
         /// </summary>
         public const string OpenId = "urn:alipay:open_id";
 
         /// <summary>
-        /// Alipay user system internal identifier, will no longer be independently open in the future, and will be replaced by OpenID.
+        /// The internal identifier for Alipay users will no longer be independently available going forward and will be replaced by OpenID.
+        /// See https://opendocs.alipay.com/common/0ai736
         /// </summary>
         public const string UserId = "urn:alipay:user_id";
     }

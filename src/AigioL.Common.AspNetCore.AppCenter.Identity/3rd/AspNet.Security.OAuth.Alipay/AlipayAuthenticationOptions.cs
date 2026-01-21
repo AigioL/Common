@@ -6,16 +6,16 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using static AspNet.Security.OAuth.Alipay.Alipay2AuthenticationConstants;
+using static AspNet.Security.OAuth.Alipay.AlipayAuthenticationConstants2;
 
 namespace AspNet.Security.OAuth.Alipay;
 
 /// <summary>
-/// Defines a set of options used by <see cref="Alipay2AuthenticationHandler"/>.
+/// Defines a set of options used by <see cref="AlipayAuthenticationHandler"/>.
 /// </summary>
-public class Alipay2AuthenticationOptions : OAuthOptions
+public class AlipayAuthenticationOptions2 : OAuthOptions
 {
-    public Alipay2AuthenticationOptions()
+    public AlipayAuthenticationOptions2()
     {
         ClaimsIssuer = AlipayAuthenticationDefaults.Issuer;
         CallbackPath = AlipayAuthenticationDefaults.CallbackPath;
@@ -32,50 +32,44 @@ public class Alipay2AuthenticationOptions : OAuthOptions
         ClaimActions.MapJsonKey(Claims.Nickname, "nick_name");
         ClaimActions.MapJsonKey(Claims.Province, "province");
         ClaimActions.MapJsonKey(Claims.OpenId, "open_id");
-        ClaimActions.MapJsonKey(Claims.UserId, "user_id");
+
+        // https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers/pull/1131#discussion_r2657531257
+        ClaimActions.MapJsonKey("urn:alipay:user_id", "user_id");
     }
 
     /// <summary>
-    /// Get or set a value indicating whether to use certificate mode for signature implementation.
+    /// Gets or sets a value indicating whether to use certificate mode for signing calls.
     /// <para>https://opendocs.alipay.com/common/057k53?pathHash=e18d6f77#%E8%AF%81%E4%B9%A6%E6%A8%A1%E5%BC%8F</para>
     /// </summary>
-    public bool EnableCertSignature { get; set; }
+    public bool UseCertificateSignatures { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional ID for your Sign in with app_cert_sn.
+    /// Gets or sets the optional ID for your Sign in with Application Public Key Certificate SN(app_cert_sn).
+    /// <para>https://opendocs.alipay.com/support/01raux</para>
     /// </summary>
-    public string? AppCertSNKeyId { get; set; }
+    public string? ApplicationCertificateSn { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional ID for your Sign in with alipay_root_cert_sn.
+    /// Gets or sets the optional ID for your Sign in with Alipay Root Certificate SN.
+    /// <para>https://opendocs.alipay.com/support/01rauy</para>
     /// </summary>
-    public string? RootCertSNKeyId { get; set; }
-
-    /// <summary>
-    /// Gets or sets an optional delegate to get the client's private key which is passed
-    /// the value of the <see cref="AppCertSNKeyId"/> or <see cref="RootCertSNKeyId"/> property and the <see cref="CancellationToken"/>
-    /// associated with the current HTTP request.
-    /// </summary>
-    /// <remarks>
-    /// The private key should be in PKCS #8 (<c>.p8</c>) format.
-    /// </remarks>
-    public Func<string, CancellationToken, Task<ReadOnlyMemory<char>>>? PrivateKey { get; set; }
+    public string? RootCertificateSn { get; set; }
 
     /// <inheritdoc />
     public override void Validate()
     {
         base.Validate();
 
-        if (EnableCertSignature)
+        if (UseCertificateSignatures)
         {
-            if (string.IsNullOrEmpty(AppCertSNKeyId))
+            if (string.IsNullOrEmpty(ApplicationCertificateSn))
             {
-                throw new ArgumentException($"The '{nameof(AppCertSNKeyId)}' option must be provided if the '{nameof(EnableCertSignature)}' option is set to true.", nameof(AppCertSNKeyId));
+                throw new ArgumentException($"The '{nameof(ApplicationCertificateSn)}' option must be provided if the '{nameof(UseCertificateSignatures)}' option is set to true.", nameof(ApplicationCertificateSn));
             }
 
-            if (string.IsNullOrEmpty(RootCertSNKeyId))
+            if (string.IsNullOrEmpty(RootCertificateSn))
             {
-                throw new ArgumentException($"The '{nameof(RootCertSNKeyId)}' option must be provided if the '{nameof(EnableCertSignature)}' option is set to true.", nameof(RootCertSNKeyId));
+                throw new ArgumentException($"The '{nameof(RootCertificateSn)}' option must be provided if the '{nameof(UseCertificateSignatures)}' option is set to true.", nameof(RootCertificateSn));
             }
         }
     }

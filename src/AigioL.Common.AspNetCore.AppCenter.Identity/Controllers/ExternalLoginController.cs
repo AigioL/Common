@@ -23,7 +23,7 @@ using System.Text.Encodings.Web;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.D3b96193;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorController;
 using QQConstants = AspNet.Security.OAuth.QQ.QQAuthenticationConstants;
-using AlipayConstants = AspNet.Security.OAuth.Alipay.Alipay2AuthenticationConstants;
+using AlipayConstants = AspNet.Security.OAuth.Alipay.AlipayAuthenticationConstants2;
 using WeChatConstants = AspNet.Security.OAuth.Weixin.WeixinAuthenticationConstants;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
