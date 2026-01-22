@@ -18,10 +18,12 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IO;
 using System.Buffers.Text;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.D3b96193;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorController;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.FixSession;
@@ -435,8 +437,27 @@ public static partial class ExternalLoginController
             }
             else
             {
-                var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
-                return Results.File(encryptStream, MediaTypeNames.MemoryPackSecurity);
+                bool isMemoryPack = false;
+                if (isMemoryPack)
+                {
+                    var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
+                    return Results.File(encryptStream, MediaTypeNames.MemoryPackSecurity);
+                }
+                else
+                {
+                    rsp.Content?.FastLRBChannel = channel;
+                    if (rsp.IsSuccess())
+                    {
+                        var token = await SerializeEncryptToJsonAsync(rsp, aes, context.RequestAborted);
+                        var r = await EndPageAsync(null, token);
+                        return r;
+                    }
+                    else
+                    {
+                        var r = await EndErrorPageAsync(rsp);
+                        return r;
+                    }
+                }
             }
         }
         else
@@ -445,7 +466,7 @@ public static partial class ExternalLoginController
             if (rsp.IsSuccess())
             {
                 using var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
-                var rspStr = Base64Url.EncodeToString(encryptStream.GetSpan());
+                var rspStr = Base64Url.EncodeToString(encryptStream.GetBuffer().AsSpan()[..unchecked((int)encryptStream.Length)]);
                 var r = await EndPageAsync(null, rspStr);
                 return r;
             }
@@ -538,7 +559,7 @@ file static class D3b96193
         var index = steamNameIdentifier.LastIndexOf('/');
         if (index > 0)
         {
-            var numberString = steamNameIdentifier[index..];
+            var numberString = steamNameIdentifier[index..].Trim('/');
             if (long.TryParse(numberString, out var val))
             {
                 return val;
@@ -559,11 +580,29 @@ file static class D3b96193
         serializeStream.Position = 0;
 
         var encryptStream = m.GetStream();
-        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write, leaveOpen: true);
         await serializeStream.CopyToAsync(cryptoStream, cancellationToken);
         await cryptoStream.FlushFinalBlockAsync(cancellationToken);
         encryptStream.Position = 0;
         return encryptStream;
+    }
+
+    internal static async Task<string> SerializeEncryptToJsonAsync(ApiRsp<LoginOrRegisterResponse?> obj, Aes aes, CancellationToken cancellationToken = default)
+    {
+        using var serializeStream = m.GetStream();
+        await JsonSerializer.SerializeAsync(serializeStream, obj,
+            IdentityMinimalApisJsonSerializerContext.Default.ApiRspLoginOrRegisterResponse, cancellationToken: cancellationToken);
+        serializeStream.Position = 0;
+
+        using var encryptStream = m.GetStream();
+        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write, leaveOpen: true);
+        await serializeStream.CopyToAsync(cryptoStream, cancellationToken);
+        await cryptoStream.FlushFinalBlockAsync(cancellationToken);
+        encryptStream.Position = 0;
+
+        var span = encryptStream.GetBuffer().AsSpan()[..unchecked((int)encryptStream.Length)];
+        var r = Base64Url.EncodeToString(span);
+        return r;
     }
 }
 
