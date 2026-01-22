@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.JsonWebTokens.Models.Abstractions;
 using System.Net;
 
@@ -23,4 +24,9 @@ partial class AppSettingsBase : INotUseForwardedHeaders, IViewsUrl
 
     /// <inheritdoc/>
     public virtual string[] GetOrigins() => IViewsUrl.GetOrigins(ViewsUrl);
+
+    /// <summary>
+    /// 供 <see cref="IDataProtectionService"/> 服务使用的密钥
+    /// </summary>
+    public string? DataProtectionKey { get; set; }
 }

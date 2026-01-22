@@ -458,7 +458,11 @@ public sealed class LoginDetection : _Layout<LoginDetectionModel>
                 if (isUS === "true") {
                     urlScheme();
                 } else {
-                    connect();
+                    if (window.__TAURI_INTERNALS__) {
+                        location.href = "http://tauri.localhost/oauth-callback/?token="+token;
+                    } else {
+                        connect();
+                    }
                 }
                 setTimeout(function () {
                     if (token.length > 0 && !isOk)
