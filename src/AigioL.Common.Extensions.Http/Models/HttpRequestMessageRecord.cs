@@ -1,5 +1,6 @@
 using AigioL.Common.Extensions.Http.Converters;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,6 +12,10 @@ namespace AigioL.Common.Extensions.Http.Models;
 /// </summary>
 public partial class HttpRequestMessageRecord
 {
+    public static readonly HttpRequestOptionsKey<Uri?> KeyRequestUri = new(nameof(HttpRequestMessage.RequestUri));
+    public static readonly HttpRequestOptionsKey<CookieContainer> KeyCookieContainer = new(nameof(CookieContainer));
+    public static readonly HttpRequestOptionsKey<IWebProxy> KeyWebProxy = new(nameof(WebProxy));
+
     Uri? requestUri;
     string? requestUriHide;
 
@@ -90,7 +95,7 @@ partial class HttpRequestMessageRecord
     /// </summary>
     public static Uri? GetOriginalRequestUri(HttpRequestMessage request)
     {
-        if (request.Options.TryGetValue<Uri>(new(nameof(HttpRequestMessage.RequestUri)), out var requestUri))
+        if (request.Options.TryGetValue(KeyRequestUri, out var requestUri) && requestUri != null)
         {
             return requestUri;
         }

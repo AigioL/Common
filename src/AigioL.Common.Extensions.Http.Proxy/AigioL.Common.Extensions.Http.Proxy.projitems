@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Models\CredentialCacheModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\CredentialsModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicSwitchWebProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicWebProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExHttpProxyJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\NetworkCredentialModel.cs" />

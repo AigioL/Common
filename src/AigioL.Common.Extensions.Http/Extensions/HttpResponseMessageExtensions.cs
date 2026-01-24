@@ -1,5 +1,6 @@
 using AigioL.Common.Extensions.Http.Models;
 using Microsoft.IO;
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -194,4 +195,38 @@ public static partial class HttpResponseMessageExtensions
     private static partial void LogHttpResponseIsFailStatusCode(
         ILogger logger, Exception? exception, int statusCode, string? requestUriHide,
         string? method, string? responseBody);
+}
+
+static partial class HttpResponseMessageExtensions
+{
+    /// <summary>
+    /// https://github.com/dotnet/runtime/blob/v10.0.2/src/libraries/System.Net.Http/src/System/Net/Http/SocketsHttpHandler/CookieHelper.cs
+    /// </summary>
+    public static void ProcessReceivedCookies(this HttpResponseMessage response, CookieContainer cookieContainer)
+    {
+        if (response.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? values))
+        {
+            // The header values are always a string[]
+            var valuesArray = (string[])values;
+            Debug.Assert(valuesArray.Length > 0, "No values for header??");
+            Debug.Assert(response.RequestMessage != null && response.RequestMessage.RequestUri != null);
+
+            Uri requestUri = response.RequestMessage.RequestUri;
+            for (int i = 0; i < valuesArray.Length; i++)
+            {
+                try
+                {
+                    cookieContainer.SetCookies(requestUri, valuesArray[i]);
+                }
+                catch (CookieException)
+                {
+                    // Ignore invalid Set-Cookie header and continue processing.
+                    //if (NetEventSource.Log.IsEnabled())
+                    //{
+                    //    NetEventSource.Error(response, $"Invalid Set-Cookie '{valuesArray[i]}' ignored.");
+                    //}
+                }
+            }
+        }
+    }
 }

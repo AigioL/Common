@@ -45,7 +45,7 @@ public partial interface IWebProxyPoolService
     /// 根据用户 Id 获取分配的代理 Id
     /// </summary>
     Task<string?> GetProxyIdAsync(
-        Guid userId,
+        string userId,
         TimeSpan expiry,
         CancellationToken cancellationToken = default);
 

@@ -135,15 +135,14 @@ public abstract partial class WebProxyPoolService(
     }
 
     public async Task<string?> GetProxyIdAsync(
-        Guid userId,
+        string userId,
         TimeSpan expiry,
         CancellationToken cancellationToken = default)
     {
-        var userIdS = userId.ToString();
         var db = connection.GetDatabase();
 
         // 有占用的直接返回
-        var proxyIdByOccupy = await db.HashGetAsync(KeySortedSetProxyOccupy, userIdS);
+        var proxyIdByOccupy = await db.HashGetAsync(KeySortedSetProxyOccupy, userId);
         if (proxyIdByOccupy.HasValue)
         {
             string? proxyIdByOccupyS = proxyIdByOccupy;
@@ -171,7 +170,7 @@ public abstract partial class WebProxyPoolService(
         // 设置用户 Id 到代理 Id 的映射
         await db.HashFieldSetAndSetExpiryAsync(
             KeyUserIdToProxyId,
-            userIdS,
+            userId,
             proxyId,
             expiry);
 
