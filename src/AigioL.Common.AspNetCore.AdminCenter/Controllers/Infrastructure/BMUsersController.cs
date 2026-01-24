@@ -122,6 +122,7 @@ public static partial class BMUsersController
         }
 
         await transaction.CommitAsync(CancellationToken.None);
+        await repo.UpdateTenantIdToUserRoleAsync(user.Id, tenantId);
         return HttpStatusCode.OK;
     }
 

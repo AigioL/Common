@@ -65,4 +65,16 @@ sealed partial class BMUserRepository<
         var r = await q1.PagingAsync(current, pageSize, RequestAborted);
         return r;
     }
+
+    public async Task<int> UpdateTenantIdToUserRoleAsync(
+        Guid userId,
+        Guid tenantId)
+    {
+        var r = await db.UserRoles
+            .Where(x => x.UserId == userId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(x => x.TenantId, tenantId)
+            , RequestAborted);
+        return r;
+    }
 }

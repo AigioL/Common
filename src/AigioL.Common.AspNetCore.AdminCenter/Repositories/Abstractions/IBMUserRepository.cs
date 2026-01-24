@@ -16,4 +16,11 @@ public interface IBMUserRepository
              string? userName, string? nickName, string? name,
              int current = IPagedModel.DefaultCurrent,
              int pageSize = IPagedModel.DefaultPageSize);
+
+    /// <summary>
+    /// 更新用户与角色关联的租户 Id
+    /// </summary>
+    Task<int> UpdateTenantIdToUserRoleAsync(
+        Guid userId,
+        Guid tenantId);
 }
