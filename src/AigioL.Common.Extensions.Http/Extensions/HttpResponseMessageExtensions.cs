@@ -1,7 +1,6 @@
 using AigioL.Common.Extensions.Http.Models;
 using Microsoft.IO;
 using System.Diagnostics;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -11,6 +10,24 @@ namespace System.Net.Http;
 
 public static partial class HttpResponseMessageExtensions
 {
+    /// <summary>
+    /// 是否为重定向状态码
+    /// </summary>
+    public static bool IsRedirectStatusCode(this HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.MovedPermanently or
+        HttpStatusCode.Redirect or
+        HttpStatusCode.RedirectKeepVerb or
+        HttpStatusCode.PermanentRedirect => true,
+        _ => false,
+    };
+
+    /// <summary>
+    /// 是否为重定向状态码
+    /// </summary>
+    public static bool IsRedirectStatusCode(this HttpResponseMessage response)
+        => response.StatusCode.IsRedirectStatusCode();
+
     static readonly RecyclableMemoryStreamManager m = new();
 
     /// <summary>

@@ -1,4 +1,5 @@
 using AigioL.Common.Extensions.Http.Models;
+using AigioL.Common.Extensions.Http.Proxy.Models;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace System.Net.Http;
@@ -28,6 +29,11 @@ public static partial class HttpClientExtensions
                 var cookiesFromContainer = cookieContainer.GetCookieHeader(request.RequestUri);
                 request.Headers.TryAddWithoutValidation("Cookie", cookiesFromContainer);
             }
+        }
+
+        if (request.Options.TryGetValue(HttpRequestMessageRecord.KeyWebProxy, out var webProxy))
+        {
+            DynamicSwitchWebProxy.Instance.SetWebProxy(webProxy);
         }
     }
 

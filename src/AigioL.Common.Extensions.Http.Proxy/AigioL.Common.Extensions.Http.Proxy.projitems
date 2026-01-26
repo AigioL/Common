@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicSwitchWebProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicWebProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExHttpProxyJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\HttpClientSession.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\NetworkCredentialModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WebProxyModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IWebProxyPoolService.cs" />
