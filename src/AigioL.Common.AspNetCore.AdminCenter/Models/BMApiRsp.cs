@@ -1,6 +1,8 @@
 using AigioL.Common.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OpenTelemetry.Trace;
 using System.Collections.Immutable;
 using System.Net;
 using System.Text.Json.Serialization;
@@ -52,11 +54,11 @@ public partial record class BMApiRsp
 
     public static implicit operator BMApiRsp(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 
-    public static implicit operator BMApiRsp(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
+    public static implicit operator BMApiRsp(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode), };
 
-    public static implicit operator BMApiRsp(string message) => new() { Messages = [message], };
+    public static implicit operator BMApiRsp(string message) => new() { Messages = [message], Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
-    public static implicit operator BMApiRsp(string[] messages) => new() { Messages = messages, };
+    public static implicit operator BMApiRsp(string[] messages) => new() { Messages = messages, Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
     public static implicit operator BMApiRsp(Exception exception)
     {
@@ -158,9 +160,9 @@ public sealed partial record class BMApiRsp<TContent> : BMApiRsp
 
     public static implicit operator BMApiRsp<TContent>(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
 
-    public static implicit operator BMApiRsp<TContent>(string message) => new() { Messages = [message], };
+    public static implicit operator BMApiRsp<TContent>(string message) => new() { Messages = [message], Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
-    public static implicit operator BMApiRsp<TContent>(string[] messages) => new() { Messages = messages, };
+    public static implicit operator BMApiRsp<TContent>(string[] messages) => new() { Messages = messages, Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
     public static implicit operator BMApiRsp<TContent>(Exception exception)
     {
@@ -190,6 +192,7 @@ public sealed partial record class BMApiRsp<TContent> : BMApiRsp
         BMApiRsp<TContent> r = new()
         {
             Messages = [.. GetErrors(identityResult)],
+            Code = unchecked((uint)HttpStatusCode.BadRequest),
         };
         r.SetIsSuccess(false);
         return r;

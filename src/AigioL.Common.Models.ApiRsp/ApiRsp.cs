@@ -52,7 +52,8 @@ public partial record class ApiRsp
     {
         ApiRsp r = new()
         {
-            Message = message
+            Code = unchecked((uint)HttpStatusCode.BadRequest),
+            Message = message,
         };
         return r;
     }
@@ -78,21 +79,21 @@ public partial record class ApiRsp
         return result;
     }
 
-    public static ApiRsp<TContent?> Create<TContent>(TContent? content) where TContent : notnull
+    public static ApiRsp<TContent> Create<TContent>(TContent? content) where TContent : notnull
     {
-        var result = new ApiRsp<TContent?> { Content = content, };
+        var result = new ApiRsp<TContent> { Content = content, };
         return result;
     }
 
-    public static ApiRsp<TContent?> Ok<TContent>(TContent? content) where TContent : notnull
+    public static ApiRsp<TContent> Ok<TContent>(TContent? content) where TContent : notnull
     {
-        var result = new ApiRsp<TContent?> { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
+        var result = new ApiRsp<TContent> { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
         return result;
     }
 
-    public static ApiRsp<TContent?> Fail<TContent>(string message) where TContent : notnull
+    public static ApiRsp<TContent> Fail<TContent>(string message) where TContent : notnull
     {
-        ApiRsp<TContent?> r = new()
+        ApiRsp<TContent> r = new()
         {
             Message = message
         };
@@ -104,6 +105,7 @@ public partial record class ApiRsp
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Sequential)]
 #endif
 public sealed partial record class ApiRsp<TContent> : ApiRsp
+    where TContent : notnull
 {
     /// <summary>
     /// 附加内容
