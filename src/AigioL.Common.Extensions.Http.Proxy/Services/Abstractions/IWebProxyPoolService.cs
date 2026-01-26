@@ -32,7 +32,7 @@ public partial interface IWebProxyPoolService
     /// <summary>
     /// 从数据库中更新代理到缓存
     /// </summary>
-    Task UpdateWebProxiesToCacheAsync(
+    Task<WebProxyModel[]> UpdateWebProxiesToCacheAsync(
         CancellationToken cancellationToken = default);
 
     /// <summary>

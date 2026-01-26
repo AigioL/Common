@@ -1,3 +1,4 @@
+using System.Formats.Asn1;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,6 +10,9 @@ namespace AigioL.Common.Extensions.Http.Proxy.Models;
 /// </summary>
 [JsonDerivedType(typeof(CredentialCacheModel), typeDiscriminator: "CredentialCache")]
 [JsonDerivedType(typeof(NetworkCredentialModel), typeDiscriminator: "NetworkCredential")]
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.Object, global::MemoryPack.SerializeLayout.Sequential)]
+[global::MemoryPack.MemoryPackUnion(0, typeof(CredentialCacheModel))]
+[global::MemoryPack.MemoryPackUnion(1, typeof(NetworkCredentialModel))]
 public abstract partial record class CredentialsModel
 {
     public abstract ICredentials? GetCredentials();

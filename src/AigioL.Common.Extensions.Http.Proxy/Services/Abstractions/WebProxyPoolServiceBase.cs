@@ -3,9 +3,12 @@ using AigioL.Common.Extensions.Http.Proxy.Services.Abstractions;
 using AigioL.Common.Models;
 using MemoryPack;
 using StackExchange.Redis;
+using System;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
 using static AigioL.Common.Extensions.Http.Proxy.Services.Abstractions.IWebProxyPoolService;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AigioL.Common.Extensions.Http.Proxy.Services;
 
@@ -13,7 +16,7 @@ namespace AigioL.Common.Extensions.Http.Proxy.Services;
 /// 由 Redis 实现的高性能 Web 代理池服务
 /// </summary>
 /// <param name="connection"></param>
-public abstract partial class WebProxyPoolService(
+public abstract partial class WebProxyPoolServiceBase(
     IConnectionMultiplexer connection) :
     IWebProxyPoolService
 {
@@ -52,8 +55,7 @@ public abstract partial class WebProxyPoolService(
 
         if (all == null || all.Length == 0)
         {
-            var proxies = await UpdateWebProxiesToCacheCoreAsync(db, cancellationToken);
-            return proxies;
+            return default;
         }
         else
         {
@@ -70,11 +72,9 @@ public abstract partial class WebProxyPoolService(
                         proxies[index++] = proxy;
                     }
                 }
-                index++;
             }
             return proxies.AsMemory(0, index);
         }
-
     }
 
     public async Task<WebProxyModel?> GetWebProxyByCacheAsync(
@@ -94,21 +94,13 @@ public abstract partial class WebProxyPoolService(
         return null;
     }
 
-    public Task UpdateWebProxiesToCacheAsync(
+    public async Task<WebProxyModel[]> UpdateWebProxiesToCacheAsync(
         CancellationToken cancellationToken = default)
     {
         var db = connection.GetDatabase();
-        return UpdateWebProxiesToCacheCoreAsync(db, cancellationToken);
-    }
-
-    async Task<WebProxyModel[]> UpdateWebProxiesToCacheCoreAsync(
-        IDatabase db,
-        CancellationToken cancellationToken = default)
-    {
         var proxies = await GetWebProxiesAsync(cancellationToken);
         if (proxies == null || proxies.Length == 0)
         {
-            await db.HashSetAsync(KeyWebProxies, [new HashEntry(RedisValue.Null, RedisValue.Null)]);
         }
         else
         {
@@ -120,6 +112,13 @@ public abstract partial class WebProxyPoolService(
                 entries[i] = new HashEntry(proxy.Id, data);
             }
             await db.HashSetAsync(KeyWebProxies, entries);
+            var proxieIds = proxies.Select(x =>
+            {
+                RedisValue rv = x.Id;
+                return new SortedSetEntry(rv, 0);
+            }).ToArray();
+            await db.SortedSetAddAsync(KeySortedSetProxyOccupy, proxieIds);
+            await db.SortedSetAddAsync(KeySortedSetProxyFailCount, proxieIds);
         }
         return proxies ?? [];
     }
@@ -142,7 +141,7 @@ public abstract partial class WebProxyPoolService(
         var db = connection.GetDatabase();
 
         // 有占用的直接返回
-        var proxyIdByOccupy = await db.HashGetAsync(KeySortedSetProxyOccupy, userId);
+        var proxyIdByOccupy = await db.HashGetAsync(KeyUserIdToProxyId, userId);
         if (proxyIdByOccupy.HasValue)
         {
             string? proxyIdByOccupyS = proxyIdByOccupy;
