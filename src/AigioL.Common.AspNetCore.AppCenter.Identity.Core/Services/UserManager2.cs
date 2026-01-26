@@ -439,7 +439,7 @@ partial class UserManager2<TDbContext> : IUserManager2
     }
 
     /// <inheritdoc/>
-    public async Task<ApiRsp<LoginOrRegisterResponse?>> LoginSharedAsync(
+    public async Task<ApiRsp<LoginOrRegisterResponse>> LoginSharedAsync(
         User user,
         bool isLoginOrRegister,
         string? deviceId)
@@ -494,7 +494,7 @@ partial class UserManager2<TDbContext> : IUserManager2
     }
 
     /// <inheritdoc/>
-    public async Task<ApiRsp<LoginOrRegisterResponse?>> LoginOrRegisterOrBindAsync(
+    public async Task<ApiRsp<LoginOrRegisterResponse>> LoginOrRegisterOrBindAsync(
         string externalAccountId,
         ExternalLoginChannel channel,
         string deviceId,

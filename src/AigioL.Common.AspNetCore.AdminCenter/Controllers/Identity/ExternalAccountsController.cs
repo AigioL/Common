@@ -45,7 +45,7 @@ public static partial class ExternalAccountsController
             var startTime = context.GetQueryDateTimeRangeNullable("startTime");
             var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userDeviceRepo = context.RequestServices.GetRequiredService<IExternalAccountRepository>();
-            BMApiRsp<PagedModel<TableItemM>?> r = await userDeviceRepo.QueryAsync(
+            BMApiRsp<PagedModel<TableItemM>> r = await userDeviceRepo.QueryAsync(
                 userId, externalAccountId, type,
                 nickName, givenName, surname,
                 gender, email, userNickName,

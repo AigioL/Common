@@ -7,12 +7,13 @@ namespace Microsoft.AspNetCore.Identity;
 public static partial class IdentityResultExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ApiRsp<T?> Fail<T>(
+    public static ApiRsp<T> Fail<T>(
         this IdentityResult identityResult,
         ApiRspCode code = ApiRspCode.BadRequest)
+        where T : notnull
     {
         var errorMessage = FailCore(identityResult);
-        ApiRsp<T?> r = new()
+        ApiRsp<T> r = new()
         {
             Code = unchecked((uint)code),
             Message = errorMessage,

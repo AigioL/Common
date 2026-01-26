@@ -102,7 +102,7 @@ public partial record class BMApiRsp
         Code = unchecked((uint)HttpStatusCode.OK),
     };
 
-    public static BMApiRsp<TContent?> OK<TContent>(TContent? content = default) => new()
+    public static BMApiRsp<TContent> OK<TContent>(TContent? content = default) where TContent : notnull => new()
     {
         Code = unchecked((uint)HttpStatusCode.OK),
         Content = content,
@@ -147,6 +147,7 @@ public partial record class BMApiRsp
 /// </summary>
 /// <typeparam name="TContent"></typeparam>
 public sealed partial record class BMApiRsp<TContent> : BMApiRsp
+    where TContent : notnull
 {
     /// <summary>
     /// 附加内容
