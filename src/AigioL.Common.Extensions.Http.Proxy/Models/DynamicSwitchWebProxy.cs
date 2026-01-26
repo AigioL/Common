@@ -7,6 +7,9 @@ namespace AigioL.Common.Extensions.Http.Proxy.Models;
 /// </summary>
 public sealed partial class DynamicSwitchWebProxy : IWebProxy
 {
+    /// <inheritdoc cref="DynamicSwitchWebProxy"/>
+    public static readonly DynamicSwitchWebProxy Instance = new();
+
     static readonly AsyncLocal<IWebProxy> asyncLocal = new();
 
     public ICredentials? Credentials
