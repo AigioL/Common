@@ -56,7 +56,7 @@ public static partial class BMUserController
         .WithDescription("修改当前登录管理后台用户的密码（验证旧密码相同）");
     }
 
-    static async Task<BMApiRsp<BMUserInfoModel>> Get<TUser>(HttpContext context, Guid tenantId) where TUser : BMUser
+    static async Task<BMApiRsp<BMUserInfoModel?>> Get<TUser>(HttpContext context, Guid tenantId) where TUser : BMUser
     {
         var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
