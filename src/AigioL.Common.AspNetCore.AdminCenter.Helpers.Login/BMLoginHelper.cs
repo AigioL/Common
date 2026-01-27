@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
@@ -39,7 +40,7 @@ public static partial class BMLoginHelper
 
     static string Encrypt(RSA rsa, string s, RSAEncryptionPadding padding)
     {
-        var max = GetMaxByteLength(rsa);
+        var max = GetMaxByteLength(rsa, padding);
 
         var bytes = HttpUtility.UrlEncodeToBytes(s, Encoding.UTF8);
 
@@ -66,11 +67,22 @@ public static partial class BMLoginHelper
         return string.Join('\n', list);
     }
 
-    static int GetMaxByteLength(RSA rsa)
+    static int GetMaxByteLength(RSA rsa, RSAEncryptionPadding padding)
     {
-        var k = rsa.KeySize / 8; // 密钥 4096 位 => k = 4096 / 8 = 512 字节
-        var max = k - 2 * 64 - 2; // 若 OAEP 使用 SHA3-512（输出 512 位 = 64 字节），则 max = 512 - 2*64 - 2 = 382 字节
-        return max;
+        int keySizeBytes = rsa.KeySize / 8;
+
+        return padding switch
+        {
+            _ when padding == RSAEncryptionPadding.Pkcs1 => keySizeBytes - 11,
+            _ when padding == RSAEncryptionPadding.OaepSHA1 => keySizeBytes - 2 * 20 - 2,      // 214 for 2048-bit
+            _ when padding == RSAEncryptionPadding.OaepSHA256 => keySizeBytes - 2 * 32 - 2,    // 190 for 2048-bit
+            _ when padding == RSAEncryptionPadding.OaepSHA384 => keySizeBytes - 2 * 48 - 2,    // 166 for 2048-bit
+            _ when padding == RSAEncryptionPadding.OaepSHA512 => keySizeBytes - 2 * 64 - 2,    // 142 for 2048-bit
+            _ when padding == RSAEncryptionPadding.OaepSHA3_256 => keySizeBytes - 2 * 32 - 2,    // 190 for 2048-bit
+            _ when padding == RSAEncryptionPadding.OaepSHA3_384 => keySizeBytes - 2 * 48 - 2,    // 166 for 2048-bit
+            _ when padding == RSAEncryptionPadding.OaepSHA3_512 => keySizeBytes - 2 * 64 - 2,    // 142 for 2048-bit
+            _ => throw new NotSupportedException($"不支持的填充方案: {padding}")
+        };
     }
 
     public sealed partial record class JsonWebTokenValue
