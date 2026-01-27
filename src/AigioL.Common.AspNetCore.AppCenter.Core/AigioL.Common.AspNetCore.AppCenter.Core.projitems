@@ -108,7 +108,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Security\ISecurityKeyOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAppVerCoreService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\ILocalizationService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\WebProxyPoolService2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\WebProxyPoolService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SteamCommunityReverseProxyHttpClientHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workers\Abstractions\WorkerBackgroundService.cs" />
   </ItemGroup>

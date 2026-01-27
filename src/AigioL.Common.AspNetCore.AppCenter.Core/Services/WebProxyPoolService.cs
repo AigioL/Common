@@ -5,13 +5,14 @@ using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Services;
 
-public partial class WebProxyPoolService2(
+public partial class WebProxyPoolService(
     IConnectionMultiplexer connection,
-    IWebProxyRepository repo) :
-    WebProxyPoolService(connection)
+    IServiceProvider serviceProvider) :
+    WebProxyPoolServiceBase(connection)
 {
     protected override Task<WebProxyModel[]> GetWebProxiesAsync(CancellationToken cancellationToken = default)
     {
+        var repo = serviceProvider.GetRequiredService<IWebProxyRepository>();
         var r = repo.GetWebProxiesAsync(cancellationToken: cancellationToken);
         return r;
     }
