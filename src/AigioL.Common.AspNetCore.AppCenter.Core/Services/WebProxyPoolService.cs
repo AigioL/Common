@@ -5,7 +5,7 @@ using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Services;
 
-public partial class WebProxyPoolService(
+public sealed partial class WebProxyPoolService(
     IConnectionMultiplexer connection,
     IServiceProvider serviceProvider) :
     WebProxyPoolServiceBase(connection)
