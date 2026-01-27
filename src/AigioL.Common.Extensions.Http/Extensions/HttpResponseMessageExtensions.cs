@@ -1,4 +1,5 @@
 using AigioL.Common.Extensions.Http.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.IO;
 using System.Diagnostics;
 using System.Net.Http.Json;

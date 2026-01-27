@@ -97,8 +97,8 @@ public static partial class BMLoginController
 
             var userName = rsa.BMDecrypt(args[0]);
             var password = rsa.BMDecrypt(args[1]);
-            var twoFactorCode = args.Length >= 3 ? rsa.BMDecrypt(args[2]) : null;
-            var twoFactorRecoveryCode = args.Length >= 4 ? rsa.BMDecrypt(args[3]) : null;
+            //var twoFactorCode = args.Length >= 3 ? rsa.BMDecrypt(args[2]) : null;
+            //var twoFactorRecoveryCode = args.Length >= 4 ? rsa.BMDecrypt(args[3]) : null;
 
             user = await userManager.FindByNameAsync(userName);
             if (user == null)

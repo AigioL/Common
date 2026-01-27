@@ -11,6 +11,8 @@
 		<TargetFrameworks>net$(DotNet_Version);net$(DotNet_Version)-windows$(WinSDK_Version)</TargetFrameworks>
 	</PropertyGroup>
 
+	<Import Project="..\AigioL.Common.Extensions.Http\AigioL.Common.Extensions.Http.projitems" Label="Shared" />
+
 	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
 
 </Project>

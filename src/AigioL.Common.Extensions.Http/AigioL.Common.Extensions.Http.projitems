@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpClientExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpResponseMessageExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicSwitchWebProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExHttpJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\HttpRequestMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\HttpResponseMessageRecord.cs" />

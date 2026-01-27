@@ -50,9 +50,11 @@
     <Project Path="src/AigioL.Common.Windows.Win32.SetWindowsHookEx/AigioL.Common.Windows.Win32.SetWindowsHookEx.shproj" Id="a883709a-ed64-40c9-9db5-c418da234d60" />
     <Project Path="src/AigioL.Common.Windows.Win32.System.ClrHosting/AigioL.Common.Windows.Win32.System.ClrHosting.shproj" Id="6e3d2f18-85d8-48b4-b636-6a5ffcfc503f" />
     <Project Path="src/AigioL.Common.Windows.Win32.System.Threading.MessageLoop/AigioL.Common.Windows.Win32.System.Threading.MessageLoop.shproj" Id="5ba03b40-b43e-4df5-ae77-a65dfc7d79c7" />
+    <Project Path="src/AigioL.Common/AigioL.Common.csproj" Id="5da9ad41-8c76-4563-be32-3e26ddae44c2" />
   </Folder>
   <Folder Name="/2.Libraries/AspNetCore/">
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.Entities/AigioL.Common.AspNetCore.AdminCenter.Entities.shproj" Id="e6c5f93e-333f-41c9-8e27-e0046d5ce19c" />
+    <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.Helpers.Login/AigioL.Common.AspNetCore.AdminCenter.Helpers.Login.shproj" Id="1fb75988-2bb5-4867-abed-3bae34abbb48" />
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter/AigioL.Common.AspNetCore.AdminCenter.shproj" Id="66c06857-99f9-4aa4-9504-e2f1070aa7ae" />
     <Project Path="src/AigioL.Common.AspNetCore.ApiGateway.Core/AigioL.Common.AspNetCore.ApiGateway.Core.shproj" Id="bb5339c8-0ab7-4b32-bd60-4a8004d4deae" />
     <Project Path="src/AigioL.Common.AspNetCore.ApiGateway/AigioL.Common.AspNetCore.ApiGateway.shproj" Id="b3f85f86-61ed-4d3b-8d6f-780b1ad07a60" />
@@ -102,18 +104,8 @@
   <Folder Name="/2.Libraries/OpenAPI.Sdk/TencentCloud/">
     <Project Path="src/AigioL.Common.TencentCloud.Sdk.IM/AigioL.Common.TencentCloud.Sdk.IM.csproj" Id="8376fc65-e1c4-4cd3-8c9c-05cda1cc7c9b" />
   </Folder>
-  <Folder Name="/3.EntryPoint/">
-    <Project Path="src/AigioL.Common.ConsoleApp1/AigioL.Common.ConsoleApp1.csproj" Id="79183e06-3987-4668-b026-7ed9253ada3b" />
-    <Project Path="src/AigioL.Common.WebApplication1/AigioL.Common.WebApplication1.csproj" Id="dafafcc8-1f8a-4d8b-a937-c667e6b6ed94" />
-    <Project Path="src/AigioL.Common.WinFormsApp1/AigioL.Common.WinFormsApp1.csproj" Id="d1edde1b-fd3c-4aed-8c9e-efbd9e04f938" />
-  </Folder>
-  <Folder Name="/3.EntryPoint/Aspire/">
-    <Project Path="src/AigioL.Common.AspireApp1.ApiService/AigioL.Common.AspireApp1.ApiService.csproj" />
-    <Project Path="src/AigioL.Common.AspireApp1.AppHost/AigioL.Common.AspireApp1.AppHost.csproj" Id="173b264f-e5ff-42fd-af44-7f1ed7e5fcd0" />
-    <Project Path="src/AigioL.Common.AspireApp1.ServiceDefaults/AigioL.Common.AspireApp1.ServiceDefaults.csproj" />
-    <Project Path="src/AigioL.Common.AspireApp1.Tests/AigioL.Common.AspireApp1.Tests.csproj" />
-    <Project Path="src/AigioL.Common.AspireApp1.Web/AigioL.Common.AspireApp1.Web.csproj" />
-  </Folder>
+  <Folder Name="/3.EntryPoint/" />
+  <Folder Name="/3.EntryPoint/Aspire/" />
   <Folder Name="/4.Tools/">
     <Project Path="src/AigioL.Common.BuildTools/AigioL.Common.BuildTools.shproj" Id="9e2ef71b-0fb8-4b45-af29-0c294675a8a8" />
   </Folder>

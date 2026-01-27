@@ -1,4 +1,5 @@
 <Project>
+	<!-- 👇 作废！！！ -->
 
 	<PropertyGroup>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -58,7 +59,7 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Models.ApiRsp\AigioL.Common.Models.ApiRsp.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Primitives\AigioL.Common.Primitives.projitems" Label="Shared" />
-	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.FeishuOApi.Sdk\AigioL.Common.FeishuOApi.Sdk.projitems" Label="Shared" />
+	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.FeishuOApi.Sdk\AigioL.Common.FeishuOApi.Sdk.projitems" Label="Shared" />-->
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.EntityFrameworkCore\AigioL.Common.EntityFrameworkCore.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Repositories\AigioL.Common.Repositories.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Repositories.EntityFrameworkCore\AigioL.Common.Repositories.EntityFrameworkCore.projitems" Label="Shared" />
@@ -69,5 +70,12 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Models.Dtos\AigioL.Common.JsonWebTokens.Models.Dtos.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.JsonWebTokens.Services\AigioL.Common.JsonWebTokens.Services.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Essentials\AigioL.Common.Essentials.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login.projitems" Label="Shared" />
+	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Extensions.Http\AigioL.Common.Extensions.Http.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Extensions.Http.Proxy\AigioL.Common.Extensions.Http.Proxy.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.Helpers.ProgramMain\AigioL.Common.AspNetCore.Helpers.ProgramMain.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AppCenter.Core\AigioL.Common.AspNetCore.AppCenter.Core.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AppCenter.Core.ClientSide\AigioL.Common.AspNetCore.AppCenter.Core.ClientSide.projitems" Label="Shared" />
+	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AdminCenter.Entities\AigioL.Common.AspNetCore.AdminCenter.Entities.projitems" Label="Shared" />-->
 
 </Project>
