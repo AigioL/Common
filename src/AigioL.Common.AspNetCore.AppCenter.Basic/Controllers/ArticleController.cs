@@ -7,6 +7,7 @@ using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using RabbitMQ.Client;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 
@@ -74,6 +75,19 @@ public static partial class ArticleController
             var r = await Info(cache, repo, conn, id, context.RequestAborted);
             return r;
         }).WithDescription("获取文章");
+#if DEBUG
+        routeGroup.MapGet("ImageHandleRequestMessage", async (IConnection rabbitmqConn, [FromQuery] string? url, [FromQuery] string? urlPath) =>
+        {
+            await CacheKeys.PushImageHandleRequestMessageAsync(rabbitmqConn, new ImageHandleRequestModel
+            {
+                UrlPath = urlPath ?? "/Images/StickerSlabs/slab-7648.webp",
+                ImageUrl = url ?? "https://debug.redd.games:20000/static/images/2026-01-07/StickerSlabs/StickerSlabs_sticker_slab-7648_2eb1919fcc4fb8ac32ae36c8d7dfd6210fb52526277b32e857dd08363735fb6e.webp",
+                Width = 128,
+                Height = 128,
+            });
+            return Results.Ok();
+        });
+#endif
     }
 
     static async Task<ApiRsp<ArticleCategoryTreeModel[]>> GetTypes(

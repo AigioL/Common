@@ -19,7 +19,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Workers;
 /// </summary>
 public static partial class PaymentResultSubscribe
 {
-    const string exchangeName = ""; // 默认交换机
+    const string exchangeName = "amq.direct"; // 默认交换机
 
     internal static async Task ListRightPushAsync(
         IConnection rabbitmqConn,
@@ -49,6 +49,8 @@ public static partial class PaymentResultSubscribe
         }
 
         protected override string RoutingKey => CacheKeys.OrderPaymentSuccess;
+
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}";
 
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {
@@ -106,6 +108,8 @@ public static partial class PaymentResultSubscribe
         }
 
         protected override string RoutingKey => CacheKeys.OrderRefundSuccess;
+
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}";
 
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {

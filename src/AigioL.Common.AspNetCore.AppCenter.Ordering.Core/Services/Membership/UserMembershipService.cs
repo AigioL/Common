@@ -26,6 +26,7 @@ sealed partial class UserMembershipService(
         Guid userId,
         MembershipGoods goods,
         Guid? channelPackageId,
+        string? orderId = null,
         CancellationToken cancellationToken = default)
     {
         // 检查是否使用过首次优惠，使用过则按商品当前正常价格计算
@@ -51,7 +52,7 @@ sealed partial class UserMembershipService(
             ChannelPackageId = channelPackageId,
         };
 
-        var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder);
+        var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder, orderId: orderId);
         return result.Success ? result.Order?.Id : null;
     }
 
@@ -193,15 +194,19 @@ sealed partial class UserMembershipService(
 
     #endregion
 
-    /// <summary>
-    /// 刷新用户会员信息缓存
-    /// </summary>
-    /// <param name="userId"></param>
-    /// <returns></returns>
-    async Task<bool> RefreshUserMembershipCacheAsync(Guid userId)
+    public async Task<bool> RefreshUserMembershipCacheAsync(Guid userId)
     {
         var database = connection.GetDatabase(CacheKeys.RedisMessagingDb);
         var cacheKey = CacheKeys.GetUserMembershipCacheKey(userId);
-        return await database.KeyDeleteAsync(cacheKey);
+        await database.KeyDeleteAsync(cacheKey);
+
+        {
+            // 刷新 UserInfoModel
+            var database2 = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+            var hashKey = ShortGuid.Encode(userId);
+            await database2.KeyDeleteAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{hashKey}");
+        }
+
+        return true;
     }
 }

@@ -17,7 +17,7 @@ public sealed partial class KeyValuePairTableItemModel : IReadOnlyId<string>
     /// <summary>
     /// 是否软删除
     /// </summary>
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     /// <summary>
     /// 创建时间

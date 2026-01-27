@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Models;
@@ -137,8 +138,9 @@ static partial class CacheKeys
     /// <param name="cacheKey"></param>
     /// <param name="getData"></param>
     /// <param name="semaphoreSlim"></param>
-    /// <param name="expireSpan">缓存数据过期时间，默认 1 小时</param>
-    /// <param name="millisecondsTimeout">获取锁超时时间</param>
+    /// <param name="expiry">缓存数据过期时间，默认 1 小时</param>
+    /// <param name="semaphoreSlimWaitMsTimeout">获取锁超时时间</param>
+    /// <param name="expiryIsNull"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public static async ValueTask<T?> GetCacheDataAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
@@ -146,8 +148,9 @@ static partial class CacheKeys
         string cacheKey,
         Func<CancellationToken, Task<T>> getData,
         SemaphoreSlim? semaphoreSlim = null,
-        TimeSpan? expireSpan = null,
-        int millisecondsTimeout = 30,
+        TimeSpan? expiry = null,
+        int semaphoreSlimWaitMsTimeout = 30,
+        bool expiryIsNull = false,
         CancellationToken cancellationToken = default)
     {
         ReadOnlyMemory<byte> data = await database.StringGetAsync(cacheKey);
@@ -156,7 +159,7 @@ static partial class CacheKeys
         if (data.Length <= 0)
         {
             if (semaphoreSlim is null ||
-                (semaphoreSlim is not null && await semaphoreSlim.WaitAsync(millisecondsTimeout)))
+                (semaphoreSlim is not null && await semaphoreSlim.WaitAsync(semaphoreSlimWaitMsTimeout, cancellationToken)))
             {
                 try
                 {
@@ -170,8 +173,15 @@ static partial class CacheKeys
                         {
                             var serializeData = MemoryPackSerializer.Serialize(r);
 
-                            expireSpan ??= TimeSpan.FromHours(1);
-                            await database.StringSetAsync(cacheKey, serializeData, expireSpan);
+                            if (expiryIsNull)
+                            {
+                                expiry = null;
+                            }
+                            else
+                            {
+                                expiry ??= TimeSpan.FromHours(1);
+                            }
+                            await database.StringSetAsync(cacheKey, serializeData, expiry);
                             return r;
                         }
                     }
@@ -206,8 +216,25 @@ static partial class CacheKeys
         using var stream = m.GetStream();
         await JsonSerializer.SerializeAsync(stream, message,
             PaymentMinimalApisJsonSerializerContext.Default.OrderRefundMessage);
-        var value = stream.GetMemory();
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
         await ListRightPushAsync(rabbitmqConn, PaymentRefundRequest, value, CancellationToken.None);
+    }
+
+    /// <summary>
+    /// 推送图片下载处理消息
+    /// </summary>
+    public static async Task PushImageHandleRequestMessageAsync(
+        IConnection rabbitmqConn,
+        ImageHandleRequestModel message,
+        CancellationToken cancellationToken = default)
+    {
+        using var stream = m.GetStream();
+        await JsonSerializer.SerializeAsync(stream, message,
+            BasicMinimalApisJsonSerializerContext.Default.ImageHandleRequestModel);
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
+        await ListRightPushAsync(rabbitmqConn, ImageHandleRequest, value, CancellationToken.None);
+        //using var channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
+        //await channel.BasicPublishAsync(COSQueueName, ImageHandleRequest, value, cancellationToken);
     }
 
     /// <summary>
@@ -223,7 +250,7 @@ static partial class CacheKeys
 
     static readonly RecyclableMemoryStreamManager m = new();
 
-    const string exchangeName = ""; // 默认交换机
+    const string exchangeName = "amq.direct"; // 默认交换机
 
     public static async Task ListRightPushAsync(
         IConnection rabbitmqConn,

@@ -221,7 +221,7 @@ public partial interface IServerPublishCommand : ICommand
             if (!push_only)
             {
                 var proj = item.Key;
-                (var csprojPath, var publishPath, var dockerfileTag, var dockerfilePath) = item.Value;
+                (var csprojPath, var publishPath, var dockerfileTag, var dockerfilePath, var publishAot, var dockerfileTempDirPath) = item.Value;
                 try
                 {
                     Directory.Delete(publishPath, true);
@@ -241,7 +241,7 @@ public partial interface IServerPublishCommand : ICommand
                 //}
 
                 #region dotnet publish
-                if (false)
+                if (!publishAot)
                 {
                     ProcessStartInfo psi = new()
                     {
@@ -272,16 +272,19 @@ public partial interface IServerPublishCommand : ICommand
                     psi.ArgumentList.Add("-f");
                     psi.ArgumentList.Add($"net{Environment.Version.Major}.{Environment.Version.Minor}");
 
-                    //psi.ArgumentList.Add($"-p:SelfContained={config.SelfContained.ToLowerString()}");
+                    const bool selfContained = false;
+                    psi.ArgumentList.Add($"-p:SelfContained={selfContained.ToString().ToLowerInvariant()}");
 
                     //if (!config.PublishSingleFile)
                     //{
-                    //    psi.ArgumentList.Add("-p:UseAppHost=false");
+                    psi.ArgumentList.Add("-p:UseAppHost=false");
                     //}
 
-                    //psi.ArgumentList.Add($"-p:PublishSingleFile={config.PublishSingleFile.ToLowerString()}");
+                    const bool publishSingleFile = false;
+                    psi.ArgumentList.Add($"-p:PublishSingleFile={publishSingleFile.ToString().ToLowerInvariant()}");
 
-                    //psi.ArgumentList.Add($"-p:PublishReadyToRun={config.PublishReadyToRun.ToLowerString()}");
+                    const bool publishReadyToRun = false;
+                    psi.ArgumentList.Add($"-p:PublishReadyToRun={publishReadyToRun.ToString().ToLowerInvariant()}");
 
                     var runtimeIdentifier = "linux-x64";
                     if (useAlpineLinux)
@@ -368,6 +371,13 @@ public partial interface IServerPublishCommand : ICommand
 
                 #region docker build
                 {
+                    if (!publishAot)
+                    {
+                        Directory.CreateDirectory(dockerfileTempDirPath);
+                        dockerfilePath = Path.Combine(dockerfileTempDirPath, "Dockerfile");
+                        var dockerfileText = GetDockerfile(proj.ProjectName);
+                        File.WriteAllText(dockerfilePath, dockerfileText);
+                    }
                     ProcessStartInfo psi = new()
                     {
                         FileName = "docker",
@@ -468,7 +478,7 @@ public partial interface IServerPublishCommand : ICommand
                       async (item, cancellationToken) =>
                       {
                           var proj = item.Key;
-                          (_, _, var dockerfileTag, _) = item.Value.Value;
+                          (_, _, var dockerfileTag, _, _, _) = item.Value.Value;
                           var domain = item.Value.domain;
                           var targetTag = $"{domain}/{push_name}/{dockerfileTag}";
 
@@ -559,6 +569,48 @@ public partial interface IServerPublishCommand : ICommand
             await body(item, cancellationToken);
         }
     }
+
+    const string dockerfile_content_jit_template =
+"""
+# 请参阅 https://aka.ms/customizecontainer 以了解如何自定义调试容器，以及 Visual Studio 如何使用此 Dockerfile 生成映像以更快地进行调试。
+
+# 此阶段用于在快速模式(默认为调试配置)下从 VS 运行时
+FROM mcr.microsoft.com/dotnet/aspnet:[DotNetVersion] AS base
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+USER $APP_UID
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
+
+# 此阶段在生产中使用，或在常规模式下从 VS 运行时使用(在不使用调试配置时为默认值)
+FROM base AS final
+WORKDIR /app
+COPY ["./src/artifacts/publish/[ProjectName]/output*", "/app"]
+ENTRYPOINT ["dotnet", "[ProjectName].dll"]
+""";
+
+    const string publish_args = // 依赖框架、无 AppHost 的快速发布参数配置项
+@"""
+publish -c {0} {1} --nologo -v q /property:WarningLevel=0 -p:AnalysisLevel=none -p:GeneratePackageOnBuild=false -p:DebugType=none -p:DebugSymbols=false -p:IsPackable=false -p:GenerateDocumentationFile=false -o {2} -f {3} -p:SelfContained=false -p:UseAppHost=false -p:PublishSingleFile=false -p:PublishReadyToRun=false -p:RuntimeIdentifier={4}
+""";
+
+    static string GetPublishArgs(string projName, bool isReleaseOrDebug = true, string rid = "linux-x64")
+    {
+        var csprojPath = Path.Combine(ProjPath, "src", projName, $"{projName}.csproj");
+        var outputPath = Path.Combine(ProjPath, "src", "artifacts", "publish", projName, "output");
+        var tfm = $"net{Environment.Version.Major}.{Environment.Version.Minor}";
+        var r = string.Format(publish_args, isReleaseOrDebug ? "Release" : "Debug", csprojPath, outputPath, tfm, rid);
+        return r;
+    }
+
+    static string GetDockerfile(string projName)
+    {
+        var r = dockerfile_content_jit_template
+            .Replace("[ProjectName]", projName)
+            .Replace("[DotNetVersion]", $"{Environment.Version.Major}.{Environment.Version.Minor}");
+        return r;
+    }
 }
 
 public sealed record class ServerPublishProject
@@ -569,7 +621,9 @@ public sealed record class ServerPublishProject
 
     public required string DockerfileTag { get; set; }
 
-    internal (string csprojPath, string publishPath, string dockerfileTag, string dockerfilePath) GetData(string projPath)
+    public const bool DefaultPublishAot = false;
+
+    internal (string csprojPath, string publishPath, string dockerfileTag, string dockerfilePath, bool publishAot, string dockerfileTempDirPath) GetData(string projPath)
     {
         var projName = ProjectName;
         var projDirName = DirName ?? projName;
@@ -577,6 +631,29 @@ public sealed record class ServerPublishProject
         var publishPath = Path.Combine(projPath, "src", "artifacts", "publish", projName, "output");
         var dockerfileTag = DockerfileTag;
         var dockerfilePath = Path.Combine(projPath, "src", projDirName, "Dockerfile");
-        return (csprojPath, publishPath, dockerfileTag, dockerfilePath);
+
+        var dockerfileTempDirPath = Path.Combine(projPath, "src", "artifacts", "publish", projName);
+
+        var publishAot = DefaultPublishAot;
+        var lines = File.ReadAllLines(csprojPath);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i].AsSpan().Trim();
+            if (line.StartsWith("<PublishAot>", StringComparison.OrdinalIgnoreCase) &&
+               line.EndsWith("</PublishAot>", StringComparison.OrdinalIgnoreCase))
+            {
+                var value = line.Slice("<PublishAot>".Length, line.Length - "<PublishAot></PublishAot>".Length).Trim();
+                if (bool.TryParse(value, out var valueB))
+                {
+                    if (publishAot != DefaultPublishAot)
+                    {
+                        publishAot = valueB;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return (csprojPath, publishPath, dockerfileTag, dockerfilePath, publishAot, dockerfileTempDirPath);
     }
 }

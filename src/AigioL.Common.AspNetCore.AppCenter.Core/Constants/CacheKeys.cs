@@ -46,9 +46,9 @@ public static partial class CacheKeys
         "AdvertisementCache";
 
     /// <summary>
-    /// Steam 充值用户操作并发锁
+    /// 用户充值操作并发锁
     /// </summary>
-    public static string GetSteamRechargeUserOperationLockKey(Guid userId) => $"SteamRechargeUserOperationHashKey:{userId:N}";
+    public static string GetUserRechargeOperationLockKey(Guid userId) => $"UserRechargeOperationLockHashKey:{userId:N}";
 
     #region HashKey
 
@@ -100,6 +100,16 @@ public static partial class CacheKeys
     #region Message
 
     /// <summary>
+    /// 订单队列名称
+    /// </summary>
+    public const string OrderQueueName = "OrderQueueName";
+
+    /// <summary>
+    /// 转账订阅队列名称
+    /// </summary>
+    public const string TransferQueueName = "TransferOrderQueue";
+
+    /// <summary>
     /// 通用订单收到订单完成通知
     /// </summary>
     public const string OrderCompleted = "OrderCompletedMessage";
@@ -144,6 +154,16 @@ public static partial class CacheKeys
     /// </summary>
     public static string GetOrderRefundedMessageQueueKeyByBusinessType(int businessType) => $"OrderRefunded_{businessType}";
 
+    /// <summary>
+    /// 通用图片处理库收到图片处理请求通知
+    /// </summary>
+    public const string ImageHandleRequest = "ImageHandleRequestMessage";
+
+    /// <summary>
+    /// 云存储消息队列名称
+    /// </summary>
+    public const string COSQueueName = "COSQueueName";
+
 
     #endregion
 
@@ -182,4 +202,10 @@ public static partial class CacheKeys
     /// 转账申请
     /// </summary>
     public const string TransferRequest = "TransferRequestMessage";
+
+    /// <summary>
+    /// Tauri 的应用程序更新静态 JSON 文件缓存键
+    /// <para>https://tauri.app/plugin/updater/#static-json-file</para>
+    /// </summary>
+    public const string TauriUpdaterStaticJSONFile = "TauriUpdaterStaticJSONFile_{0}_{1}";
 }

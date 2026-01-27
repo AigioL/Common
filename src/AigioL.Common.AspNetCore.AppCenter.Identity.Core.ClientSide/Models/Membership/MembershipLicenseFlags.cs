@@ -57,4 +57,10 @@ public enum MembershipLicenseFlags
     /// </summary>
     [Description("积分兑换")]
     Points = 1 << 7,
+
+    /// <summary>
+    /// 口令码兑换
+    /// </summary>
+    [Description("口令码兑换")]
+    PromoCode = 1 << 8,
 }

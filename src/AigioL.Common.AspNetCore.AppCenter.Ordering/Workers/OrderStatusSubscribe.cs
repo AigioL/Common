@@ -33,6 +33,8 @@ public static partial class OrderStatusSubscribe
 
         protected override string RoutingKey => CacheKeys.OrderCompleted;
 
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}";
+
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {
             string? orderNumber = null;

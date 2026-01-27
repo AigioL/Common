@@ -40,24 +40,35 @@ public interface IRepository<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity>
     /// 将实体从数据库中删除
     /// </summary>
     /// <param name="entity">要删除的实体</param>
+    /// <param name="operatorUserId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>受影响的行数</returns>
-    Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task<int> DeleteAsync(
+        TEntity entity,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 将多个实体从数据库中删除
     /// </summary>
     /// <param name="entities">要删除的多个实体</param>
+    /// <param name="operatorUserId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>受影响的行数</returns>
-    Task<int> DeleteRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) => OperateRangeAsync(entities, DeleteAsync, cancellationToken);
+    Task<int> DeleteRangeAsync(
+        IEnumerable<TEntity> entities,
+        Guid? operatorUserId = null,
+        CancellationToken cancellationToken = default) => OperateRangeAsync(entities, x => DeleteAsync(x, operatorUserId, cancellationToken));
 
     /// <summary>
     /// 将多个实体从数据库中删除
     /// </summary>
+    /// <param name="operatorUserId"></param>
     /// <param name="entities">要删除的多个实体</param>
     /// <returns>受影响的行数</returns>
-    Task<int> DeleteRangeAsync(params TEntity[] entities) => DeleteRangeAsync(entities.AsEnumerable());
+    Task<int> DeleteRangeAsync(
+        Guid? operatorUserId = null,
+        params TEntity[] entities) => DeleteRangeAsync(entities.AsEnumerable());
 
     #endregion
 

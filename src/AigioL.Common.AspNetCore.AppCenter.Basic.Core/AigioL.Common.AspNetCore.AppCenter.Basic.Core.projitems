@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\BasicMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FileSystem\CloudFileType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\IdNameModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ImageHandle\ImageHandleRequestModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\KeyValuePairModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Notice\OfficialMessageItemModel.cs" />
@@ -75,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\FileSystem\Abstractions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Models\ImageHandle\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)README.md" />

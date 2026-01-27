@@ -9,23 +9,28 @@ using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Models;
 using MemoryPack;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IO;
 using System.Buffers.Text;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.D3b96193;
 using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.ErrorController;
+using static AigioL.Common.AspNetCore.AppCenter.Identity.Controllers.FixSession;
+using AlipayConstants = AspNet.Security.OAuth.Alipay.AlipayAuthenticationConstants2;
 using QQConstants = AspNet.Security.OAuth.QQ.QQAuthenticationConstants;
-using AlipayConstants = AspNet.Security.OAuth.Alipay.Alipay2AuthenticationConstants;
-using WeChatConstants = AspNet.Security.OAuth.Weixin.WeixinAuthenticationConstants;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
+using WeChatConstants = AspNet.Security.OAuth.Weixin.WeixinAuthenticationConstants;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Controllers;
 
@@ -83,7 +88,7 @@ public static partial class ExternalLoginController
     {
         ResponseCacheNone(context);
         context.Session.Clear();
-        SetSessions(context);
+        SetQueryToSession(context);
         return ExternalLoginDetectionCoreAsync(context, channel: channel);
     }
 
@@ -100,7 +105,7 @@ public static partial class ExternalLoginController
         {
             return Results.NotFound();
         }
-        context.Session.SetInt32(nameof(ExternalLoginChannel), unchecked((int)channel));
+        SetSessionInt32(context, nameof(ExternalLoginChannel), unchecked((int)channel));
 
         var appVerCoreService = context.RequestServices.GetRequiredService<IAppVerCoreService>();
         var (errMsg, _) = await appVerCoreService.GetSecurityResultAsync(context);
@@ -111,7 +116,7 @@ public static partial class ExternalLoginController
         }
 
         var userId = context.GetUserId();
-        var isBind = bool.TryParse(context.Session.GetString(KeyIsBind), out var isBind_) && isBind_;
+        var isBind = bool.TryParse(GetSessionString(context, KeyIsBind), out var isBind_) && isBind_;
         context.Items[KeyIsBind] = isBind;
         if (isBind)
         {
@@ -152,15 +157,15 @@ public static partial class ExternalLoginController
     {
         ResponseCacheNone(context);
 
-        var channelInt32 = context.Session.GetInt32(nameof(ExternalLoginChannel));
+        var channelInt32 = GetSessionInt32(context, nameof(ExternalLoginChannel));
         var channel = channelInt32.HasValue ? (ExternalLoginChannel)channelInt32.Value : DefaultExternalLoginChannel;
 
         string? deviceId = null;
-        if (ShortGuid.TryParse(context.Session.GetString("dg"), out Guid dg))
+        if (ShortGuid.TryParse(GetSessionString(context, "dg"), out Guid dg))
         {
             deviceId = new DeviceId(dg,
-                context.Session.GetString("dr"),
-                context.Session.GetString("dn"))
+                GetSessionString(context, "dr"),
+                GetSessionString(context, "dn"))
                 .GetDeviceId();
         }
 
@@ -171,8 +176,8 @@ public static partial class ExternalLoginController
         }
 
         var remoteError = context.Request.Query["remoteError"];
-        var port = context.Session.GetString("port");
-        var isWeb = bool.TryParse(context.Session.GetString("isWeb"), out var isWebB) && isWebB;
+        var port = GetSessionString(context, "port");
+        var isWeb = bool.TryParse(GetSessionString(context, "isWeb"), out var isWebB) && isWebB;
         var portHasValue = !string.IsNullOrEmpty(port);
         if (portHasValue && !ushort.TryParse(port, out var _))
         {
@@ -198,7 +203,7 @@ public static partial class ExternalLoginController
         ArgumentNullException.ThrowIfNull(aes);
 
         var userId = context.GetUserId();
-        var isBind = bool.TryParse(context.Session.GetString(KeyIsBind), out var isBind_) && isBind_;
+        var isBind = bool.TryParse(GetSessionString(context, KeyIsBind), out var isBind_) && isBind_;
         context.Items[KeyIsBind] = isBind;
         if (isBind)
         {
@@ -363,7 +368,7 @@ public static partial class ExternalLoginController
         // 返回页面 Html
         async Task<IResult> EndPageAsync(string? error, string? token)
         {
-            var useUrlSchemeLoginToken = bool.TryParse(context.Session.GetString("isUS"), out var isUS) && isUS;
+            var useUrlSchemeLoginToken = bool.TryParse(GetSessionString(context, "isUS"), out var isUS) && isUS;
             var r = await ExternalLoginDetectionCoreAsync(
                 context, error: error, token: token,
                 port: port, useUrlSchemeLoginToken: useUrlSchemeLoginToken, channel: channel);
@@ -408,12 +413,12 @@ public static partial class ExternalLoginController
                 {
                     if (rsp.IsSuccess() && rsp.Content?.AuthToken != null)
                     {
-                        var redirectUrl = context.Session.GetString("redirectUrl");
+                        var redirectUrl = GetSessionString(context, "redirectUrl");
                         var isOAuth = string.IsNullOrWhiteSpace(redirectUrl);
                         if (isOAuth)
                         {
                             // OAuth 使用 ReturnUrl
-                            redirectUrl = context.Session.GetString("ReturnUrl");
+                            redirectUrl = GetSessionString(context, "ReturnUrl");
                         }
                         redirectUrl = WebUtility.UrlEncode(redirectUrl);
                         var ticks = rsp.Content.AuthToken.ExpiresIn.Ticks;
@@ -432,8 +437,27 @@ public static partial class ExternalLoginController
             }
             else
             {
-                var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
-                return Results.File(encryptStream, MediaTypeNames.MemoryPackSecurity);
+                bool isMemoryPack = false;
+                if (isMemoryPack)
+                {
+                    var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
+                    return Results.File(encryptStream, MediaTypeNames.MemoryPackSecurity);
+                }
+                else
+                {
+                    rsp.Content?.FastLRBChannel = channel;
+                    if (rsp.IsSuccess())
+                    {
+                        var token = await SerializeEncryptToJsonAsync(rsp, aes, context.RequestAborted);
+                        var r = await EndPageAsync(null, token);
+                        return r;
+                    }
+                    else
+                    {
+                        var r = await EndErrorPageAsync(rsp);
+                        return r;
+                    }
+                }
             }
         }
         else
@@ -442,7 +466,7 @@ public static partial class ExternalLoginController
             if (rsp.IsSuccess())
             {
                 using var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
-                var rspStr = Base64Url.EncodeToString(encryptStream.GetSpan());
+                var rspStr = Base64Url.EncodeToString(encryptStream.GetBuffer().AsSpan()[..unchecked((int)encryptStream.Length)]);
                 var r = await EndPageAsync(null, rspStr);
                 return r;
             }
@@ -459,7 +483,7 @@ file static class D3b96193
 {
     internal static string? RoutePattern { get; set; }
 
-    static readonly string[] QueryKeys = [
+    internal static readonly string[] QueryKeys = [
         "port",
         "sKeyHex",
         "sKeyPadding",
@@ -479,22 +503,6 @@ file static class D3b96193
     ];
 
     internal const string KeyIsBind = "isBind";
-
-    /// <summary>
-    /// 将指定的 Query 参数保存到 Session 中
-    /// </summary>
-    /// <param name="context"></param>
-    internal static void SetSessions(HttpContext context)
-    {
-        foreach (var item in QueryKeys)
-        {
-            var value = context.Request.Query[item];
-            if (!StringValues.IsNullOrEmpty(value))
-            {
-                context.Session.SetString(item, value!);
-            }
-        }
-    }
 
     internal const ExternalLoginChannel DefaultExternalLoginChannel = ExternalLoginChannel.Steam;
 
@@ -551,7 +559,7 @@ file static class D3b96193
         var index = steamNameIdentifier.LastIndexOf('/');
         if (index > 0)
         {
-            var numberString = steamNameIdentifier[index..];
+            var numberString = steamNameIdentifier[index..].Trim('/');
             if (long.TryParse(numberString, out var val))
             {
                 return val;
@@ -572,10 +580,147 @@ file static class D3b96193
         serializeStream.Position = 0;
 
         var encryptStream = m.GetStream();
-        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
+        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write, leaveOpen: true);
         await serializeStream.CopyToAsync(cryptoStream, cancellationToken);
         await cryptoStream.FlushFinalBlockAsync(cancellationToken);
         encryptStream.Position = 0;
         return encryptStream;
+    }
+
+    internal static async Task<string> SerializeEncryptToJsonAsync(ApiRsp<LoginOrRegisterResponse?> obj, Aes aes, CancellationToken cancellationToken = default)
+    {
+        using var serializeStream = m.GetStream();
+        await JsonSerializer.SerializeAsync(serializeStream, obj,
+            IdentityMinimalApisJsonSerializerContext.Default.ApiRspLoginOrRegisterResponse, cancellationToken: cancellationToken);
+        serializeStream.Position = 0;
+
+        using var encryptStream = m.GetStream();
+        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write, leaveOpen: true);
+        await serializeStream.CopyToAsync(cryptoStream, cancellationToken);
+        await cryptoStream.FlushFinalBlockAsync(cancellationToken);
+        encryptStream.Position = 0;
+
+        var span = encryptStream.GetBuffer().AsSpan()[..unchecked((int)encryptStream.Length)];
+        var r = Base64Url.EncodeToString(span);
+        return r;
+    }
+}
+
+/// <summary>
+/// 修复 Session 保存后读取无值的问题
+/// </summary>
+file static class FixSession
+{
+    /// <summary>
+    /// 使用追加 Cookie 方式修复 Session 无法读取的问题
+    /// </summary>
+    static readonly bool AppendCookieFixSession = false;
+
+    /// <summary>
+    /// 从 Session 或 Cookie 中获取字符串值
+    /// </summary>
+    internal static string? GetSessionString(HttpContext context, string key)
+    {
+        string? value = null;
+        if (!string.IsNullOrEmpty(context.Session.Id))
+        {
+            value = context.Session.GetString(key);
+            if (!string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+        }
+        if (AppendCookieFixSession)
+        {
+            context.Request.Cookies.TryGetValue($"7DCE917D.{key}", out value);
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// 从 Session 或 Cookie 中获取 <see cref="int"/> 值
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    internal static int? GetSessionInt32(HttpContext context, string key)
+    {
+        int? value = null;
+        if (!string.IsNullOrEmpty(context.Session.Id))
+        {
+            value = context.Session.GetInt32(key);
+            if (value.HasValue)
+            {
+                return value;
+            }
+        }
+        if (AppendCookieFixSession)
+        {
+            if (context.Request.Cookies.TryGetValue($"7DCE917D.{key}", out var valueS))
+            {
+                if (int.TryParse(valueS, out var valueI))
+                {
+                    return valueI;
+                }
+            }
+        }
+        return value;
+    }
+
+    internal static CookieOptions CreateCookieOptions(HttpContext context)
+    {
+        var options = context.RequestServices.GetRequiredService<IOptions<SessionOptions>>().Value;
+        CookieOptions cookieOptions = new()
+        {
+            HttpOnly = options.Cookie.HttpOnly,
+            IsEssential = options.Cookie.IsEssential,
+            Expires = DateTimeOffset.UtcNow.Add(options.IdleTimeout),
+        };
+        return cookieOptions;
+    }
+
+    internal static CookieOptions GetCookieOptions(HttpContext context)
+    {
+        if (context.Items.TryGetValue(nameof(CookieOptions), out var options) && options is CookieOptions cookieOptions)
+        {
+        }
+        else
+        {
+            cookieOptions = CreateCookieOptions(context);
+            context.Items[nameof(CookieOptions)] = cookieOptions;
+        }
+        return cookieOptions;
+    }
+
+    /// <summary>
+    /// 将指定的 Query 参数保存到 Session 中
+    /// </summary>
+    /// <param name="context"></param>
+    internal static void SetQueryToSession(HttpContext context)
+    {
+        CookieOptions cookieOptions = AppendCookieFixSession ? GetCookieOptions(context) : null!;
+
+        foreach (var item in QueryKeys)
+        {
+            var value = context.Request.Query[item];
+            if (!StringValues.IsNullOrEmpty(value))
+            {
+                context.Session.SetString(item, value!);
+                if (AppendCookieFixSession)
+                {
+                    context.Response.Cookies.Append($"7DCE917D.{item}", value!, cookieOptions);
+                }
+            }
+        }
+    }
+
+    internal static void SetSessionInt32(HttpContext context, string key, int value)
+    {
+        CookieOptions cookieOptions = AppendCookieFixSession ? GetCookieOptions(context) : null!;
+        context.Session.SetInt32(key, value);
+        if (AppendCookieFixSession)
+        {
+            context.Response.Cookies.Append($"7DCE917D.{key}", value.ToString(), cookieOptions);
+        }
     }
 }

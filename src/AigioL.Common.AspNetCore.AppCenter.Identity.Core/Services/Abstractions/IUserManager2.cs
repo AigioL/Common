@@ -27,7 +27,7 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
     /// <summary>
     /// 进行登录生成凭证返回
     /// </summary>
-    Task<ApiRsp<LoginOrRegisterResponse?>> LoginSharedAsync(
+    Task<ApiRsp<LoginOrRegisterResponse>> LoginSharedAsync(
         User user,
         bool isLoginOrRegister,
         string? deviceId);
@@ -40,7 +40,7 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
     /// <summary>
     /// 登录或注册或绑定通过第三方外部账号
     /// </summary>
-    Task<ApiRsp<LoginOrRegisterResponse?>> LoginOrRegisterOrBindAsync(
+    Task<ApiRsp<LoginOrRegisterResponse>> LoginOrRegisterOrBindAsync(
         string externalAccountId,
         ExternalLoginChannel channel,
         string deviceId,

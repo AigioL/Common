@@ -6,16 +6,17 @@
 
 using AspNet.Security.OAuth.Alipay;
 using Microsoft.AspNetCore.Authentication;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
 /// Extension methods to add Alipay authentication capabilities to an HTTP application pipeline.
 /// </summary>
-public static class Alipay2AuthenticationExtensions
+public static class AlipayAuthenticationExtensions
 {
     /// <summary>
-    /// Adds <see cref="Alipay2AuthenticationHandler"/> to the specified
+    /// Adds <see cref="AlipayAuthenticationHandler"/> to the specified
     /// <see cref="AuthenticationBuilder"/>, which enables Alipay authentication capabilities.
     /// </summary>
     /// <param name="builder">The authentication builder.</param>
@@ -26,7 +27,7 @@ public static class Alipay2AuthenticationExtensions
     }
 
     /// <summary>
-    /// Adds <see cref="Alipay2AuthenticationHandler"/> to the specified
+    /// Adds <see cref="AlipayAuthenticationHandler"/> to the specified
     /// <see cref="AuthenticationBuilder"/>, which enables Alipay authentication capabilities.
     /// </summary>
     /// <param name="builder">The authentication builder.</param>
@@ -34,13 +35,13 @@ public static class Alipay2AuthenticationExtensions
     /// <returns>The <see cref="AuthenticationBuilder"/>.</returns>
     public static AuthenticationBuilder AddAlipay2(
         this AuthenticationBuilder builder,
-        Action<Alipay2AuthenticationOptions> configuration)
+        Action<AlipayAuthenticationOptions2> configuration)
     {
         return builder.AddAlipay2(AlipayAuthenticationDefaults.AuthenticationScheme, configuration);
     }
 
     /// <summary>
-    /// Adds <see cref="Alipay2AuthenticationHandler"/> to the specified
+    /// Adds <see cref="AlipayAuthenticationHandler"/> to the specified
     /// <see cref="AuthenticationBuilder"/>, which enables Alipay authentication capabilities.
     /// </summary>
     /// <param name="builder">The authentication builder.</param>
@@ -50,13 +51,13 @@ public static class Alipay2AuthenticationExtensions
     public static AuthenticationBuilder AddAlipay2(
         this AuthenticationBuilder builder,
         string scheme,
-        Action<Alipay2AuthenticationOptions> configuration)
+        Action<AlipayAuthenticationOptions2> configuration)
     {
         return builder.AddAlipay2(scheme, AlipayAuthenticationDefaults.DisplayName, configuration);
     }
 
     /// <summary>
-    /// Adds <see cref="Alipay2AuthenticationHandler"/> to the specified
+    /// Adds <see cref="AlipayAuthenticationHandler"/> to the specified
     /// <see cref="AuthenticationBuilder"/>, which enables Alipay authentication capabilities.
     /// </summary>
     /// <param name="builder">The authentication builder.</param>
@@ -68,8 +69,8 @@ public static class Alipay2AuthenticationExtensions
         this AuthenticationBuilder builder,
         string scheme,
         string caption,
-        Action<Alipay2AuthenticationOptions> configuration)
+        Action<AlipayAuthenticationOptions2> configuration)
     {
-        return builder.AddOAuth<Alipay2AuthenticationOptions, Alipay2AuthenticationHandler>(scheme, caption, configuration);
+        return builder.AddOAuth<AlipayAuthenticationOptions2, AlipayAuthenticationHandler2>(scheme, caption, configuration);
     }
 }

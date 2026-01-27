@@ -161,14 +161,16 @@ sealed partial class PaymentRepository<TDbContext> :
         return orderInfo;
     }
 
-    public async Task<bool> IsPaymentMethodValidAsync(int type, OrderBusinessPaymentMethod method,
+    public async Task<bool> IsPaymentMethodValidAsync(int type,
+        PaymentMethod method,
+        PaymentType paymentType,
         CancellationToken cancellationToken = default)
     {
         var query = db.OrderBusinessPaymentConfigurations
             .AsNoTrackingWithIdentityResolution()
             .Where(x =>
-            x.PaymentMethod == method.PaymentMethod &&
-            x.PaymentType == method.PaymentType &&
+            x.PaymentMethod == method &&
+            x.PaymentType == paymentType &&
             x.Disable == false &&
             x.BusinessTypeId == type);
 
@@ -176,19 +178,23 @@ sealed partial class PaymentRepository<TDbContext> :
         return any;
     }
 
-    public async Task<OrderPaymentComposition?> AddOrGetPayMethodAsync(string orderId, decimal amount, OrderBusinessPaymentMethod method)
+    public async Task<OrderPaymentComposition?> AddOrGetPayMethodAsync(
+        string orderId,
+        decimal amount,
+        PaymentMethod method,
+        PaymentType paymentType)
     {
         var order = await db.OrderPaymentCompositions.FirstOrDefaultAsync(x =>
             x.OrderId == orderId &&
-            x.PaymentMethod == method.PaymentMethod &&
-            x.PaymentType == method.PaymentType);
+            x.PaymentMethod == method &&
+            x.PaymentType == paymentType);
         if (order == null)
         {
             order = new OrderPaymentComposition
             {
                 OrderId = orderId,
-                PaymentMethod = method.PaymentMethod,
-                PaymentType = method.PaymentType,
+                PaymentMethod = method,
+                PaymentType = paymentType,
                 PaymentAmount = amount,
                 PaymentNumber = "",
             };

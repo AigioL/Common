@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
 using AigioL.Common.Models;
@@ -51,9 +52,9 @@ public abstract partial class WorkerBackgroundService(
 
     protected abstract string RoutingKey { get; }
 
-    protected virtual string QueueName => "";
+    protected abstract string QueueName { get; }
 
-    protected virtual string ExchangeName => "";
+    protected virtual string ExchangeName { get; } = "amq.direct";
 
     /// <summary>
     /// 此消费者标签用于标识订阅，以及需要取消订阅的时机
@@ -105,6 +106,8 @@ public abstract partial class WorkerBackgroundService(
             var exchangeName = ExchangeName;
             var routingKey = RoutingKey;
             channel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
+            await channel.ExchangeDeclareAsync(ExchangeName, ExchangeType.Direct, durable: true);
+            await channel.QueueDeclareAsync(QueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
             await channel.QueueBindAsync(queueName, exchangeName, routingKey, cancellationToken: cancellationToken);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
@@ -126,19 +129,26 @@ public abstract partial class WorkerBackgroundService(
                     r = ex;
                 }
 
-                bool basicAck = false;
-                if (r != null && r.IsSuccess())
-                {
-                    basicAck = true;
-                }
-                else
+                //bool basicAck = false;
+                //if (r != null && r.IsSuccess())
+                //{
+                //    basicAck = true;
+                //}
+                //else
+                //{
+                //    await OnHandleFailAsync(workerName, r);
+                //}
+                //if (basicAck)
+                //{
+                //    await channel.BasicAckAsync(e.DeliveryTag, false, cancellationToken: CancellationToken.None); // 不取消
+                //}
+                //错误信息发送消息通知
+                if (r != null && !r.IsSuccess())
                 {
                     await OnHandleFailAsync(workerName, r);
                 }
-                if (basicAck)
-                {
-                    await channel.BasicAckAsync(e.DeliveryTag, false, cancellationToken: CancellationToken.None); // 不取消
-                }
+                //消息始终确认
+                await channel.BasicAckAsync(e.DeliveryTag, false, cancellationToken: CancellationToken.None); // 不取消
             };
 
             // this consumer tag identifies the subscription

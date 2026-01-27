@@ -23,7 +23,6 @@ sealed partial class WeChatPayV3Services<
     IWeChatPayServices
     where TAppSettings : class, IPaySettings
 {
-
     public async Task<PubPayState> PubPay(WeChatPayTradeType tradeType, string orderNumber, string title,
        decimal amount, string body, string ip, DateTimeOffset timeExpire, string? userOpenId = null, string? returnUrl = null)
     {
@@ -138,7 +137,7 @@ sealed partial class WeChatPayV3Services<
             {
                 qs.Add("redirectUrl", returnUrl);
             }
-            var ub = new UriBuilder(OfficialUrl) { Path = "wechatpay", Query = qs.ToString() };
+            var ub = new UriBuilder(OfficialUrl) { Path = "/pay/wechatpay", Query = qs.ToString() };
             paymentPageUrl = ub.ToString();
             return true;
         }

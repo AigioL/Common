@@ -1,10 +1,13 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Helpers.SnowFlake;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using AigioL.Common.Models;
+using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
@@ -112,7 +115,7 @@ public static class MembershipController
         Guid membershipGoodsId,
         Guid? channelPackageId)
     {
-        var lockKey = CacheKeys.GetSteamRechargeUserOperationLockKey(userId);
+        var lockKey = CacheKeys.GetUserRechargeOperationLockKey(userId);
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
         return r;
 
@@ -140,17 +143,35 @@ public static class MembershipController
                 return ApiRsp.Fail<string>("商品已下架");
             }
 
-            var generic_order_id = await userMembershipService.CreateMembershipOrderAsync(
-                userId,
-                goods,
-                channelPackageId);
-            if (!string.IsNullOrWhiteSpace(generic_order_id))
+            // 直接创建订单
             {
-                return ApiRsp.Ok(generic_order_id);
+                //var generic_order_id = await userMembershipService.CreateMembershipOrderAsync(
+                //    userId,
+                //    goods,
+                //    channelPackageId);
+                //if (!string.IsNullOrWhiteSpace(generic_order_id))
+                //{
+                //    return ApiRsp.Ok(generic_order_id);
+                //}
+
+                //logger.LogTrace("{userId} create businessOrder failed", userId);
+                //return ApiRspCode.BadRequest;
             }
 
-            logger.LogTrace("{userId} create businessOrder failed", userId);
-            return ApiRspCode.BadRequest;
+            // 延迟创建订单模式
+            {
+                var cacheKey = IdGeneratorHelper.GetNextId();
+                var lazyModel = new LazyCreateMembershipOrderModel()
+                {
+                    UserId = userId,
+                    MembershipGoodsId = membershipGoodsId,
+                    ChannelPackageId = channelPackageId,
+                };
+                var database = conn.GetDatabase(CacheKeys.RedisMessagingDb);
+                var lazyModelValue = MemoryPackSerializer.Serialize(lazyModel);
+                await database.StringSetAsync($"OrderIdTemp-{cacheKey}", lazyModelValue, TimeSpan.FromMinutes(6d));
+                return ApiRsp.Ok(cacheKey);
+            }
         }
     }
 
@@ -162,12 +183,18 @@ public static class MembershipController
         IUserMembershipService userMembershipService,
         MembershipCDKeyRequest cdKeyRequest)
     {
-        if (!ShortGuid.TryParse(cdKeyRequest.CDKey, out Guid cdKey))
+        Guid cdKey;
+        var cdKeyB58 = Base58Guid.Decode(cdKeyRequest.CDKey);
+        if (cdKeyB58.HasValue)
+        {
+            cdKey = cdKeyB58.Value;
+        }
+        else if (!ShortGuid.TryParse(cdKeyRequest.CDKey, out cdKey))
         {
             return "CDKey 不合法";
         }
 
-        var lockKey = CacheKeys.GetSteamRechargeUserOperationLockKey(cdKey);
+        var lockKey = CacheKeys.GetUserRechargeOperationLockKey(cdKey);
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
         return r;
 

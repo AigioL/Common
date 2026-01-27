@@ -48,7 +48,7 @@ public partial class OrderBusinessPaymentConfiguration :
     public bool Disable { get; set; }
 
     /// <inheritdoc/>
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     /// <inheritdoc/>
     public long Sort { get; set; }

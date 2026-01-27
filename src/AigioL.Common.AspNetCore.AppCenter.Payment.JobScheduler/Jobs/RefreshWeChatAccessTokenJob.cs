@@ -27,8 +27,17 @@ public partial class RefreshWeChatAccessTokenJob<
 {
     protected sealed override async Task<ApiRsp> HandleAsync(IJobExecutionContext? context, CancellationToken cancellationToken)
     {
-        var appIdWeChat = options.Value.WeChatApiOptions?.AppId;
-        var appSecretWeChat = options.Value.WeChatApiOptions?.AppSecret;
+        string? appIdWeChat, appSecretWeChat;
+
+        try
+        {
+            appIdWeChat = options.Value.WeChatApiOptions?.AppId;
+            appSecretWeChat = options.Value.WeChatApiOptions?.AppSecret;
+        }
+        catch (ArgumentNullException)
+        {
+            appIdWeChat = appSecretWeChat = null;
+        }
         if (string.IsNullOrWhiteSpace(appIdWeChat) || string.IsNullOrWhiteSpace(appSecretWeChat))
         {
             logger.LogWarning("获取 WeChatApiOptions.AppId 为空");
@@ -40,8 +49,18 @@ public partial class RefreshWeChatAccessTokenJob<
             const string redisKey = "AccessToken";
             var redisHashField = $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}";
             var redis = redisConnection.GetDatabase(CacheKeys.RedisAccessTokenDb);
-            ReadOnlySpan<char> cache = await redis.HashGetAsync(redisKey, redisHashField);
-            var accessToken = JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
+            var weChatAccessTokenRedisValue = await redis.HashGetAsync(redisKey, redisHashField);
+            WeChatAccessToken? accessToken = null;
+            if (weChatAccessTokenRedisValue.HasValue)
+            {
+                ReadOnlySpan<char> weChatAccessTokenCharsValue = weChatAccessTokenRedisValue;
+                if (weChatAccessTokenCharsValue.Length != 0)
+                {
+                    accessToken = JsonSerializer.Deserialize(
+                        weChatAccessTokenCharsValue,
+                        PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
+                }
+            }
             if (accessToken == null || accessToken.ExpireTimestamp <= DateTimeOffset.Now.ToUnixTimeSeconds())
             {
                 var client = CreateWeXinClient(appIdWeChat, appSecretWeChat);

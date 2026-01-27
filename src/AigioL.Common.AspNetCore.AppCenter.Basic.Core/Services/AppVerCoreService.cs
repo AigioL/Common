@@ -169,7 +169,7 @@ sealed partial class AppVerCoreService<TDbContext> : AppVerCoreService,
 
         try
         {
-            var aes = AESUtils.Create(aesKeyBytes);
+            var aes = AESUtils.CreateOld(aesKeyBytes);
             return (default, aes);
         }
         catch (Exception e)

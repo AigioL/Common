@@ -1,11 +1,14 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Reflection;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 
@@ -22,6 +25,51 @@ public static partial class BMMenusController
             .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
             .WithDescription("管理后台的菜单管理");
 
+        routeGroup.MapGet("/init", async (HttpContext context) =>
+        {
+            var userManager = context.RequestServices.GetRequiredService<UserManager<BMUser>>();
+            var user = await userManager.GetUserAsync(context.User);
+            if (user == null)
+            {
+                return HttpStatusCode.Unauthorized;
+            }
+
+            var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
+            var isRootTenant = user.TenantId == adminCenterService.RootTenantIdG;
+            if (!isRootTenant)
+            {
+                return HttpStatusCode.Unauthorized;
+            }
+
+            var addMenus = new List<BMMenu>(InfoController.GetBMMenus(isRootTenant));
+            adminCenterService.HandleMenus(isRootTenant, addMenus);
+            InfoController.SetUserIdAndTenantId(addMenus, user.Id, adminCenterService.RootTenantIdG);
+
+            BMApiRsp<BMMenuInitModel[]> r = addMenus.Select(x => new BMMenuInitModel
+            {
+                Url = x.Url,
+                Name = x.Name,
+                Key = x.Key,
+                IconUrl = x.IconUrl,
+                Sort = x.Sort,
+                Note = x.Note,
+            }).ToArray();
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("获取初始化的管理后台菜单组");
+
+        routeGroup.MapGet("/keys", async (HttpContext context) =>
+        {
+            var t = typeof(ControllerConstants);
+            string[] keys = [.. t.GetFields(BindingFlags.Public | BindingFlags.Static)
+                .Where(x => x.FieldType == typeof(string))
+                .Select(x => x.GetValue(null)?.ToString()!)
+                .Where(x => !string.IsNullOrWhiteSpace(x))];
+            var r = BMApiRsp.OK(keys);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("查询管理后台控制器的菜单 Key 组");
+
         routeGroup.MapGet("/tree", async (HttpContext context) =>
         {
             var r = await Tree(context);
@@ -37,6 +85,15 @@ public static partial class BMMenusController
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Detail)
         .WithDescription("获取管理后台菜单详情");
+
+        routeGroup.MapPut("/sort", async (HttpContext context,
+            [FromBody] BMMenuSortItem[] items) =>
+        {
+            var r = await MenuSort(context, items);
+            return r.SetHttpContext(context);
+        }).PermissionFilter(ControllerName, BMButtonType.Edit)
+        .WithDescription("设置菜单排序");
+
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] BMMenuEdit model) =>
         {
@@ -85,16 +142,18 @@ public static partial class BMMenusController
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("获取管理后台菜单的按钮列表");
         routeGroup.MapPost("bottons/{menuId}", async (HttpContext context,
-            [FromRoute] Guid menuId) =>
+            [FromRoute] Guid menuId,
+            [FromBody] Guid[] buttons) =>
         {
-            var r = await AddMenuButtons(context, menuId);
+            var r = await AddMenuButtons(context, menuId, buttons);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增管理后台菜单的按钮");
         routeGroup.MapPut("bottons/{menuId}", async (HttpContext context,
-            [FromRoute] Guid menuId) =>
+            [FromRoute] Guid menuId,
+            [FromBody] Guid[] buttons) =>
         {
-            var r = await EditMenuButtons(context, menuId);
+            var r = await EditMenuButtons(context, menuId, buttons);
             return r.SetHttpContext(context);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("编辑管理后台菜单的按钮");
@@ -136,6 +195,20 @@ public static partial class BMMenusController
         .WithDescription("删除管理后台菜单权限按钮");
     }
 
+    static async Task<BMApiRsp<bool>> MenuSort(HttpContext context, BMMenuSortItem[] items)
+    {
+        try
+        {
+            var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+            var r = await repo.SetMenuSort(items);
+            return BMApiRsp.OkBoolean(r);
+        }
+        catch
+        {
+            return BMApiRsp.OkBoolean(false);
+        }
+    }
+
     static async Task<BMApiRsp<List<BMMenuTreeItem>?>> Tree(HttpContext context)
     {
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
@@ -152,6 +225,15 @@ public static partial class BMMenusController
 
     static async Task<BMApiRsp<int>> PostOrPut(HttpContext context, BMMenuEdit model)
     {
+        if (model.ParentId == model.Id)
+        {
+            return new BMApiRsp<int>
+            {
+                Code = (int)HttpStatusCode.BadRequest,
+                Messages = new string[] { "上级菜单不能选择自己" },
+                Content = 0,
+            };
+        }
         var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
         var userId = context.GetBMUserId();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();

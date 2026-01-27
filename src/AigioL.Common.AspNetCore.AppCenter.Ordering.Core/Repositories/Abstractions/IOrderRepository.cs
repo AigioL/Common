@@ -79,6 +79,14 @@ public partial interface IOrderRepository
     /// <param name="orderNumber">订单号</param>
     /// <returns></returns>
     Task CompleteOrderAsync(string orderNumber);
+
+    /// <summary>
+    /// 获取订单支付状态
+    /// </summary>
+    /// <param name="orderId">订单号</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<OrderStatus> GetOrderStatusAsync(string orderId, CancellationToken cancellationToken = default);
 }
 
 partial interface IOrderRepository // 管理后台

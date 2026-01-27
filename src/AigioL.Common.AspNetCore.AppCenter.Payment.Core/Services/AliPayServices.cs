@@ -94,7 +94,6 @@ sealed partial class AliPayServices<
                 var wapPayRequest = new AlipayTradeWapPayRequest();
                 wapPayRequest.SetBizModel(wapPayModel);
                 wapPayRequest.SetNotifyUrl(paymentOptions.NotifyUrl);
-                wapPayRequest.SetReturnUrl(returnUrl ?? $"{paymentOptions.ReturnUrl}?id={orderId}");
 
                 LogApiInfo(wapPayModel);
                 var wapPayResponse = await client.PageExecuteAsync(wapPayRequest, paymentOptions, null, "GET");

@@ -64,6 +64,19 @@ sealed partial class OrderRepository<TDbContext> :
         return orderInfo;
     }
 
+    public async Task<OrderStatus> GetOrderStatusAsync(string orderId, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(orderId))
+        {
+            throw new ArgumentNullException(nameof(orderId));
+        }
+        var query = db.Orders.AsNoTrackingWithIdentityResolution()
+            .Where(a => a.Id == orderId)
+            .Select(a => a.Status);
+        var status = await query.SingleOrDefaultAsync(cancellationToken);
+        return status;
+    }
+
     public async Task<OrderPayInfoModel?> GetOrderPaymentInfo(string orderId, bool isWaitPay, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(orderId))
@@ -208,7 +221,7 @@ sealed partial class OrderRepository<TDbContext> :
             .ExecuteUpdateAsync(s => s.SetProperty(a => a.Status, OrderStatus.Completed));
         if (r <= 0)
         {
-            throw new ApplicationException("完成订单失败，改订单不是已付款状态");
+            throw new ApplicationException("完成订单失败，该订单不是已付款状态");
         }
     }
 }

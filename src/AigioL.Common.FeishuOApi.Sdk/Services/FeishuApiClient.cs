@@ -1,7 +1,6 @@
 using AigioL.Common.FeishuOApi.Sdk.Models;
 using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
 using AigioL.Common.Models;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Buffers;
 using System.Diagnostics;
@@ -39,7 +38,19 @@ $"""
 Enter (dotnet user-secrets set "FeishuApiOptions:{name}" "value") on the current csproj path to set the secret value see https://learn.microsoft.com/zh-cn/aspnet/core/security/app-secrets
 """);
 
-    public async Task<ApiRsp> SendMessageAsync(
+    public Task<ApiRsp> SendMessageAsync(
+        string? title,
+        string? text,
+        CancellationToken cancellationToken = default)
+    {
+        var hookId = HookId;
+        var serverTag = options.Value.ServerTag;
+        return SendMessageCoreAsync(hookId, serverTag, title, text, cancellationToken);
+    }
+
+    public async Task<ApiRsp> SendMessageCoreAsync(
+        string? hookId,
+        string? serverTag,
         string? title,
         string? text,
         CancellationToken cancellationToken = default)
@@ -47,13 +58,12 @@ Enter (dotnet user-secrets set "FeishuApiOptions:{name}" "value") on the current
         HttpResponseMessage? response = null;
         try
         {
-            var serverTag = options.Value.ServerTag;
             if (!string.IsNullOrWhiteSpace(serverTag))
             {
                 text = $"{serverTag}: {text}";
             }
 
-            Uri requestUri = new Uri($"/open-apis/bot/v2/hook/{HookId}", UriKind.Relative);
+            Uri requestUri = new Uri($"/open-apis/bot/v2/hook/{hookId}", UriKind.Relative);
             using var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             var richTextMessage = GetRichTextMessage(title, text, out var bytesWritten);
             try
@@ -65,7 +75,7 @@ Enter (dotnet user-secrets set "FeishuApiOptions:{name}" "value") on the current
                         ContentType = new MediaTypeHeaderValue("application/json"),
                     },
                 };
-                response = await httpClient.SendAsync(request, cancellationToken);
+                response = await httpClient.UseDefaultSendAsync(request, cancellationToken: cancellationToken);
             }
             finally
             {

@@ -44,11 +44,11 @@ partial interface IMembershipBusinessOrderRepository
     /// <summary>
     /// 创建业务订单 (普通会员、CDKey 兑换、自动续费会员)， if isAgreementDeduction is <see langword="true"/>, paymentType is required
     /// </summary>
-    /// <param name="business_order"></param>
-    /// <param name="isAgreementDeduction">是否自动续费订单</param>
-    /// <param name="paymentType"></param>
-    /// <returns></returns>
-    Task<(bool Success, Order? Order)> CreateBusinessOrder(MembershipBusinessOrder business_order, bool isAgreementDeduction = false, PaymentType? paymentType = null);
+    Task<(bool Success, Order? Order)> CreateBusinessOrder(
+        MembershipBusinessOrder business_order,
+        bool isAgreementDeduction = false,
+        PaymentType? paymentType = null,
+        string? orderId = null);
 
     /// <summary>
     /// <see cref="EntityFrameworkQueryableExtensions.FirstOrDefaultAsync{TSource}(IQueryable{TSource}, Expression{Func{TSource, bool}}, CancellationToken)"/>
@@ -87,4 +87,15 @@ partial interface IMembershipBusinessOrderRepository
     Task<(bool isSuccess, decimal? firstAmount)> AddAgreementAndBindOrderAsync(
         MerchantDeductionAgreement agreement,
         string orderId);
+
+    /// <summary>
+    /// 创建或更新用户会员信息
+    /// </summary>
+    Task<bool> CreateOrUpdateUserMembershipAsync(
+       Guid businessOrderId,
+       TimeSpan rechargeTimeSpan,
+       Guid userId,
+       MembershipLicenseFlags membershipLicenseFlags,
+       MembershipBusinessSource membershipBusinessSource,
+       DateTimeOffset? now = null);
 }

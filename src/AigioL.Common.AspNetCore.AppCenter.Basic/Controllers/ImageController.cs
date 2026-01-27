@@ -101,7 +101,7 @@ public static partial class ImageController
             var r = await repo.FindAsync(idG, cancellationToken: cancellationToken);
             return r;
         }, cancellationToken);
-        if (entity != null && !entity.SoftDeleted)
+        if (entity != null && entity.DeleteTime == null)
         {
             url = entity.Url;
             if (!url.IsHttpUrl())

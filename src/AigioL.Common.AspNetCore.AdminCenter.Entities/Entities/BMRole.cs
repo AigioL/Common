@@ -97,7 +97,7 @@ partial class BMRole : ITenantBaseEntity<Guid>
 {
     /// <inheritdoc/>
     [Comment("是否软删除")]
-    public bool SoftDeleted { get; set; }
+    public DateTimeOffset? DeleteTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("租户 Id")]

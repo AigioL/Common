@@ -51,6 +51,8 @@ public abstract partial class MembershipOrderSubscribe : WorkerBackgroundService
 
         protected override string RoutingKey => CacheKeys.AgreementSign_Membership;
 
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}"; // 每个路由独立队列，避免混用
+
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {
             var agreementNo = Encoding.UTF8.GetString(eventArgs.Body.Span);
@@ -80,6 +82,8 @@ public abstract partial class MembershipOrderSubscribe : WorkerBackgroundService
         }
 
         protected override string RoutingKey => CacheKeys.AgreementUnSign_Membership;
+
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}"; // 每个路由独立队列，避免混用
 
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {
@@ -111,6 +115,8 @@ public abstract partial class MembershipOrderSubscribe : WorkerBackgroundService
 
         protected override string RoutingKey => CacheKeys.GetPaymentSuccessMessageQueueKeyByBusinessType(orderBusinessTypeService.Membership);
 
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}"; // 每个路由独立队列，避免混用
+
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {
             var orderId = Encoding.UTF8.GetString(eventArgs.Body.Span);
@@ -141,6 +147,8 @@ public abstract partial class MembershipOrderSubscribe : WorkerBackgroundService
 
         protected override string RoutingKey => CacheKeys.GetOrderUserRequestRefundMessageQueueKeyByBusinessType(orderBusinessTypeService.Membership);
 
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}"; // 每个路由独立队列，避免混用
+
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {
             var orderId = Encoding.UTF8.GetString(eventArgs.Body.Span);
@@ -170,6 +178,8 @@ public abstract partial class MembershipOrderSubscribe : WorkerBackgroundService
         }
 
         protected override string RoutingKey => CacheKeys.GetOrderRefundedMessageQueueKeyByBusinessType(orderBusinessTypeService.Membership);
+
+        protected override string QueueName => $"{CacheKeys.OrderQueueName}.{RoutingKey}"; // 每个路由独立队列，避免混用
 
         protected override async Task<ApiRsp> HandleAsync(BasicDeliverEventArgs eventArgs, CancellationToken cancellationToken)
         {

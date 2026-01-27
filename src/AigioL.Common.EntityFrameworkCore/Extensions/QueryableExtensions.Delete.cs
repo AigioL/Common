@@ -13,13 +13,10 @@ static partial class QueryableExtensions
     /// <summary>
     /// 根据条件常规删除（批量删除或软删除），根据实体是否继承了 <see cref="ISoftDeleted"/> 自动检测
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> GeneralDeleteAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity>(
         this IQueryable<TEntity> query,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
@@ -30,7 +27,7 @@ static partial class QueryableExtensions
         }
         else
         {
-            var r = await query2.SoftDeleteAsync(cancellationToken);
+            var r = await query2.SoftDeleteAsync(operatorUserId, cancellationToken);
             return r;
         }
     }
@@ -38,17 +35,47 @@ static partial class QueryableExtensions
     /// <summary>
     /// 根据条件批量软删除
     /// </summary>
-    /// <param name="query"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> SoftDeleteAsync(
         this IQueryable<ISoftDeleted> query,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
     {
-        var r = await query.ExecuteUpdateAsync(s => s.SetProperty(b => b.SoftDeleted, true), cancellationToken);
-        return r;
+        if (query is IQueryable<IOperatorUserId> query2)
+        {
+            var r = await query.ExecuteUpdateAsync(s => s
+                .SetProperty(b => b.DeleteTime, DateTimeOffset.Now)
+                .SetProperty(b => EF.Property<Guid?>(b, nameof(IOperatorUserId.OperatorUserId)), operatorUserId)
+                , cancellationToken);
+
+            //var t = (Task<int>)typeof(QueryableExtensions)
+            //    .GetMethod(nameof(_SoftDeleteCoreAsync), BindingFlags.Static | BindingFlags.NonPublic)
+            //    .MakeGenericMethod(query.GetType().GenericTypeArguments[0])
+            //    .Invoke(null, [query, operatorUserId, cancellationToken]);
+            //var r = await t;
+            return r;
+        }
+        else
+        {
+            var r = await query.ExecuteUpdateAsync(s => s.SetProperty(b => b.DeleteTime, DateTimeOffset.Now), cancellationToken);
+            return r;
+        }
     }
+
+    //#pragma warning disable IDE1006 // 命名样式
+    //    static async Task<int> _SoftDeleteCoreAsync<T>(
+    //#pragma warning restore IDE1006 // 命名样式
+    //        this IQueryable<T> query,
+    //        Guid? operatorUserId = null,
+    //        CancellationToken cancellationToken = default)
+    //        where T : IOperatorUserId, ISoftDeleted
+    //    {
+    //        var r = await query.ExecuteUpdateAsync(s => s
+    //            .SetProperty(b => b.DeleteTime, DateTimeOffset.Now)
+    //            .SetProperty(b => b.OperatorUserId, operatorUserId)
+    //            , cancellationToken);
+    //        return r;
+    //    }
 
     #endregion
 
@@ -57,44 +84,34 @@ static partial class QueryableExtensions
     /// <summary>
     /// 根据主键常规删除（批量删除或软删除），根据实体是否继承了 <see cref="ISoftDeleted"/> 自动检测
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="primaryKey"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> GeneralDeleteByIdAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         TPrimaryKey primaryKey,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TPrimaryKey : IEquatable<TPrimaryKey>
         where TEntity : class, IEntity
     {
         query = query.Where(IEntity<TPrimaryKey>.LambdaEqualId<TEntity>(primaryKey));
-        var r = await query.GeneralDeleteAsync(cancellationToken);
+        var r = await query.GeneralDeleteAsync(operatorUserId, cancellationToken);
         return r;
     }
 
     /// <summary>
     /// 根据主键软删除
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="primaryKey"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> SoftDeleteByIdAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         TPrimaryKey primaryKey,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TPrimaryKey : IEquatable<TPrimaryKey>
         where TEntity : class, IEntity, ISoftDeleted
     {
         query = query.Where(IEntity<TPrimaryKey>.LambdaEqualId<TEntity>(primaryKey));
-        var r = await query.SoftDeleteAsync(cancellationToken);
+        var r = await query.SoftDeleteAsync(operatorUserId, cancellationToken);
         return r;
     }
 
@@ -127,44 +144,34 @@ static partial class QueryableExtensions
     /// <summary>
     /// 根据多个主键常规删除（批量删除或软删除），根据实体是否继承了 <see cref="ISoftDeleted"/> 自动检测
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="primaryKeys"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> GeneralDeleteByIdAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         IEnumerable<TPrimaryKey> primaryKeys,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TPrimaryKey : IEquatable<TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>
     {
         query = query.Where(x => Enumerable.Contains(primaryKeys, x.Id));
-        var r = await query.GeneralDeleteAsync(cancellationToken);
+        var r = await query.GeneralDeleteAsync(operatorUserId, cancellationToken);
         return r;
     }
 
     /// <summary>
     /// 根据多个主键软删除
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="primaryKeys"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> SoftDeleteByIdAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         IEnumerable<TPrimaryKey> primaryKeys,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TPrimaryKey : IEquatable<TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>, ISoftDeleted
     {
         query = query.Where(x => Enumerable.Contains(primaryKeys, x.Id));
-        var r = await query.SoftDeleteAsync(cancellationToken);
+        var r = await query.SoftDeleteAsync(operatorUserId, cancellationToken);
         return r;
     }
 
@@ -197,42 +204,32 @@ static partial class QueryableExtensions
     /// <summary>
     /// 根据实体常规删除（批量删除或软删除），根据实体是否继承了 <see cref="ISoftDeleted"/> 自动检测
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="entity"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> GeneralDeleteAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         TEntity entity,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TPrimaryKey : IEquatable<TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>
     {
-        var r = await query.GeneralDeleteByIdAsync(entity.Id, cancellationToken);
+        var r = await query.GeneralDeleteByIdAsync(entity.Id, operatorUserId, cancellationToken);
         return r;
     }
 
     /// <summary>
     /// 根据实体软删除
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="entity"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> SoftDeleteAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         TEntity entity,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TPrimaryKey : IEquatable<TPrimaryKey>
         where TEntity : class, IEntity<TPrimaryKey>, ISoftDeleted
     {
-        var r = await query.SoftDeleteByIdAsync(entity.Id, cancellationToken);
+        var r = await query.SoftDeleteByIdAsync(entity.Id, operatorUserId, cancellationToken);
         return r;
     }
 
@@ -264,42 +261,32 @@ static partial class QueryableExtensions
     /// <summary>
     /// 根据多个实体常规删除（批量删除或软删除），根据实体是否继承了 <see cref="ISoftDeleted"/> 自动检测
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="entities"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> GeneralDeleteAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         IEnumerable<TEntity> entities,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TEntity : class, IEntity<TPrimaryKey>
         where TPrimaryKey : IEquatable<TPrimaryKey>
     {
-        var r = await query.GeneralDeleteByIdAsync(entities.Select(x => x.Id), cancellationToken);
+        var r = await query.GeneralDeleteByIdAsync(entities.Select(x => x.Id), operatorUserId, cancellationToken);
         return r;
     }
 
     /// <summary>
     /// 根据多个实体软删除
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TPrimaryKey"></typeparam>
-    /// <param name="query"></param>
-    /// <param name="entities"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static async Task<int> SoftDeleteAsync<[DynamicallyAccessedMembers(IEntity.DAMT)] TEntity, [DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey>(
         this IQueryable<TEntity> query,
         IEnumerable<TEntity> entities,
+        Guid? operatorUserId = null,
         CancellationToken cancellationToken = default)
         where TEntity : class, IEntity<TPrimaryKey>, ISoftDeleted
         where TPrimaryKey : IEquatable<TPrimaryKey>
     {
-        var r = await query.SoftDeleteByIdAsync(entities.Select(x => x.Id), cancellationToken);
+        var r = await query.SoftDeleteByIdAsync(entities.Select(x => x.Id), operatorUserId, cancellationToken);
         return r;
     }
 

@@ -1,11 +1,15 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 using AigioL.Common.Models;
+using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SKIT.FlurlHttpClient.Wechat.Api;
@@ -40,11 +44,13 @@ public static class PaymentController
         routeGroup.MapPost("{orderId}", async (HttpContext context,
             [FromRoute] string orderId,
             [FromQuery] string? openId,
-            [FromBody] OrderBusinessPaymentMethod method) =>
+            [FromQuery] string? wxCode,
+            [FromBody] OrderBusinessLaunchPaymentMethod method) =>
         {
+            var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
-            var r = await Pay(paymentRepo, context, orderId,
-                method, openId, context.RequestAborted);
+            var r = await Pay<TAppSettings>(paymentRepo, conn, context, orderId,
+                method, openId, wxCode, context.RequestAborted);
             return r;
         });
         routeGroup.MapGet("method/{businessType}", async (HttpContext context,
@@ -96,27 +102,60 @@ public static class PaymentController
         return r;
     }
 
-    static async Task<ApiRsp<PubPayState?>> Pay(
+    static async Task<ApiRsp<PubPayState?>> Pay<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
         IPaymentRepository paymentRepo,
+        IConnectionMultiplexer conn,
         HttpContext context,
         string orderId,
-        OrderBusinessPaymentMethod method,
+        OrderBusinessLaunchPaymentMethod method,
         string? wxOpenId = null,
+        string? wxCode = null,
         CancellationToken cancellationToken = default)
+        where TAppSettings : class, IAppSettings
     {
         if (string.IsNullOrWhiteSpace(orderId))
         {
             return ApiRspCode.NotFound;
         }
+
+        // 延迟创建订单模式
+        {
+            var database = conn.GetDatabase(CacheKeys.RedisMessagingDb);
+            var lazyModelValue = await database.StringGetAsync($"OrderIdTemp-{orderId}");
+            if (!lazyModelValue.HasValue)
+            {
+                return ApiRspCode.NotFound;
+            }
+            var lazyModel = MemoryPackSerializer.Deserialize<LazyCreateMembershipOrderModel>(lazyModelValue);
+            if (lazyModel == null)
+            {
+                return ApiRspCode.NotFound;
+            }
+            var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
+            var membershipGoodsRepo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
+            var goods = await membershipGoodsRepo.FindAsync(lazyModel.MembershipGoodsId, cancellationToken);
+            if (goods == null)
+            {
+                return ApiRspCode.NotFound;
+            }
+            var orderId2 = await userMembershipService.CreateMembershipOrderAsync(lazyModel.UserId, goods, lazyModel.ChannelPackageId, orderId, cancellationToken);
+            if (string.IsNullOrWhiteSpace(orderId2))
+            {
+                return ApiRspCode.NotFound;
+            }
+            orderId = orderId2;
+        }
+
         var orderPayInfo = await paymentRepo.GetOrderPaymentInfoAsync(orderId, true, cancellationToken);
         if (orderPayInfo == null)
         {
             return ApiRspCode.NotFound;
         }
-        var isMethodValid = await paymentRepo.IsPaymentMethodValidAsync(orderPayInfo.BusinessType, method, cancellationToken);
+        var paymentType = method.PaymentType.ToPaymentType();
+        var isMethodValid = await paymentRepo.IsPaymentMethodValidAsync(orderPayInfo.BusinessType, method.PaymentMethod, paymentType, cancellationToken);
         if (isMethodValid)
         {
-            var paymentMethod = await paymentRepo.AddOrGetPayMethodAsync(orderPayInfo.Id, orderPayInfo.AmountReceivable, method);
+            var paymentMethod = await paymentRepo.AddOrGetPayMethodAsync(orderPayInfo.Id, orderPayInfo.AmountReceivable, method.PaymentMethod, paymentType);
             if (paymentMethod == null)
             {
                 return "添加支付方式失败";
@@ -126,11 +165,18 @@ public static class PaymentController
                 case PaymentMethod.Online:
                     switch (method.PaymentType)
                     {
-                        case PaymentType.Alipay:
+                        case WebPaymentType.Alipay:
+                        case WebPaymentType.AlipayMWEB:
                             {
+                                var payTradeType = method.PaymentType switch
+                                {
+                                    WebPaymentType.Alipay => AliPayPayTradeType.JSAPI_PC,
+                                    WebPaymentType.AlipayMWEB => AliPayPayTradeType.MWEB,
+                                    _ => throw new ArgumentOutOfRangeException(nameof(method.PaymentType), method.PaymentType, null),
+                                };
                                 var aliPayServices = context.RequestServices.GetRequiredService<IAliPayServices>();
                                 return await aliPayServices.PubPay(
-                                    AliPayPayTradeType.JSAPI_PC,
+                                    payTradeType,
                                     orderId,
                                     orderPayInfo.OrderNumber,
                                     orderPayInfo.Remarks ?? string.Empty,
@@ -138,15 +184,26 @@ public static class PaymentController
                                     string.Empty,
                                     orderPayInfo.Timeout);
                             }
-                        case PaymentType.WeChatPay:
-                        case PaymentType.WeChatPayNative:
+                        case WebPaymentType.WeChatPay:
+                        case WebPaymentType.WeChatPayNative:
                             {
                                 var weChatPayTradeType = method.PaymentType switch
                                 {
-                                    PaymentType.WeChatPay => WeChatPayTradeType.JSAPI_OFFICIAL,
-                                    PaymentType.WeChatPayNative => WeChatPayTradeType.NATIVE,
+                                    WebPaymentType.WeChatPay => WeChatPayTradeType.JSAPI_OFFICIAL,
+                                    WebPaymentType.WeChatPayNative => WeChatPayTradeType.NATIVE,
                                     _ => throw new ArgumentOutOfRangeException(nameof(method.PaymentType), method.PaymentType, null),
                                 };
+                                if (string.IsNullOrWhiteSpace(wxOpenId) && !string.IsNullOrWhiteSpace(wxCode))
+                                {
+                                    // 微信通过 code 获取 openId
+                                    var settings = context.RequestServices.GetRequiredService<IOptions<TAppSettings>>().Value;
+                                    var appIdWeChat = settings.WeChatApiOptions.AppId;
+                                    var appSecretWeChat = settings.WeChatApiOptions.AppSecret;
+                                    var response = await GetAuth2AccessTokenResponse(
+                                        wxCode, appIdWeChat, appSecretWeChat,
+                                        conn, cancellationToken);
+                                    wxOpenId = response.OpenId;
+                                }
                                 var weChatPayServices = context.RequestServices.GetRequiredService<IWeChatPayServices>();
                                 var remoteIpAddress = context.Connection.RemoteIpAddress;
                                 return await weChatPayServices.PubPay(
@@ -202,6 +259,51 @@ public static class PaymentController
         return Results.NotFound();
     }
 
+    /// <summary>
+    /// 微信通过 Code 获取 OpenId
+    /// </summary>
+    static async Task<SnsOAuth2AccessTokenResponse> GetAuth2AccessTokenResponse(
+        string code,
+        string appIdWeChat,
+        string appSecretWeChat,
+        IConnectionMultiplexer conn,
+        CancellationToken cancellationToken = default)
+    {
+        var redis = conn.GetDatabase(CacheKeys.RedisAccessTokenDb);
+
+        var weChatAccessTokenRedisValue = await redis.HashGetAsync("AccessToken", $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}");
+        if (!weChatAccessTokenRedisValue.HasValue)
+        {
+            throw new InvalidOperationException("微信访问令牌不存在，无法获取 OpenId");
+        }
+        ReadOnlySpan<char> weChatAccessTokenCharsValue = weChatAccessTokenRedisValue;
+        if (weChatAccessTokenCharsValue.Length == 0)
+        {
+            throw new InvalidOperationException("微信访问令牌不正确，无法获取 OpenId");
+        }
+        var weChatAccessToken = JsonSerializer.Deserialize(weChatAccessTokenCharsValue, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
+        ArgumentNullException.ThrowIfNull(weChatAccessToken?.AccessToken);
+        var request = new SnsOAuth2AccessTokenRequest()
+        {
+            Code = code,
+            AccessToken = weChatAccessToken.AccessToken,
+            GrantType = "authorization_code",
+        };
+        var client = new WechatApiClient(new()
+        {
+            AppId = appIdWeChat,
+            AppSecret = appSecretWeChat,
+        });
+
+        client.Configure(settings =>
+        {
+            settings.JsonSerializer = new global::SKIT.FlurlHttpClient.SystemTextJsonSerializer();
+        });
+
+        var response = await client.ExecuteSnsOAuth2AccessTokenAsync(request, cancellationToken);
+        return response;
+    }
+
     static async Task<IResult> RedirectToV2(
         HttpContext context,
         string appIdWeChat,
@@ -216,30 +318,9 @@ public static class PaymentController
         }
 
         var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
-        var redis = conn.GetDatabase(CacheKeys.RedisAccessTokenDb);
-
-        ReadOnlySpan<char> cache = await redis.HashGetAsync("AccessToken", $"{nameof(PaymentAccessTokenEnum.WeiXinAccessToken)}:{appIdWeChat}");
-        var accessToken = JsonSerializer.Deserialize(cache, PaymentMinimalApisJsonSerializerContext.Default.WeChatAccessToken);
-
-        var request = new SnsOAuth2AccessTokenRequest()
-        {
-            Code = code,
-            AccessToken = accessToken!.AccessToken,
-            GrantType = "authorization_code",
-        };
-
-        var client = new WechatApiClient(new()
-        {
-            AppId = appIdWeChat,
-            AppSecret = appSecretWeChat,
-        });
-
-        client.Configure(settings =>
-        {
-            settings.JsonSerializer = new global::SKIT.FlurlHttpClient.SystemTextJsonSerializer();
-        });
-
-        var response = await client.ExecuteSnsOAuth2AccessTokenAsync(request, cancellationToken);
+        var response = await GetAuth2AccessTokenResponse(
+            code, appIdWeChat, appSecretWeChat,
+            conn, cancellationToken);
         var redirectUrl = global::Flurl.Url.Parse(url).SetQueryParam("openId", response.OpenId);
         return Results.Redirect(redirectUrl);
     }

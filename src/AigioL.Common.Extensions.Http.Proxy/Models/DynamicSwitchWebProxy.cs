@@ -1,0 +1,43 @@
+using System.Net;
+
+namespace AigioL.Common.Extensions.Http.Proxy.Models;
+
+/// <summary>
+/// 可动态切换设置内部 <see cref="IWebProxy"/> 实例的 <see cref="WebProxy"/> 实现
+/// </summary>
+public sealed partial class DynamicSwitchWebProxy : IWebProxy
+{
+    /// <inheritdoc cref="DynamicSwitchWebProxy"/>
+    public static readonly DynamicSwitchWebProxy Instance = new();
+
+    static readonly AsyncLocal<IWebProxy> asyncLocal = new();
+
+    public ICredentials? Credentials
+    {
+        get
+        {
+            ArgumentNullException.ThrowIfNull(asyncLocal.Value);
+            return asyncLocal.Value.Credentials;
+        }
+        set
+        {
+        }
+    }
+
+    public Uri? GetProxy(Uri destination)
+    {
+        ArgumentNullException.ThrowIfNull(asyncLocal.Value);
+        return asyncLocal.Value.GetProxy(destination);
+    }
+
+    public bool IsBypassed(Uri host)
+    {
+        ArgumentNullException.ThrowIfNull(asyncLocal.Value);
+        return asyncLocal.Value.IsBypassed(host);
+    }
+
+    public void SetWebProxy(IWebProxy? webProxy = null)
+    {
+        asyncLocal.Value = webProxy ?? HttpNoProxy.Instance;
+    }
+}

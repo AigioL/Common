@@ -10,12 +10,18 @@ namespace System.Net;
 public sealed class HttpNoProxy : IWebProxy
 {
     /// <inheritdoc cref="HttpNoProxy"/>
-    public static readonly HttpNoProxy Instance = new();
+    public static readonly IWebProxy Instance = GetInstance();
 
     HttpNoProxy() { }
 
     /// <inheritdoc/>
-    public ICredentials? Credentials { get; set; }
+    public ICredentials? Credentials
+    {
+        get => null;
+        set
+        {
+        }
+    }
 
     /// <inheritdoc/>
     public Uri? GetProxy(Uri destination) => null;
@@ -31,4 +37,24 @@ public sealed class HttpNoProxy : IWebProxy
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNoProxy([NotNullWhen(false)] IWebProxy? proxy)
         => proxy == null || proxy.GetType().Name == nameof(HttpNoProxy);
+
+    static IWebProxy GetInstance()
+    {
+        try
+        {
+            var t = Type.GetType("System.Net.Http.HttpNoProxy");
+            if (t != null)
+            {
+                if (Activator.CreateInstance(t) is IWebProxy w)
+                {
+                    return w;
+                }
+            }
+        }
+        catch
+        {
+        }
+
+        return new HttpNoProxy();
+    }
 }

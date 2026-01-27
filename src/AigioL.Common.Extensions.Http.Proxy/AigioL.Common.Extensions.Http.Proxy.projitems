@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>0a3c3013-54de-4413-b861-4d0faf6af587</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.Extensions.Http.Proxy</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CredentialCacheModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\CredentialsModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicSwitchWebProxy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicWebProxy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ExHttpProxyJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\HttpClientSession.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\NetworkCredentialModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WebProxyModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IWebProxyPoolService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\WebProxyPoolServiceBase.cs" />
+  </ItemGroup>
+</Project>

@@ -2,6 +2,9 @@ using AigioL.Common.AspNetCore.AppCenter.Basic.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Services;
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Repositories.Net;
+using AigioL.Common.AspNetCore.AppCenter.Repositories.Net.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -42,6 +45,16 @@ public static partial class ServiceCollectionServiceExtensions
         // AppVer
         services.TryAddScoped<IAppVerBuildRepository, AppVerBuildRepository<TDbContext>>();
         services.TryAddScoped<IAppVerRepository, AppVerRepository<TDbContext>>();
+        return services;
+    }
+
+    public static IServiceCollection AddWebProxyRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext, IKeyValuePairsDbContext
+    {
+        services.TryAddScoped<IKeyValuePairRepository, KeyValuePairRepository<TDbContext>>();
+        services.TryAddScoped<IWebProxyRepository, WebProxyRepository<TDbContext>>();
         return services;
     }
 

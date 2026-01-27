@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>2df64651-264a-4621-aa16-b6bac63b63db</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.Extensions.Http</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\MediaTypeHeaderValueToStringJsonConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\RecyclableMemoryStreamToStringJsonConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpClientExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestMessageExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpResponseMessageExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ExHttpJsonSerializerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\HttpRequestMessageRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\HttpResponseMessageRecord.cs" />
+  </ItemGroup>
+</Project>

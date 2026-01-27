@@ -49,7 +49,7 @@ public sealed class PermissionAuthorizationHandler<
                     where role.UserId == userId &&
                         buttonRole.TenantId == user.TenantId &&
                         buttonRole.ControllerName == policyName &&
-                        !tenant.SoftDeleted
+                        tenant.DeleteTime == null
                     select role;
 #if DEBUG
         var str = query.ToQueryString();
