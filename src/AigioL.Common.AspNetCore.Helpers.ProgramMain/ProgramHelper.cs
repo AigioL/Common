@@ -1,3 +1,5 @@
+using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.EntityFrameworkCore.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,12 +8,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NLog;
 using NLog.Common;
 using NLog.Config;
+using NLog.Layouts;
 using NLog.Targets;
 using NLog.Web;
 using System.Reflection;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -23,6 +28,7 @@ namespace AigioL.Common.AspNetCore.Helpers.ProgramMain;
 
 public static partial class ProgramHelper
 {
+    static bool isContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
     static readonly WebApplication? app;
 
     public static WebApplication App
@@ -90,6 +96,7 @@ public static partial class ProgramHelper
                                 .RegisterNLogWeb()
                                 .LoadConfiguration(InitNLogConfig(archiveAboveSize, maxArchiveFiles, maxArchiveDays))
                                 .GetCurrentClassLogger();
+
         bool isDevelopment =
 #if DEBUG
             true;
@@ -107,6 +114,12 @@ public static partial class ProgramHelper
             logger.Debug("init main");
             builder ??= WebApplication.CreateSlimBuilder(args);
             isDevelopment = builder.Environment.IsDevelopment();
+
+            if (isContainer)
+            {
+                builder.Configuration.AddJsonFile("config/appsettings.k8s.json", optional: true, reloadOnChange: true);
+            }
+
             builder.WebHost.ConfigureKestrel(static o =>
             {
                 o.AddServerHeader = false;
@@ -121,6 +134,7 @@ public static partial class ProgramHelper
             Log.ConfigureLoggerFactory(app.Services.GetRequiredService<ILoggerFactory>());
             //InitFileSystem(app.Environment);
             //Ioc.ConfigureServices(app.Services);
+
             if (configure != default)
             {
                 configure(app);
@@ -143,135 +157,103 @@ public static partial class ProgramHelper
     }
 
     /// <summary>
-    /// 初始化 NLog 配置
+    /// 初始化 NLog 配置：支持本地文件 + K8S JSON 流
     /// </summary>
-    /// <returns></returns>
     static LoggingConfiguration InitNLogConfig(long archiveAboveSize, int maxArchiveFiles, int maxArchiveDays)
     {
-        // https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-6
+        // 基础设置
+        LogManager.Setup().SetupExtensions(s => s.RegisterAssembly("NLog.Web.AspNetCore"));
+        var objConfig = new LoggingConfiguration();
 
-        var logsPath = Path.Combine(AppContext.BaseDirectory, "logs");
-        CreateDirectory(logsPath);
-
-        InternalLogger.LogFile = $"logs{Path.DirectorySeparatorChar}internal-nlog.txt";
+        // 内部日志设置
+        InternalLogger.LogFile = Path.Combine(AppContext.BaseDirectory, "logs", "internal-nlog.txt");
         InternalLogger.LogLevel =
 #if DEBUG
-            NLogLevel.Info;
+        NLogLevel.Info;
 #else
-            NLogLevel.Error;
+        NLogLevel.Error;
 #endif
-        // enable asp.net core layout renderers
-        LogManager.Setup().SetupExtensions(s => s.RegisterAssembly("NLog.Web.AspNetCore"));
 
-        var objConfig = new LoggingConfiguration();
-        // File Target for all log messages with basic details
-        var allfile = new FileTarget("allfile")
+        if (isContainer)
         {
-            FileName = $"logs{Path.DirectorySeparatorChar}nlog-all-${{shortdate}}.log",
-            Layout = "${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}",
-            ArchiveAboveSize = archiveAboveSize,
-            MaxArchiveFiles = maxArchiveFiles,
-            MaxArchiveDays = maxArchiveDays,
-        };
-        objConfig.AddTarget(allfile);
-        // File Target for own log messages with extra web details using some ASP.NET core renderers
-        var ownFile_web = new FileTarget("ownFile-web")
-        {
-            FileName = $"logs{Path.DirectorySeparatorChar}nlog-own-${{shortdate}}.log",
-            Layout = "${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}|url: ${aspnet-request-url}|action: ${aspnet-mvc-action}",
-            ArchiveAboveSize = archiveAboveSize,
-            MaxArchiveFiles = maxArchiveFiles,
-            MaxArchiveDays = maxArchiveDays,
-        };
-        objConfig.AddTarget(ownFile_web);
-        // Console Target for hosting lifetime messages to improve Docker / Visual Studio startup detection
-        var lifetimeConsole = new ConsoleTarget("lifetimeConsole")
-        {
-            Layout = "${level:truncate=4:tolower=true}\\: ${logger}[0]${newline}      ${message}${exception:format=tostring}",
-        };
-        objConfig.AddTarget(lifetimeConsole);
+            // 【K8S 模式】使用 JSON 控制台输出 
+            var k8sConsole = new ConsoleTarget("k8sConsole")
+            {
+                // 使用 JsonLayout，PLG 采集后可以直接按字段查询
+                Layout = new JsonLayout
+                {
+                    Attributes =
+                    {
+                        new JsonAttribute("time", "${longdate}"),
+                        new JsonAttribute("level", "${level:upperCase=true}"),
+                        new JsonAttribute("logger", "${logger}"),
+                        new JsonAttribute("message", "${message}"),
+                        new JsonAttribute("exception", "${exception:format=tostring}"),
+                        // 微服务链路追踪 ID
+                        new JsonAttribute("traceId", "${aspnet-traceidentifier}"),
+                        new JsonAttribute("url", "${aspnet-request-url}"),
+                        new JsonAttribute("action", "${aspnet-mvc-action}")
+                    }
+                }
+            };
+            objConfig.AddTarget(k8sConsole);
 
-        var ruleMinLevel =
+            // K8S 规则：仅输出核心业务日志到控制台
+            var minLevel =
 #if DEBUG
-            NLogLevel.Trace;
+                NLogLevel.Trace;
 #else
-            NLogLevel.Error;
+            NLogLevel.Info; // 生产环境建议 Info
 #endif
-
-        // All logs, including from Microsoft
-        objConfig.AddRule(ruleMinLevel, NLogLevel.Fatal, allfile, "*");
-        objConfig.AddRule(ruleMinLevel, NLogLevel.Fatal, ownFile_web, "*");
-
-        foreach (var target in objConfig.AllTargets)
+            objConfig.AddRule(minLevel, NLogLevel.Fatal, k8sConsole);
+        }
+        else
         {
-            // Skip non-critical Microsoft logs and so log only own logs (BlackHole)
-            objConfig.AddRule(NLogLevel.Error, NLogLevel.Fatal, target, "Microsoft.*", true);
-            objConfig.AddRule(NLogLevel.Error, NLogLevel.Fatal, target, "System.Net.Http.*", true);
+            // 【本地模式】文件日志逻辑
+            var logsPath = Path.Combine(AppContext.BaseDirectory, "logs");
+            if (!Directory.Exists(logsPath)) Directory.CreateDirectory(logsPath);
+
+            // 1. allfile
+            var allfile = new FileTarget("allfile")
+            {
+                FileName = Path.Combine(logsPath, "nlog-all-${shortdate}.log"),
+                Layout = "${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}",
+                ArchiveAboveSize = archiveAboveSize,
+                MaxArchiveFiles = maxArchiveFiles,
+                MaxArchiveDays = maxArchiveDays,
+            };
+
+            // 2. ownFile-web
+            var ownFile_web = new FileTarget("ownFile-web")
+            {
+                FileName = Path.Combine(logsPath, "nlog-own-${shortdate}.log"),
+                Layout = "${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}|url: ${aspnet-request-url}|action: ${aspnet-mvc-action}",
+                ArchiveAboveSize = archiveAboveSize,
+                MaxArchiveFiles = maxArchiveFiles,
+                MaxArchiveDays = maxArchiveDays,
+            };
+
+            // 3. 方便 VS 查看的彩色控制台
+            var lifetimeConsole = new ConsoleTarget("lifetimeConsole")
+            {
+                Layout = "${level:truncate=4:tolower=true}\\: ${logger}[0]${newline}      ${message}${exception:format=tostring}",
+            };
+
+            objConfig.AddTarget(allfile);
+            objConfig.AddTarget(ownFile_web);
+            objConfig.AddTarget(lifetimeConsole);
+
+            // 本地规则
+            objConfig.AddRule(NLogLevel.Trace, NLogLevel.Fatal, allfile);
+            objConfig.AddRule(NLogLevel.Trace, NLogLevel.Fatal, ownFile_web);
+            objConfig.AddRule(NLogLevel.Info, NLogLevel.Fatal, lifetimeConsole);
         }
 
-        foreach (var target in new Target[] { lifetimeConsole, ownFile_web })
-            // Output hosting lifetime messages to console target for faster startup detection
-            objConfig.AddRule(NLogLevel.Error, NLogLevel.Fatal, target, "Microsoft.Hosting.Lifetime", true);
+        // 通用黑洞规则：屏蔽冗余的微软系统日志
+        objConfig.AddRule(NLogLevel.Trace, NLogLevel.Info, new NullTarget(), "Microsoft.*", true);
+        objConfig.AddRule(NLogLevel.Trace, NLogLevel.Info, new NullTarget(), "System.Net.Http.*", true);
 
         return objConfig;
-
-        //        var xmlConfigStr =
-        //          "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-        //          "<nlog xmlns=\"http://www.nlog-project.org/schemas/NLog.xsd\"" +
-        //          "      xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
-        //          "      autoReload=\"true\"" +
-        //          "      internalLogLevel=\"" +
-        //#if DEBUG
-        //          "Info"
-        //#else
-        //          "Error"
-        //#endif
-        //          + "\"" +
-        //          "      internalLogFile=\"logs" + Path.DirectorySeparatorChar + "internal-nlog.txt\">" +
-        //          // enable asp.net core layout renderers
-        //          "  <extensions>" +
-        //          "    <add assembly=\"NLog.Web.AspNetCore\"/>" +
-        //          "  </extensions>" +
-        //          // the targets to write to
-        //          "  <targets>" +
-        //          // write logs to file
-        //          "    <target xsi:type=\"File\" name=\"allfile\" fileName=\"logs" + Path.DirectorySeparatorChar + "nlog-all-${shortdate}.log\"" +
-        //          "            layout=\"${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}\"/>" +
-        //          // another file log, only own logs. Uses some ASP.NET core renderers
-        //          "    <target xsi:type=\"File\" name=\"ownFile-web\" fileName=\"logs" + Path.DirectorySeparatorChar + "nlog-own-${shortdate}.log\"" +
-        //          "            layout=\"${longdate}|${event-properties:item=EventId_Id}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}|url: ${aspnet-request-url}|action: ${aspnet-mvc-action}\"/>" +
-        //          // Console Target for hosting lifetime messages to improve Docker / Visual Studio startup detection
-        //          "    <target xsi:type=\"Console\" name=\"lifetimeConsole\" layout=\"${level:truncate=4:tolower=true}\\: ${logger}[0]${newline}      ${message}${exception:format=tostring}\" />" +
-        //          "  </targets>" +
-        //          // rules to map from logger name to target
-        //          "  <rules>" +
-        //          // All logs, including from Microsoft
-        //          "    <logger name=\"*\" minlevel=\"" +
-        //#if DEBUG
-        //          "Trace"
-        //#else
-        //          "Error"
-        //#endif
-        //          + "\" writeTo=\"allfile\"/>" +
-        //          // Output hosting lifetime messages to console target for faster startup detection
-        //          "    <logger name=\"Microsoft.Hosting.Lifetime\" minlevel=\"Info\" writeTo=\"lifetimeConsole, ownFile-web\" final=\"true\" />" +
-        //          // Skip non-critical Microsoft logs and so log only own logs
-        //          "    <logger name=\"Microsoft.*\" maxLevel=\"Info\" final=\"true\"/>" +
-        //          "    <logger name=\"System.Net.Http.*\" maxlevel=\"Info\" final=\"true\" />" +
-        //          // BlackHole without writeTo
-        //          "    <logger name=\"*\" minlevel=\"" +
-        //#if DEBUG
-        //          "Trace"
-        //#else
-        //          "Error"
-        //#endif
-        //          + "\" writeTo=\"ownFile-web\"/>" +
-        //          "  </rules>" +
-        //          "</nlog>";
-
-        //        var xmlConfig = XmlLoggingConfiguration.CreateFromXmlString(xmlConfigStr);
-
-        //        return xmlConfig;
     }
 
     #region https://github.com/NLog/NLog/wiki/File-target
