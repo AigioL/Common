@@ -3,12 +3,9 @@ using AigioL.Common.Extensions.Http.Proxy.Services.Abstractions;
 using AigioL.Common.Models;
 using MemoryPack;
 using StackExchange.Redis;
-using System;
 using System.Diagnostics;
 using System.Net;
-using System.Threading;
 using static AigioL.Common.Extensions.Http.Proxy.Services.Abstractions.IWebProxyPoolService;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AigioL.Common.Extensions.Http.Proxy.Services;
 
