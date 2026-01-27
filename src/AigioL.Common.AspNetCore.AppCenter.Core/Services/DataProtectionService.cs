@@ -116,7 +116,7 @@ partial class DataProtectionService
             }
             else
             {
-                var e = rsa.Encrypt(plainBytes, Padding);
+                var e = rsa.Encrypt(span, Padding);
                 Write(stream, e.Length);
                 stream.Write(e);
                 break;
