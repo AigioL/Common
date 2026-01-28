@@ -50,6 +50,11 @@ public partial interface IWebProxyPoolService
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 触发 Lua 脚本执行原子清理和计数递减
+    /// </summary>
+    Task CleanupExpiredProxiesAsync();
+
+    /// <summary>
     /// 标记代理使用失败次数加 1，原子操作，返回当前失败次数
     /// </summary>
     Task<int> MarkFailCountAsync(
@@ -90,4 +95,6 @@ partial interface IWebProxyPoolService
     /// 代理 Id 使用失败的次数有序集合
     /// </summary>
     protected const string KeySortedSetProxyFailCount = "WebProxyPool_ProxyFailCount_SortedSet";
+
+    protected const string KeyUserIdToProxyIdTimeout = "WebProxyPool_UserIdToProxyIdTimeout";
 }

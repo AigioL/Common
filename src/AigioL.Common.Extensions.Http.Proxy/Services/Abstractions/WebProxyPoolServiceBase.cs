@@ -130,6 +130,11 @@ public abstract partial class WebProxyPoolServiceBase(
         await db.KeyDeleteAsync(KeySortedSetProxyFailCount);
     }
 
+    /// <summary>
+    /// 单个代理的最大使用次数阈值
+    /// </summary>
+    protected virtual int MaxUsage => 50;
+
     public async Task<string?> GetProxyIdAsync(
         string userId,
         TimeSpan expiry,
@@ -137,7 +142,7 @@ public abstract partial class WebProxyPoolServiceBase(
     {
         var db = connection.GetDatabase();
 
-        // 有占用的直接返回
+        // 1. 检查是否存在现有租约 (复用已分配的代理)
         var proxyIdByOccupy = await db.HashGetAsync(KeyUserIdToProxyId, userId);
         if (proxyIdByOccupy.HasValue)
         {
@@ -148,29 +153,113 @@ public abstract partial class WebProxyPoolServiceBase(
             }
         }
 
-        var array = await db.SortedSetRangeByScoreAsync(KeySortedSetProxyOccupy, take: 1);
-        if (array == null || array.Length == 0 || !array[0].HasValue)
+        // 2. [核心优化] 使用 Lua 脚本原子获取并锁定代理
+        // 解决了两个问题：
+        // a. 并发下多个请求同时读到同一个 proxyId 导致的分配不均。
+        // b. 严格的阈值检查 (原子性保证不会突破 maxUsage)。
+        var script = @"
+            -- KEYS[1]: 代理占用计数 ZSet (KeySortedSetProxyOccupy)
+            -- ARGV[1]: 最大占用阈值 (maxUsage)
+
+            -- 1. 获取当前占用最少的一个代理
+            -- ZRANGE 返回 {member, score}
+            local candidates = redis.call('ZRANGE', KEYS[1], 0, 0, 'WITHSCORES')
+            if #candidates == 0 then
+                return nil
+            end
+
+            local id = candidates[1]
+            local score = tonumber(candidates[2])
+
+            -- 2. 阈值检查：如果最低分已经达到或超过上限，说明所有代理都已满
+            if score >= tonumber(ARGV[1]) then
+                return nil
+            end
+
+            -- 3. 原子增加占用计数
+            redis.call('ZINCRBY', KEYS[1], 1, id)
+            return id
+        ";
+
+        var result = await db.ScriptEvaluateAsync(LuaScript.Prepare(script), new
         {
-            return null;
+            key1 = (RedisKey)KeySortedSetProxyOccupy,
+            arg1 = MaxUsage,
+        });
+
+        if (result.IsNull)
+        {
+            return null; // 所有代理都忙，或池子为空
         }
 
-        string? proxyId = array[0];
-        if (string.IsNullOrEmpty(proxyId))
+        string proxyId = result.ToString();
+
+        // 方案一：
         {
-            return null;
+            // 设置用户 Id 到代理 Id 的映射
+            //await db.HashFieldSetAndSetExpiryAsync(
+            //    KeyUserIdToProxyId,
+            //    userId,
+            //    proxyId,
+            //    expiry);
         }
 
-        // 增加占用计数
-        await db.SortedSetIncrementAsync(KeySortedSetProxyOccupy, proxyId, 1);
+        // 方案二：
+        // 不要依赖 Ex (Expire) 机制，而是将“过期时间”作为 Score 存入一个 Sorted Set。 C# 端不再 hold 连接去 Subscribe，而是简单地启动一个定时器（如每秒），调用一次 Lua 脚本进行“清理”。
+        // 这种方式是完全原子的，逻辑完全在 Lua 中，且可靠性远高于 Keyspace Notifications。
+        {
+            // 设置用户 Id 到代理 Id 的映射
+            await db.HashSetAsync(KeyUserIdToProxyId, userId, proxyId);
 
-        // 设置用户 Id 到代理 Id 的映射
-        await db.HashFieldSetAndSetExpiryAsync(
-            KeyUserIdToProxyId,
-            userId,
-            proxyId,
-            expiry);
+            // 不使用 TTL，而是添加到超时 ZSet 中
+            // Score = 当前时间 + 过期时长 (使用 Unix 时间戳)
+            double expireScore = DateTimeOffset.UtcNow.Add(expiry).ToUnixTimeSeconds();
+            await db.SortedSetAddAsync(KeyUserIdToProxyIdTimeout, userId, expireScore);
+        }
 
         return proxyId;
+    }
+
+    public async Task CleanupExpiredProxiesAsync()
+    {
+        // 使用 ZSet 存储过期时间，通过 Lua 脚本批量处理。这符合原子性要求，解决了“监听事件丢失”的问题，并且将逻辑核心封装在 Lua 中，C# 仅充当一个简单的定时触发器（Ticker）
+        var db = connection.GetDatabase();
+
+        // 创建一个 Lua 脚本，用于查找已过期的数据、执行清理并扣减计数。
+        // -- KEYS[1]: 记录过期时间的 ZSet (例如 "proxy:timeouts")
+        // -- KEYS[2]: 用户与代理映射的 Hash (例如 "user:proxy:map")
+        // -- KEYS[3]: 代理占用计数的 ZSet (例如 "proxy:occupy")
+        // -- ARGV[1]: 当前 Unix 时间戳 (秒或毫秒)
+        // -- 1. 获取所有分数小于等于当前时间的过期项 (UserId)
+        // -- 2. 获取该用户当前占用的 ProxyId
+        // -- 3. 从 Hash 中移除用户
+        // -- 4. 原子递减该 Proxy 的占用计数
+        // -- 5. 从超时队列中移除该用户
+        var script = @"
+            local expired = redis.call('ZRANGEBYSCORE', KEYS[1], '-inf', ARGV[1])
+            if #expired > 0 then
+                for _, u in ipairs(expired) do
+                    local pid = redis.call('HGET', KEYS[2], u)
+                    if pid then
+                        redis.call('HDEL', KEYS[2], u)
+                        redis.call('ZINCRBY', KEYS[3], -1, pid)
+                    end
+                    redis.call('ZREM', KEYS[1], u)
+                end
+            end
+            return #expired";
+
+        // 获取当前时间戳
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        // 执行脚本
+        await db.ScriptEvaluateAsync(LuaScript.Prepare(script), new
+        {
+            key1 = (RedisKey)KeyUserIdToProxyIdTimeout,       // 超时 ZSet
+            key2 = (RedisKey)KeyUserIdToProxyId,              // 映射 Hash
+            key3 = (RedisKey)KeySortedSetProxyOccupy,         // 计数 ZSet
+            arg1 = now                                        // 当前时间阈值
+        });
     }
 
     public async Task<int> MarkFailCountAsync(

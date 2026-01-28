@@ -6,6 +6,10 @@ namespace AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 
 public abstract partial class AppSettingsBase : JsonWebTokenOptions
 {
+    /// <summary>
+    /// 控制 Job 是否不启用的开关，值为 Job 的名称
+    /// </summary>
+    public string[]? CloseFunctions { get; set; }
 }
 
 partial class AppSettingsBase : INotUseForwardedHeaders, IViewsUrl
