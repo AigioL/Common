@@ -104,7 +104,9 @@
   <Folder Name="/2.Libraries/OpenAPI.Sdk/TencentCloud/">
     <Project Path="src/AigioL.Common.TencentCloud.Sdk.IM/AigioL.Common.TencentCloud.Sdk.IM.csproj" Id="8376fc65-e1c4-4cd3-8c9c-05cda1cc7c9b" />
   </Folder>
-  <Folder Name="/3.EntryPoint/" />
+  <Folder Name="/3.EntryPoint/">
+    <Project Path="src/AigioL.Common.WinFormsApp1/AigioL.Common.WinFormsApp1.csproj" />
+  </Folder>
   <Folder Name="/3.EntryPoint/Aspire/" />
   <Folder Name="/4.Tools/">
     <Project Path="src/AigioL.Common.BuildTools/AigioL.Common.BuildTools.shproj" Id="9e2ef71b-0fb8-4b45-af29-0c294675a8a8" />

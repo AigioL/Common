@@ -8,6 +8,25 @@
 		<DefineConstants>$(DefineConstants);USE_WINDOWSFORMS</DefineConstants>
 	</PropertyGroup>
 
-	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
+	<ItemGroup>
+		<PackageReference Include="NLog" />
+		<PackageReference Include="NLog.Extensions.Logging" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+		<PackageReference Include="Microsoft.Extensions.Logging.EventLog" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" />
+		<PackageReference Include="Microsoft.Windows.CsWin32">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="MemoryPack" />
+	</ItemGroup>
+
+	<Import Project="..\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.Bcl.LogInit\AigioL.Common.Bcl.LogInit.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
 
 </Project>
