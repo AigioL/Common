@@ -84,6 +84,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\MSMinimalApisJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Net\WebProxyCredentialsType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\RabbitMQ\CallbackMessageBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\RabbitMQ\RetryMessageBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SmsCodeType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeviceIsTrustWithUserId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletPaymentDirection.cs" />
@@ -110,6 +112,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\ILocalizationService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\WebProxyPoolService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SteamCommunityReverseProxyHttpClientHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\Abstractions\CallbackWorkerBackGroundService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\Abstractions\ManualWorkerBackgroundService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workers\Abstractions\WorkerBackgroundService.cs" />
   </ItemGroup>
 </Project>

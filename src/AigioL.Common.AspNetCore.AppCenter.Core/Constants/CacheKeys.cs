@@ -167,6 +167,45 @@ public static partial class CacheKeys
 
     #endregion
 
+    #region Steam
+
+    /// <summary>
+    /// 订单队列名称
+    /// </summary>
+    public const string SteamQueueName = "StamQueueName";
+
+    /// <summary>
+    /// 刷新用户 Steam AccessToken
+    /// </summary>
+    public const string RefreshUserSteamAccessToken = "RefreshUserSteamAccessToken";
+
+    /// <summary>
+    /// 刷新用户 Steam 库存
+    /// </summary>
+    public const string RefreshUserSteamInventory = "RefreshUserSteamInventory";
+
+    /// <summary>
+    /// 全部 AppId 的物品的基础信息集合 用来求差集
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <returns></returns>
+    public static string GetSteamAssetClassInfoSetKey_(int appId) => $"GetSteamAssetClassInfoSetKey_{appId}";
+
+    /// <summary>
+    /// 获取物品锁定 key
+    /// </summary>
+    /// <param name="appId"></param>
+    /// <returns></returns>
+    public static string GetSteamAssetClassInfoLockKey_(int appId) => $"SteamAssetClassInfoLockKey_{appId}";
+
+    /// <summary>
+    /// 去获取 SteamAssetClassInfo 的队列 Key
+    /// </summary>
+    /// <returns></returns>
+    public const string SteamAssetClassInfoRefreshQueueKey = "SteamAssetClassInfoRefreshQueueKey";
+
+    #endregion
+
     /// <summary>
     /// 支付服务是否停止
     /// </summary>
