@@ -24,20 +24,17 @@ public abstract partial class CallbackWorkerBackGroundService(
 {
     protected readonly ConcurrentDictionary<Guid, TaskCompletionSource> _callbackMapper = new();
 
-    IChannel? callbackChannel;
+    protected readonly Guid RunTaskId = Guid.NewGuid();
 
-    IChannel CallbackChannel
-    {
-        get
-        {
-            ArgumentNullException.ThrowIfNull(callbackChannel);
-            return callbackChannel;
-        }
-    }
+    IChannel? callbackChannel;
 
     protected abstract string CallbackTaskKey { get; }
 
     protected virtual string CallbackExchangeName { get; } = "temporary.amq.direct";
+
+    public static string CallbackRoutingKey(string CallbackTaskKey, Guid RunTaskId) => $"Callback.{CallbackTaskKey}.{RunTaskId}";
+
+    public static string CallbackQueueName(string CallbackTaskKey, Guid RunTaskId) => $"Callback.Queue.{CallbackTaskKey}.{RunTaskId}";
 
     /// <summary>
     /// 默认回调等待 1 分钟
@@ -65,9 +62,8 @@ public abstract partial class CallbackWorkerBackGroundService(
         #region 绑定需要的回调队列
         try
         {
-            var RunTaskId = Guid.NewGuid();
-            var callbackRoutingKey = $"Callback.{CallbackTaskKey}.{RunTaskId}";
-            var callbackQueueName = $"Callback.Queue.{CallbackTaskKey}.{RunTaskId}";
+            var callbackRoutingKey = CallbackRoutingKey(CallbackTaskKey, RunTaskId);
+            var callbackQueueName = CallbackQueueName(CallbackTaskKey, RunTaskId);
             callbackChannel = await rabbitmqConn.CreateChannelAsync(cancellationToken: cancellationToken);
             await callbackChannel.ExchangeDeclareAsync(CallbackExchangeName, ExchangeType.Direct, durable: true);
             await callbackChannel.QueueDeclareAsync(callbackQueueName, durable: false, exclusive: true, autoDelete: true, arguments: null);

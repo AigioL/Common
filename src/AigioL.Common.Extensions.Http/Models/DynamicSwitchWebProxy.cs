@@ -17,7 +17,8 @@ public sealed partial class DynamicSwitchWebProxy : IWebProxy
     {
         get
         {
-            ArgumentNullException.ThrowIfNull(asyncLocal.Value);
+            if (asyncLocal.Value == null)
+                return HttpNoProxy.Instance.Credentials;
             return asyncLocal.Value.Credentials;
         }
         set
@@ -27,13 +28,15 @@ public sealed partial class DynamicSwitchWebProxy : IWebProxy
 
     public Uri? GetProxy(Uri destination)
     {
-        ArgumentNullException.ThrowIfNull(asyncLocal.Value);
+        if (asyncLocal.Value == null)
+            return HttpNoProxy.Instance.GetProxy(destination);
         return asyncLocal.Value.GetProxy(destination);
     }
 
     public bool IsBypassed(Uri host)
     {
-        ArgumentNullException.ThrowIfNull(asyncLocal.Value);
+        if (asyncLocal.Value == null)
+            return HttpNoProxy.Instance.IsBypassed(host);
         return asyncLocal.Value.IsBypassed(host);
     }
 
