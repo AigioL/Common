@@ -92,6 +92,24 @@ public static partial class HttpResponseMessageExtensions
     }
 
     /// <summary>
+    /// 将响应内容流写入记录的内容流中
+    /// </summary>
+    public static async Task SetResponseContentStreamAsync(
+        this HttpResponseMessage response,
+        HttpResponseMessageRecord responseMessageRecord,
+        CancellationToken cancellationToken = default)
+    {
+        var stream = responseMessageRecord.Content;
+        if (stream != null)
+        {
+            stream.Position = 0;
+            using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            await contentStream.CopyToAsync(stream, cancellationToken).ConfigureAwait(false);
+            stream.Position = 0;
+        }
+    }
+
+    /// <summary>
     /// 从响应中读取 JSON，支持调试时查看内容
     /// </summary>
     public static async Task<T?> ReadFromJsonExAsync<T>(
