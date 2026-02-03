@@ -1,4 +1,3 @@
-using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
 using AigioL.Common.Models;
@@ -6,12 +5,8 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System;
-using System.Collections.Concurrent;
-using System.Diagnostics.Tracing;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
-using System.Threading;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Workers.Abstractions;
 
