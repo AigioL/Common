@@ -52,6 +52,7 @@ public static partial class VersionsController
                         var r2 = r.Content.ToTauri();
                         if (r2 != null)
                         {
+                            r2.Url = r2.Url.Replace("{channelPackageId}", ShortGuid.Empty.Value);
                             return Results.Json(r2,
                                 AppVersionTauriModelJsonSerializerContext.Default.AppVersionTauriModel);
                         }
