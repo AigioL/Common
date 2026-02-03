@@ -86,9 +86,10 @@ https://tauri.app/plugin/updater/#static-json-file
             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent);
 
-        routeGroup.MapGet("f3766645/{target}/{arch}", async (HttpContext context,
+        routeGroup.MapGet("f3766645/{target}/{arch}/{channelPackageId?}", async (HttpContext context,
             [FromRoute] string target,
-            [FromRoute] string arch) =>
+            [FromRoute] string arch,
+            [FromRoute] string? channelPackageId = null) =>
         {
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
@@ -102,6 +103,17 @@ https://tauri.app/plugin/updater/#static-json-file
                     {
                         if (urlNode != null && urlNode.GetValue<string>() is string urlStr)
                         {
+                            string channelPackageIdStr;
+                            if (ShortGuid.TryParse(channelPackageId, out ShortGuid channelPackageIdG))
+                            {
+                                channelPackageIdStr = channelPackageIdG.Value;
+                            }
+                            else
+                            {
+                                channelPackageIdStr = ShortGuid.Empty.Value;
+                            }
+
+                            urlStr = urlStr.Replace("{channelPackageId}", channelPackageIdStr);
                             return Results.Redirect(urlStr);
                         }
                     }

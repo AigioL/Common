@@ -252,4 +252,5 @@ public static partial class CacheKeys
     /// <para>https://tauri.app/plugin/updater/#static-json-file</para>
     /// </summary>
     public const string TauriUpdaterStaticJSONFile = "TauriUpdaterStaticJSONFile_{0}_{1}";
+
 }
