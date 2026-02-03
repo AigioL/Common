@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.Extensions.Http.Proxy.Models;
 using AigioL.Common.Extensions.Http.Proxy.Services.Abstractions;
 using AigioL.Common.Models;
@@ -18,6 +19,8 @@ public abstract partial class WebProxyPoolServiceBase(
     IWebProxyPoolService
 {
     protected string ConnectionTestUrl => "http://www.msftconnecttest.com/connecttest.txt";
+
+    protected TimeSpan expiryTimeSpan = TimeSpan.FromHours(6);
 
     public async Task<ApiRsp<TimeSpan?>> ConnectionTestAsync(
         IWebProxy webProxy,
@@ -76,6 +79,7 @@ public abstract partial class WebProxyPoolServiceBase(
 
     public async Task<WebProxyModel?> GetWebProxyByCacheAsync(
         string proxyId,
+        string? userId,
         CancellationToken cancellationToken = default)
     {
         var db = connection.GetDatabase();
@@ -85,6 +89,12 @@ public abstract partial class WebProxyPoolServiceBase(
             var m = MemoryPackSerializer.Deserialize<WebProxyModel>(proxy);
             if (m != null)
             {
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    //延长租约时间
+                    double expireScore = DateTimeOffset.UtcNow.Add(expiryTimeSpan).ToUnixTimeSeconds();
+                    await db.SortedSetUpdateAsync(KeyUserIdToProxyIdTimeout, userId, expireScore);
+                }
                 return m;
             }
         }
@@ -218,6 +228,18 @@ public abstract partial class WebProxyPoolServiceBase(
         }
 
         return proxyId;
+    }
+
+    public async Task<WebProxyModel?> GetWebProxyAsync(
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        var db = connection.GetDatabase();
+        var proxyId = await GetProxyIdAsync(userId, TimeSpan.FromHours(6), cancellationToken);
+        if (string.IsNullOrWhiteSpace(proxyId))
+            return null;
+        var webProxy = await GetWebProxyByCacheAsync(proxyId, userId, cancellationToken);
+        return webProxy;
     }
 
     public async Task CleanupExpiredProxiesAsync()

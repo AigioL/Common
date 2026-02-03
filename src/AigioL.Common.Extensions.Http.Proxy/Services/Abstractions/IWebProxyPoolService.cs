@@ -27,6 +27,7 @@ public partial interface IWebProxyPoolService
     /// </summary>
     Task<WebProxyModel?> GetWebProxyByCacheAsync(
         string proxyId,
+        string? userId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -71,6 +72,14 @@ public partial interface IWebProxyPoolService
     /// 获取代理使用失败的次数有序集合
     /// </summary>
     Task<Dictionary<string, int>> GetSortedSetProxyFailCountAsync(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取 用户分配的 Web 代理
+    /// </summary>
+    /// <returns></returns>
+    Task<WebProxyModel?> GetWebProxyAsync(
+        string userId,
         CancellationToken cancellationToken = default);
 }
 

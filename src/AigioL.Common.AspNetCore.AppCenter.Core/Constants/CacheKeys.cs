@@ -180,6 +180,11 @@ public static partial class CacheKeys
     public const string RefreshUserSteamAccessToken = "RefreshUserSteamAccessToken";
 
     /// <summary>
+    /// 刷新 Steam 物品基础信息
+    /// </summary>
+    public const string RefreshSteamAssetClassInfo = "RefreshSteamAssetClassInfo";
+
+    /// <summary>
     /// 刷新用户 Steam 库存
     /// </summary>
     public const string RefreshUserSteamInventory = "RefreshUserSteamInventory";
