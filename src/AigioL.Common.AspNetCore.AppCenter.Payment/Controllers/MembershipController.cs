@@ -6,6 +6,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
@@ -41,9 +42,26 @@ public static class MembershipController
                 return ApiRspCode.BadRequest;
             }
             Guid? channelPackageIdGN = null;
-            if (ShortGuid.TryParse(channelPackageId, out Guid channelPackageIdG) && channelPackageIdG != default)
+            if (channelPackageId != null)
             {
-                channelPackageIdGN = channelPackageIdG;
+                var channelPackageService = context.RequestServices.GetService<IChannelPackageService>();
+                if (!IChannelPackageService.CheckId(
+                    channelPackageService,
+                    channelPackageId,
+                    out channelPackageIdGN,
+                    out ApiRspCode code))
+                {
+                    return code;
+                }
+                if (channelPackageIdGN.HasValue)
+                {
+                    var exists = await channelPackageService.ExistsAsync(channelPackageIdGN.Value, context.RequestAborted);
+                    if (!exists)
+                    {
+                        // 渠道包 Id 不存在
+                        return ApiRspCode.NotFound;
+                    }
+                }
             }
             var userId = context.GetUserIdThrowIfNull();
             var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MembershipController));

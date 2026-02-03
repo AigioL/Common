@@ -101,6 +101,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Komaasharus\KomaasharuRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Net\Abstractions\IWebProxyRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Net\WebProxyRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IChannelPackageService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IDataProtectionService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\DataProtectionService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\UserManager.cs" />

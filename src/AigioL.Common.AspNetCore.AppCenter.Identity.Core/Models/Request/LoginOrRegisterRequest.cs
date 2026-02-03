@@ -36,4 +36,7 @@ public sealed partial record class LoginOrRegisterRequest : IDeviceId, IReadOnly
     /// <inheritdoc/>
     [global::MemoryPack.MemoryPackOrder(6)]
     public string? PhoneNumberRegionCode { get; set; }
+
+    [global::MemoryPack.MemoryPackOrder(7)]
+    public string? ChannelPackageId { get; set; }
 }

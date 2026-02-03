@@ -175,6 +175,32 @@ public static partial class ExternalLoginController
             return r;
         }
 
+        Guid? channelPackageIdGN = null;
+        var channelPackageId = GetSessionString(context, "channelPackageId");
+        if (channelPackageId != null)
+        {
+            var channelPackageService = context.RequestServices.GetService<IChannelPackageService>();
+            if (!IChannelPackageService.CheckId(
+                channelPackageService,
+                channelPackageId,
+                out channelPackageIdGN,
+                out ApiRspCode code))
+            {
+                var r = await ExternalLoginDetectionCoreAsync(context, error: $"code: {(int)code}.", channel: channel);
+                return r;
+            }
+            if (channelPackageIdGN.HasValue)
+            {
+                var exists = await channelPackageService.ExistsAsync(channelPackageIdGN.Value, context.RequestAborted);
+                if (!exists)
+                {
+                    // 渠道包 Id 不存在
+                    var r = await ExternalLoginDetectionCoreAsync(context, error: $"unknown channelPackageId.", channel: channel);
+                    return r;
+                }
+            }
+        }
+
         var remoteError = context.Request.Query["remoteError"];
         var port = GetSessionString(context, "port");
         var isWeb = bool.TryParse(GetSessionString(context, "isWeb"), out var isWebB) && isWebB;
@@ -261,7 +287,7 @@ public static partial class ExternalLoginController
                         return r;
                     }
                     var name = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
-                    rsp = await userManager.LoginOrRegisterOrBindAsync(steamAccountId64.Value.ToString(), channel, deviceId, userId, p =>
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(steamAccountId64.Value.ToString(), channel, deviceId, userId, channelPackageIdGN, p =>
                     {
                         p.NickName = name;
                     });
@@ -279,7 +305,7 @@ public static partial class ExternalLoginController
                     var email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email);
                     var givenName = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.GivenName);
                     var surname = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Surname);
-                    rsp = await userManager.LoginOrRegisterOrBindAsync(nameIdentifier, channel, deviceId, userId, x =>
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(nameIdentifier, channel, deviceId, userId, channelPackageIdGN, x =>
                     {
                         x.NickName = name;
                         x.Email = email;
@@ -299,7 +325,7 @@ public static partial class ExternalLoginController
                     var nickname = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
                     var gender = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Gender);
                     var avatar_full = externalLoginInfo.Principal.FindFirstValue(QQConstants.Claims.AvatarFullUrl);
-                    rsp = await userManager.LoginOrRegisterOrBindAsync(unionId, channel, deviceId, userId, x =>
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(unionId, channel, deviceId, userId, channelPackageIdGN, x =>
                     {
                         x.NickName = nickname;
                         x.Gender = ExternalAccount.ParseGenderStr(gender);
@@ -318,7 +344,7 @@ public static partial class ExternalLoginController
                     var nickname = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Name);
                     var gender = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Gender);
                     var avatar_full = externalLoginInfo.Principal.FindFirstValue(WeChatConstants.Claims.HeadImgUrl);
-                    rsp = await userManager.LoginOrRegisterOrBindAsync(openId, channel, deviceId, userId, x =>
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(openId, channel, deviceId, userId, channelPackageIdGN, x =>
                     {
                         x.NickName = nickname;
                         x.Gender = ExternalAccount.ParseGenderStr(gender);
@@ -337,7 +363,7 @@ public static partial class ExternalLoginController
                     var nickname = externalLoginInfo.Principal.FindFirstValue(AlipayConstants.Claims.Nickname);
                     var gender = externalLoginInfo.Principal.FindFirstValue(AlipayConstants.Claims.Gender);
                     var avatar_full = externalLoginInfo.Principal.FindFirstValue(AlipayConstants.Claims.Avatar);
-                    rsp = await userManager.LoginOrRegisterOrBindAsync(openId, channel, deviceId, userId, x =>
+                    rsp = await userManager.LoginOrRegisterOrBindAsync(openId, channel, deviceId, userId, channelPackageIdGN, x =>
                     {
                         x.NickName = nickname;
                         x.Gender = ExternalAccount.ParseGenderStr(gender);
@@ -500,6 +526,7 @@ file static class D3b96193
         "dg", // DeviceIdG
         "dr", // DeviceIdR
         "dn", // DeviceIdN
+        "channelPackageId", // 渠道包 Id，Guid
     ];
 
     internal const string KeyIsBind = "isBind";

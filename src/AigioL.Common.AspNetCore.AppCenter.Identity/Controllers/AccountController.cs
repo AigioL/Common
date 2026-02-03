@@ -7,6 +7,7 @@ using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
@@ -51,6 +52,7 @@ public static partial class AccountController
                 request.SmsCode,
                 request.Channel,
                 deviceId,
+                request.ChannelPackageId,
                 (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
             return r;
         }).WithDescription("登录或注册账号")
@@ -129,14 +131,15 @@ public static partial class AccountController
     /// <summary>
     /// 登录或注册账号，如要支持密码登录，需使用 <see cref="SignInManager{TUser}"/> 提供纪录失败次数与锁定用户
     /// </summary>
-    static async Task<ApiRsp<TLoginOrRegisterResponse>> LoginOrRegister<TLoginOrRegisterResponse, TIdentityDbContext>(
+    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginOrRegister<TLoginOrRegisterResponse, TIdentityDbContext>(
         HttpContext context,
         string? phoneNumber,
         string? phoneNumberRegionCode,
         string? smsCode,
         LoginChannel loginChannel,
         string? deviceId,
-        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse>>> funcLoginSharedAsync)
+        string? channelPackageId,
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
         where TIdentityDbContext : IIdentityDbContext
         where TLoginOrRegisterResponse : notnull
     {
@@ -158,6 +161,29 @@ public static partial class AccountController
             return HttpStatusCode.TooManyRequests;
         }
 
+        Guid? channelPackageIdGN = null;
+        if (channelPackageId != null)
+        {
+            var channelPackageService = context.RequestServices.GetService<IChannelPackageService>();
+            if (!IChannelPackageService.CheckId(
+                channelPackageService,
+                channelPackageId,
+                out channelPackageIdGN,
+                out ApiRspCode code))
+            {
+                return code;
+            }
+            if (channelPackageIdGN.HasValue)
+            {
+                var exists = await channelPackageService.ExistsAsync(channelPackageIdGN.Value, context.RequestAborted);
+                if (!exists)
+                {
+                    // 渠道包 Id 不存在
+                    return ApiRspCode.NotFound;
+                }
+            }
+        }
+
         var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(AccountController));
         var userManager = context.RequestServices.GetRequiredService<IUserManager2>();
         var db = context.RequestServices.GetRequiredService<TIdentityDbContext>();
@@ -167,8 +193,8 @@ public static partial class AccountController
         var result = await LoginOrRegisterCore(
             logger, userManager, db,
             authMessageRecordRepo, smsSender, phoneNumber,
-            phoneNumberRegionCode, smsCode, funcLoginSharedAsync,
-            context.RequestAborted);
+            phoneNumberRegionCode, smsCode, channelPackageIdGN,
+            funcLoginSharedAsync, context.RequestAborted);
         if (result.IsSuccess())
         {
             cache.Remove(ipCacheKey);
@@ -185,7 +211,7 @@ public static partial class AccountController
         return result;
     }
 
-    static async Task<ApiRsp<TLoginOrRegisterResponse>> LoginOrRegisterCore<TLoginOrRegisterResponse>(
+    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginOrRegisterCore<TLoginOrRegisterResponse>(
         ILogger logger,
         IUserManager2 userManager,
         IIdentityDbContext db,
@@ -194,7 +220,8 @@ public static partial class AccountController
         string? phoneNumber,
         string? phoneNumberRegionCode,
         string? smsCode,
-        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse>>> funcLoginSharedAsync,
+        Guid? channelPackageId,
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
         CancellationToken cancellationToken = default)
         where TLoginOrRegisterResponse : notnull
     {
@@ -241,7 +268,8 @@ public static partial class AccountController
                     await userManager.CreateByPhoneNumberAsync(
                         phoneNumber,
                         phoneNumberRegionCode,
-                        phoneNumberConfirmed: true);
+                        phoneNumberConfirmed: true,
+                        channelPackageId: channelPackageId);
 
                 user = user_c;
 
@@ -271,7 +299,7 @@ public static partial class AccountController
             return await LoginSharedAsync(true);
         }
 
-        async Task<ApiRsp<TLoginOrRegisterResponse>> LoginSharedAsync(bool isLoginOrRegister)
+        async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginSharedAsync(bool isLoginOrRegister)
         {
             var r = await funcLoginSharedAsync(userManager, user, isLoginOrRegister);
             if (r.IsSuccess())
@@ -297,7 +325,7 @@ public static partial class AccountController
     /// <summary>
     /// 刷新 JWT
     /// </summary>
-    static async Task<ApiRsp<JsonWebTokenValue>> RefreshTokenAsync(
+    static async Task<ApiRsp<JsonWebTokenValue?>> RefreshTokenAsync(
         HttpContext context,
         string? refresh_token,
         string? deviceId)
@@ -479,7 +507,7 @@ public static partial class AccountController
     /// <summary>
     /// 通过邮箱注册
     /// </summary>
-    static async Task<ApiRsp<TLoginOrRegisterResponse>> RegisterByEmail<TLoginOrRegisterResponse>(
+    static async Task<ApiRsp<TLoginOrRegisterResponse?>> RegisterByEmail<TLoginOrRegisterResponse>(
         ILogger logger,
         IUserManager2 userManager,
         IIdentityDbContext db,
@@ -489,7 +517,7 @@ public static partial class AccountController
         string? password,
         string? code,
         string? deviceId,
-        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse>>> funcLoginSharedAsync,
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
         CancellationToken cancellationToken = default) where TLoginOrRegisterResponse : class
     {
         if (string.IsNullOrEmpty(email) ||
@@ -552,11 +580,11 @@ public static partial class AccountController
     /// <summary>
     /// 通过密码登录
     /// </summary>
-    static async Task<ApiRsp<TLoginOrRegisterResponse>> LoginByPassword<TLoginOrRegisterResponse, TIdentityDbContext>(
+    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginByPassword<TLoginOrRegisterResponse, TIdentityDbContext>(
         HttpContext context,
         string? account,
         string? password,
-        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse>>> funcLoginSharedAsync)
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync)
         where TIdentityDbContext : IIdentityDbContext
         where TLoginOrRegisterResponse : notnull
     {
@@ -594,12 +622,12 @@ public static partial class AccountController
         return result;
     }
 
-    static async Task<ApiRsp<TLoginOrRegisterResponse>> LoginByPasswordCore<TLoginOrRegisterResponse>(
+    static async Task<ApiRsp<TLoginOrRegisterResponse?>> LoginByPasswordCore<TLoginOrRegisterResponse>(
         IUserManager2 userManager,
         IIdentityDbContext db,
         string? account,
         string? password,
-        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse>>> funcLoginSharedAsync,
+        Func<IUserManager2, User, bool, Task<ApiRsp<TLoginOrRegisterResponse?>>> funcLoginSharedAsync,
         CancellationToken cancellationToken = default)
         where TLoginOrRegisterResponse : notnull
     {

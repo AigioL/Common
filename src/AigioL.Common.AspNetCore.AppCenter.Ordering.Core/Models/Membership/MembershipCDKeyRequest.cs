@@ -12,6 +12,9 @@ public sealed partial class MembershipCDKeyRequest
     [global::MemoryPack.MemoryPackOrder(1)]
     public required string CDKey { get; set; }
 
+    [global::MemoryPack.MemoryPackOrder(2)]
+    public string? ChannelPackageId { get; set; }
+
 #if DEBUG
     [Obsolete("", true)]
     [global::MemoryPack.MemoryPackIgnore]

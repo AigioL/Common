@@ -7,7 +7,7 @@ namespace Microsoft.AspNetCore.Identity;
 public static partial class IdentityResultExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ApiRsp<T> Fail<T>(
+    public static ApiRsp<T?> Fail<T>(
         this IdentityResult identityResult,
         ApiRspCode code = ApiRspCode.BadRequest)
         where T : notnull
