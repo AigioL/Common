@@ -4,8 +4,10 @@ using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
 using AigioL.Common.Models;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
+using Microsoft.IO;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Redd.Models.Steam;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,7 +24,7 @@ public abstract partial class CallbackWorkerBackGroundService(
     IConnection rabbitmqConn,
     IFeishuApiClient feishuApiClient) : ManualWorkerBackgroundService(logger, jsonOptions, rabbitmqConn, feishuApiClient)
 {
-    protected readonly ConcurrentDictionary<Guid, TaskCompletionSource> _callbackMapper = new();
+    protected readonly ConcurrentDictionary<Guid, TaskCompletionSource<bool>> _callbackMapper = new();
 
     protected readonly Guid RunTaskId = Guid.NewGuid();
 
@@ -47,12 +49,17 @@ public abstract partial class CallbackWorkerBackGroundService(
     /// <returns></returns>
     public async Task HandleCallbackAsync(BasicDeliverEventArgs eventArgs, IChannel channel, CancellationToken cancellationToken)
     {
-        if (Guid.TryParse(eventArgs.Body.Span, out Guid taskId))
+        try
         {
-            if (!_callbackMapper.TryRemove(taskId, out var tcs))
-                return;
-            tcs.SetResult();
+            var callbackInfo = JsonSerializer.Deserialize(eventArgs.Body.Span, MSMinimalApisJsonSerializerContext.Default.ApiRspGuid);
+            if (callbackInfo != null)
+            {
+                if (!_callbackMapper.TryRemove(callbackInfo.Content, out var tcs))
+                    return;
+                tcs.SetResult(callbackInfo.IsSuccess());
+            }
         }
+        catch { }
         //无效消息抛弃
         await channel.BasicAckAsync(eventArgs.DeliveryTag, false, cancellationToken);
     }
