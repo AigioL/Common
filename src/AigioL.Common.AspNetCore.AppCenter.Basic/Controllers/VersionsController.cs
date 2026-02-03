@@ -77,6 +77,7 @@ https://tauri.org.cn/v1/guides/distribution/updater
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
             var key = string.Format(CacheKeys.TauriUpdaterStaticJSONFile, target, arch);
             var json = await keyValuePairRepo.GetAsync<string>(cache, key, null, context.RequestAborted);
+            json = json?.Replace("{channelPackageId}", ShortGuid.Empty.Value);
             return Results.Text(json, "application/json");
         })
             .WithDescription(
