@@ -49,10 +49,7 @@ public partial interface IClientMsixPublishCommand : ICommand
         bool? debug = null;
         string rid = $"win-{arch.ToString().ToLowerInvariant()}";
         var signCertFile = pfxFilePath_MSStore_CodeSigning;
-        SecureString signCertPassword = new();
-        signCertPassword.AppendChar('1');
-        signCertPassword.AppendChar('2');
-        signCertPassword.AppendChar('3');
+        SecureString? signCertPassword = null;
 
         if (string.IsNullOrWhiteSpace(progPath) || !Version.TryParse(version4, out var version4Obj))
         {
