@@ -100,7 +100,7 @@ public partial interface IClientMsixPublishCommand : ICommand
         // msix 签名证书名必须与包名一致
         WindowsKitsHelper.SignTool.Start($"\"{msixFilePath}\"", signCertFile: signCertFile, signCertPassword: signCertPassword);
 
-        var msixBundleFilePath = $"{progPath}.msixbundle";
+        var msixBundleFilePath = Path.Combine(Path.GetDirectoryName(progPath)!, MSIXHelper.GetPublishFileName(debug, version4, rid, ".msixbundle"));
         WindowsKitsHelper.MakeAppx.StartBundle(msixBundleFilePath, msixDir, version4);
         await Task.Delay(TimeSpan.FromSeconds(1.15d));
 
@@ -151,63 +151,10 @@ file static class MSIXHelper
             // 处理 URI 激活
             // https://learn.microsoft.com/zh-cn/windows/uwp/launch-resume/handle-uri-activation
 
-            var xmlString =
-$"""
-            <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-            <Package IgnorableNamespaces="uap rescap desktop desktop2 build" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build">
-              <Identity Name="{IdentityName}" Publisher="{Publisher}" 
-            Version="{version4}" ProcessorArchitecture="{processorArchitecture.ToString().ToLowerInvariant()}"/>
-              <Properties>
-                <DisplayName>{DisplayName}</DisplayName>
-                <PublisherDisplayName>{PublisherDisplayName}</PublisherDisplayName>
-                <Logo>images\StoreLogo.png</Logo>
-              </Properties>
-              <Dependencies>
-                <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0"/>
-                <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0"/>
-              </Dependencies>
-              <Resources>
-                <Resource Language="zh-CN"/>
-                <Resource uap:Scale="200"/>
-              </Resources>
-              <Applications>
-                <Application Id="App" Executable="{Executable}" EntryPoint="Windows.FullTrustApplication">
-                  <uap:VisualElements DisplayName="{DisplayName}" Description="{Description}" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
-                    <uap:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png" Square310x310Logo="images\LargeTile.png" ShortName="{DisplayName}">
-                      <uap:ShowNameOnTiles>
-                        <uap:ShowOn Tile="square150x150Logo"/>
-                        <uap:ShowOn Tile="wide310x150Logo"/>
-                        <uap:ShowOn Tile="square310x310Logo"/>
-                      </uap:ShowNameOnTiles>
-                    </uap:DefaultTile>
-                    <uap:SplashScreen Image="images\SplashScreen.png"/>
-                    <uap:InitialRotationPreference>
-                      <uap:Rotation Preference="landscape"/>
-                    </uap:InitialRotationPreference>
-                    <uap:LockScreen BadgeLogo="images\BadgeLogo.png" Notification="badgeAndTileText"/>
-                  </uap:VisualElements>
-                  <Extensions>
-                    <desktop:Extension Category="windows.fullTrustProcess" Executable="{Executable}"/>
-                    <desktop:Extension Category="windows.startupTask" Executable="{Executable}" EntryPoint="Windows.FullTrustApplication">
-                      <desktop:StartupTask TaskId="BootAutoStartTask" Enabled="true" DisplayName="{DisplayName} System Boot Run"/>
-                    </desktop:Extension>
-                    <uap:Extension Category="windows.protocol">
-                        <uap:Protocol Name="{UapProtocol}">
-                            <uap:Logo>Images\Square44x44Logo.png</uap:Logo>
-                            <uap:DisplayName>{DisplayName} URI Scheme</uap:DisplayName>
-                        </uap:Protocol>
-                    </uap:Extension>
-                  </Extensions>
-                </Application>
-              </Applications>
-            {PackageExtensions}
-              <Capabilities>
-                <Capability Name="internetClient"/>
-                <rescap:Capability Name="runFullTrust"/>
-                <rescap:Capability Name="allowElevation"/>
-              </Capabilities>
-            </Package>
-            """;
+            var processorArch = processorArchitecture.ToString().ToLowerInvariant();
+            var xmlString = AppxManifestXml;
+            xmlString = xmlString.Replace("[version4]", version4);
+            xmlString = xmlString.Replace("[processorArch]", processorArch);
 
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xmlString);
@@ -226,6 +173,9 @@ $"""
             var projectRoot = $@"{ProjPath}\res\windows\makepri";
 
             CopyDirectory(projectRoot, rootPublicPath, true);
+
+            var priPath = @$"{rootPublicPath}\resources.pri";
+            IOPath.DeleteFile(priPath);
 
             WindowsKitsHelper.MakePri.Start(
                 xmlPriConfig,
@@ -288,15 +238,9 @@ file static class ConstReflectionHelper
     }
 
 #pragma warning disable IDE1006 // 命名样式
-    internal static string IdentityName => GetConstString(nameof(IdentityName));
-    internal static string Publisher => GetConstString(nameof(Publisher));
-    internal static string DisplayName => GetConstString(nameof(DisplayName));
-    internal static string PublisherDisplayName => GetConstString(nameof(PublisherDisplayName));
+    internal static string AppxManifestXml => GetConstString(nameof(AppxManifestXml));
     internal static string Executable => GetConstString(nameof(Executable));
-    internal static string Description => GetConstString(nameof(Description));
-    internal static string PackageExtensions => GetConstString(nameof(PackageExtensions));
     internal static string pfxFilePath_MSStore_CodeSigning => GetConstString(nameof(pfxFilePath_MSStore_CodeSigning));
-    internal static string UapProtocol => GetConstString(nameof(UapProtocol));
 #pragma warning restore IDE1006 // 命名样式
 }
 #endif
