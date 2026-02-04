@@ -3,6 +3,8 @@ using AigioL.Common.BuildTools.Commands.Abstractions;
 using System.CommandLine;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Text;
 using System.Xml;
 using Windows.Management.Deployment;
 using static AigioL.Common.BuildTools.Commands.ConstReflectionHelper;
@@ -47,6 +49,10 @@ public partial interface IClientMsixPublishCommand : ICommand
         bool? debug = null;
         string rid = $"win-{arch.ToString().ToLowerInvariant()}";
         var signCertFile = pfxFilePath_MSStore_CodeSigning;
+        SecureString signCertPassword = new();
+        signCertPassword.AppendChar('1');
+        signCertPassword.AppendChar('2');
+        signCertPassword.AppendChar('3');
 
         if (string.IsNullOrWhiteSpace(progPath) || !Version.TryParse(version4, out var version4Obj))
         {
@@ -95,7 +101,7 @@ public partial interface IClientMsixPublishCommand : ICommand
 
         // 签名 msix 包
         // msix 签名证书名必须与包名一致
-        WindowsKitsHelper.SignTool.Start($"\"{msixFilePath}\"", signCertFile: signCertFile);
+        WindowsKitsHelper.SignTool.Start($"\"{msixFilePath}\"", signCertFile: signCertFile, signCertPassword: signCertPassword);
 
         var msixBundleFilePath = $"{progPath}.msixbundle";
         WindowsKitsHelper.MakeAppx.StartBundle(msixBundleFilePath, msixDir, version4);
@@ -103,7 +109,7 @@ public partial interface IClientMsixPublishCommand : ICommand
 
         // 签名 msix 包
         // msix 签名证书名必须与包名一致
-        WindowsKitsHelper.SignTool.Start($"\"{msixBundleFilePath}\"", signCertFile: signCertFile);
+        WindowsKitsHelper.SignTool.Start($"\"{msixBundleFilePath}\"", signCertFile: signCertFile, signCertPassword: signCertPassword);
 
         var msixBundleFileInfo = new FileInfo(msixBundleFilePath);
 
@@ -150,60 +156,67 @@ file static class MSIXHelper
 
             var xmlString =
 $"""
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Package IgnorableNamespaces="uap rescap desktop desktop2 build" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build">
-  <Identity Name="{IdentityName}" Publisher="{Publisher}" 
-Version="{version4}" ProcessorArchitecture="{processorArchitecture.ToString().ToLowerInvariant()}"/>
-  <Properties>
-    <DisplayName>{DisplayName}</DisplayName>
-    <PublisherDisplayName>{PublisherDisplayName}</PublisherDisplayName>
-    <Logo>images\StoreLogo.png</Logo>
-  </Properties>
-  <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0"/>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0"/>
-  </Dependencies>
-  <Resources>
-    <Resource Language="zh-CN"/>
-    <Resource uap:Scale="200"/>
-  </Resources>
-  <Applications>
-    <Application Id="App" Executable="{Executable}" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements DisplayName="{DisplayName}" Description="{Description}" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png" Square310x310Logo="images\LargeTile.png" ShortName="{DisplayName}">
-          <uap:ShowNameOnTiles>
-            <uap:ShowOn Tile="square150x150Logo"/>
-            <uap:ShowOn Tile="wide310x150Logo"/>
-            <uap:ShowOn Tile="square310x310Logo"/>
-          </uap:ShowNameOnTiles>
-        </uap:DefaultTile>
-        <uap:SplashScreen Image="images\SplashScreen.png"/>
-        <uap:InitialRotationPreference>
-          <uap:Rotation Preference="landscape"/>
-        </uap:InitialRotationPreference>
-        <uap:LockScreen BadgeLogo="images\BadgeLogo.png" Notification="badgeAndTileText"/>
-      </uap:VisualElements>
-      <Extensions>
-        <desktop:Extension Category="windows.fullTrustProcess" Executable="{Executable}"/>
-        <desktop:Extension Category="windows.startupTask" Executable="{Executable}" EntryPoint="Windows.FullTrustApplication">
-          <desktop:StartupTask TaskId="BootAutoStartTask" Enabled="true" DisplayName="{DisplayName} System Boot Run"/>
-        </desktop:Extension>
-      </Extensions>
-    </Application>
-  </Applications>
-{PackageExtensions}
-  <Capabilities>
-    <Capability Name="internetClient"/>
-    <rescap:Capability Name="runFullTrust"/>
-    <rescap:Capability Name="allowElevation"/>
-  </Capabilities>
-</Package>
-""";
+            <?xml version="1.0" encoding="utf-8" standalone="yes"?>
+            <Package IgnorableNamespaces="uap rescap desktop desktop2 build" xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2" xmlns:build="http://schemas.microsoft.com/developer/appx/2015/build">
+              <Identity Name="{IdentityName}" Publisher="{Publisher}" 
+            Version="{version4}" ProcessorArchitecture="{processorArchitecture.ToString().ToLowerInvariant()}"/>
+              <Properties>
+                <DisplayName>{DisplayName}</DisplayName>
+                <PublisherDisplayName>{PublisherDisplayName}</PublisherDisplayName>
+                <Logo>images\StoreLogo.png</Logo>
+              </Properties>
+              <Dependencies>
+                <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0"/>
+                <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0"/>
+              </Dependencies>
+              <Resources>
+                <Resource Language="zh-CN"/>
+                <Resource uap:Scale="200"/>
+              </Resources>
+              <Applications>
+                <Application Id="App" Executable="{Executable}" EntryPoint="Windows.FullTrustApplication">
+                  <uap:VisualElements DisplayName="{DisplayName}" Description="{Description}" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
+                    <uap:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png" Square71x71Logo="images\SmallTile.png" Square310x310Logo="images\LargeTile.png" ShortName="{DisplayName}">
+                      <uap:ShowNameOnTiles>
+                        <uap:ShowOn Tile="square150x150Logo"/>
+                        <uap:ShowOn Tile="wide310x150Logo"/>
+                        <uap:ShowOn Tile="square310x310Logo"/>
+                      </uap:ShowNameOnTiles>
+                    </uap:DefaultTile>
+                    <uap:SplashScreen Image="images\SplashScreen.png"/>
+                    <uap:InitialRotationPreference>
+                      <uap:Rotation Preference="landscape"/>
+                    </uap:InitialRotationPreference>
+                    <uap:LockScreen BadgeLogo="images\BadgeLogo.png" Notification="badgeAndTileText"/>
+                  </uap:VisualElements>
+                  <Extensions>
+                    <desktop:Extension Category="windows.fullTrustProcess" Executable="{Executable}"/>
+                    <desktop:Extension Category="windows.startupTask" Executable="{Executable}" EntryPoint="Windows.FullTrustApplication">
+                      <desktop:StartupTask TaskId="BootAutoStartTask" Enabled="true" DisplayName="{DisplayName} System Boot Run"/>
+                    </desktop:Extension>
+                    <uap:Extension Category="windows.protocol">
+                        <uap:Protocol Name="{UapProtocol}">
+                            <uap:Logo>Images\Square44x44Logo.png</uap:Logo>
+                            <uap:DisplayName>{DisplayName} URI Scheme</uap:DisplayName>
+                        </uap:Protocol>
+                    </uap:Extension>
+                  </Extensions>
+                </Application>
+              </Applications>
+            {PackageExtensions}
+              <Capabilities>
+                <Capability Name="internetClient"/>
+                <rescap:Capability Name="runFullTrust"/>
+                <rescap:Capability Name="allowElevation"/>
+              </Capabilities>
+            </Package>
+            """;
+
             var xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(xmlString);
             var xmlStringMini = xmlDoc.InnerXml;
             var xmlFilePath = Path.Combine(rootPublicPath, "AppxManifest.xml");
-            File.WriteAllText(xmlFilePath, xmlStringMini);
+            File.WriteAllText(xmlFilePath, xmlStringMini, new UTF8Encoding(true));
         }
     }
 
@@ -215,10 +228,46 @@ Version="{version4}" ProcessorArchitecture="{processorArchitecture.ToString().To
             var xmlAppXManifestPath = @$"{rootPublicPath}\AppXManifest.xml";
             var projectRoot = $@"{ProjPath}\res\windows\makepri";
 
-            WindowsKitsHelper.MakePri.Start(xmlPriConfig,
+            CopyDirectory(projectRoot, rootPublicPath, true);
+
+            WindowsKitsHelper.MakePri.Start(
+                xmlPriConfig,
                 xmlAppXManifestPath,
                 projectRoot,
                 rootPublicPath);
+        }
+    }
+
+    static void CopyDirectory(string sourceDir, string destinationDir, bool recursive) // https://learn.microsoft.com/zh-cn/dotnet/standard/io/how-to-copy-directories
+    {
+        // Get information about the source directory
+        var dir = new DirectoryInfo(sourceDir);
+
+        // Check if the source directory exists
+        if (!dir.Exists)
+            throw new DirectoryNotFoundException($"Source directory not found: {dir.FullName}");
+
+        // Cache directories before we start copying
+        DirectoryInfo[] dirs = dir.GetDirectories();
+
+        // Create the destination directory
+        IOPath.CreateDirectory(destinationDir);
+
+        // Get the files in the source directory and copy to the destination directory
+        foreach (FileInfo file in dir.GetFiles())
+        {
+            string targetFilePath = Path.Combine(destinationDir, file.Name);
+            file.CopyTo(targetFilePath, true);
+        }
+
+        // If recursive and copying subdirectories, recursively call this method
+        if (recursive)
+        {
+            foreach (DirectoryInfo subDir in dirs)
+            {
+                string newDestinationDir = Path.Combine(destinationDir, subDir.Name);
+                CopyDirectory(subDir.FullName, newDestinationDir, true);
+            }
         }
     }
 }
@@ -231,8 +280,12 @@ file static class ConstReflectionHelper
     {
         if (fields == null)
         {
-            var fields = typeof(IClientMsixPublishCommand).GetFields(BindingFlags.Instance | BindingFlags.Static);
-            ConstReflectionHelper.fields = fields.ToDictionary(x => x.Name, x => x.GetValue(null)?.ToString())!;
+            var t = typeof(IClientMsixPublishCommand);
+            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)
+                .Concat(t.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic));
+            ConstReflectionHelper.fields = fields
+                .Where(x => x.FieldType == typeof(string))
+                .ToDictionary(x => x.Name, x => x.GetValue(null)?.ToString())!;
         }
         return fields[name];
     }
@@ -246,6 +299,7 @@ file static class ConstReflectionHelper
     internal static string Description => GetConstString(nameof(Description));
     internal static string PackageExtensions => GetConstString(nameof(PackageExtensions));
     internal static string pfxFilePath_MSStore_CodeSigning => GetConstString(nameof(pfxFilePath_MSStore_CodeSigning));
+    internal static string UapProtocol => GetConstString(nameof(UapProtocol));
 #pragma warning restore IDE1006 // 命名样式
 }
 #endif
