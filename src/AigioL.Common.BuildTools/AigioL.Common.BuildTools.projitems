@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Abstractions\ICommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\IClientMsixPublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\IRenameCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\IServerPublishCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExitApplicationException.cs" />
