@@ -30,6 +30,7 @@ public static partial class ProfileExtensions
             .ForMember(d => d.Configurations, opt => opt.MapFrom(s => s.MerchantDeductionAgreementConfigurations != null ? s.MerchantDeductionAgreementConfigurations.Select(s => s.Id).ToList() : new()));
 
         p.CreateMap<AftersalesBill, AftersalesBillTableItem>()
+            .ForMember(d => d.OrderNumber, opt => opt.MapFrom(s => s.OrderId))
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
             .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
             .ForMember(d => d.UserNickName, opt => opt.MapFrom(s => s.User == null ? default : s.User.NickName))

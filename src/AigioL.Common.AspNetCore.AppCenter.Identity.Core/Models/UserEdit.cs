@@ -126,4 +126,9 @@ public sealed partial record class UserEdit : IReadOnlyId<Guid>
     /// 是否处于封禁状态，判断依据为：封禁结束时间大于当前时间
     /// </remarks>
     public bool IsLockout => LockoutEnd > DateTimeOffset.Now;
+
+    /// <summary>
+    /// 会员信息
+    /// </summary>
+    public UserMembershipModel? Membership { get; set; }
 }
