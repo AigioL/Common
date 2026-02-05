@@ -146,13 +146,16 @@ public static partial class RefundBillController
         await CacheKeys.PushOrderRefundRequestMessageAsync(rabbitmqConn, message);
 
         // 如果业务类型需要退款时需要解约协议
-        if (info.MerchantDeductionAgreementStatus == AgreementStatus.Signed &&
-            IsRefundAndUnSignMerchantDeductionAgreement(info.BusinessTypeId))
+        if (info.MerchantDeductionAgreementNo != null)
         {
-            var kvValue = await keyValuePairRepo.QueryValueAsync($"业务订单退款时自动解约扣款协议_{info.BusinessTypeId}");
-            if (kvValue == "1" || (bool.TryParse(kvValue, out var kvValueB) && kvValueB))
+            if (info.MerchantDeductionAgreementStatus == AgreementStatus.Signed &&
+                IsRefundAndUnSignMerchantDeductionAgreement(info.BusinessTypeId))
             {
-                await CacheKeys.PushAgreementUnSignRequestMessageAsync(rabbitmqConn, info.MerchantDeductionAgreementNo);
+                var kvValue = await keyValuePairRepo.QueryValueAsync($"业务订单退款时自动解约扣款协议_{info.BusinessTypeId}");
+                if (kvValue == "1" || (bool.TryParse(kvValue, out var kvValueB) && kvValueB))
+                {
+                    await CacheKeys.PushAgreementUnSignRequestMessageAsync(rabbitmqConn, info.MerchantDeductionAgreementNo);
+                }
             }
         }
 

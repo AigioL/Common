@@ -86,6 +86,6 @@ partial interface IRefundBillRepository // 管理后台
         string OrderNumber,
         string RefundNumber,
         int BusinessTypeId,
-        AgreementStatus MerchantDeductionAgreementStatus,
-        string MerchantDeductionAgreementNo);
+        AgreementStatus? MerchantDeductionAgreementStatus,
+        string? MerchantDeductionAgreementNo);
 }
