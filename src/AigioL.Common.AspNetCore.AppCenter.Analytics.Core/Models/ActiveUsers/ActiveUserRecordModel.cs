@@ -93,6 +93,9 @@ public sealed partial class ActiveUserRecordModel : IExplicitHasValue, IDeviceId
     [global::MemoryPack.MemoryPackOrder(14)]
     public string? DeviceIdN { get; set; }
 
+    [global::MemoryPack.MemoryPackOrder(15)]
+    public string? ChannelPackageId { get; set; }
+
     /// <inheritdoc/>
     bool IExplicitHasValue.ExplicitHasValue()
     {

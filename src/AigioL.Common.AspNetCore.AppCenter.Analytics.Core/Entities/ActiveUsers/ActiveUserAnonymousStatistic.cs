@@ -135,6 +135,12 @@ public partial class ActiveUserAnonymousStatistic :
     [Comment("客户端分发渠道")]
     public int ClientDistributionChannel { get; set; }
 
+    /// <summary>
+    /// 渠道包 Id
+    /// </summary>
+    [Comment("渠道包 Id")]
+    public Guid? ChannelPackageId { get; set; }
+
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<ActiveUserAnonymousStatistic>
     {
         public void Configure(EntityTypeBuilder<ActiveUserAnonymousStatistic> builder)

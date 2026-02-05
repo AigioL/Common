@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using MemoryPack;
@@ -81,6 +82,34 @@ public static class ActiveUsersController
             return HttpStatusCode.BadRequest;
         }
 
+        if (model.OSVersion == null || model.OSVersion.Length > MaxLengths.Version)
+        {
+            return HttpStatusCode.BadRequest;
+        }
+
+        Guid? channelPackageIdGN = null;
+        if (!string.IsNullOrWhiteSpace(model.ChannelPackageId))
+        {
+            var channelPackageService = context.RequestServices.GetService<IChannelPackageService>();
+            if (!IChannelPackageService.CheckId(
+                    channelPackageService,
+                    model.ChannelPackageId,
+                    out channelPackageIdGN,
+                    out ApiRspCode code))
+            {
+                return code;
+            }
+            if (channelPackageIdGN.HasValue)
+            {
+                var exists = await channelPackageService.ExistsAsync(channelPackageIdGN.Value, context.RequestAborted);
+                if (!exists)
+                {
+                    // 渠道包 Id 不存在
+                    return ApiRspCode.NotFound;
+                }
+            }
+        }
+
         var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
         var contains = await ContainsAsync(connection, deviceId, model.Platform);
         if (contains)
@@ -88,19 +117,19 @@ public static class ActiveUsersController
             return HttpStatusCode.OK;
         }
 
-        var rabbitmqConn = context.RequestServices.GetRequiredService<IConnection>();
         ActiveUserAnonymousStatisticCacheModel cacheModel = new()
         {
             Model = model,
             IPAddress = ip,
             DevicePlatform = context.GetDevicePlatform(),
             DeviceId = deviceId,
+            AppVersion = appVer.Version,
+            ChannelPackageId = channelPackageIdGN,
         };
         const string k = nameof(ActiveUserAnonymousStatisticCacheModel);
         var v = MemoryPackSerializer.Serialize(cacheModel);
-        using var channel = await rabbitmqConn.CreateChannelAsync();
-        // 👇 推送到 RabbitMQ 队列等待 Job 批量插入数据库
-        await channel.BasicPublishAsync("", k, v);
+        var dbConnection = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+        await dbConnection.ListRightPushAsync(k, v);
 
         return HttpStatusCode.OK;
     }

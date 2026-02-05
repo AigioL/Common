@@ -30,6 +30,18 @@ public sealed partial class ActiveUserAnonymousStatisticCacheModel
     [global::MemoryPack.MemoryPackOrder(3)]
     public required string DeviceId { get; set; }
 
+    /// <summary>
+    /// 应用版本
+    /// </summary>
+    [global::MemoryPack.MemoryPackOrder(4)]
+    public string? AppVersion { get; set; }
+
+    /// <summary>
+    /// 渠道包 Id
+    /// </summary>
+    [global::MemoryPack.MemoryPackOrder(5)]
+    public Guid? ChannelPackageId { get; set; }
+
     ///// <summary>
     ///// 客户端版本 Id
     ///// </summary>
