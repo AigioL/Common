@@ -9,6 +9,7 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.AppCenter.Analytics</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserRecordModel.cs" />
   </ItemGroup>
 </Project>
