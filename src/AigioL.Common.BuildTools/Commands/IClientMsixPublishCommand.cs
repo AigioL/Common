@@ -1,6 +1,7 @@
 #if WINDOWS
 using AigioL.Common.BuildTools.Commands.Abstractions;
 using System.CommandLine;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -51,7 +52,19 @@ public partial interface IClientMsixPublishCommand : ICommand
         var signCertFile = pfxFilePath_MSStore_CodeSigning;
         SecureString? signCertPassword = null;
 
-        if (string.IsNullOrWhiteSpace(progPath) || !Version.TryParse(version4, out var version4Obj))
+        if (string.IsNullOrWhiteSpace(progPath))
+        {
+            return -1;
+        }
+
+        if (string.Equals("auto", version4, StringComparison.InvariantCultureIgnoreCase))
+        {
+            var exePath = Path.Combine(progPath, Executable);
+            var fvi = FileVersionInfo.GetVersionInfo(exePath);
+            version4 = fvi.FileVersion;
+        }
+
+        if (!Version.TryParse(version4, out var version4Obj))
         {
             return -1;
         }
