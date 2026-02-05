@@ -61,6 +61,7 @@
     <Project Path="src/AigioL.Common.AspNetCore.Helpers.ProgramMain/AigioL.Common.AspNetCore.Helpers.ProgramMain.shproj" Id="276306f9-8c73-4b7a-a517-e7a502cd5f2b" />
   </Folder>
   <Folder Name="/2.Libraries/AspNetCore/AppCenter/">
+    <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics.Core.ClientSide/AigioL.Common.AspNetCore.AppCenter.Analytics.Core.ClientSide.shproj" Id="caf78f1d-0d61-483a-aef0-ddbc18800c6e" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics.Core/AigioL.Common.AspNetCore.AppCenter.Analytics.Core.shproj" Id="dff7c2b6-ce45-4ba7-b4d5-0d07fd760843" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Analytics.JobScheduler.shproj" Id="5f7d9445-265c-4167-afcd-e90182101582" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics/AigioL.Common.AspNetCore.AppCenter.Analytics.shproj" Id="4741fdd2-d3e8-43a7-a068-03d0f9859292" />

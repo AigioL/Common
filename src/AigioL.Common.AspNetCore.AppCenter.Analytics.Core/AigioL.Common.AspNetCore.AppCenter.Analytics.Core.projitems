@@ -43,7 +43,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionServiceExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticCacheModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserAnonymousStatisticType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserRecordModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\ActiveUserStatisticsType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\ActiveUserSumResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ActiveUsers\Summaries\StatisticsActiveUserOSResponse.cs" />
