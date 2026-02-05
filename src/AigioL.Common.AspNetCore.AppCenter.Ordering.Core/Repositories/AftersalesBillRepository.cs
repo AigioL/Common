@@ -28,7 +28,7 @@ sealed partial class AftersalesBillRepository<TDbContext> :
     public async Task<ApiRsp<(Order? order, AftersalesBillDetailModel? aftersalesBillDetailModel)>> CreateAftersalesBill(
         string orderId,
         string refundReason,
-        Guid userId,
+        Guid? userId,
         CancellationToken cancellationToken = default)
     {
         Order? order = null;
@@ -43,10 +43,20 @@ sealed partial class AftersalesBillRepository<TDbContext> :
         }
 
         // 检查订单状态
-        order = string.IsNullOrWhiteSpace(orderId) ? null : await db.Orders
-            .AsNoTrackingWithIdentityResolution()
-            .Where(a => a.Id == orderId && a.UserId == userId)
-            .SingleOrDefaultAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(orderId))
+        {
+            order = null;
+        }
+        else
+        {
+            var query = db.Orders.AsNoTrackingWithIdentityResolution()
+                .Where(a => a.Id == orderId);
+            if (userId.HasValue)
+            {
+                query = query.Where(a => a.UserId == userId.Value);
+            }
+            order = await query.SingleOrDefaultAsync(cancellationToken);
+        }
         if (order == null)
         {
             return Error("找不到要售后的订单");

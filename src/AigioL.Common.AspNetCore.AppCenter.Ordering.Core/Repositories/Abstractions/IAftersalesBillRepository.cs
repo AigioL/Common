@@ -21,7 +21,7 @@ public partial interface IAftersalesBillRepository : IRepository<AftersalesBill,
     Task<ApiRsp<(Order? order, AftersalesBillDetailModel? aftersalesBillDetailModel)>> CreateAftersalesBill(
         string orderId,
         string refundReason,
-        Guid userId,
+        Guid? userId,
         CancellationToken cancellationToken = default);
 }
 

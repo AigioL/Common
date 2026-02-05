@@ -59,13 +59,12 @@ public static partial class AftersalesBillController
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("分页查询售后单");
 
-        routeGroup.MapPost("{acUserId}", async (HttpContext context,
-            [FromRoute] Guid acUserId,
+        routeGroup.MapPost("", async (HttpContext context,
             [FromBody] AftersalesBillAddModel m) =>
         {
             var aftersalesBillRepo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
             var rabbitmqConn = context.RequestServices.GetRequiredService<IConnection>();
-            var result = await aftersalesBillRepo.CreateAftersalesBill(m.OrderId, m.RefundReason, acUserId, context.RequestAborted);
+            var result = await aftersalesBillRepo.CreateAftersalesBill(m.OrderId, m.RefundReason, null, context.RequestAborted);
             if (!result.IsSuccess())
             {
                 var error = result.Message;
