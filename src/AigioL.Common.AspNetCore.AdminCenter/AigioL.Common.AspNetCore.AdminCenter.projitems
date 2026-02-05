@@ -77,6 +77,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Users\AddBMUserModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Users\EditBMUserInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Users\EditBMUserModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Users\SetUserMembershipModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\PermissionAuthorizationHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Requirements\PermissionAuthorizationRequirement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IBMMenuRepository.cs" />

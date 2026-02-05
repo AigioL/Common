@@ -16,12 +16,14 @@ public partial interface IAftersalesBillRepository : IRepository<AftersalesBill,
     /// <param name="orderId">订单 Id</param>
     /// <param name="refundReason">退款原因</param>
     /// <param name="userId">用户 Id，限制用户只能操作自己的订单</param>
+    /// <param name="refundAmount">部分退款金额</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<ApiRsp<(Order? order, AftersalesBillDetailModel? aftersalesBillDetailModel)>> CreateAftersalesBill(
         string orderId,
         string refundReason,
-        Guid userId,
+        Guid? userId,
+        decimal? refundAmount = null,
         CancellationToken cancellationToken = default);
 }
 

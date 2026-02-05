@@ -6,6 +6,7 @@ namespace AigioL.Common.Extensions.Http.Proxy.Models;
 /// <summary>
 /// 包含 <see cref="HttpClient"/> 类的 HTTP 代理设置的可序列化模型类
 /// </summary>
+[global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Sequential)]
 public partial record class WebProxyModel
 {
     public required string Id { get; set; }

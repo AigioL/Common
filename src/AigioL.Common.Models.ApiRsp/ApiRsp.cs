@@ -52,7 +52,8 @@ public partial record class ApiRsp
     {
         ApiRsp r = new()
         {
-            Message = message
+            Code = unchecked((uint)HttpStatusCode.BadRequest),
+            Message = message,
         };
         return r;
     }
@@ -78,19 +79,19 @@ public partial record class ApiRsp
         return result;
     }
 
-    public static ApiRsp<TContent?> Create<TContent>(TContent? content) where TContent : notnull
+    public static ApiRsp<TContent?> Create<TContent>(TContent? content)
     {
         var result = new ApiRsp<TContent?> { Content = content, };
         return result;
     }
 
-    public static ApiRsp<TContent?> Ok<TContent>(TContent? content) where TContent : notnull
+    public static ApiRsp<TContent?> Ok<TContent>(TContent? content)
     {
         var result = new ApiRsp<TContent?> { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
         return result;
     }
 
-    public static ApiRsp<TContent?> Fail<TContent>(string message) where TContent : notnull
+    public static ApiRsp<TContent?> Fail<TContent>(string message)
     {
         ApiRsp<TContent?> r = new()
         {
@@ -110,19 +111,19 @@ public sealed partial record class ApiRsp<TContent> : ApiRsp
     /// </summary>
     public TContent? Content { get; set; }
 
-    public static implicit operator ApiRsp<TContent>(TContent content) => new() { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
+    public static implicit operator ApiRsp<TContent?>(TContent content) => new() { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
 
-    public static implicit operator ApiRsp<TContent>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
+    public static implicit operator ApiRsp<TContent?>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 
-    public static implicit operator ApiRsp<TContent>(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
+    public static implicit operator ApiRsp<TContent?>(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
 
-    public static implicit operator ApiRsp<TContent>(ApiRspCode code) => new() { Code = unchecked((uint)code) };
+    public static implicit operator ApiRsp<TContent?>(ApiRspCode code) => new() { Code = unchecked((uint)code) };
 
-    public static implicit operator ApiRsp<TContent>(string message) => Fail<TContent>(message);
+    public static implicit operator ApiRsp<TContent?>(string message) => Fail<TContent>(message);
 
-    static ApiRsp<TContent> Create(ApiRspCode code, string message)
+    static ApiRsp<TContent?> Create(ApiRspCode code, string message)
     {
-        ApiRsp<TContent> r = new()
+        ApiRsp<TContent?> r = new()
         {
             Code = unchecked((uint)code),
             Message = message
@@ -130,11 +131,11 @@ public sealed partial record class ApiRsp<TContent> : ApiRsp
         return r;
     }
 
-    public static implicit operator ApiRsp<TContent>((ApiRspCode code, string message) t) => Create(t.code, t.message);
+    public static implicit operator ApiRsp<TContent?>((ApiRspCode code, string message) t) => Create(t.code, t.message);
 
-    public static implicit operator ApiRsp<TContent>((string message, ApiRspCode code) t) => Create(t.code, t.message);
+    public static implicit operator ApiRsp<TContent?>((string message, ApiRspCode code) t) => Create(t.code, t.message);
 
-    public static implicit operator ApiRsp<TContent>(Exception exception)
+    public static implicit operator ApiRsp<TContent?>(Exception exception)
     {
         ApiRsp<TContent> result = new();
         result.SetException(exception);

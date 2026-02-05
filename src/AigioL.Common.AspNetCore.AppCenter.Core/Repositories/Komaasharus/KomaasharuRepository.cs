@@ -90,7 +90,7 @@ partial class KomaasharuRepository<TDbContext>
         {
             query = query.Where(x => x.DeviceIdiom.HasFlag(deviceIdiom.Value));
         }
-        var query2 = query.Select(FExpressions.MapToModel);
+        var query2 = query.OrderBy(static x => x.Sort).Select(FExpressions.MapToModel);
 #if DEBUG
         var str = query2.ToQueryString();
         //Console.WriteLine(str);

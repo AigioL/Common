@@ -3,10 +3,10 @@ using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Models;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
-using RabbitMQ.Client;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -31,7 +31,6 @@ public static class ActiveUsersController
             var r = await PostAsync(context, m);
             return r;
         });
-
     }
 
     /// <summary>
@@ -126,6 +125,7 @@ public static class ActiveUsersController
             AppVersion = appVer.Version,
             ChannelPackageId = channelPackageIdGN,
         };
+
         const string k = nameof(ActiveUserAnonymousStatisticCacheModel);
         var v = MemoryPackSerializer.Serialize(cacheModel);
         var dbConnection = connection.GetDatabase(CacheKeys.RedisHashDataDb);

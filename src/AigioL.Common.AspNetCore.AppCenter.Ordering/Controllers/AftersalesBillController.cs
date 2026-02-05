@@ -40,7 +40,7 @@ public static class AftersalesBillController
         AftersalesBillAddModel m,
         CancellationToken cancellationToken = default)
     {
-        var result = await repo.CreateAftersalesBill(m.OrderId, m.RefundReason, userId, cancellationToken);
+        var result = await repo.CreateAftersalesBill(m.OrderId, m.RefundReason, userId, cancellationToken: cancellationToken);
         if (!result.IsSuccess())
         {
             var error = result.Message;

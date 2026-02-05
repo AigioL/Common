@@ -14,7 +14,7 @@ public partial class HttpRequestMessageRecord
 {
     public static readonly HttpRequestOptionsKey<Uri?> KeyRequestUri = new(nameof(HttpRequestMessage.RequestUri));
     public static readonly HttpRequestOptionsKey<CookieContainer> KeyCookieContainer = new(nameof(CookieContainer));
-    public static readonly HttpRequestOptionsKey<IWebProxy> KeyWebProxy = new(nameof(WebProxy));
+    public static readonly HttpRequestOptionsKey<IWebProxy?> KeyWebProxy = new(nameof(WebProxy));
 
     Uri? requestUri;
     string? requestUriHide;

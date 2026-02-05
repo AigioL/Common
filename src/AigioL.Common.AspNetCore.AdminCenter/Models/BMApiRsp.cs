@@ -52,11 +52,11 @@ public partial record class BMApiRsp
 
     public static implicit operator BMApiRsp(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 
-    public static implicit operator BMApiRsp(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
+    public static implicit operator BMApiRsp(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode), };
 
-    public static implicit operator BMApiRsp(string message) => new() { Messages = [message], };
+    public static implicit operator BMApiRsp(string message) => new() { Messages = [message], Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
-    public static implicit operator BMApiRsp(string[] messages) => new() { Messages = messages, };
+    public static implicit operator BMApiRsp(string[] messages) => new() { Messages = messages, Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
     public static implicit operator BMApiRsp(Exception exception)
     {
@@ -152,31 +152,31 @@ public sealed partial record class BMApiRsp<TContent> : BMApiRsp
     [JsonPropertyName("data")]
     public TContent? Content { get; set; }
 
-    public static implicit operator BMApiRsp<TContent>(TContent content) => new() { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
+    public static implicit operator BMApiRsp<TContent?>(TContent? content) => new() { Content = content, Code = unchecked((uint)HttpStatusCode.OK), };
 
-    public static implicit operator BMApiRsp<TContent>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
+    public static implicit operator BMApiRsp<TContent?>(bool isSuccess) => isSuccess ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
 
-    public static implicit operator BMApiRsp<TContent>(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
+    public static implicit operator BMApiRsp<TContent?>(HttpStatusCode statusCode) => new() { Code = unchecked((uint)statusCode) };
 
-    public static implicit operator BMApiRsp<TContent>(string message) => new() { Messages = [message], };
+    public static implicit operator BMApiRsp<TContent?>(string message) => new() { Messages = [message], Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
-    public static implicit operator BMApiRsp<TContent>(string[] messages) => new() { Messages = messages, };
+    public static implicit operator BMApiRsp<TContent?>(string[] messages) => new() { Messages = messages, Code = unchecked((uint)HttpStatusCode.BadRequest), };
 
-    public static implicit operator BMApiRsp<TContent>(Exception exception)
+    public static implicit operator BMApiRsp<TContent?>(Exception exception)
     {
-        BMApiRsp<TContent> result = new();
+        BMApiRsp<TContent?> result = new();
         result.SetException(exception);
         return result;
     }
 
-    public static implicit operator BMApiRsp<TContent>(ModelStateDictionary dict)
+    public static implicit operator BMApiRsp<TContent?>(ModelStateDictionary dict)
     {
-        BMApiRsp<TContent> apiRsp = new();
+        BMApiRsp<TContent?> apiRsp = new();
         SetModelStateDictionary(apiRsp, dict);
         return apiRsp;
     }
 
-    public static implicit operator BMApiRsp<TContent>(ApiRsp<TContent> apiRsp) => new()
+    public static implicit operator BMApiRsp<TContent?>(ApiRsp<TContent> apiRsp) => new()
     {
         Code = apiRsp.Code,
         Messages = apiRsp.Message == null ? [] : [apiRsp.Message],
@@ -185,11 +185,12 @@ public sealed partial record class BMApiRsp<TContent> : BMApiRsp
         TraceId = apiRsp.TraceId,
     };
 
-    public static implicit operator BMApiRsp<TContent>(IdentityResult identityResult)
+    public static implicit operator BMApiRsp<TContent?>(IdentityResult identityResult)
     {
-        BMApiRsp<TContent> r = new()
+        BMApiRsp<TContent?> r = new()
         {
             Messages = [.. GetErrors(identityResult)],
+            Code = unchecked((uint)HttpStatusCode.BadRequest),
         };
         r.SetIsSuccess(false);
         return r;

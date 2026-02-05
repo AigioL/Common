@@ -1,5 +1,6 @@
 using AigioL.Common.Primitives.Columns;
 using System.Security.Cryptography;
+using static AigioL.Common.AspNetCore.AppCenter.Models.Abstractions.DeviceIdExtensions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 
@@ -19,6 +20,17 @@ public interface IDeviceId
     /// 设备标识符 N
     /// </summary>
     string? DeviceIdN { get; set; }
+
+    static string? GetDeviceId(Guid deviceIdG, string? deviceIdR, string? deviceIdN)
+    {
+        if (deviceIdG != default && IsDeviceIdR(deviceIdR) &&
+           IsDeviceIdN(deviceIdN))
+        {
+            var r = ShortGuid.Encode(deviceIdG) + deviceIdR + deviceIdN;
+            return r;
+        }
+        return null;
+    }
 }
 
 public static partial class DeviceIdExtensions
@@ -43,12 +55,7 @@ public static partial class DeviceIdExtensions
 
     public static string? GetDeviceId(this IDeviceId deviceId)
     {
-        if (deviceId.DeviceIdG != default && IsDeviceIdR(deviceId.DeviceIdR) &&
-            IsDeviceIdN(deviceId.DeviceIdN))
-        {
-            var r = ShortGuid.Encode(deviceId.DeviceIdG) + deviceId.DeviceIdR + deviceId.DeviceIdN;
-            return r;
-        }
-        return null;
+        var deviceIdString = IDeviceId.GetDeviceId(deviceId.DeviceIdG, deviceId.DeviceIdR, deviceId.DeviceIdN);
+        return deviceIdString;
     }
 }

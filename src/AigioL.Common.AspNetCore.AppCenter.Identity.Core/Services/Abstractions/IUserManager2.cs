@@ -45,6 +45,7 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
         ExternalLoginChannel channel,
         string deviceId,
         Guid? bindUserId = null,
+        Guid? channelPackageId = null,
         Action<ExternalAccount>? setProperties = null);
 }
 
@@ -57,7 +58,8 @@ partial interface IUserManager2 // 创建用户
         string phoneNumber,
         string? regionCode,
         bool phoneNumberConfirmed,
-        string? password = null);
+        string? password = null,
+        Guid? channelPackageId = null);
 
     /// <summary>
     /// 根据邮箱创建用户
@@ -65,5 +67,6 @@ partial interface IUserManager2 // 创建用户
     Task<(User user, IdentityResult identityResult)> CreateByEmailAsync(
         string email,
         string password,
-        bool emailConfirmed);
+        bool emailConfirmed,
+        Guid? channelPackageId = null);
 }

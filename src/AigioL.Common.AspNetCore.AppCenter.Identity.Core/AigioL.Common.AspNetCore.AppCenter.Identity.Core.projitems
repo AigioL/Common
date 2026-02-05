@@ -32,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeleteTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserDeviceTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserEdit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\UserMembershipModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserSearchModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\UserWalletChangeRecordModel.cs" />

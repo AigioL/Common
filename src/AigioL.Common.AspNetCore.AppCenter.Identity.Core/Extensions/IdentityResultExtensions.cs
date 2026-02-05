@@ -10,9 +10,10 @@ public static partial class IdentityResultExtensions
     public static ApiRsp<T?> Fail<T>(
         this IdentityResult identityResult,
         ApiRspCode code = ApiRspCode.BadRequest)
+        where T : notnull
     {
         var errorMessage = FailCore(identityResult);
-        ApiRsp<T?> r = new()
+        ApiRsp<T> r = new()
         {
             Code = unchecked((uint)code),
             Message = errorMessage,

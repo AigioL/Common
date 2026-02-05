@@ -209,4 +209,18 @@ sealed partial class UserMembershipService(
 
         return true;
     }
+
+    public async Task<bool> EditUserMembershipAsync(
+        Guid userId,
+        DateTimeOffset? endTime,
+        TimeSpan? timeSpan,
+        string? note)
+    {
+        if (!endTime.HasValue && !timeSpan.HasValue)
+        {
+            return false;
+        }
+
+        throw new NotImplementedException("TODO: 未实现");
+    }
 }

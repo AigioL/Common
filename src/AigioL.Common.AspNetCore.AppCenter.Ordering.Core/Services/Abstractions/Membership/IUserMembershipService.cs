@@ -67,4 +67,13 @@ public interface IUserMembershipService
     /// 刷新用户会员信息缓存
     /// </summary>
     Task<bool> RefreshUserMembershipCacheAsync(Guid userId);
+
+    /// <summary>
+    /// 编辑用户会员时长
+    /// </summary>
+    Task<bool> EditUserMembershipAsync(
+        Guid userId,
+        DateTimeOffset? endTime,
+        TimeSpan? timeSpan,
+        string? note);
 }

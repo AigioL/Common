@@ -1,10 +1,12 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 using AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -147,5 +149,15 @@ public static partial class UsersController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("查询用户钱包变更记录");
+
+        routeGroup.MapPut("membership", async (HttpContext context,
+            [FromBody] SetUserMembershipModel model) =>
+        {
+            var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
+            var isOk = await userMembershipService.EditUserMembershipAsync(model.UserId, model.EndTime, model.TimeSpan, model.Note);
+            var r = BMApiRsp.OkBoolean(isOk);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Edit)
+        .WithDescription("编辑用户会员时长");
     }
 }

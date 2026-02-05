@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using Windows.Storage;
 
 namespace Windows.Management.Deployment;
@@ -44,10 +45,8 @@ createconfig /cf "{xmlPriConfig}" /dq {defaultCultureName} /o /pv {platform}
 
             var prixml = File.ReadAllText(xmlPriConfig);
             prixml = prixml.Replace("<packaging>\r\n\t\t<autoResourcePackage qualifier=\"Language\"/>\r\n\t\t<autoResourcePackage qualifier=\"Scale\"/>\r\n\t\t<autoResourcePackage qualifier=\"DXFeatureLevel\"/>\r\n\t</packaging>", "");
-            File.WriteAllText(xmlPriConfig, prixml);
+            File.WriteAllText(xmlPriConfig, prixml, new UTF8Encoding(true));
 
-            //var prPath = $@"{ProjPath}\res\windows\makepri";
-            //CopyDirectory(prPath, rootPublicPath, true);
             psi = new ProcessStartInfo
             {
                 FileName = makePriPath,
@@ -55,7 +54,7 @@ createconfig /cf "{xmlPriConfig}" /dq {defaultCultureName} /o /pv {platform}
                 Arguments =
                 // https://learn.microsoft.com/en-us/windows/uwp/app-resources/makepri-exe-command-options#new-command
 $"""
-new /cf "{xmlAppXManifestPath}" /pr "{projectRoot}" /mn "{xmlAppXManifestPath}"
+new /cf "{xmlPriConfig}" /pr "{projectRoot}" /mn "{xmlAppXManifestPath}"
 """,
             };
             if (workingDirectory != null)

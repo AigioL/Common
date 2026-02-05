@@ -28,7 +28,8 @@ sealed partial class AftersalesBillRepository<TDbContext> :
     public async Task<ApiRsp<(Order? order, AftersalesBillDetailModel? aftersalesBillDetailModel)>> CreateAftersalesBill(
         string orderId,
         string refundReason,
-        Guid userId,
+        Guid? userId,
+        decimal? refundAmount = null,
         CancellationToken cancellationToken = default)
     {
         Order? order = null;
@@ -43,10 +44,20 @@ sealed partial class AftersalesBillRepository<TDbContext> :
         }
 
         // 检查订单状态
-        order = string.IsNullOrWhiteSpace(orderId) ? null : await db.Orders
-            .AsNoTrackingWithIdentityResolution()
-            .Where(a => a.Id == orderId && a.UserId == userId)
-            .SingleOrDefaultAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(orderId))
+        {
+            order = null;
+        }
+        else
+        {
+            var query = db.Orders.AsNoTrackingWithIdentityResolution()
+                .Where(a => a.Id == orderId);
+            if (userId.HasValue)
+            {
+                query = query.Where(a => a.UserId == userId.Value);
+            }
+            order = await query.SingleOrDefaultAsync(cancellationToken);
+        }
         if (order == null)
         {
             return Error("找不到要售后的订单");
@@ -81,13 +92,22 @@ sealed partial class AftersalesBillRepository<TDbContext> :
             return Error("订单已有进行中的售后单");
         }
 
+        if (!refundAmount.HasValue)
+        {
+            refundAmount = order.AmountReceived;
+        }
+        else if (refundAmount.Value < 0 || refundAmount.Value > order.AmountReceived)
+        {
+            return Error("退款金额不能超过订单实收金额");
+        }
+
         var aftersalesBill = new AftersalesBill()
         {
             AftersalesNumber = IdGeneratorHelper.GetNextId(),
             OrderId = order.Id,
             UserId = order.UserId,
             TenantId = order.TenantId,
-            RefundAmount = order.AmountReceived,
+            RefundAmount = refundAmount.Value,
             AuditStatus = AuditStatus.Pending,
             RefundReason = refundReason,
             CreateTime = DateTimeOffset.Now,

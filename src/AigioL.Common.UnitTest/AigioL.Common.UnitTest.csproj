@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\AigioL.Common.TencentCloud.Sdk.IM\AigioL.Common.TencentCloud.Sdk.IM.csproj" />
+		<ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -29,6 +30,10 @@
 		<Using Include="AigioL.Common.UnitTest.Abstractions" />
 	</ItemGroup>
 
-	<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />
+	<Import Project="..\AigioL.Common.Bcl.LogInit\AigioL.Common.Bcl.LogInit.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.System.IOPath.FileSystem\AigioL.Common.System.IOPath.FileSystem.projitems" Label="Shared" />
+
+	<!--<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />-->
 
 </Project>

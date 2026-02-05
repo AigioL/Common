@@ -145,7 +145,9 @@ partial class UserRepository<TDbContext>
         CancellationToken cancellationToken = default)
     {
         var mapper = serviceProvider.GetRequiredService<IMapper>();
-        var query = db.Users.AsNoTrackingWithIdentityResolution();
+        var query = db.Users
+            .Include(x => x.Membership)
+            .AsNoTrackingWithIdentityResolution();
         var r = await query.Where(x => x.Id == id)
             .ProjectTo<UserEdit>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);

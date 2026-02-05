@@ -29,6 +29,11 @@ public static partial class HttpClientExtensions
                 request.Headers.TryAddWithoutValidation("Cookie", cookiesFromContainer);
             }
         }
+
+        if (request.Options.TryGetValue(HttpRequestMessageRecord.KeyWebProxy, out var webProxy))
+        {
+            DynamicSwitchWebProxy.Instance.SetWebProxy(webProxy);
+        }
     }
 
     /// <summary>

@@ -1,3 +1,8 @@
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers;
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers;
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Constants;
+using MemoryPack;
 using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Jobs;
@@ -6,15 +11,17 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Jobs;
 /// 活跃用户数据批量插入任务
 /// </summary>
 public sealed partial class ActiveUserInsertJob(
-    //IActiveUserRecordRepository activeUserRecordRepository,
+    IActiveUserRecordRepository activeUserRecordRepository,
     IConnectionMultiplexer redisConnection,
     ILogger<ActiveUserInsertJob> logger,
     AppDbContext dbContext,
     IFeishuApiClient feishuApiClient) : JobService<AppDbContext, ActiveUserInsertJob>(logger, dbContext, feishuApiClient)
 {
+    const string k = nameof(ActiveUserAnonymousStatisticCacheModel);
+
     protected sealed override async Task<ApiRsp> HandleAsync(IJobExecutionContext? context, CancellationToken cancellationToken)
     {
-        //var redisDb = redisConnection.GetDatabase(CacheKeys.RedisHashDataDb);
+        var redisDb = redisConnection.GetDatabase(CacheKeys.RedisHashDataDb);
 
         var len = await redisDb.ListLengthAsync(k);
         var redisValues = await redisDb.ListRangeAsync(k, 0, len);

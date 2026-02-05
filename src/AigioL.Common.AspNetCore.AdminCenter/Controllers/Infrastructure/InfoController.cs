@@ -39,7 +39,7 @@ public static partial class InfoController
             [FromBody] BMInitSystemRequest model,
             [FromQuery] bool onlyMigrate = false) =>
         {
-            BMApiRsp<JsonWebTokenValue> result;
+            BMApiRsp<JsonWebTokenValue?> result;
             try
             {
                 result = await PostAsync<TDbContext, TUser, TRole, TUserRole>(context, model, onlyMigrate);
@@ -76,7 +76,7 @@ public static partial class InfoController
         //        .WithDescription("运行时应用迁移");
     }
 
-    static async Task<BMApiRsp<JsonWebTokenValue>> PostAsync<TDbContext, TUser, TRole, TUserRole>(
+    static async Task<BMApiRsp<JsonWebTokenValue?>> PostAsync<TDbContext, TUser, TRole, TUserRole>(
         HttpContext context,
         BMInitSystemRequest model,
         bool onlyMigrate)
@@ -85,7 +85,7 @@ public static partial class InfoController
         where TRole : BMRole, new()
         where TUserRole : BMUserRole
     {
-        BMApiRsp<JsonWebTokenValue> result;
+        BMApiRsp<JsonWebTokenValue?> result;
 
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var db = context.RequestServices.GetRequiredService<TDbContext>();

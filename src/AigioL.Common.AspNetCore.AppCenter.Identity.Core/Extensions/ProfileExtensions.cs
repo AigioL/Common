@@ -39,6 +39,8 @@ public static partial class ProfileExtensions
 
         p.CreateMap<User, UserEdit>();
 
+        p.CreateMap<UserMembership, UserMembershipModel>();
+
         p.CreateMap<UserWallet, UserWalletModel>();
 
         p.CreateMap<UserWalletChangeRecord, UserWalletChangeRecordModel>();

@@ -7,14 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories;
 
-sealed partial class AnalysisLogRepository<TDbContext> :
-    Repository<TDbContext, AnalysisEventLog, Guid>,
+sealed partial class AnalysisLogRepository<TDbContext>(TDbContext dbContext, IServiceProvider serviceProvider) :
+    Repository<TDbContext, AnalysisEventLog, Guid>(dbContext, serviceProvider),
     IAnalysisLogRepository
     where TDbContext : DbContext, IAnalysisLogDbContext
 {
-    public AnalysisLogRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
-    {
-    }
 }
 
 partial class AnalysisLogRepository<TDbContext>

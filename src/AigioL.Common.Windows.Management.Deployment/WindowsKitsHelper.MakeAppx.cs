@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Windows.Storage;
 
 namespace Windows.Management.Deployment;
 
@@ -42,7 +41,6 @@ pack /v /h {hashAlgorithm} /d "{contentDirPath}" /p "{msixPath}"
             string msixPath, // Specifies the app package or bundle.
             string contentDirPath, // Specifies the input, output, or content directory
             string version4,
-            string hashAlgorithm = "SHA256",
             string? makeAppxPath = null)
         {
             IOPath.DeleteFile(msixPath);
@@ -54,7 +52,7 @@ pack /v /h {hashAlgorithm} /d "{contentDirPath}" /p "{msixPath}"
                 UseShellExecute = false,
                 Arguments =
 $"""
-bundle /v /bv {version4} /h {hashAlgorithm} /d "{contentDirPath}" /p "{msixPath}"
+bundle /v /bv {version4} /d "{contentDirPath}" /p "{msixPath}"
 """,
             };
             StartAndWaitForExit(psi);

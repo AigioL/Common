@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Services;
 
-sealed partial class DataProtectionService<TAppSettings>(IOptions<TAppSettings> options) :
+public sealed partial class DataProtectionService<TAppSettings>(IOptions<TAppSettings> options) :
     DataProtectionService
     where TAppSettings : AppSettingsBase
 {
@@ -24,7 +24,7 @@ sealed partial class DataProtectionService<TAppSettings>(IOptions<TAppSettings> 
     }
 }
 
-abstract partial class DataProtectionService : IDataProtectionService
+public abstract partial class DataProtectionService : IDataProtectionService
 {
     protected Lazy<(RSA rsa, byte[] keyHash)>? lazyRSA;
 
@@ -116,7 +116,7 @@ partial class DataProtectionService
             }
             else
             {
-                var e = rsa.Encrypt(plainBytes, Padding);
+                var e = rsa.Encrypt(span, Padding);
                 Write(stream, e.Length);
                 stream.Write(e);
                 break;

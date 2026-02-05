@@ -1,6 +1,7 @@
 using AigioL.Common.FeishuOApi.Sdk.Models;
 using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
 using AigioL.Common.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Buffers;
 using System.Diagnostics;

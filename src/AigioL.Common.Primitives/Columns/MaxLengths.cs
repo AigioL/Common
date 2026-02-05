@@ -143,7 +143,7 @@ static partial class MaxLengths // 业务相关字段
     /// <summary>
     /// 设备 Id，版本代号为 R
     /// </summary>
-    public const int DeviceIdR = 7;
+    public const int DeviceIdR = 8;
 
     /// <summary>
     /// SHA1 算法的哈希 Hex 字符串长度

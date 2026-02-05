@@ -52,6 +52,7 @@ public static partial class VersionsController
                         var r2 = r.Content.ToTauri();
                         if (r2 != null)
                         {
+                            r2.Url = r2.Url.Replace("{channelPackageId}", ShortGuid.Empty.Value);
                             return Results.Json(r2,
                                 AppVersionTauriModelJsonSerializerContext.Default.AppVersionTauriModel);
                         }
@@ -76,6 +77,7 @@ https://tauri.org.cn/v1/guides/distribution/updater
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
             var key = string.Format(CacheKeys.TauriUpdaterStaticJSONFile, target, arch);
             var json = await keyValuePairRepo.GetAsync<string>(cache, key, null, context.RequestAborted);
+            json = json?.Replace("{channelPackageId}", ShortGuid.Empty.Value);
             return Results.Text(json, "application/json");
         })
             .WithDescription(
@@ -86,9 +88,10 @@ https://tauri.app/plugin/updater/#static-json-file
             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status204NoContent);
 
-        routeGroup.MapGet("f3766645/{target}/{arch}", async (HttpContext context,
+        routeGroup.MapGet("f3766645/{target}/{arch}/{channelPackageId?}", async (HttpContext context,
             [FromRoute] string target,
-            [FromRoute] string arch) =>
+            [FromRoute] string arch,
+            [FromRoute] string? channelPackageId = null) =>
         {
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
@@ -102,6 +105,17 @@ https://tauri.app/plugin/updater/#static-json-file
                     {
                         if (urlNode != null && urlNode.GetValue<string>() is string urlStr)
                         {
+                            string channelPackageIdStr;
+                            if (ShortGuid.TryParse(channelPackageId, out ShortGuid channelPackageIdG))
+                            {
+                                channelPackageIdStr = channelPackageIdG.Value;
+                            }
+                            else
+                            {
+                                channelPackageIdStr = ShortGuid.Empty.Value;
+                            }
+
+                            urlStr = urlStr.Replace("{channelPackageId}", channelPackageIdStr);
                             return Results.Redirect(urlStr);
                         }
                     }

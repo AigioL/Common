@@ -309,6 +309,11 @@ public enum ApiRspCode : uint
     /// </summary>
     UserIsBanOrLock = 1091,
 
+    /// <summary>
+    /// 未正确配置渠道服务
+    /// </summary>
+    ChannelPackageServiceIsNull = 1100,
+
     #endregion
 
     #region 错误状态码 5000~5999

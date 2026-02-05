@@ -1,4 +1,5 @@
 using AigioL.Common.Extensions.Http.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.IO;
 using System.Diagnostics;
 using System.Net.Http.Json;
@@ -11,6 +12,24 @@ namespace System.Net.Http;
 
 public static partial class HttpResponseMessageExtensions
 {
+    /// <summary>
+    /// 是否为重定向状态码
+    /// </summary>
+    public static bool IsRedirectStatusCode(this HttpStatusCode statusCode) => statusCode switch
+    {
+        HttpStatusCode.MovedPermanently or
+        HttpStatusCode.Redirect or
+        HttpStatusCode.RedirectKeepVerb or
+        HttpStatusCode.PermanentRedirect => true,
+        _ => false,
+    };
+
+    /// <summary>
+    /// 是否为重定向状态码
+    /// </summary>
+    public static bool IsRedirectStatusCode(this HttpResponseMessage response)
+        => response.StatusCode.IsRedirectStatusCode();
+
     static readonly RecyclableMemoryStreamManager m = new();
 
     /// <summary>
@@ -69,6 +88,24 @@ public static partial class HttpResponseMessageExtensions
         finally
         {
             disposable?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 将响应内容流写入记录的内容流中
+    /// </summary>
+    public static async Task SetResponseContentStreamAsync(
+        this HttpResponseMessage response,
+        HttpResponseMessageRecord responseMessageRecord,
+        CancellationToken cancellationToken = default)
+    {
+        var stream = responseMessageRecord.Content;
+        if (stream != null)
+        {
+            stream.Position = 0;
+            using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            await contentStream.CopyToAsync(stream, cancellationToken).ConfigureAwait(false);
+            stream.Position = 0;
         }
     }
 

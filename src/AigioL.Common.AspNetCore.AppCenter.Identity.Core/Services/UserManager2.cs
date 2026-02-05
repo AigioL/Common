@@ -499,6 +499,7 @@ partial class UserManager2<TDbContext> : IUserManager2
         ExternalLoginChannel channel,
         string deviceId,
         Guid? bindUserId = null,
+        Guid? channelPackageId = null,
         Action<ExternalAccount>? setProperties = null)
     {
         CancellationToken.ThrowIfCancellationRequested();
@@ -557,7 +558,7 @@ partial class UserManager2<TDbContext> : IUserManager2
             }
             else // 创建用户
             {
-                (var user, var result) = await CreateAccountAsync(externalAccount);
+                (var user, var result) = await CreateAccountAsync(externalAccount, channelPackageId);
                 if (result.Succeeded)
                 {
                     var r = await LoginSharedAsync(user, false, deviceId);
@@ -680,14 +681,16 @@ partial class UserManager2<TDbContext> : IUserManager2
         }
     }
 
-    async Task<(User user, IdentityResult identityResult)> CreateAccountAsync(ExternalAccount externalAccount)
+    async Task<(User user, IdentityResult identityResult)> CreateAccountAsync(
+        ExternalAccount externalAccount,
+        Guid? channelPackageId = null)
     {
         var user = new User
         {
             ExternalAccounts = new() { externalAccount }
         };
         SetUserPropertiesByExternalAccount(user, externalAccount);
-        var identityResult = await CreateAsync(user);
+        var identityResult = await CreateAsync(user, channelPackageId);
         return (user, identityResult);
     }
 
@@ -739,7 +742,8 @@ partial class UserManager2<TDbContext> : IUserManager2
         string phoneNumber,
         string? regionCode,
         bool phoneNumberConfirmed,
-        string? password = null)
+        string? password = null,
+        Guid? channelPackageId = null)
     {
         if (string.IsNullOrWhiteSpace(regionCode))
         {
@@ -751,7 +755,9 @@ partial class UserManager2<TDbContext> : IUserManager2
             PhoneNumberRegionCode = regionCode,
             PhoneNumberConfirmed = phoneNumberConfirmed,
         };
-        var identityResult = await (string.IsNullOrWhiteSpace(password) ? CreateAsync(user) : CreateAsync(user, password));
+        var identityResult = await (string.IsNullOrWhiteSpace(password) ?
+            CreateAsync(user, channelPackageId) :
+            CreateAsync(user, password, channelPackageId));
         return (user, identityResult);
     }
 
@@ -759,18 +765,19 @@ partial class UserManager2<TDbContext> : IUserManager2
     public async Task<(User user, IdentityResult identityResult)> CreateByEmailAsync(
         string email,
         string password,
-        bool emailConfirmed)
+        bool emailConfirmed,
+        Guid? channelPackageId = null)
     {
         var user = new User
         {
             Email = email,
             EmailConfirmed = emailConfirmed,
         };
-        var identityResult = await CreateAsync(user, password);
+        var identityResult = await CreateAsync(user, password, channelPackageId);
         return (user, identityResult);
     }
 
-    async Task OnCreateAsync(User user)
+    async Task OnCreateAsync(User user, Guid? channelPackage = null)
     {
         if (string.IsNullOrWhiteSpace(user.NickName))
         {
@@ -778,9 +785,19 @@ partial class UserManager2<TDbContext> : IUserManager2
         }
 
         // 创建时赠送会员时长
-        var dayFreeMembershipDuration = await keyValuePairRepo.GetAsync(cache,
-            CacheKeys.创建用户时赠送会员时长天,
-            MSMinimalApisJsonSerializerContext.Default.NullableDouble);
+        double? dayFreeMembershipDuration = null;
+        if (channelPackage.HasValue)
+        {
+            dayFreeMembershipDuration = await keyValuePairRepo.GetAsync(cache,
+                string.Format(CacheKeys.创建用户时赠送会员时长天_渠道Id, channelPackage.Value),
+                MSMinimalApisJsonSerializerContext.Default.NullableDouble);
+        }
+        if (!dayFreeMembershipDuration.HasValue)
+        {
+            dayFreeMembershipDuration = await keyValuePairRepo.GetAsync(cache,
+                CacheKeys.创建用户时赠送会员时长天,
+                MSMinimalApisJsonSerializerContext.Default.NullableDouble);
+        }
         if (dayFreeMembershipDuration.HasValue && dayFreeMembershipDuration.Value > 0)
         {
             user.Membership ??= new();
@@ -797,10 +814,24 @@ partial class UserManager2<TDbContext> : IUserManager2
         return r;
     }
 
+    public async Task<IdentityResult> CreateAsync(User user, Guid? channelPackage = null)
+    {
+        await OnCreateAsync(user, channelPackage);
+        var r = await base.CreateAsync(user);
+        return r;
+    }
+
     /// <inheritdoc/>
     public override async Task<IdentityResult> CreateAsync(User user, string password)
     {
         await OnCreateAsync(user);
+        var r = await base.CreateAsync(user, password);
+        return r;
+    }
+
+    public async Task<IdentityResult> CreateAsync(User user, string password, Guid? channelPackage = null)
+    {
+        await OnCreateAsync(user, channelPackage);
         var r = await base.CreateAsync(user, password);
         return r;
     }

@@ -19,4 +19,13 @@ public static partial class ServiceCollectionServiceExtensions
         services.TryAddScoped<IAnalysisLogRepository, AnalysisLogRepository<TDbContext>>();
         return services;
     }
+
+    public static IServiceCollection AddActiveUserRecordRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext, IActiveUsersDbContext
+    {
+        services.TryAddScoped<IActiveUserRecordRepository, ActiveUserRecordRepository<TDbContext>>();
+        return services;
+    }
 }

@@ -56,6 +56,7 @@ public partial class ActiveUserAnonymousStatistic :
 
     [Required] // EF not null
     [Comment("操作系统版本号")]
+    [StringLength(MaxLengths.Version)]
     public required string OSVersion { get; set; }
 
     [Comment("App 版本号")]

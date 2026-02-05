@@ -12,8 +12,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\MediaTypeHeaderValueToStringJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\RecyclableMemoryStreamToStringJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpClientExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestHeadersExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestMessageExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpResponseMessageExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DynamicSwitchWebProxy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExHttpJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\HttpRequestMessageRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\HttpResponseMessageRecord.cs" />

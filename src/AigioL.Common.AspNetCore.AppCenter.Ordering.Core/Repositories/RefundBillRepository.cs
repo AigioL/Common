@@ -209,10 +209,10 @@ partial class RefundBillRepository<TDbContext> // 管理后台
         Guid refundId,
         CancellationToken cancellationToken = default)
     {
-        var r = await db.RefundBills
+        var query = db.RefundBills
             .Include(x => x.AftersalesBill!)
                 .ThenInclude(x => x.Order)
-                    .ThenInclude(x => x!.MerchantDeductionAgreement)
+                    .ThenInclude(x => x.MerchantDeductionAgreement)
             .Where(x => x.Id == refundId)
             .Select(x => (x.AftersalesBill == null || x.AftersalesBill.Order == null) ? default : new OrderRefundInfoModel(
                 x.AftersalesBill.Order.Status,
@@ -220,9 +220,10 @@ partial class RefundBillRepository<TDbContext> // 管理后台
                 x.AftersalesBill.Order.Id,
                 x.RefundNumber,
                 x.AftersalesBill.Order.BusinessTypeId,
-                x.AftersalesBill.Order.MerchantDeductionAgreement.Status,
-                x.AftersalesBill.Order.MerchantDeductionAgreement.AgreementNo))
-            .SingleOrDefaultAsync(cancellationToken);
+                x.AftersalesBill.Order.MerchantDeductionAgreement == null ? default : x.AftersalesBill.Order.MerchantDeductionAgreement.Status,
+                x.AftersalesBill.Order.MerchantDeductionAgreement == null ? default : x.AftersalesBill.Order.MerchantDeductionAgreement.AgreementNo));
+
+        var r = await query.SingleOrDefaultAsync(cancellationToken);
 
         if (string.IsNullOrWhiteSpace(r?.OrderNumber))
             return null;

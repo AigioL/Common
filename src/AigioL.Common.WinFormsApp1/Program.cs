@@ -31,6 +31,26 @@ static class Program
 
         LogInit.InitLog("AigioL.Common.WinFormsApp1");
 
+        ValueTuple<uint, uint, uint>[] hotkeys =
+        {
+            ((uint)VirtualKey.Control, (uint)VirtualKey.F1, 0),
+            ((uint)VirtualKey.LControl, (uint)VirtualKey.Alt, (uint)VirtualKey.F1),
+            ((uint)VirtualKey.Control, (uint)VirtualKey.Alt, (uint)VirtualKey.F2),
+            ((uint)VirtualKey.Control, (uint)VirtualKey.Alt, (uint)VirtualKey.A),
+            ((uint)VirtualKey.NumPad0, 0, 0),
+            ((uint)VirtualKey.NumPad1, 0, 0),
+            ((uint)VirtualKey.NumPad2, 0, 0),
+            ((uint)VirtualKey.NumPad3, 0, 0),
+            (0, (uint)VirtualKey.NumPad3, 0),
+            (0, 0,  (uint)VirtualKey.NumPad4),
+            (0, 0,  (uint)VirtualKey.NumPad5),
+            ((uint)VirtualKey.NumPad6, 0, 0),
+            (0, 0,  (uint)VirtualKey.NumPad7),
+            ((uint)VirtualKey.NumPad8, 0, 0),
+            ((uint)VirtualKey.NumPad9, 0, 0),
+            ((uint)VirtualKey.NumPad0, 0, 0),
+        };
+
         Task.Run(async () =>
         {
             await Task.Delay(1200);
@@ -48,51 +68,36 @@ static class Program
                     Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] 热键被按下: {e.ComboString}");
                 };
 
-                ValueTuple<uint, uint, uint>[] hotkeys =
-                {
-                    ((uint)VirtualKey.Control, (uint)VirtualKey.F1, 0),
-                    ((uint)VirtualKey.LControl, (uint)VirtualKey.Alt, (uint)VirtualKey.F1),
-                    ((uint)VirtualKey.Control, (uint)VirtualKey.Alt, (uint)VirtualKey.F2),
-                    ((uint)VirtualKey.Control, (uint)VirtualKey.Alt, (uint)VirtualKey.A),
-                    ((uint)VirtualKey.NumPad0, 0, 0),
-                    ((uint)VirtualKey.NumPad1, 0, 0),
-                    ((uint)VirtualKey.NumPad2, 0, 0),
-                    ((uint)VirtualKey.NumPad3, 0, 0),
-                    (0, (uint)VirtualKey.NumPad3, 0),
-                    (0, 0,  (uint)VirtualKey.NumPad4),
-                    (0, 0,  (uint)VirtualKey.NumPad5),
-                    ((uint)VirtualKey.NumPad6, 0, 0),
-                    (0, 0,  (uint)VirtualKey.NumPad7),
-                    ((uint)VirtualKey.NumPad8, 0, 0),
-                    ((uint)VirtualKey.NumPad9, 0, 0),
-                    ((uint)VirtualKey.NumPad0, 0, 0),
-                };
-
                 // 注册热键
                 list = hotkeyListener.RegisterHotkeys(hotkeys);
             }, null);
 
+            foreach (var item in hotkeys)
+            {
+                Console.WriteLine($"已注册热键：{(VirtualKey)item.Item1} + {(VirtualKey)item.Item2} + {(VirtualKey)item.Item3}");
+            }
+
             Console.WriteLine($"热键注册完成，总数：{list.Count}");
         });
 
-#if DEBUG
+        //#if DEBUG
         // 附加调试运行时，如果不开窗体，退出会卡住
         var f = new Form1();
         tcsAppRun.SetResult(SynchronizationContext.Current!);
         Application.Run(f);
-#else
-        Console.WriteLine("按下 CTRL+C 退出");
-        ApplicationContext ctx = new();
-        tcsAppRun.SetResult(SynchronizationContext.Current!);
-        Console.CancelKeyPress += (_, e) =>
-        {
-            if (!e.Cancel)
-            {
-                ctx.Dispose();
-            }
-        };
+        //#else
+        //        Console.WriteLine("按下 CTRL+C 退出");
+        //        ApplicationContext ctx = new();
+        //        tcsAppRun.SetResult(SynchronizationContext.Current!);
+        //        Console.CancelKeyPress += (_, e) =>
+        //        {
+        //            if (!e.Cancel)
+        //            {
+        //                ctx.Dispose();
+        //            }
+        //        };
 
-        Application.Run(ctx);
-#endif
+        //        Application.Run(ctx);
+        //#endif
     }
 }

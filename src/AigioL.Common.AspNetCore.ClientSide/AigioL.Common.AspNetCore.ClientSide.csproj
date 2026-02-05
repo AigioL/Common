@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net$(DotNet_Version)</TargetFramework>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\AigioL.Common.AspNetCore.AppCenter.Core.Resources\AigioL.Common.AspNetCore.AppCenter.Core.Resources.csproj" />
+		<ProjectReference Include="..\AigioL.Common.AspNetCore.AppCenter.Identity.UI\AigioL.Common.AspNetCore.AppCenter.Identity.UI.csproj" />
+		<ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
+	</ItemGroup>
+
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Analytics.Core\AigioL.Common.AspNetCore.AppCenter.Analytics.Core.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Basic.Core\AigioL.Common.AspNetCore.AppCenter.Basic.Core.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Core\AigioL.Common.AspNetCore.AppCenter.Core.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Core.ClientSide\AigioL.Common.AspNetCore.AppCenter.Core.ClientSide.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Identity.Core\AigioL.Common.AspNetCore.AppCenter.Identity.Core.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Identity.Core.ClientSide\AigioL.Common.AspNetCore.AppCenter.Identity.Core.ClientSide.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.AspNetCore.AppCenter.Ordering.Core\AigioL.Common.AspNetCore.AppCenter.Ordering.Core.projitems" Label="Shared" />
+
+</Project>

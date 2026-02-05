@@ -7,20 +7,15 @@ using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
 using AigioL.Common.Models;
 using COSXML;
 using COSXML.Auth;
-using COSXML.Common;
-using COSXML.Model;
 using COSXML.Model.Object;
 using ImageMagick;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Json;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System.IO;
 using System.Net;
 using System.Text.Json;
-using static COSXML.Model.Tag.ListAllMyBuckets;
+
 namespace AigioL.Common.AspNetCore.AppCenter.COS;
 
 /// <summary>

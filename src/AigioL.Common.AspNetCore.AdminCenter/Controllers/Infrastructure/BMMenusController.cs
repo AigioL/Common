@@ -45,7 +45,7 @@ public static partial class BMMenusController
             adminCenterService.HandleMenus(isRootTenant, addMenus);
             InfoController.SetUserIdAndTenantId(addMenus, user.Id, adminCenterService.RootTenantIdG);
 
-            BMApiRsp<BMMenuInitModel[]> r = addMenus.Select(x => new BMMenuInitModel
+            BMApiRsp<BMMenuInitModel[]?> r = addMenus.Select(x => new BMMenuInitModel
             {
                 Url = x.Url,
                 Name = x.Name,
