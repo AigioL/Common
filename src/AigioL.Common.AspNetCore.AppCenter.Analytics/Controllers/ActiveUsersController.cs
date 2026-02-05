@@ -5,7 +5,6 @@ using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
-using RabbitMQ.Client;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -30,7 +29,6 @@ public static class ActiveUsersController
             var r = await PostAsync(context, m);
             return r;
         });
-
     }
 
     /// <summary>
@@ -88,19 +86,19 @@ public static class ActiveUsersController
             return HttpStatusCode.OK;
         }
 
-        var rabbitmqConn = context.RequestServices.GetRequiredService<IConnection>();
         ActiveUserAnonymousStatisticCacheModel cacheModel = new()
         {
             Model = model,
             IPAddress = ip,
             DevicePlatform = context.GetDevicePlatform(),
             DeviceId = deviceId,
+            AppVersion = appVer.Version,
         };
+
         const string k = nameof(ActiveUserAnonymousStatisticCacheModel);
         var v = MemoryPackSerializer.Serialize(cacheModel);
-        using var channel = await rabbitmqConn.CreateChannelAsync();
-        // 👇 推送到 RabbitMQ 队列等待 Job 批量插入数据库
-        await channel.BasicPublishAsync("", k, v);
+        var dbConnection = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+        await dbConnection.ListRightPushAsync(k, v);
 
         return HttpStatusCode.OK;
     }
