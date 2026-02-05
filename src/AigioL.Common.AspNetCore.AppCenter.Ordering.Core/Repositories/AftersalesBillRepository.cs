@@ -29,6 +29,7 @@ sealed partial class AftersalesBillRepository<TDbContext> :
         string orderId,
         string refundReason,
         Guid? userId,
+        decimal? refundAmount = null,
         CancellationToken cancellationToken = default)
     {
         Order? order = null;
@@ -91,13 +92,22 @@ sealed partial class AftersalesBillRepository<TDbContext> :
             return Error("订单已有进行中的售后单");
         }
 
+        if (!refundAmount.HasValue)
+        {
+            refundAmount = order.AmountReceived;
+        }
+        else if (refundAmount.Value < 0 || refundAmount.Value > order.AmountReceived)
+        {
+            return Error("退款金额不能超过订单实收金额");
+        }
+
         var aftersalesBill = new AftersalesBill()
         {
             AftersalesNumber = IdGeneratorHelper.GetNextId(),
             OrderId = order.Id,
             UserId = order.UserId,
             TenantId = order.TenantId,
-            RefundAmount = order.AmountReceived,
+            RefundAmount = refundAmount.Value,
             AuditStatus = AuditStatus.Pending,
             RefundReason = refundReason,
             CreateTime = DateTimeOffset.Now,
