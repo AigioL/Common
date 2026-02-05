@@ -2,6 +2,7 @@ using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.Models;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
 using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
@@ -75,6 +76,11 @@ public static class ActiveUsersController
 
         var deviceId = model.GetDeviceId();
         if (deviceId == null)
+        {
+            return HttpStatusCode.BadRequest;
+        }
+
+        if (model.OSVersion == null || model.OSVersion.Length > MaxLengths.Version)
         {
             return HttpStatusCode.BadRequest;
         }
