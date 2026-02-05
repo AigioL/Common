@@ -60,11 +60,12 @@ public static partial class AftersalesBillController
         .WithDescription("分页查询售后单");
 
         routeGroup.MapPost("", async (HttpContext context,
-            [FromBody] AftersalesBillAddModel m) =>
+            [FromBody] AftersalesBillAddModel m,
+            [FromQuery] decimal? refundAmount = null) =>
         {
             var aftersalesBillRepo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
             var rabbitmqConn = context.RequestServices.GetRequiredService<IConnection>();
-            var result = await aftersalesBillRepo.CreateAftersalesBill(m.OrderId, m.RefundReason, null, context.RequestAborted);
+            var result = await aftersalesBillRepo.CreateAftersalesBill(m.OrderId, m.RefundReason, null, refundAmount, context.RequestAborted);
             if (!result.IsSuccess())
             {
                 var error = result.Message;
