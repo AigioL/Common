@@ -193,7 +193,7 @@ public static class MembershipController
         }
     }
 
-    static async Task<ApiRsp> CreateByCDKeyAsync(
+    static async Task<ApiRsp<DateTimeOffset?>> CreateByCDKeyAsync(
         ILogger logger,
         IConnectionMultiplexer conn,
         IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
@@ -216,12 +216,12 @@ public static class MembershipController
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
         return r;
 
-        async Task<ApiRsp<nil>> HandleCoreAsync()
+        async Task<ApiRsp<DateTimeOffset?>> HandleCoreAsync()
         {
             var productKey = await membershipProductKeyRecordRepo.FindAsync(cdKey);
             if (productKey == null || productKey.IsUsed)
             {
-                return "CDKey 不存在 或 已被激活";
+                return "CDKey 不存在或已被激活";
             }
 
             var goods = await membershipGoodsRepo.FindAsync(productKey.MembershipGoodsId);
@@ -229,20 +229,20 @@ public static class MembershipController
                 (goods.MemberLicenseType != MembershipLicenseFlags.CDKey &&
                 goods.MemberLicenseType != MembershipLicenseFlags.Points))
             {
-                return "充值商品类型未找到 充值类型不匹配";
+                return "充值商品类型未找到或充值类型不匹配";
             }
 
             var r = await userMembershipService.CreateMembershipOrderByCDKeyAsync(cdKeyRequest.UserId, productKey, goods);
-            if (r)
+            if (r.isOK)
             {
-                return (ApiRspCode.OK, "兑换成功");
+                return r.currentRealExpireDate;
             }
 
             logger.LogTrace("{cdKey}({cdKeyS}) create businessOrder by cdkey failed", cdKey, cdKeyRequest.CDKey);
             return "CDKey 已被使用";
         }
 
-        async Task<ApiRsp<nil>> ErrorHandleAsync(Exception ex)
+        async Task<ApiRsp<DateTimeOffset?>> ErrorHandleAsync(Exception ex)
         {
             await Task.CompletedTask;
             logger.LogError(ex, "{cdKey}({cdKeyS}) create businessOrder by cdkey error", cdKey, cdKeyRequest.CDKey);

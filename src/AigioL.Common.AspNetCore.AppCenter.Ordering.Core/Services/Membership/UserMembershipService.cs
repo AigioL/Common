@@ -56,7 +56,7 @@ sealed partial class UserMembershipService(
         return result.Success ? result.Order?.Id : null;
     }
 
-    public async Task<bool> CreateMembershipOrderByCDKeyAsync(
+    public async Task<(bool isOK, DateTimeOffset? currentRealExpireDate)> CreateMembershipOrderByCDKeyAsync(
         Guid userId,
         MembershipProductKeyRecord productKeyRecord,
         MembershipGoods goods,
@@ -64,7 +64,7 @@ sealed partial class UserMembershipService(
     {
         if (productKeyRecord.MembershipGoodsId != goods.Id)
         {
-            return false;
+            return (false, null);
         }
 
         var membershipOrder = new MembershipBusinessOrder
@@ -81,7 +81,7 @@ sealed partial class UserMembershipService(
         };
 
         var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder);
-        return result.Success;
+        return (result.Success, result.currentRealExpireDate);
     }
 
     #region SubscribeHandle / 支付订单通知处理
@@ -136,7 +136,7 @@ sealed partial class UserMembershipService(
             BusinessSource = MembershipBusinessSource.协议扣款,
         };
 
-        // 创建瓦特会员订单：通用订单、业务订单、支付组成一并创建
+        // 创建会员订单：通用订单、业务订单、支付组成一并创建
         var result = await membershipBusinessOrderRepo.CreateBusinessOrder(
             membershipOrder,
             true,

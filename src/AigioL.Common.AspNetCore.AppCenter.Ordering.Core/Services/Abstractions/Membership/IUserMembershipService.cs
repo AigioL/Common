@@ -18,7 +18,7 @@ public interface IUserMembershipService
     /// <summary>
     /// CDKey 兑换会员
     /// </summary>
-    Task<bool> CreateMembershipOrderByCDKeyAsync(
+    Task<(bool isOK, DateTimeOffset? currentRealExpireDate)> CreateMembershipOrderByCDKeyAsync(
         Guid userId,
         MembershipProductKeyRecord productKeyRecord,
         MembershipGoods goods,

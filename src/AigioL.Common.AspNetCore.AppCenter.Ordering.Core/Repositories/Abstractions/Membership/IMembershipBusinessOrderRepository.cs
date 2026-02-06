@@ -44,7 +44,7 @@ partial interface IMembershipBusinessOrderRepository
     /// <summary>
     /// 创建业务订单 (普通会员、CDKey 兑换、自动续费会员)， if isAgreementDeduction is <see langword="true"/>, paymentType is required
     /// </summary>
-    Task<(bool Success, Order? Order)> CreateBusinessOrder(
+    Task<(bool Success, Order? Order, DateTimeOffset? currentRealExpireDate)> CreateBusinessOrder(
         MembershipBusinessOrder business_order,
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
@@ -91,7 +91,7 @@ partial interface IMembershipBusinessOrderRepository
     /// <summary>
     /// 创建或更新用户会员信息
     /// </summary>
-    Task<bool> CreateOrUpdateUserMembershipAsync(
+    Task<(int rowCount, DateTimeOffset? currentRealExpireDate)> CreateOrUpdateUserMembershipAsync(
        Guid businessOrderId,
        TimeSpan rechargeTimeSpan,
        Guid userId,
