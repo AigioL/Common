@@ -12,7 +12,9 @@ using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
+using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Controllers;
 
@@ -77,14 +79,18 @@ public static class MembershipController
         routeGroup.MapPost("create/cdkey", async (HttpContext context,
             [FromBody] MembershipCDKeyRequest request) =>
         {
+            var ip = context.Connection.RemoteIpAddress?.ToString();
+            if (string.IsNullOrWhiteSpace(ip))
+            {
+                return "未知的 IP 地址";
+            }
             var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MembershipController));
             var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
             var membershipGoodsRepo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
             var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
             var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
-            var r = await CreateByCDKeyAsync(
-                logger, conn, membershipProductKeyRecordRepo,
-                membershipGoodsRepo, userMembershipService, request);
+            var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
+            var r = await CreateByCDKeyAsync(ip, logger, conn, cache, membershipProductKeyRecordRepo, membershipGoodsRepo, userMembershipService, request, context.RequestAborted);
             return r;
         }).AllowAnonymous()
         .WithDescription("使用 CDKey 兑换会员");
@@ -193,13 +199,21 @@ public static class MembershipController
         }
     }
 
+    /// <summary>
+    /// 使用 CDKey 兑换会员的 IP 锁定时间，单位分钟，超过次数限制后锁定该 IP 一段时间，减少暴力破解 CDKey 的风险
+    /// </summary>
+    static readonly TimeSpan CreateByCDKeyIpLockoutTimeSpan = TimeSpan.FromMinutes(10);
+
     static async Task<ApiRsp<DateTimeOffset?>> CreateByCDKeyAsync(
+        string ip,
         ILogger logger,
         IConnectionMultiplexer conn,
+        IDistributedCache cache,
         IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
         IMembershipGoodsRepository membershipGoodsRepo,
         IUserMembershipService userMembershipService,
-        MembershipCDKeyRequest cdKeyRequest)
+        MembershipCDKeyRequest cdKeyRequest,
+        CancellationToken cancellationToken = default)
     {
         Guid cdKey;
         var cdKeyB58 = Base58Guid.Decode(cdKeyRequest.CDKey);
@@ -212,8 +226,26 @@ public static class MembershipController
             return "CDKey 不合法";
         }
 
+        // IP Redis 键检查周期内失败次数过多限制
+        var ipCacheKey = $"CreateByCDKey_Ip_[{ip}]";
+        var ipAccessFailedCountB = await cache.GetAsync(ipCacheKey, cancellationToken);
+        var ipAccessFailedCount = ipAccessFailedCountB == null ? 0 : BinaryPrimitives.ReadInt32BigEndian(ipAccessFailedCountB);
+        if (ipAccessFailedCount >= CacheKeys.MaxIpAccessFailedCount)
+        {
+            return HttpStatusCode.TooManyRequests;
+        }
+
         var lockKey = CacheKeys.GetUserRechargeOperationLockKey(cdKey);
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
+        if (!r.IsSuccess())
+        {
+            var ipAccessFailedCountS = new byte[sizeof(int)];
+            BinaryPrimitives.WriteInt32BigEndian(ipAccessFailedCountS, ipAccessFailedCount + 1);
+            await cache.SetAsync(ipCacheKey, ipAccessFailedCountS, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = CreateByCDKeyIpLockoutTimeSpan,
+            }, CancellationToken.None);
+        }
         return r;
 
         async Task<ApiRsp<DateTimeOffset?>> HandleCoreAsync()
@@ -242,11 +274,11 @@ public static class MembershipController
             return "CDKey 已被使用";
         }
 
-        async Task<ApiRsp<DateTimeOffset?>> ErrorHandleAsync(Exception ex)
+        Task<ApiRsp<DateTimeOffset?>> ErrorHandleAsync(Exception ex)
         {
-            await Task.CompletedTask;
             logger.LogError(ex, "{cdKey}({cdKeyS}) create businessOrder by cdkey error", cdKey, cdKeyRequest.CDKey);
-            return ApiRspCode.InternalServerError;
+            ApiRsp<DateTimeOffset?> r = ApiRspCode.InternalServerError;
+            return Task.FromResult(r);
         }
     }
 

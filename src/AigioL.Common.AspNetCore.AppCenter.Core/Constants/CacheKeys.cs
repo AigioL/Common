@@ -253,4 +253,8 @@ public static partial class CacheKeys
     /// </summary>
     public const string TauriUpdaterStaticJSONFile = "TauriUpdaterStaticJSONFile_{0}_{1}";
 
+    /// <summary>
+    /// 通用的 IP 地址访问失败次数限制最大值
+    /// </summary>
+    public const int MaxIpAccessFailedCount = 10;
 }

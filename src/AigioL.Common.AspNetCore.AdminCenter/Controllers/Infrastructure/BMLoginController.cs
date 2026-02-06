@@ -44,7 +44,6 @@ public static partial class BMLoginController
             return HttpStatusCode.BadRequest;
         }
 
-
         var ip = context.Connection.RemoteIpAddress?.ToString();
         if (string.IsNullOrWhiteSpace(ip))
         {
@@ -57,6 +56,7 @@ public static partial class BMLoginController
 
         TUser? user = null;
 
+        // IP Redis 键检查周期内失败次数过多限制
         var ipCacheKey = $"BM_Login_Ip_[{ip}]";
         var ipAccessFailedCountB = await cache.GetAsync(ipCacheKey, context.RequestAborted);
         var ipAccessFailedCount = ipAccessFailedCountB == null ? 0 : BinaryPrimitives.ReadInt32BigEndian(ipAccessFailedCountB);
@@ -77,7 +77,7 @@ public static partial class BMLoginController
                 await userManager.UpdateAsync(user);
             }
 
-            await cache.SetAsync(ipCacheKey, ipAccessFailedCountS.ToArray(), new DistributedCacheEntryOptions
+            await cache.SetAsync(ipCacheKey, ipAccessFailedCountS, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = options.Lockout.DefaultLockoutTimeSpan,
             }, CancellationToken.None);
