@@ -210,8 +210,9 @@ sealed partial class UserMembershipService(
         return true;
     }
 
-    public async Task<bool> EditUserMembershipAsync(
+    public async Task<bool> EditUserMembershipWithRefreshUserMembershipCacheAsync(
         Guid userId,
+        Guid? bmUserId,
         DateTimeOffset? endTime,
         TimeSpan? timeSpan,
         string? note)
@@ -221,6 +222,13 @@ sealed partial class UserMembershipService(
             return false;
         }
 
-        throw new NotImplementedException("TODO: 未实现");
+        var rowCount = await userMembershipRepo.EditUserMembershipAsync(userId, bmUserId, endTime, timeSpan, note);
+        var isOK = rowCount > 0;
+        if (isOK)
+        {
+            isOK = await RefreshUserMembershipCacheAsync(userId);
+            return isOK;
+        }
+        return false;
     }
 }

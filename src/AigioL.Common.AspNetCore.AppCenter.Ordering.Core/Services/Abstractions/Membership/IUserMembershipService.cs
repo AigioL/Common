@@ -69,10 +69,11 @@ public interface IUserMembershipService
     Task<bool> RefreshUserMembershipCacheAsync(Guid userId);
 
     /// <summary>
-    /// 编辑用户会员时长
+    /// 编辑用户会员时长并刷新用户会员信息缓存
     /// </summary>
-    Task<bool> EditUserMembershipAsync(
+    Task<bool> EditUserMembershipWithRefreshUserMembershipCacheAsync(
         Guid userId,
+        Guid? bmUserId,
         DateTimeOffset? endTime,
         TimeSpan? timeSpan,
         string? note);

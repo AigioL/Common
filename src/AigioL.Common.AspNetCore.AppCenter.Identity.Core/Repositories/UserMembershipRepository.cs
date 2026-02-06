@@ -11,15 +11,11 @@ using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
 
-sealed partial class UserMembershipRepository<TDbContext> :
-    Repository<TDbContext, UserMembership, Guid>,
+sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, IServiceProvider serviceProvider) :
+    Repository<TDbContext, UserMembership, Guid>(dbContext, serviceProvider),
     IUserMembershipRepository
     where TDbContext : DbContext, IIdentityDbContext
 {
-    public UserMembershipRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
-    {
-    }
-
     public async Task<bool> AddUserMembershipFlagAsync(Guid userId, MembershipLicenseFlags membershipLicenseFlags)
     {
         var flags = Enum.GetValues<MembershipLicenseFlags>().Where(x => membershipLicenseFlags.HasFlag(x)).ToArray();
@@ -174,6 +170,64 @@ sealed partial class UserMembershipRepository<TDbContext> :
         }
 
         return Result(r);
+    }
+
+    public async Task<int> EditUserMembershipAsync(
+        Guid userId,
+        Guid? bmUserId,
+        DateTimeOffset? endTime,
+        TimeSpan? timeSpan,
+        string? note)
+    {
+        var now = DateTimeOffset.UtcNow;
+        var query = db.UserMemberships.Where(x => x.Id == userId);
+        int rowCount;
+        TimeSpan changeValue;
+        if (timeSpan.HasValue)
+        {
+            var expireDate = now + timeSpan.Value;
+            rowCount = await query.ExecuteUpdateAsync(p => p
+                .SetProperty(x => x.UpdateTime, now)
+                .SetProperty(x => x.FirstMembershipDate, x => x.FirstMembershipDate == default ? now : x.FirstMembershipDate)
+                .SetProperty(x => x.StartDate, x => x.StartDate == default ? now : x.FirstMembershipDate)
+                .SetProperty(x => x.ExpireDate, x => x.ExpireDate == default ? expireDate : x.ExpireDate.Add(timeSpan.Value))
+            );
+            changeValue = timeSpan.Value;
+        }
+        else if (endTime.HasValue)
+        {
+            var expireDate = await query.Select(x => x.ExpireDate).SingleOrDefaultAsync();
+            rowCount = await query.ExecuteUpdateAsync(p => p
+                .SetProperty(x => x.UpdateTime, now)
+                .SetProperty(x => x.FirstMembershipDate, x => x.FirstMembershipDate == default ? now : x.FirstMembershipDate)
+                .SetProperty(x => x.StartDate, x => x.StartDate == default ? now : x.FirstMembershipDate)
+                .SetProperty(x => x.ExpireDate, endTime.Value)
+            );
+            changeValue = endTime.Value - (expireDate == default ? now : expireDate);
+        }
+        else
+        {
+            return 0;
+        }
+
+        if (rowCount > 0)
+        {
+            var expireDate = await query.Select(x => x.ExpireDate).SingleOrDefaultAsync();
+            UserMembershipChangeRecord record = new()
+            {
+                UserId = userId,
+                MembershipChangeDirection = changeValue < TimeSpan.Zero ? MembershipChangeDirection.Out : MembershipChangeDirection.In,
+                Value = changeValue,
+                Note = note,
+                CurrentRealExpireDate = expireDate,
+                CreateTime = now,
+                CreateUserId = bmUserId,
+            };
+            await db.UserMembershipChangeRecords.AddAsync(record);
+            rowCount += await db.SaveChangesAsync();
+        }
+
+        return rowCount;
     }
 
     [LoggerMessage(

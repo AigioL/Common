@@ -7,6 +7,7 @@ using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -135,10 +136,10 @@ public static partial class UsersController
             [FromQuery] string? note,
             [FromQuery] string? sourceId,
             [FromQuery] bool? noticeStatus,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
             var userWalletChangeRecordRepo = context.RequestServices.GetRequiredService<IUserWalletChangeRecordRepository>();
             BMApiRsp<PagedModel<UserWalletChangeRecordModel>?> r = await userWalletChangeRecordRepo.QueryAsync(
                 userId, @event, @type,
@@ -153,8 +154,19 @@ public static partial class UsersController
         routeGroup.MapPut("membership", async (HttpContext context,
             [FromBody] SetUserMembershipModel model) =>
         {
+            if (string.IsNullOrWhiteSpace(model.Note))
+            {
+                return "备注不能为空";
+            }
+            else if (model.Note.Length > MaxLengths.Text)
+            {
+                return $"备注长度不能超过 {MaxLengths.Text}";
+            }
+            var userId = context.GetBMUserId();
             var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
-            var isOk = await userMembershipService.EditUserMembershipAsync(model.UserId, model.EndTime, model.TimeSpan, model.Note);
+            var isOk = await userMembershipService.EditUserMembershipWithRefreshUserMembershipCacheAsync(
+                model.UserId, userId, model.EndTime,
+                model.TimeSpan, model.Note);
             var r = BMApiRsp.OkBoolean(isOk);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)

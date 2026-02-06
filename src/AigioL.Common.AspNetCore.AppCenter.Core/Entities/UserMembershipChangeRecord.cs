@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Models;
@@ -5,7 +6,7 @@ using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 
@@ -14,10 +15,9 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// </summary>
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class UserMembershipChangeRecord :
-    Entity<Guid>,
+    CreationBaseEntity<Guid>,
     INEWSEQUENTIALID,
-    INote,
-    ICreateTime
+    INote
 {
     /// <summary>
     /// 用户 Id
@@ -47,6 +47,7 @@ public partial class UserMembershipChangeRecord :
 
     /// <inheritdoc/>
     [Comment("备注")]
+    [StringLength(MaxLengths.Text)]
     public string? Note { get; set; }
 
     /// <summary>
@@ -55,16 +56,12 @@ public partial class UserMembershipChangeRecord :
     [Comment("变更后的实际到期时间")]
     public DateTimeOffset CurrentRealExpireDate { get; set; }
 
-    /// <summary>
-    /// 变更时间
-    /// </summary>
-    [Comment("变更时间")]
-    public DateTimeOffset CreateTime { get; set; }
-
-    public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<UserMembershipChangeRecord>
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<UserMembershipChangeRecord>
     {
-        public void Configure(EntityTypeBuilder<UserMembershipChangeRecord> builder)
+        public sealed override void Configure(EntityTypeBuilder<UserMembershipChangeRecord> builder)
         {
+            base.Configure(builder);
+
             builder.ToTable(IAppDbContextBase.TableNames.UserMembershipChangeRecords);
 
             builder.HasIndex(x => new { x.MembershipChangeDirection, x.MemberLicenseType });

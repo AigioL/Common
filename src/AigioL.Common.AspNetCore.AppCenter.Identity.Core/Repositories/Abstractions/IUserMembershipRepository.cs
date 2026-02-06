@@ -33,4 +33,14 @@ public partial interface IUserMembershipRepository : IRepository<UserMembership,
         Guid userId,
         bool isLockTake = false,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 编辑用户会员时长
+    /// </summary>
+    Task<int> EditUserMembershipAsync(
+        Guid userId,
+        Guid? bmUserId,
+        DateTimeOffset? endTime,
+        TimeSpan? timeSpan,
+        string? note);
 }

@@ -531,7 +531,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         DateTimeOffset currentRealExpireDate,
         DateTimeOffset? now = null)
     {
-        var changeRecord = new UserMembershipChangeRecord()
+        var record = new UserMembershipChangeRecord()
         {
             UserId = userId,
             MembershipChangeDirection = MembershipChangeDirection.Out,
@@ -541,7 +541,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             CreateTime = now ?? DateTimeOffset.Now,
         };
 
-        await db.UserMembershipChangeRecords.AddAsync(changeRecord);
+        await db.UserMembershipChangeRecords.AddAsync(record);
         var r = await db.SaveChangesAsync();
         return r > 0;
     }

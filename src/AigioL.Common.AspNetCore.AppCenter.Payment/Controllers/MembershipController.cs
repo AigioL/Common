@@ -193,7 +193,7 @@ public static class MembershipController
         }
     }
 
-    static async Task<ApiRsp<bool>> CreateByCDKeyAsync(
+    static async Task<ApiRsp> CreateByCDKeyAsync(
         ILogger logger,
         IConnectionMultiplexer conn,
         IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
@@ -216,7 +216,7 @@ public static class MembershipController
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
         return r;
 
-        async Task<ApiRsp<bool>> HandleCoreAsync()
+        async Task<ApiRsp<nil>> HandleCoreAsync()
         {
             var productKey = await membershipProductKeyRecordRepo.FindAsync(cdKey);
             if (productKey == null || productKey.IsUsed)
@@ -242,7 +242,7 @@ public static class MembershipController
             return "CDKey 已被使用";
         }
 
-        async Task<ApiRsp<bool>> ErrorHandleAsync(Exception ex)
+        async Task<ApiRsp<nil>> ErrorHandleAsync(Exception ex)
         {
             await Task.CompletedTask;
             logger.LogError(ex, "{cdKey}({cdKeyS}) create businessOrder by cdkey error", cdKey, cdKeyRequest.CDKey);
