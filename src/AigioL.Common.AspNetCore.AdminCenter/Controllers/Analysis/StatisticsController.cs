@@ -25,7 +25,7 @@ public static partial class StatisticsController
 
     public static void MapAnalysisStatistics(
         this IEndpointRouteBuilder b,
-        [StringSyntax("Route")] string pattern = "ms/basics/statistics")
+        [StringSyntax("Route")] string pattern = "ms/analysis/statistics")
     {
         var routeGroup = b.MapGroup(pattern)
             .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
