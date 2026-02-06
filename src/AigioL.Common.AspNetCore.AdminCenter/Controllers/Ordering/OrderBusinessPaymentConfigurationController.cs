@@ -35,11 +35,11 @@ public static partial class OrderBusinessPaymentConfigurationController
             [FromQuery] string? operatorUser = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset[]? createTime = null,
+            [FromQuery] DateTimeOffset[]? updateTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRange("createTime");
-            var updateTime = context.GetQueryDateTimeRange("updateTime");
             var orderBusinessPaymentConfigurationRepo = context.RequestServices.GetRequiredService<IOrderBusinessPaymentConfigurationRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await orderBusinessPaymentConfigurationRepo.QueryAsync(
                 businessType, paymentMethod, paymentType,

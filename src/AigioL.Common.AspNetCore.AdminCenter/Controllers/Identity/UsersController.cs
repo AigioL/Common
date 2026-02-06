@@ -43,12 +43,12 @@ public static partial class UsersController
             [FromQuery] bool? isLockout,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? lastLoginTime = null,
+            [FromQuery] DateTimeOffset?[]? startTime = null,
+            [FromQuery] DateTimeOffset?[]? endTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var lastLoginTime = context.GetQueryDateTimeRangeNullable("lastLoginTime");
-            var startTime = context.GetQueryDateTimeRangeNullable("startTime");
-            var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userRepo = context.RequestServices.GetRequiredService<IUserRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await userRepo.QueryAsync(
                 id, openId, userType,

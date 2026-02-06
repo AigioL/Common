@@ -44,11 +44,11 @@ public static partial class OrderController
             [FromQuery] Guid? agreementId,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
+            [FromQuery] DateTimeOffset?[]? paymentTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
-            var paymentTime = context.GetQueryDateTimeRangeNullable("paymentTime");
             var orderRepo = context.RequestServices.GetRequiredService<IOrderRepository>();
             BMApiRsp<PagedModelEx<TableItemM, decimal>?> r = await orderRepo.QueryAsync(
                 id, orderNumber, type,

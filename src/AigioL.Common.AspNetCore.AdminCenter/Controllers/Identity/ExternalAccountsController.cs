@@ -37,15 +37,15 @@ public static partial class ExternalAccountsController
             [FromQuery] string? userNickName,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? startTime = null,
+            [FromQuery] DateTimeOffset?[]? endTime = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
+            [FromQuery] DateTimeOffset?[]? updateTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
-            var updateTime = context.GetQueryDateTimeRangeNullable("updateTime");
-            var startTime = context.GetQueryDateTimeRangeNullable("startTime");
-            var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userDeviceRepo = context.RequestServices.GetRequiredService<IExternalAccountRepository>();
-            BMApiRsp<PagedModel<TableItemM>> r = await userDeviceRepo.QueryAsync(
+            BMApiRsp<PagedModel<TableItemM>?> r = await userDeviceRepo.QueryAsync(
                 userId, externalAccountId, type,
                 nickName, givenName, surname,
                 gender, email, userNickName,

@@ -32,12 +32,12 @@ public static class UserOrderController
             [FromQuery] long? orderNumber = null,
             [FromQuery] int? businessType = null,
             [FromQuery] string? note = null,
+            [FromQuery] DateTimeOffset?[]? paymentTime = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
+            [FromQuery] OrderStatus[]? status = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var status = context.GetQueryEnums<OrderStatus>("status");
-            var paymentTime = context.GetQueryDateTimeRangeNullable("paymentTime");
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
             if (note == null)
             {
                 if (context.Request.Query.TryGetValue("remarks", out var remarks) && !StringValues.IsNullOrEmpty(remarks))
@@ -68,12 +68,11 @@ public static class UserOrderController
             return r;
         }).WithDescription("通过支付记录查询用户绑定外部平台信息");
         routeGroup.MapGet("count", async (HttpContext context,
-            //[FromQuery] OrderStatus?[]? status = null,
+            [FromQuery] OrderStatus[]? status = null,
             [FromQuery] int? businessType = null) =>
         {
             var userId = context.GetUserIdThrowIfNull();
             var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
-            var status = context.GetQueryEnums<OrderStatus>("status");
             var r = await GetUserOrderCount(
                 userId, repo, status,
                 businessType, context.RequestAborted);

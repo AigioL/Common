@@ -41,11 +41,11 @@ public static partial class AftersalesBillController
             [FromQuery] string? operatorUser = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
+            [FromQuery] DateTimeOffset?[]? updateTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
-            var updateTime = context.GetQueryDateTimeRangeNullable("updateTime");
             var aftersalesBillRepo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await aftersalesBillRepo.QueryAsync(
                 orderNumber, aftersalesNumber, businessType,

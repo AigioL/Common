@@ -38,11 +38,11 @@ public static partial class ArticleController
             [FromQuery] string? operatorUser = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
+            [FromQuery] DateTimeOffset?[]? updateTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
-            var updateTime = context.GetQueryDateTimeRangeNullable("updateTime");
             var articleRepo = context.RequestServices.GetRequiredService<IArticleRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await articleRepo.QueryAsync(
                 id, categoryId, tagId,

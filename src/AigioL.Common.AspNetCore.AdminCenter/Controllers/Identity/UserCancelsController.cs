@@ -33,13 +33,13 @@ public static partial class UserCancelsController
             [FromQuery] int? areaId,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? birthDate = null,
+            [FromQuery] DateTimeOffset?[]? startTime = null,
+            [FromQuery] DateTimeOffset?[]? endTime = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
-            var birthDate = context.GetQueryDateTimeRangeNullable("birthDate");
-            var startTime = context.GetQueryDateTimeRangeNullable("startTime");
-            var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userDeleteRepo = context.RequestServices.GetRequiredService<IUserDeleteRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await userDeleteRepo.QueryAsync(
                 userId, phoneNumber, email,

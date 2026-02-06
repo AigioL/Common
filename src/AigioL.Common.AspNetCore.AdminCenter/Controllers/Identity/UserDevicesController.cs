@@ -33,12 +33,12 @@ public static partial class UserDevicesController
             [FromQuery] DevicePlatform2? platform,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? lastLoginTime = null,
+            [FromQuery] DateTimeOffset?[]? startTime = null,
+            [FromQuery] DateTimeOffset?[]? endTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var lastLoginTime = context.GetQueryDateTimeRangeNullable("lastLoginTime");
-            var startTime = context.GetQueryDateTimeRangeNullable("startTime");
-            var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var userDeviceRepo = context.RequestServices.GetRequiredService<IUserDeviceRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await userDeviceRepo.QueryAsync(
                 userId, nickName, deviceName,

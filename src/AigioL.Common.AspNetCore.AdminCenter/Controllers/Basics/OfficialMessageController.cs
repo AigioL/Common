@@ -33,12 +33,12 @@ public static partial class OfficialMessageController
             [FromQuery] bool? userViewable,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? pushTime = null,
+            [FromQuery] DateTimeOffset?[]? expireTime = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var pushTime = context.GetQueryDateTimeRangeNullable("pushTime");
-            var expireTime = context.GetQueryDateTimeRangeNullable("expireTime");
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
             var officialMessageRepo = context.RequestServices.GetRequiredService<IOfficialMessageRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await officialMessageRepo.QueryAsync(
                 messageType, title, pushClientDevice,

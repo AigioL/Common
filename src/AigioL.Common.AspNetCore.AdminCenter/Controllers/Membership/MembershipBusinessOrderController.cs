@@ -40,11 +40,11 @@ public static partial class MembershipBusinessOrderController
             [FromQuery] string? cdkey,
             [FromQuery] string? orderBy,
             [FromQuery] bool? desc,
+            [FromQuery] DateTimeOffset?[]? paymentTime = null,
+            [FromQuery] DateTimeOffset?[]? rechargeCompletionTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var paymentTime = context.GetQueryDateTimeRangeNullable("paymentTime");
-            var rechargeCompletionTime = context.GetQueryDateTimeRangeNullable("rechargeCompletionTime");
             var membershipBusinessOrderRepo = context.RequestServices.GetRequiredService<IMembershipBusinessOrderRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await membershipBusinessOrderRepo.QueryAsync(
                 id, goodsName, goodsNo,

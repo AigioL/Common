@@ -36,12 +36,12 @@ public static partial class AuthMessageRecordController
             [FromQuery] bool? checkSuccess,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? startTime = null,
+            [FromQuery] DateTimeOffset?[]? endTime = null,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRangeNullable("createTime");
-            var startTime = context.GetQueryDateTimeRangeNullable("startTime");
-            var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await authMessageRecordRepo.QueryAsync(
                 userId, phoneNumber, phoneNumberRegionCode,

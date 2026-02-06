@@ -35,11 +35,11 @@ public static partial class KomaasharuController
             [FromQuery] bool? disable,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset?[]? startTime = null,
+            [FromQuery] DateTimeOffset?[]? endTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var startTime = context.GetQueryDateTimeRangeNullable("startTime");
-            var endTime = context.GetQueryDateTimeRangeNullable("endTime");
             var advertisementRepo = context.RequestServices.GetRequiredService<IKomaasharuRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await advertisementRepo.QueryAsync(
                 name, type, orientation,

@@ -48,11 +48,11 @@ public static partial class RefundBillController
             [FromQuery] bool? desc = null,
             [FromQuery] string? goodsType = null,
             [FromQuery] bool? isSettlement = null,
+            [FromQuery] DateTimeOffset[]? createTime = null,
+            [FromQuery] DateTimeOffset[]? updateTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRange("createTime");
-            var updateTime = context.GetQueryDateTimeRange("updateTime");
             var refundBillRepo = context.RequestServices.GetRequiredService<IRefundBillRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await refundBillRepo.QueryAsync(
                 userId, refundNumber, aftersalesNumber,

@@ -40,11 +40,11 @@ public static partial class MerchantDeductionAgreementConfigurationController
             [FromQuery] string? remarks = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset[]? createTime = null,
+            [FromQuery] DateTimeOffset[]? updateTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRange("createTime");
-            var updateTime = context.GetQueryDateTimeRange("updateTime");
             var merchantDeductionAgreementConfigurationRepo = context.RequestServices.GetRequiredService<IMerchantDeductionAgreementConfigurationRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await merchantDeductionAgreementConfigurationRepo.QueryAsync(
                 code, name, planId,

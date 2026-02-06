@@ -32,11 +32,11 @@ public static partial class ArticleTagController
             [FromQuery] string? operatorUser = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
+            [FromQuery] DateTimeOffset[]? createTime = null,
+            [FromQuery] DateTimeOffset[]? updateTime = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
-            var createTime = context.GetQueryDateTimeRange("createTime");
-            var updateTime = context.GetQueryDateTimeRange("updateTime");
             var articleTagRepo = context.RequestServices.GetRequiredService<IArticleTagRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await articleTagRepo.QueryAsync(
                 name, createTime, updateTime,
