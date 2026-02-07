@@ -51,7 +51,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
     #region CreateMembershipBusinessOrder / 创建业务订单
 
-    public async Task<(bool Success, Order? Order, DateTimeOffset? currentRealExpireDate)> CreateBusinessOrder(
+    /// <inheritdoc/>
+    public async Task<(bool Success, Order? Order, UserMembershipChangeRecord? record)> CreateBusinessOrder(
         MembershipBusinessOrder business_order,
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
@@ -72,8 +73,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         // CDKey 兑换
         else if (business_order.BusinessSource == MembershipBusinessSource.CDK激活)
         {
-            var resultCDK = await CreateMembershipBusinessOrderByCDKeyAsync(business_order);
-            return (resultCDK.isOK, null, resultCDK.currentRealExpireDate);
+            var (isOK, record) = await CreateMembershipBusinessOrderByCDKeyAsync(business_order);
+            return (isOK, null, record);
         }
         // 普通订单
         else
@@ -297,7 +298,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         }
     }
 
-    public async Task<(int rowCount, DateTimeOffset? currentRealExpireDate)> CreateOrUpdateUserMembershipAsync(
+    public async Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(
         Guid businessOrderId,
         TimeSpan rechargeTimeSpan,
         Guid userId,
@@ -358,7 +359,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
         if (userMembershipChangeSuccess)
         {
-            var userMembershipChangeRecord = new UserMembershipChangeRecord()
+            var record = new UserMembershipChangeRecord()
             {
                 UserId = userId,
                 MembershipChangeDirection = MembershipChangeDirection.In,
@@ -369,9 +370,9 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 CurrentRealExpireDate = currentRealExpireDate,
             };
 
-            db.UserMembershipChangeRecords.Add(userMembershipChangeRecord);
+            db.UserMembershipChangeRecords.Add(record);
             var rowCount = await db.SaveChangesAsync();
-            return (rowCount, currentRealExpireDate);
+            return (rowCount, record);
         }
 
         return (0, null);
@@ -379,13 +380,13 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
     #region Private Methods
 
-    Task<(int rowCount, DateTimeOffset? currentRealExpireDate)> CreateOrUpdateUserMembershipAsync(MembershipBusinessOrder business_order, DateTimeOffset? now)
+    Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(MembershipBusinessOrder business_order, DateTimeOffset? now)
     {
         var rechargeDays = business_order.RechargeDays;
         var rechargeTimeSpan = TimeSpan.FromDays(rechargeDays);
         return CreateOrUpdateUserMembershipAsync(
             business_order.Id, rechargeTimeSpan, business_order.UserId,
-            business_order.MemberLicenseType, business_order.BusinessSource);
+            business_order.MemberLicenseType, business_order.BusinessSource, now);
     }
 
     /// <summary>
@@ -640,13 +641,13 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// CDKey 渠道创建会员业务订单
     /// </summary>
-    async Task<(bool isOK, DateTimeOffset? currentRealExpireDate)> CreateMembershipBusinessOrderByCDKeyAsync(
+    async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipBusinessOrderByCDKeyAsync(
         MembershipBusinessOrder business_order)
     {
         var now = DateTimeOffset.Now;
         return await db.Database.CreateExecutionStrategy().ExecuteAsync(CoreAsync);
 
-        async Task<(bool isOK, DateTimeOffset? currentRealExpireDate)> CoreAsync()
+        async Task<(bool isOK, UserMembershipChangeRecord? record)> CoreAsync()
         {
             using var transaction = await db.Database.BeginTransactionAsync();
             try
@@ -661,7 +662,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 var orderAdd = await db.SaveChangesAsync() > 0;
 
                 // 会员充值
-                var (rowCount, currentRealExpireDate) = await CreateOrUpdateUserMembershipAsync(business_order, now);
+                var (rowCount, record) = await CreateOrUpdateUserMembershipAsync(business_order, now);
                 var userMembershipChangeSuccess = rowCount > 0;
 
                 // CDKey 可以使用则提交事务
@@ -674,7 +675,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 if (orderAdd && userMembershipChangeSuccess && r)
                 {
                     await transaction.CommitAsync();
-                    return (true, currentRealExpireDate);
+                    return (true, record);
                 }
                 throw new InvalidOperationException();
             }

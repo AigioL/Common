@@ -1,5 +1,11 @@
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
+using AigioL.Common.Models;
+using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
+using Order = AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
 
@@ -16,12 +22,20 @@ public interface IUserMembershipService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// CDKey 兑换会员
+    /// 使用 CDKey 兑换会员
     /// </summary>
-    Task<(bool isOK, DateTimeOffset? currentRealExpireDate)> CreateMembershipOrderByCDKeyAsync(
+    Task<ApiRsp<TContent?>> CreateByCDKeyAsync<TContent>(
+        Func<bool, UserMembershipChangeRecord, ApiRsp<TContent?>> getResult,
+        string ip,
+        ILogger logger,
+        IConnectionMultiplexer conn,
+        IDistributedCache cache,
+        IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
+        IMembershipGoodsRepository membershipGoodsRepo,
         Guid userId,
-        MembershipProductKeyRecord productKeyRecord,
-        MembershipGoods goods,
+        Guid cdKey,
+        Guid? channelPackageId,
+        bool isTimeSpan = false,
         CancellationToken cancellationToken = default);
 
     #region SubscribeHandle / 支付订单通知处理
@@ -61,7 +75,6 @@ public interface IUserMembershipService
     Task<bool> UnSignMerchantDeductionSuccessHandleAsync(string agreementNo);
 
     #endregion
-
 
     /// <summary>
     /// 刷新用户会员信息缓存

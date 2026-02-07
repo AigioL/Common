@@ -137,7 +137,7 @@ public sealed partial record class ApiRsp<TContent> : ApiRsp
 
     public static implicit operator ApiRsp<TContent?>(Exception exception)
     {
-        ApiRsp<TContent> result = new();
+        ApiRsp<TContent?> result = new();
         result.SetException(exception);
         return result;
     }

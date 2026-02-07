@@ -7,12 +7,9 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 public sealed partial class MembershipCDKeyRequest
 {
     [global::MemoryPack.MemoryPackOrder(0)]
-    public Guid UserId { get; set; }
-
-    [global::MemoryPack.MemoryPackOrder(1)]
     public required string CDKey { get; set; }
 
-    [global::MemoryPack.MemoryPackOrder(2)]
+    [global::MemoryPack.MemoryPackOrder(1)]
     public string? ChannelPackageId { get; set; }
 
 #if DEBUG

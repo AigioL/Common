@@ -1,4 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Constants;
+using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
@@ -7,7 +9,11 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
+using AigioL.Common.Models;
+using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
+using System.Buffers.Binary;
+using System.Net;
 using Order = AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Membership;
@@ -56,11 +62,11 @@ sealed partial class UserMembershipService(
         return result.Success ? result.Order?.Id : null;
     }
 
-    public async Task<(bool isOK, DateTimeOffset? currentRealExpireDate)> CreateMembershipOrderByCDKeyAsync(
+    public async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipOrderByCDKeyAsync(
         Guid userId,
         MembershipProductKeyRecord productKeyRecord,
         MembershipGoods goods,
-        CancellationToken cancellationToken = default)
+        Guid? channelPackageId = null)
     {
         if (productKeyRecord.MembershipGoodsId != goods.Id)
         {
@@ -78,10 +84,104 @@ sealed partial class UserMembershipService(
             MembershipGoodsId = goods.Id,
             BusinessSource = MembershipBusinessSource.CDK激活,
             ProductKeyRecordId = productKeyRecord.Id,
+            ChannelPackageId = channelPackageId,
         };
 
         var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder);
-        return (result.Success, result.currentRealExpireDate);
+        return (result.Success, result.record);
+    }
+
+    /// <summary>
+    /// 使用 CDKey 兑换会员的 IP 锁定时间，单位分钟，超过次数限制后锁定该 IP 一段时间，减少暴力破解 CDKey 的风险
+    /// </summary>
+    static readonly TimeSpan CreateByCDKeyIpLockoutTimeSpan = TimeSpan.FromMinutes(10);
+
+    public async Task<ApiRsp<TContent?>> CreateByCDKeyAsync<TContent>(
+        Func<bool, UserMembershipChangeRecord, ApiRsp<TContent?>> getResult,
+        string ip,
+        ILogger logger,
+        IConnectionMultiplexer conn,
+        IDistributedCache cache,
+        IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
+        IMembershipGoodsRepository membershipGoodsRepo,
+        Guid userId,
+        Guid cdKey,
+        Guid? channelPackageId,
+        bool isTimeSpan = false,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(ip))
+        {
+            return "未知的 IP 地址";
+        }
+
+        //Guid cdKey;
+        //var cdKeyB58 = Base58Guid.Decode(cdKeyRequest.CDKey);
+        //if (cdKeyB58.HasValue)
+        //{
+        //    cdKey = cdKeyB58.Value;
+        //}
+        //else if (!ShortGuid.TryParse(cdKeyRequest.CDKey, out cdKey))
+        //{
+        //    return "CDKey 不合法";
+        //}
+
+        // IP Redis 键检查周期内失败次数过多限制
+        var ipCacheKey = $"CreateByCDKey_Ip_[{ip}]";
+        var ipAccessFailedCountB = await cache.GetAsync(ipCacheKey, cancellationToken);
+        var ipAccessFailedCount = ipAccessFailedCountB == null ? 0 : BinaryPrimitives.ReadInt32BigEndian(ipAccessFailedCountB);
+        if (ipAccessFailedCount >= CacheKeys.MaxIpAccessFailedCount)
+        {
+            return HttpStatusCode.TooManyRequests;
+        }
+
+        var lockKey = CacheKeys.GetUserRechargeOperationLockKey(cdKey);
+        var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
+        if (!r.IsSuccess())
+        {
+            var ipAccessFailedCountS = new byte[sizeof(int)];
+            BinaryPrimitives.WriteInt32BigEndian(ipAccessFailedCountS, ipAccessFailedCount + 1);
+            await cache.SetAsync(ipCacheKey, ipAccessFailedCountS, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = CreateByCDKeyIpLockoutTimeSpan,
+            }, CancellationToken.None);
+        }
+        return r;
+
+        async Task<ApiRsp<TContent?>> HandleCoreAsync()
+        {
+            var productKey = await membershipProductKeyRecordRepo.FindAsync(cdKey, cancellationToken: cancellationToken);
+            if (productKey == null || productKey.IsUsed)
+            {
+                return "CDKey 不存在或已被激活";
+            }
+
+            var goods = await membershipGoodsRepo.FindAsync(productKey.MembershipGoodsId, cancellationToken: cancellationToken);
+            if (goods == null ||
+                (goods.MemberLicenseType != MembershipLicenseFlags.CDKey &&
+                goods.MemberLicenseType != MembershipLicenseFlags.Points))
+            {
+                return "充值商品类型未找到或充值类型不匹配";
+            }
+
+            var r = await CreateMembershipOrderByCDKeyAsync(userId, productKey, goods, channelPackageId);
+            if (r.isOK)
+            {
+                ArgumentNullException.ThrowIfNull(r.record);
+                var r2 = getResult(isTimeSpan, r.record);
+                return r2;
+            }
+
+            logger.LogTrace("{cdKey}({cdKeyS}) create businessOrder by cdkey failed", cdKey, cdKey);
+            return "CDKey 已被使用";
+        }
+
+        Task<ApiRsp<TContent?>> ErrorHandleAsync(Exception ex)
+        {
+            logger.LogError(ex, "{cdKey}({cdKeyS}) create businessOrder by cdkey error", cdKey, cdKey);
+            ApiRsp<TContent?> r = ApiRspCode.InternalServerError;
+            return Task.FromResult(r);
+        }
     }
 
     #region SubscribeHandle / 支付订单通知处理

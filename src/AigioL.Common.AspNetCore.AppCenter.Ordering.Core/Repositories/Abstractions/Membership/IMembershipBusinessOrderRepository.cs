@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
@@ -44,7 +45,7 @@ partial interface IMembershipBusinessOrderRepository
     /// <summary>
     /// 创建业务订单 (普通会员、CDKey 兑换、自动续费会员)， if isAgreementDeduction is <see langword="true"/>, paymentType is required
     /// </summary>
-    Task<(bool Success, Order? Order, DateTimeOffset? currentRealExpireDate)> CreateBusinessOrder(
+    Task<(bool Success, Order? Order, UserMembershipChangeRecord? record)> CreateBusinessOrder(
         MembershipBusinessOrder business_order,
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
@@ -91,7 +92,7 @@ partial interface IMembershipBusinessOrderRepository
     /// <summary>
     /// 创建或更新用户会员信息
     /// </summary>
-    Task<(int rowCount, DateTimeOffset? currentRealExpireDate)> CreateOrUpdateUserMembershipAsync(
+    Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(
        Guid businessOrderId,
        TimeSpan rechargeTimeSpan,
        Guid userId,

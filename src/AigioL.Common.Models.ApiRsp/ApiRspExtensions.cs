@@ -1,4 +1,5 @@
 using AigioL.Common.Models.Abstractions;
+using AngleSharp.Dom;
 using System.Net;
 
 namespace AigioL.Common.Models;
@@ -27,5 +28,18 @@ public static partial class ApiRspExtensions
         apiRsp.Code = isSuccess ?
                 unchecked((uint)HttpStatusCode.OK) :
                 unchecked((uint)HttpStatusCode.BadRequest);
+    }
+
+    public static ApiRsp<TContent?> CreateNew<TContent>(this ApiRsp apiRsp, TContent? content = default)
+    {
+        ApiRsp<TContent?> r = new()
+        {
+            Code = apiRsp.Code,
+            Message = apiRsp.Message,
+            Url = apiRsp.Url,
+            TraceId = apiRsp.TraceId,
+            Content = content,
+        };
+        return r;
     }
 }

@@ -12,9 +12,7 @@ using MemoryPack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
-using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Controllers;
 
@@ -76,24 +74,6 @@ public static class MembershipController
                 channelPackageIdGN);
             return r;
         }).WithDescription("根据会员商品创建会员订单");
-        routeGroup.MapPost("create/cdkey", async (HttpContext context,
-            [FromBody] MembershipCDKeyRequest request) =>
-        {
-            var ip = context.Connection.RemoteIpAddress?.ToString();
-            if (string.IsNullOrWhiteSpace(ip))
-            {
-                return "未知的 IP 地址";
-            }
-            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MembershipController));
-            var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
-            var membershipGoodsRepo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
-            var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
-            var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
-            var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
-            var r = await CreateByCDKeyAsync(ip, logger, conn, cache, membershipProductKeyRecordRepo, membershipGoodsRepo, userMembershipService, request, context.RequestAborted);
-            return r;
-        }).AllowAnonymous()
-        .WithDescription("使用 CDKey 兑换会员");
         routeGroup.MapPost("create/createagreementsigndeduct", async (HttpContext context,
             [FromBody] MembershipCreateAgreementSignDeductRequest request) =>
         {
@@ -196,89 +176,6 @@ public static class MembershipController
                 await database.StringSetAsync($"OrderIdTemp-{cacheKey}", lazyModelValue, TimeSpan.FromMinutes(6d));
                 return ApiRsp.Ok(cacheKey);
             }
-        }
-    }
-
-    /// <summary>
-    /// 使用 CDKey 兑换会员的 IP 锁定时间，单位分钟，超过次数限制后锁定该 IP 一段时间，减少暴力破解 CDKey 的风险
-    /// </summary>
-    static readonly TimeSpan CreateByCDKeyIpLockoutTimeSpan = TimeSpan.FromMinutes(10);
-
-    static async Task<ApiRsp<DateTimeOffset?>> CreateByCDKeyAsync(
-        string ip,
-        ILogger logger,
-        IConnectionMultiplexer conn,
-        IDistributedCache cache,
-        IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
-        IMembershipGoodsRepository membershipGoodsRepo,
-        IUserMembershipService userMembershipService,
-        MembershipCDKeyRequest cdKeyRequest,
-        CancellationToken cancellationToken = default)
-    {
-        Guid cdKey;
-        var cdKeyB58 = Base58Guid.Decode(cdKeyRequest.CDKey);
-        if (cdKeyB58.HasValue)
-        {
-            cdKey = cdKeyB58.Value;
-        }
-        else if (!ShortGuid.TryParse(cdKeyRequest.CDKey, out cdKey))
-        {
-            return "CDKey 不合法";
-        }
-
-        // IP Redis 键检查周期内失败次数过多限制
-        var ipCacheKey = $"CreateByCDKey_Ip_[{ip}]";
-        var ipAccessFailedCountB = await cache.GetAsync(ipCacheKey, cancellationToken);
-        var ipAccessFailedCount = ipAccessFailedCountB == null ? 0 : BinaryPrimitives.ReadInt32BigEndian(ipAccessFailedCountB);
-        if (ipAccessFailedCount >= CacheKeys.MaxIpAccessFailedCount)
-        {
-            return HttpStatusCode.TooManyRequests;
-        }
-
-        var lockKey = CacheKeys.GetUserRechargeOperationLockKey(cdKey);
-        var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
-        if (!r.IsSuccess())
-        {
-            var ipAccessFailedCountS = new byte[sizeof(int)];
-            BinaryPrimitives.WriteInt32BigEndian(ipAccessFailedCountS, ipAccessFailedCount + 1);
-            await cache.SetAsync(ipCacheKey, ipAccessFailedCountS, new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = CreateByCDKeyIpLockoutTimeSpan,
-            }, CancellationToken.None);
-        }
-        return r;
-
-        async Task<ApiRsp<DateTimeOffset?>> HandleCoreAsync()
-        {
-            var productKey = await membershipProductKeyRecordRepo.FindAsync(cdKey);
-            if (productKey == null || productKey.IsUsed)
-            {
-                return "CDKey 不存在或已被激活";
-            }
-
-            var goods = await membershipGoodsRepo.FindAsync(productKey.MembershipGoodsId);
-            if (goods == null ||
-                (goods.MemberLicenseType != MembershipLicenseFlags.CDKey &&
-                goods.MemberLicenseType != MembershipLicenseFlags.Points))
-            {
-                return "充值商品类型未找到或充值类型不匹配";
-            }
-
-            var r = await userMembershipService.CreateMembershipOrderByCDKeyAsync(cdKeyRequest.UserId, productKey, goods);
-            if (r.isOK)
-            {
-                return r.currentRealExpireDate;
-            }
-
-            logger.LogTrace("{cdKey}({cdKeyS}) create businessOrder by cdkey failed", cdKey, cdKeyRequest.CDKey);
-            return "CDKey 已被使用";
-        }
-
-        Task<ApiRsp<DateTimeOffset?>> ErrorHandleAsync(Exception ex)
-        {
-            logger.LogError(ex, "{cdKey}({cdKeyS}) create businessOrder by cdkey error", cdKey, cdKeyRequest.CDKey);
-            ApiRsp<DateTimeOffset?> r = ApiRspCode.InternalServerError;
-            return Task.FromResult(r);
         }
     }
 
