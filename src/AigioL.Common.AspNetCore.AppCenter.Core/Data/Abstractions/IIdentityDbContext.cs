@@ -6,6 +6,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 
 public partial interface IIdentityDbContext : IDbContextBase
 {
+    DbSet<AuthMessageRecord> AuthMessageRecords { get; }
+
     #region 用户模块
 
     DbSet<User> Users { get; }

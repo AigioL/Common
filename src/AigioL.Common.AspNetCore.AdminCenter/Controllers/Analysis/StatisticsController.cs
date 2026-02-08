@@ -65,8 +65,8 @@ public static partial class StatisticsController
         .WithDescription("客户端注册用户统计");
 
         routeGroup.MapGet("activeusercountstatistics", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime) =>
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<ActiveUserSumResponse[]?> r = await statisticsRepo.GetActiveUserStatisticsAsync(startTime, endTime, context.RequestAborted);
@@ -78,8 +78,8 @@ public static partial class StatisticsController
 #pragma warning disable CS0618 // 类型或成员已过时
             [FromRoute] WebApiCompatDevicePlatform? platform,
 #pragma warning restore CS0618 // 类型或成员已过时
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime) =>
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsActiveUserOSResponse[]?> r = await statisticsRepo.GetActiveStatisticsAsync(platform, startTime, endTime, context.RequestAborted);
@@ -91,7 +91,7 @@ public static partial class StatisticsController
 #pragma warning disable CS0618 // 类型或成员已过时
             [FromRoute] WebApiCompatDevicePlatform? platform,
 #pragma warning restore CS0618 // 类型或成员已过时
-            [FromQuery] DateTimeOffset time) =>
+            [FromQuery] DateOnly time) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsChartActiveUserOSResponse[]?> r = await statisticsRepo.GetOsVersionStatisticsAsync(platform, time, context.RequestAborted);
@@ -100,8 +100,8 @@ public static partial class StatisticsController
         .WithDescription("查询某一天的客户端用户使用的操作系统平台分布");
 
         routeGroup.MapGet("advertisementstatistics", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime) =>
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsKomaasharuResponse[]?> r = await statisticsRepo.GetAdvertisementStatisticsAsync(startTime, endTime, context.RequestAborted);
@@ -113,8 +113,8 @@ public static partial class StatisticsController
 #pragma warning disable CS0618 // 类型或成员已过时
             [FromRoute] WebApiCompatDevicePlatform? platform,
 #pragma warning restore CS0618 // 类型或成员已过时
-             [FromQuery] DateTimeOffset startTime,
-             [FromQuery] DateTimeOffset endTime) =>
+             [FromQuery] DateOnly startTime,
+             [FromQuery] DateOnly endTime) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<UserActivityStatisticsResponse[]?> r = await statisticsRepo.GetUserActivityStatisticsAsync(platform, startTime, endTime, context.RequestAborted);
@@ -123,8 +123,8 @@ public static partial class StatisticsController
         .WithDescription("客户端活跃度用户统计");
 
         routeGroup.MapGet("smsusagetrendstatistics", async (HttpContext context,
-             [FromQuery] DateTimeOffset startTime,
-             [FromQuery] DateTimeOffset endTime) =>
+             [FromQuery] DateOnly startTime,
+             [FromQuery] DateOnly endTime) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsSmsUsageTrendResponse[]?> r = await statisticsRepo.GetSmsUsageTrendStatisticsAsync(startTime, endTime, context.RequestAborted);
@@ -133,8 +133,8 @@ public static partial class StatisticsController
         .WithDescription("短信验证码发送趋势统计");
 
         routeGroup.MapGet("emailusagetrendstatistics", async (HttpContext context,
-             [FromQuery] DateTimeOffset startTime,
-             [FromQuery] DateTimeOffset endTime) =>
+             [FromQuery] DateOnly startTime,
+             [FromQuery] DateOnly endTime) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsEmailUsageTrendResponse[]?> r = await statisticsRepo.GetEmailUsageTrendStatisticsAsync(startTime, endTime, context.RequestAborted);

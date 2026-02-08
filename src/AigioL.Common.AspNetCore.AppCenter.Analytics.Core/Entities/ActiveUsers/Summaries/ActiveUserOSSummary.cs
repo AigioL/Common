@@ -13,7 +13,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summ
 [Table("ActiveUserOSSummaries")]
 public partial class ActiveUserOSSummary :
     Entity<Guid>,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ICreateTime
 {
     /// <summary>
     /// 活跃用户统计汇总 Id
@@ -98,8 +99,12 @@ public partial class ActiveUserOSSummary :
     public int Count { get; set; }
 
     /// <summary>
-    /// 统计日期（当天的数据）
+    /// 统计日期
     /// </summary>
-    [Comment("统计日期（当天的数据）")]
-    public DateTimeOffset StatisticsTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
+
+    /// <inheritdoc/>
+    [Comment("创建时间")]
+    public DateTimeOffset CreateTime { get; set; }
 }

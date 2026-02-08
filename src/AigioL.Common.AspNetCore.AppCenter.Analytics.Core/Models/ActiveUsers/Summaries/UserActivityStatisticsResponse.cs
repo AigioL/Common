@@ -1,4 +1,5 @@
 using AigioL.Common.Primitives.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers.Summaries;
 
@@ -24,7 +25,7 @@ public record class UserActivityStatisticsResponse
     public int Count { get; set; }
 
     /// <summary>
-    /// 统计日期 （当天的数据）
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    public DateOnly StatisticsTime { get; set; }
 }

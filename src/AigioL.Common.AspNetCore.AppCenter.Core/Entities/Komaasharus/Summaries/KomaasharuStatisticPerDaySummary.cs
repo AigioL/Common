@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 [Table("AdvertisementStatisticPerDaySummaries")]
 public partial class KomaasharuStatisticPerDaySummary :
     Entity<Guid>,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ICreateTime
 {
     /// <summary>
     /// 广告 Id
@@ -50,9 +52,14 @@ public partial class KomaasharuStatisticPerDaySummary :
     public DeviceIdiom DeviceIdiom { get; set; }
 
     /// <summary>
-    /// 统计日期（当天的数据）
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
+
+    /// <inheritdoc/>
+    [Comment("创建时间")]
+    public DateTimeOffset CreateTime { get; set; }
 
     public static Expression<Func<KomaasharuStatisticPerDaySummary, StatisticsKomaasharuResponse>> Expression => _Expression.Expression;
 }

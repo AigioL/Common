@@ -42,17 +42,18 @@ public partial class ActiveUserDayWeekMonthSummary :
     /// <summary>
     /// 被统计数据的开始时间
     /// </summary>
-    public DateTimeOffset StatisticsStartTime { get; set; }
+    public DateOnly StatisticsStartTime { get; set; }
 
     /// <summary>
     /// 被统计数据的结束时间
     /// </summary>
-    public DateTimeOffset StatisticsEndTime { get; set; }
+    public DateOnly StatisticsEndTime { get; set; }
 
     /// <summary>
     /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建时间")]

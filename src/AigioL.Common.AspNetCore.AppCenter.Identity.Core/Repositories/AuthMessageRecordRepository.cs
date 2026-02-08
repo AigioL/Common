@@ -85,7 +85,8 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
 
     public async Task<DateTimeOffset?> GetLastSendSmsTime(string phoneNumberOrEmail, string? phoneNumberRegionCode, SmsCodeType? requestType = null, AuthMessageType? type = null)
     {
-        IQueryable<AuthMessageRecord> query = Entity.AsNoTrackingWithIdentityResolution();
+        IQueryable<AuthMessageRecord> query = db.AuthMessageRecords
+            .AsNoTrackingWithIdentityResolution();
 
         if (requestType.HasValue)
         {
@@ -142,7 +143,7 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
         var today = DateTimeOffset.Now.Date;
         var tomorrow = today.AddDays(1);
 
-        var count = await Entity
+        var count = await db.AuthMessageRecords
             .CountAsync(x => x.PhoneNumber == phoneNumber && x.PhoneNumberRegionCode == phoneNumberRegionCode &&
                 x.CreateTime >= today &&
                 x.CreateTime < tomorrow &&
@@ -153,7 +154,7 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
 
     //public Task<PagedModel<dynamic>> QueryAsync(Guid? userId, string? phoneNumber, string? phoneNumberRegionCode, string? nickName, DateTimeOffset?[]? createTime, string? email, SmsCodeType? requestType, bool? everCheck, bool? checkSuccess, string? orderBy, bool? desc, int current = 1, int pageSize = 10)
     //{
-    //    var query = Entity.AsNoTrackingWithIdentityResolution();
+    //    var query = db.AuthMessageRecords.AsNoTrackingWithIdentityResolution();
 
     //    if (userId.HasValue)
     //        query = query.Where(x => x.UserId == userId);

@@ -19,9 +19,10 @@ public partial class ActiveUserAppVerSummary :
     public long Count { get; set; }
 
     /// <summary>
-    /// 统计日期（当天的数据）
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建时间")]

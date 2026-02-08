@@ -28,5 +28,5 @@ public record class ActiveUserSumResponse
     /// <summary>
     /// 日期
     /// </summary>
-    public DateTimeOffset Time { get; set; }
+    public DateOnly Time { get; set; }
 }

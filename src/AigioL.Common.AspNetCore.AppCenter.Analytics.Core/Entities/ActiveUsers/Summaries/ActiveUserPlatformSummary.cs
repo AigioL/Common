@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers.Summaries;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summ
 [Table("ActiveUserPlatformSummaries")]
 public partial class ActiveUserPlatformSummary :
     Entity<Guid>,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ICreateTime
 {
     public Guid StatisticsId { get; set; }
 
@@ -37,9 +39,14 @@ public partial class ActiveUserPlatformSummary :
     public int Count { get; set; }
 
     /// <summary>
-    /// 统计日期（当天的数据）
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
+
+    /// <inheritdoc/>
+    [Comment("创建时间")]
+    public DateTimeOffset CreateTime { get; set; }
 
     public static Expression<Func<ActiveUserPlatformSummary, StatisticsActiveUserOSResponse>> Expression => _Expr.Expression;
 }

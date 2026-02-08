@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers.Summaries;
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -14,7 +15,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summ
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class ActiveUserStatisticSummary :
     Entity<Guid>,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ICreateTime
 {
     /// <summary>
     /// 总数据量
@@ -39,12 +41,16 @@ public partial class ActiveUserStatisticSummary :
     /// <summary>
     /// 统计日期（开始）
     /// </summary>
-    public DateTimeOffset StatisticsStartTime { get; set; }
+    public DateOnly StatisticsStartTime { get; set; }
 
     /// <summary>
     /// 统计日期（结束）
     /// </summary>
-    public DateTimeOffset StatisticsEndTime { get; set; }
+    public DateOnly StatisticsEndTime { get; set; }
+
+    /// <inheritdoc/>
+    [Comment("创建时间")]
+    public DateTimeOffset CreateTime { get; set; }
 
     /// <summary>
     /// 统计平台数据
@@ -104,6 +110,6 @@ file static class _Expr
         LoginCount = x.LoginCount,
         DeviceIdCount = x.DeviceIdCount,
         IPCount = x.IPCount,
-        Time = x.StatisticsStartTime.Date,
+        Time = x.StatisticsStartTime,
     };
 }

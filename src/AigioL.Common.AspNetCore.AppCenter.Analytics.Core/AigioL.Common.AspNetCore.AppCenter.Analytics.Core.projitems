@@ -61,11 +61,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\Statistics\StatisticsOrderAmountQtyModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Statistics\StatisticsResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Statistics\StatisticsSmsUsageTrendResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Statistics\StatisticUserCount.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IActiveUserRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IAnalysisLogRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IStatisticsRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\ActiveUserRecordRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\AnalysisLogRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\StatisticsRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Entities\AnalysisLogs\Abstractions\" />

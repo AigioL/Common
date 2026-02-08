@@ -1,4 +1,6 @@
+using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summaries;
@@ -6,7 +8,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summ
 [Table("ActiveUserScreenResolutionSummaries")]
 public sealed class ActiveUserScreenResolutionSummary :
     Entity<Guid>,
-    INEWSEQUENTIALID
+    INEWSEQUENTIALID,
+    ICreateTime
 {
     public Guid StatisticsId { get; set; }
 
@@ -25,7 +28,12 @@ public sealed class ActiveUserScreenResolutionSummary :
     public int Count { get; set; }
 
     /// <summary>
-    /// 统计日期（当天的数据）
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
+
+    /// <inheritdoc/>
+    [Comment("创建时间")]
+    public DateTimeOffset CreateTime { get; set; }
 }

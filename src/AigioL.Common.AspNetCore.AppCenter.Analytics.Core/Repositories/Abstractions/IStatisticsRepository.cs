@@ -1,6 +1,10 @@
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers;
+using AigioL.Common.AspNetCore.AppCenter.Analytics.Entities.ActiveUsers.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.ActiveUsers.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Statistics;
+using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Primitives.Models;
@@ -9,6 +13,39 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions
 
 public partial interface IStatisticsRepository
 {
+    /// <summary>
+    /// 将时区转换为北京时间（UTC+8）
+    /// </summary>
+    static DateTimeOffset ToUTC8(DateTimeOffset dto)
+    {
+        var utc8Offset = TimeSpan.FromHours(8);
+        if (dto.Offset == utc8Offset)
+        {
+            return dto;
+        }
+        return dto.ToOffset(utc8Offset);
+    }
+
+    /// <summary>
+    /// 将时区转换为北京时间（UTC+8）并去除时间部分，保留日期部分
+    /// </summary>
+    static DateTimeOffset ToUTC8Date(DateTimeOffset dto)
+    {
+        dto = ToUTC8(dto);
+        return new DateTimeOffset(dto.Year, dto.Month, dto.Day, 0, 0, 0, dto.Offset);
+    }
+
+    static DateTimeOffset ToUTC8Date(DateOnly @do)
+    {
+        var utc8Offset = TimeSpan.FromHours(8);
+        return new DateTimeOffset(@do.Year, @do.Month, @do.Day, 0, 0, 0, utc8Offset);
+    }
+
+    static DateOnly GetDateOnly(DateTimeOffset dto)
+    {
+        var date = ToUTC8Date(dto);
+        return new DateOnly(date.Year, date.Month, date.Day);
+    }
 }
 
 partial interface IStatisticsRepository
@@ -31,8 +68,8 @@ partial interface IStatisticsRepository
     /// 获取活跃用户相关统计数据
     /// </summary>
     Task<ActiveUserSumResponse[]> GetActiveUserStatisticsAsync(
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -42,8 +79,8 @@ partial interface IStatisticsRepository
 #pragma warning disable CS0618 // 类型或成员已过时
         WebApiCompatDevicePlatform? platform,
 #pragma warning restore CS0618 // 类型或成员已过时
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -53,15 +90,15 @@ partial interface IStatisticsRepository
 #pragma warning disable CS0618 // 类型或成员已过时
         WebApiCompatDevicePlatform? platform,
 #pragma warning restore CS0618 // 类型或成员已过时
-        DateTimeOffset time,
+        DateOnly time,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取广告相关统计数据
     /// </summary>
     Task<StatisticsKomaasharuResponse[]> GetAdvertisementStatisticsAsync(
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -71,24 +108,24 @@ partial interface IStatisticsRepository
 #pragma warning disable CS0618 // 类型或成员已过时
         WebApiCompatDevicePlatform? platform,
 #pragma warning restore CS0618 // 类型或成员已过时
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取短信使用趋势统计
     /// </summary>
     Task<StatisticsSmsUsageTrendResponse[]> GetSmsUsageTrendStatisticsAsync(
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取邮件发送趋势统计
     /// </summary>
     Task<StatisticsEmailUsageTrendResponse[]> GetEmailUsageTrendStatisticsAsync(
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -234,4 +271,76 @@ partial interface IStatisticsRepository
         DateTimeOffset start,
         DateTimeOffset end,
         CancellationToken cancellationToken = default);
+}
+
+partial interface IStatisticsRepository
+{
+    /// <summary>
+    /// 获取系统中第一条活跃用户
+    /// </summary>
+    Task<ActiveUserAnonymousStatistic?> GetFirstRecord(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 每日统计
+    /// </summary>
+    /// <param name="start">开始时间</param>
+    /// <param name="end">结束时间</param>
+    /// <returns></returns>
+    Task<int> StatisticsDaysData(DateTimeOffset start, DateTimeOffset end);
+
+    /// <summary>
+    /// 删除指定区间的数据返回行数
+    /// </summary>
+    Task<int> DeleteDaysData(DateTimeOffset start, DateTimeOffset end);
+
+    /// <summary>
+    /// 统计活跃用户版本数据
+    /// </summary>
+    Task<int> StatisticsAppVerDaysData(DateTimeOffset start, DateTimeOffset end);
+
+    /// <summary>
+    /// 获取最后一条广告统计每日记录
+    /// </summary>
+    Task<KomaasharuStatisticPerDaySummary?> GetLastAdvertisementStatisticDaily(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取第一条广告统计记录
+    /// </summary>
+    Task<KomaasharuStatistic?> GetFirstAdvertisementStatistic(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 广告信息每日统计
+    /// </summary>
+    /// <param name="statisticDate">统计日期</param>
+    /// <returns></returns>
+    Task<int> PerformAdvertisementStatisticDaily(DateTimeOffset statisticDate);
+
+    /// <summary>
+    /// 获取最后一条活跃度统计记录
+    /// </summary>
+    Task<ActiveUserDayWeekMonthSummary?> GetLastUserDWMStatisticDaily(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 用户活跃度信息每日统计
+    /// </summary>
+    /// <param name="statisticDate">统计日期</param>
+    /// <returns></returns>
+    Task<int> PerformUserDWMStatisticDaily(DateTimeOffset statisticDate);
+
+    /// <summary>
+    /// 获取最后一条订单金额数量统计记录
+    /// </summary>
+    Task<OrderAmountQtySummary?> GetLastOrderAmountQtySummary(
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 订单金额和数量每日统计
+    /// </summary>
+    /// <param name="statisticDate">统计日期</param>
+    /// <returns></returns>
+    Task<int> PerformOrderAmountQtyStatisticDaily(DateTimeOffset statisticDate);
 }

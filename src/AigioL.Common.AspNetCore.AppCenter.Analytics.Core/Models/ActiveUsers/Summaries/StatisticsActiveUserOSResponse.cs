@@ -19,7 +19,7 @@ public record class StatisticsActiveUserOSResponse
     public int Count { get; set; }
 
     /// <summary>
-    /// 统计日期 （当天的数据）
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    public DateOnly StatisticsTime { get; set; }
 }

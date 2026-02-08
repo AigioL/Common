@@ -16,7 +16,7 @@ public sealed partial record class StatisticsKomaasharuResponse
     public long ClickCount { get; set; }
 
     /// <summary>
-    /// 统计时间
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    public DateOnly StatisticsTime { get; set; }
 }

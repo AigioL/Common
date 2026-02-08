@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories;
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
@@ -15,7 +16,6 @@ public static partial class ServiceCollectionServiceExtensions
         this IServiceCollection services)
         where TDbContext : DbContext, IAnalysisLogDbContext
     {
-        //services.TryAddScoped<IStatisticsRepository, StatisticsRepository<TDbContext>>();
         services.TryAddScoped<IAnalysisLogRepository, AnalysisLogRepository<TDbContext>>();
         return services;
     }
@@ -26,6 +26,19 @@ public static partial class ServiceCollectionServiceExtensions
         where TDbContext : DbContext, IActiveUsersDbContext
     {
         services.TryAddScoped<IActiveUserRecordRepository, ActiveUserRecordRepository<TDbContext>>();
+        return services;
+    }
+
+    public static IServiceCollection AddStatisticsRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext,
+        IActiveUsersDbContext,
+        IActiveUsersSummariesDbContext,
+        IKomaasharuSummariesDbContext,
+        IIdentityDbContext
+    {
+        services.TryAddScoped<IStatisticsRepository, StatisticsRepository<TDbContext>>();
         return services;
     }
 }
