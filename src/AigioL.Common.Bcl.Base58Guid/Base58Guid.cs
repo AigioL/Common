@@ -27,15 +27,22 @@ public static class Base58Guid
 
     public static Guid? Decode(ReadOnlySpan<char> chars)
     {
-        chars = chars.Trim();
-        if (chars.Length == 0 || chars.Length > 30) // 一般长度为 22
+        try
         {
-            return null;
+            chars = chars.Trim();
+            if (chars.Length == 0 || chars.Length > 30) // 一般长度为 22
+            {
+                return null;
+            }
+            Span<byte> b = stackalloc byte[16];
+            if (Base58.Bitcoin.TryDecode(chars, b, out var bytesWritten) && bytesWritten == b.Length)
+            {
+                return new Guid(b);
+            }
         }
-        Span<byte> b = stackalloc byte[16];
-        if (Base58.Bitcoin.TryDecode(chars, b, out var bytesWritten) && bytesWritten == b.Length)
+        catch
         {
-            return new Guid(b);
+            // ignored
         }
         return null;
     }
