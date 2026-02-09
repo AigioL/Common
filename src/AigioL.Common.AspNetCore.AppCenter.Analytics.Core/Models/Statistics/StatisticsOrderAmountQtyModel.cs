@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using Microsoft.EntityFrameworkCore;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Models.Statistics;
 
@@ -43,7 +44,7 @@ public sealed partial class StatisticsOrderAmountQtyModel
     public PaymentType PaymentType { get; set; }
 
     /// <summary>
-    /// 统计日期（当天的数据）
+    /// 统计日期
     /// </summary>
-    public DateTimeOffset StatisticsTime { get; set; }
+    public DateOnly StatisticsTime { get; set; }
 }

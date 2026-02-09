@@ -43,7 +43,7 @@ public sealed record class StatisticsChartActiveUserOSResponse
 /// </summary>
 public sealed record class AnalysisResponse
 {
-    public DateTimeOffset? Date { get; set; }
+    public DateOnly Date { get; set; }
 
     public string? Name { get; set; }
 

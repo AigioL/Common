@@ -9,13 +9,21 @@ using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using GameTrainer.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
 using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions.IStatisticsRepository;
+using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.LazyCalendar;
+using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.LazyStatisticUserCountDict;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories;
 
@@ -26,19 +34,12 @@ sealed partial class StatisticsRepository<TDbContext>(TDbContext dbContext, ISer
     IActiveUsersDbContext,
     IActiveUsersSummariesDbContext,
     IKomaasharuSummariesDbContext,
-    IIdentityDbContext
+    IIdentityDbContext,
+    IOrderSummariesDbContext,
+    IKeyValuePairsDbContext,
+    IOrderingPaymentBaseDbContext,
+    IAnalysisLogSummariesDbContext
 {
-    /// <summary>
-    /// <see cref="ExternalLoginChannel"/> 到 <see cref="StatisticUserCount"/> 的字典
-    /// </summary>
-    static readonly Dictionary<ExternalLoginChannel, StatisticUserCount> dictFLCToSUC = new()
-    {
-        { ExternalLoginChannel.Steam, StatisticUserCount.BindSteam },
-        { ExternalLoginChannel.QQ, StatisticUserCount.BindQQ },
-        { ExternalLoginChannel.Microsoft, StatisticUserCount.BindMS },
-        { ExternalLoginChannel.Alipay, StatisticUserCount.BindAlipay },
-        { ExternalLoginChannel.Weixin, StatisticUserCount.BindWeChat },
-    };
 }
 
 partial class StatisticsRepository<TDbContext>
@@ -329,60 +330,315 @@ partial class StatisticsRepository<TDbContext>
     }
 
     public async Task<StatisticsOrderAmountQtyModel[]> GetOrderAmountQtyStatisticsAsync(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? unit,
         PaymentType? paymentType,
         bool taxed,
         bool pureProfit,
+        int businessTypeId,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.OrderAmountQtySummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.BusinessTypeId == businessTypeId)
+            .Where(x => x.StatisticsTime >= startTime && x.StatisticsTime < endTime)
+            .OrderBy(x => x.StatisticsTime)
+            .Select(a => new StatisticsOrderAmountQtyModel
+            {
+                Amount = a.Amount,
+                Quantity = a.Quantity,
+                RefundAmount = a.RefundAmount,
+                RefundQuantity = a.RefundQuantity,
+                BusinessTypeId = a.BusinessTypeId,
+                GoodsType = a.GoodsType,
+                PaymentType = a.PaymentType,
+                StatisticsTime = a.StatisticsTime,
+            });
+
+        // 按支付类型过滤
+        if (paymentType != null)
+            query = query.Where(a => a.PaymentType == paymentType);
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.ToArrayAsync(cancellationToken);
+
+        var g = GroupByUnit(unit, r);
+        var query2 = from m in g
+                     let first = m.First()
+                     select new StatisticsOrderAmountQtyModel
+                     {
+                         StatisticsTime = first.StatisticsTime,
+                         BusinessTypeId = first.BusinessTypeId,
+                         Amount = m.Sum(static x => x.Amount),
+                         Quantity = m.Sum(static x => x.Quantity),
+                         GoodsType = first.GoodsType,
+                     };
+        return [.. query2];
     }
 
+    static int GetWeekOfYear(DateOnly d) =>
+        gregorianCalendar.GetWeekOfYear(d.ToDateTime(default), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+    static IEnumerable<IGrouping<(string UnitKey, string GoodsType), StatisticsOrderAmountQtyModel>> GroupByUnit(
+        string? unit,
+        StatisticsOrderAmountQtyModel[] models) => unit switch
+        {
+            "day" => models.GroupBy(a => (a.StatisticsTime.ToString(), a.GoodsType)),
+            "week" => models.GroupBy(a => (a.StatisticsTime.Year.ToString() + GetWeekOfYear(a.StatisticsTime), a.GoodsType)),
+            "month" => models.GroupBy(a => (a.StatisticsTime.Year.ToString() + a.StatisticsTime.Month, a.GoodsType)),
+            "year" => models.GroupBy(a => (a.StatisticsTime.Year.ToString(), a.GoodsType)),
+            _ => throw new ArgumentOutOfRangeException(nameof(unit), unit, null),
+        };
+
     public async Task<OrderAmountQtyTableModel[]> GetOrderSummaryTable(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         OrderType[]? orderTypes = null,
         int[]? orderBusinessTypeIds = null,
         string? orderBy = null,
         bool? desc = null,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var taxs = await TaxHelper.GetTaxAsync(db, cancellationToken);
+        var alipayTax = taxs[TaxHelper.键_支付宝税点];
+        var wechatPayTax = taxs[TaxHelper.键_微信支付税点];
+
+        var startTime_ = ToUTC8Date(startTime);
+        var endTime_ = ToUTC8Date(startTime);
+
+        var orders = db.Orders;
+        var orderPaymentCompositions = db.OrderPaymentCompositions
+             .Where(x =>
+                x.PaymentStatus != PaymentStatus.WaitPay &&
+                x.PaymentMethod == PaymentMethod.Online);
+        var refundBills = db.RefundBills
+            .Include(x => x.AftersalesBill)
+            .Where(x =>
+                x.RefundStatus == RefundStatus.Refund);
+
+        var query = from o in orders
+                    join c in orderPaymentCompositions on o.Id equals c.OrderId
+                    join r in refundBills on o.Id equals r.AftersalesBill!.OrderId into rs
+                    from r in rs.DefaultIfEmpty()
+                    where o.PaymentTime >= startTime_ && o.PaymentTime < endTime_
+                    select new
+                    {
+                        o.Type,
+                        o.BusinessTypeId,
+                        o.Note,
+                        c.PaymentAmount,
+                        ActualAmount =
+                                c.PaymentType == PaymentType.Alipay ? c.PaymentAmount - c.PaymentAmount * alipayTax :
+                                c.PaymentType == PaymentType.WeChatPay ? c.PaymentAmount - c.PaymentAmount * wechatPayTax
+                                : c.PaymentAmount,
+                        RefundAmount = (decimal?)r.RefundAmount ?? 0m,
+                    } into row
+                    select new
+                    {
+                        row.Type,
+                        row.BusinessTypeId,
+                        row.Note,
+                        row.PaymentAmount,
+                        row.ActualAmount,
+                        row.RefundAmount,
+                        //Profit = (row.ActualAmount - row.RefundAmount) * xunYouOrderProfitMargin,
+                        //Share = (row.PaymentAmount - row.RefundAmount) * xunYouOrderShareRatio,
+                    } into row
+                    group row by new
+                    {
+                        row.Type,
+                        row.BusinessTypeId,
+                        row.Note,
+                    } into g
+                    orderby g.Key.Type, g.Key.BusinessTypeId, g.Key.Note
+                    select new OrderAmountQtyTableModel
+                    {
+                        OrderType = g.Key.Type,
+                        OrderBusinessTypeId = g.Key.BusinessTypeId,
+                        GoodsType = g.Key.Note,
+                        PaymentCount = g.Count(),
+                        RefundCount = g.Count(a => a.RefundAmount > 0),
+                        PaymentAmount = g.Sum(o => o.PaymentAmount),
+                        ActualAmount = g.Sum(o => o.ActualAmount),
+                        RefundAmount = g.Sum(o => o.RefundAmount),
+                        //Profit = g.Sum(o => o.Profit),
+                        //Share = g.Sum(o => o.Share),
+                    };
+
+        if (orderBusinessTypeIds?.Length > 0)
+            query = query.Where(a => orderBusinessTypeIds.Contains(a.OrderBusinessTypeId));
+
+        // 结算上月的订单在本月退款
+        var lastMonthStartTime = startTime.AddDays(1 - startTime.Day).AddMonths(-1);
+        var lastMonthStartTime_ = ToUTC8Date(lastMonthStartTime);
+        var lastMonthEndTime = startTime.AddDays(1 - startTime.Day);
+        var lastMonthEndTime_ = ToUTC8Date(lastMonthEndTime);
+
+        var query2 = from o in orders
+                     join r in refundBills on o.Id equals r.AftersalesBill!.OrderId into rs
+                     from r in rs.DefaultIfEmpty()
+                     where o.PaymentTime >= lastMonthStartTime_ && o.PaymentTime < lastMonthEndTime_ &&
+                           r.RefundFinishTime >= startTime_ && r.RefundFinishTime < endTime_
+                     select new
+                     {
+                         o.Type,
+                         o.BusinessTypeId,
+                         o.Note,
+                         RefundAmount = (decimal?)r.RefundAmount ?? 0m,
+                     } into row
+                     group row by new
+                     {
+                         row.Type,
+                         row.BusinessTypeId,
+                         row.Note,
+                     } into g
+                     select new OrderAmountQtyTableModel
+                     {
+                         OrderType = g.Key.Type,
+                         OrderBusinessTypeId = g.Key.BusinessTypeId,
+                         GoodsType = g.Key.Note,
+                         LastMonthRefundCount = g.Count(),
+                         LastMonthRefundAmount = g.Sum(x => x.RefundAmount)
+                     };
+        if (orderBusinessTypeIds?.Length > 0)
+            query2 = query2.Where(a => orderBusinessTypeIds.Contains(a.OrderBusinessTypeId));
+#if DEBUG
+        var sqlString = query.ToQueryString();
+        var sqlString2 = query2.ToQueryString();
+#endif
+        var orderModels = await query.ToArrayAsync(cancellationToken);
+        var refundModels = await query2.ToArrayAsync(cancellationToken);
+
+        foreach (var item in orderModels)
+        {
+            var refund = refundModels.Where(p => p.GoodsType == item.GoodsType).FirstOrDefault();
+            if (refund == null)
+            {
+                continue;
+            }
+            item.LastMonthRefundAmount = (decimal?)refund.LastMonthRefundAmount ?? 0m;
+            //item.Profit = (item.ActualAmount - item.RefundAmount - refund.LastMonthRefundAmount) * xunYouOrderProfitMargin;
+            //item.Share = (item.PaymentAmount - item.RefundAmount - refund.LastMonthRefundAmount) * xunYouOrderShareRatio;
+            item.LastMonthRefundCount = refund.LastMonthRefundCount;
+        }
+
+        var sumOrder = new OrderAmountQtyTableModel()
+        {
+            GoodsType = "合计",
+            PaymentCount = orderModels.Sum(a => a.PaymentCount),
+            RefundCount = orderModels.Sum(a => a.RefundCount),
+            LastMonthRefundCount = orderModels.Sum(a => a.LastMonthRefundCount),
+            LastMonthRefundAmount = orderModels.Sum(a => a.LastMonthRefundAmount),
+            PaymentAmount = orderModels.Sum(a => a.PaymentAmount),
+            ActualAmount = orderModels.Sum(a => a.ActualAmount),
+            RefundAmount = orderModels.Sum(a => a.RefundAmount),
+            Profit = orderModels.Sum(a => a.Profit),
+            Share = orderModels.Sum(a => a.Share),
+        };
+
+        var result = new OrderAmountQtyTableModel[orderModels.Length + 1];
+        orderModels.CopyTo(result, 0);
+        result[orderModels.Length] = sumOrder;
+        return result;
     }
 
     public async Task<AnalysisResponse[]?> GetStartServiceLogAnalysis(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         Guid? appId,
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisStartServiceLogSummaries
+           .AsNoTrackingWithIdentityResolution()
+           .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime &&
+                x.IsTheMonthlyStatistics == isMonth);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+        if (!string.IsNullOrWhiteSpace(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        var query2 = query.GroupBy(x => x.StatisticsTime)
+            .Select(x => new AnalysisResponse
+            {
+                Date = x.Key,
+                StatisticsCount = x.Sum(a => a.StatisticalValues),
+                Name = "活跃用户"
+            })
+            .OrderBy(x => x.Date);
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<AnalysisResponse[]?> GetStartSessionLogAnalysis(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         Guid? appId,
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisStartSessionLogSummaries
+                  .AsNoTrackingWithIdentityResolution()
+                  .Where(x =>
+                    x.StatisticsTime >= startTime &&
+                    x.StatisticsTime <= endTime &&
+                    x.IsTheMonthlyStatistics == isMonth);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+        if (!string.IsNullOrWhiteSpace(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        var query2 = query.GroupBy(x => x.StatisticsTime)
+            .Select(x => new AnalysisResponse
+            {
+                Date = x.Key,
+                StatisticsCount = x.Sum(a => a.StatisticalValues),
+                Name = "开始会话"
+            })
+            .OrderBy(x => x.Date);
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
-    public async Task<string[]?> GetAnalysisEvnetMenuList(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+    public async Task<string[]> GetAnalysisEvnetMenuList(
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         Guid? appId,
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisEventLogSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime &&
+                x.IsTheMonthlyStatistics == isMonth);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+        if (!string.IsNullOrWhiteSpace(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        var query2 = query.OrderBy(x => x.StatisticsTime)
+            .Select(x => x.EventName)
+            .Distinct();
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<string[]?> GetAnalysisPropertiesKeyMenuList(
@@ -542,4 +798,75 @@ partial class StatisticsRepository<TDbContext>
     {
         throw new NotImplementedException();
     }
+}
+
+static partial class TaxHelper
+{
+    public const string 键_支付宝税点 = "AlipayTax";
+    public const string 键_微信支付税点 = "WechatPayTax";
+
+    static decimal GetTaxDef(string key) => key switch
+    {
+        键_支付宝税点 => 0.01m,
+        键_微信支付税点 => 0.006m,
+        _ => default,
+    };
+
+    public static async Task<Dictionary<string, decimal>> GetTaxAsync(
+        IKeyValuePairsDbContext db,
+        CancellationToken cancellationToken = default)
+    {
+        string[] keys =
+        [
+            键_支付宝税点,
+            键_微信支付税点,
+        ];
+
+        var query = db.KeyValuePairs
+            .Where(x => x.DeleteTime == null && keys.Contains(x.Id))
+            .Select(static x => new
+            {
+                x.Id,
+                x.Value,
+            });
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.ToArrayAsync(cancellationToken);
+
+        var query2 = from m in r
+                     let tax = decimal.TryParse(m.Value, out var number) ? number : GetTaxDef(m.Id)
+                     where tax != default
+                     select KeyValuePair.Create(m.Id, tax);
+        Dictionary<string, decimal> r2 = new(query2);
+        for (int i = 0; i < keys.Length; i++)
+        {
+            var it = keys[i];
+            if (!r2.ContainsKey(it))
+            {
+                r2.Add(it, GetTaxDef(it));
+            }
+        }
+        return r2;
+    }
+}
+
+file static class LazyStatisticUserCountDict
+{
+    /// <summary>
+    /// <see cref="ExternalLoginChannel"/> 到 <see cref="StatisticUserCount"/> 的字典
+    /// </summary>
+    internal static readonly Dictionary<ExternalLoginChannel, StatisticUserCount> dictFLCToSUC = new()
+    {
+        { ExternalLoginChannel.Steam, StatisticUserCount.BindSteam },
+        { ExternalLoginChannel.QQ, StatisticUserCount.BindQQ },
+        { ExternalLoginChannel.Microsoft, StatisticUserCount.BindMS },
+        { ExternalLoginChannel.Alipay, StatisticUserCount.BindAlipay },
+        { ExternalLoginChannel.Weixin, StatisticUserCount.BindWeChat },
+    };
+}
+
+file static class LazyCalendar
+{
+    internal static readonly Calendar gregorianCalendar = new CultureInfo("zh-CN").Calendar;
 }

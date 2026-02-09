@@ -132,20 +132,21 @@ partial interface IStatisticsRepository
     /// 获取订单的金额数量统计
     /// </summary>
     Task<StatisticsOrderAmountQtyModel[]> GetOrderAmountQtyStatisticsAsync(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? unit,
         PaymentType? paymentType,
         bool taxed,
         bool pureProfit,
+        int businessTypeId,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取订单的金额数量统计表格
     /// </summary>
     Task<OrderAmountQtyTableModel[]> GetOrderSummaryTable(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         OrderType[]? orderTypes = null,
         int[]? orderBusinessTypeIds = null,
         string? orderBy = null,
@@ -156,8 +157,8 @@ partial interface IStatisticsRepository
     /// 获取启动服务数据
     /// </summary>
     Task<AnalysisResponse[]?> GetStartServiceLogAnalysis(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         Guid? appId,
         bool isMonth,
@@ -167,8 +168,8 @@ partial interface IStatisticsRepository
     /// 获取开始会话数据
     /// </summary>
     Task<AnalysisResponse[]?> GetStartSessionLogAnalysis(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         Guid? appId,
         bool isMonth,
@@ -177,9 +178,9 @@ partial interface IStatisticsRepository
     /// <summary>
     /// 获取事件的菜单
     /// </summary>
-    Task<string[]?> GetAnalysisEvnetMenuList(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+    Task<string[]> GetAnalysisEvnetMenuList(
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         Guid? appId,
         bool isMonth,

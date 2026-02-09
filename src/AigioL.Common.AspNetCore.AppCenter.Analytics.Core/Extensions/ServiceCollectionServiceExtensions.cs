@@ -2,6 +2,7 @@ using AigioL.Common.AspNetCore.AppCenter.Analytics.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories;
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
@@ -36,7 +37,11 @@ public static partial class ServiceCollectionServiceExtensions
         IActiveUsersDbContext,
         IActiveUsersSummariesDbContext,
         IKomaasharuSummariesDbContext,
-        IIdentityDbContext
+        IIdentityDbContext,
+        IOrderSummariesDbContext,
+        IKeyValuePairsDbContext,
+        IOrderingPaymentBaseDbContext,
+        IAnalysisLogSummariesDbContext
     {
         services.TryAddScoped<IStatisticsRepository, StatisticsRepository<TDbContext>>();
         return services;

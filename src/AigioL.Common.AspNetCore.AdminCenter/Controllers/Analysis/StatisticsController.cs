@@ -143,22 +143,23 @@ public static partial class StatisticsController
         .WithDescription("邮件验证码发送趋势统计");
 
         routeGroup.MapGet("orderamountqtystatistics", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
+            [FromQuery] int businessTypeId,
             [FromQuery] string unit = "day",
             [FromQuery] PaymentType? paymentType = null,
             [FromQuery] bool taxed = false,
             [FromQuery] bool pureProfit = false) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
-            BMApiRsp<StatisticsOrderAmountQtyModel[]?> r = await statisticsRepo.GetOrderAmountQtyStatisticsAsync(startTime, endTime, unit, paymentType, taxed, pureProfit, context.RequestAborted);
+            BMApiRsp<StatisticsOrderAmountQtyModel[]?> r = await statisticsRepo.GetOrderAmountQtyStatisticsAsync(startTime, endTime, unit, paymentType, taxed, pureProfit, businessTypeId, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerNameOrderSummary, BMButtonType.Query)
         .WithDescription("订单的金额数量统计");
 
         routeGroup.MapGet("orderamountqtysummary", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] OrderType[]? orderType = null,
             [FromQuery] int[]? orderBusinessType = null,
             [FromQuery] string? orderBy = null,
@@ -171,8 +172,8 @@ public static partial class StatisticsController
         .WithDescription("订单的金额数量统计表格项");
 
         routeGroup.MapGet("getstartserviceloganalysis", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] string? appVersion,
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
@@ -184,8 +185,8 @@ public static partial class StatisticsController
         .WithDescription("活跃用户数据");
 
         routeGroup.MapGet("getstartsessionloganalysis", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] string? appVersion,
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
@@ -197,8 +198,8 @@ public static partial class StatisticsController
         .WithDescription("开始会话统计数据");
 
         routeGroup.MapGet("getanalysisevnetmenulist", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] string? appVersion,
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>

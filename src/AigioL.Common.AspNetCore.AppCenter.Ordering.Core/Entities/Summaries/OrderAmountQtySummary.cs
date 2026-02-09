@@ -60,10 +60,10 @@ public partial class OrderAmountQtySummary :
     public PaymentType PaymentType { get; set; }
 
     /// <summary>
-    /// 统计日期（当天的数据）
+    /// 统计日期
     /// </summary>
-    [Comment("统计日期（当天的数据）")]
-    public DateTimeOffset StatisticsTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建时间")]

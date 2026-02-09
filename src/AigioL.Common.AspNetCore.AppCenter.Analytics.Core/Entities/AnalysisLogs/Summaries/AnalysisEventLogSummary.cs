@@ -35,10 +35,10 @@ public partial class AnalysisEventLogSummary :
     public int StatisticalValues { get; set; }
 
     /// <summary>
-    /// 统计时间
+    /// 统计日期
     /// </summary>
-    [Comment("统计时间")]
-    public DateTimeOffset StatisticalTime { get; set; }
+    [Comment("统计日期")]
+    public DateOnly StatisticsTime { get; set; }
 
     /// <inheritdoc/>
     [Comment("创建时间")]

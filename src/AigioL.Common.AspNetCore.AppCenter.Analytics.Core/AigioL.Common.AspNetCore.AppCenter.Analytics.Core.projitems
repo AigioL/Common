@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IAnalysisLogSummariesDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IBigDataAnalysisDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IKomaasharuSummariesDbContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IOrderSummariesDbContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\ActiveUserAnonymousStatistic.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserAppVerSummary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\ActiveUsers\Summaries\ActiveUserArchitectureSummary.cs" />
