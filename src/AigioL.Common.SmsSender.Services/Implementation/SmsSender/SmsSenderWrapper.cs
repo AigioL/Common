@@ -19,12 +19,11 @@ internal sealed class SmsSenderWrapper<TSmsSender, [DynamicallyAccessedMembers(D
     /// <summary>
     /// 初始化 SmsSenderWrapper 实例
     /// </summary>
-    /// <param name="hostingEnvironment"></param>
     /// <param name="options"></param>
+    /// 
     /// <param name="smsSender"></param>
     /// <param name="debug"></param>
     public SmsSenderWrapper(
-      IHostEnvironment hostingEnvironment,
       IOptions<TSmsSettings> options,
       TSmsSender smsSender,
       DebugSmsSenderProvider debug)
@@ -35,8 +34,8 @@ internal sealed class SmsSenderWrapper<TSmsSender, [DynamicallyAccessedMembers(D
 
         if (settings != null)
         {
-            if (settings.SmsOptions == null || (settings.UseDebugSmsSender.HasValue && settings.UseDebugSmsSender.Value) || (!settings.UseDebugSmsSender.HasValue
-                && hostingEnvironment.IsDevelopment()))
+            if (settings.SmsOptions == null ||
+                (settings.UseDebugSmsSender.HasValue && settings.UseDebugSmsSender.Value))
             {
                 this.smsSender = debug;
             }

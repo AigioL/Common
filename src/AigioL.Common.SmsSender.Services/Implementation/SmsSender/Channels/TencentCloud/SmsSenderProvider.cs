@@ -162,7 +162,7 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
 
         Dictionary<string, string> headers = new Dictionary<string, string>();
         headers.Add("Authorization", authorization);
-        headers.Add("Host", endpoint);
+        headers.Add("Host", new Uri(endpoint).Host);
         headers.Add("Content-Type", contentType);
         headers.Add("X-TC-Timestamp", requestTimestamp);
         headers.Add("X-TC-Version", Version);

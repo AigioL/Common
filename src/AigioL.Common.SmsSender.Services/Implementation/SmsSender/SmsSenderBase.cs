@@ -1,5 +1,4 @@
 using AigioL.Common.SmsSender.Models.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
@@ -31,74 +30,7 @@ public abstract class SmsSenderBase : ISmsSender
     /// <returns></returns>
     public virtual string GenerateRandomNum(int length)
     {
-        return GenerateRandomNum(length).ToString();
-    }
-
-    /// <summary>
-    /// 生成随机数字，长度为固定传入参数
-    /// </summary>
-    /// <param name="length">要生成的字符串长度</param>
-    /// <param name="endIsZero">生成的数字最后一位是否能够为0，默认不能为0( <see langword="false"/> )</param>
-    /// <returns></returns>
-    internal static int GenerateRandomNum(int length = 6, bool endIsZero = false)
-    {
-        if (length > 11) length = 11;
-        var result = 0;
-        var lastNum = 0;
-        if (RandomNumberGenerator.GetInt32(256) % 2 == 0)
-            for (int i = length - 1; i >= 0; i--) // 5 4 3 2 1 0
-                EachGenerate(i);
-        else
-            for (int i = 0; i < length; i++) // 0 1 2 3 4 5
-                EachGenerate(i);
-        return result;
-        void EachGenerate(int i)
-        {
-            var bit = (int)(i == 0 ? 1 : Math.Pow(10, i));
-            // 100,000  10,000  1,000   100     10      1
-            // 1        10      100     1,000   10,000  100,000
-            var current = RandomNumberGenerator.GetInt32(lastNum + 1, lastNum + 10);
-            lastNum = current % 10;
-            if (lastNum == 0)
-            {
-                // i != 0 &&  i!=5 末尾和开头不能有零
-                if ((i != 0 || endIsZero) && i != length - 1)
-                    return;
-                lastNum = RandomNumberGenerator.GetInt32(1, 10);
-            }
-            result += lastNum * bit;
-        }
-    }
-
-    /// <summary>
-    /// 生成随机字符串，长度为固定传入字符串
-    /// </summary>
-    /// <param name="length">要生成的字符串长度</param>
-    /// <param name="randomChars">随机字符串字符集</param>
-    /// <returns></returns>
-    internal static string GenerateRandomString(int length = 6,
-        string randomChars = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    {
-        var result = new char[length];
-        if (RandomNumberGenerator.GetInt32(256) % 2 == 0)
-            for (var i = length - 1; i >= 0; i--) // 5 4 3 2 1 0
-                EachGenerate(i);
-        else
-            for (var i = 0; i < length; i++) // 0 1 2 3 4 5
-                EachGenerate(i);
-        return new string(result);
-        void EachGenerate(int i)
-        {
-            var index = RandomNumberGenerator.GetInt32(0, randomChars.Length);
-            var temp = RandomCharAt(randomChars, index);
-            static char RandomCharAt(string s, int index)
-            {
-                if (index == s.Length) index = 0;
-                else if (index > s.Length) index %= s.Length;
-                return s[index];
-            }
-            result[i] = temp;
-        }
+        return Random2.GenerateRandomNum(length).ToString();
     }
 
     /// <summary>
@@ -171,5 +103,75 @@ public abstract class SmsSenderBase : ISmsSender
     {
         var jsonObj = await content.ReadFromJsonAsync(jsonTypeInfo, cancellationToken);
         return jsonObj;
+    }
+
+    protected static class Random2
+    {
+        /// <summary>
+        /// 生成随机数字，长度为固定传入参数
+        /// </summary>
+        /// <param name="length">要生成的字符串长度</param>
+        /// <param name="endIsZero">生成的数字最后一位是否能够为0，默认不能为0( <see langword="false"/> )</param>
+        /// <returns></returns>
+        internal static int GenerateRandomNum(int length = 6, bool endIsZero = false)
+        {
+            if (length > 11) length = 11;
+            var result = 0;
+            var lastNum = 0;
+            if (RandomNumberGenerator.GetInt32(256) % 2 == 0)
+                for (int i = length - 1; i >= 0; i--) // 5 4 3 2 1 0
+                    EachGenerate(i);
+            else
+                for (int i = 0; i < length; i++) // 0 1 2 3 4 5
+                    EachGenerate(i);
+            return result;
+            void EachGenerate(int i)
+            {
+                var bit = (int)(i == 0 ? 1 : Math.Pow(10, i));
+                // 100,000  10,000  1,000   100     10      1
+                // 1        10      100     1,000   10,000  100,000
+                var current = RandomNumberGenerator.GetInt32(lastNum + 1, lastNum + 10);
+                lastNum = current % 10;
+                if (lastNum == 0)
+                {
+                    // i != 0 &&  i!=5 末尾和开头不能有零
+                    if ((i != 0 || endIsZero) && i != length - 1)
+                        return;
+                    lastNum = RandomNumberGenerator.GetInt32(1, 10);
+                }
+                result += lastNum * bit;
+            }
+        }
+
+        /// <summary>
+        /// 生成随机字符串，长度为固定传入字符串
+        /// </summary>
+        /// <param name="length">要生成的字符串长度</param>
+        /// <param name="randomChars">随机字符串字符集</param>
+        /// <returns></returns>
+        internal static string GenerateRandomString(int length = 6,
+            string randomChars = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        {
+            var result = new char[length];
+            if (RandomNumberGenerator.GetInt32(256) % 2 == 0)
+                for (var i = length - 1; i >= 0; i--) // 5 4 3 2 1 0
+                    EachGenerate(i);
+            else
+                for (var i = 0; i < length; i++) // 0 1 2 3 4 5
+                    EachGenerate(i);
+            return new string(result);
+            void EachGenerate(int i)
+            {
+                var index = RandomNumberGenerator.GetInt32(0, randomChars.Length);
+                var temp = RandomCharAt(randomChars, index);
+                static char RandomCharAt(string s, int index)
+                {
+                    if (index == s.Length) index = 0;
+                    else if (index > s.Length) index %= s.Length;
+                    return s[index];
+                }
+                result[i] = temp;
+            }
+        }
     }
 }

@@ -126,7 +126,7 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
            { "Format", "JSON" }, // 没传默认为JSON，可选填值：XML
            { "SignatureMethod", "HMAC-SHA1" }, // 建议固定值：HMAC-SHA1
            { "SignatureVersion", "1.0" }, // 建议固定值：1.0
-           { "SignatureNonce", Guid.NewGuid().ToString("N") + SmsSenderBase.GenerateRandomString(3) },
+           { "SignatureNonce", Guid.NewGuid().ToString("N") + Random2.GenerateRandomString(3) },
            // 用于请求的防重放攻击，每次请求唯一，JAVA语言建议用：java.util.UUID.randomUUID()生成即可
            //{ "Signature", "" }, // 最终生成的签名结果值
 
