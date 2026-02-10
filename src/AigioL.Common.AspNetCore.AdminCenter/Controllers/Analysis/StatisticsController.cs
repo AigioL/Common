@@ -51,8 +51,8 @@ public static partial class StatisticsController
         .WithDescription("客户端用户注册比例统计（绑定的第三方平台账号比例）");
 
         routeGroup.MapGet("registeruserstatistics", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime) =>
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime) =>
         {
             if (startTime.AddMonths(1) > endTime)
             {
@@ -211,8 +211,8 @@ public static partial class StatisticsController
         .WithDescription("事件分析一级菜单");
 
         routeGroup.MapGet("getanalysispropertieskeymenulist", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] string? appVersion,
             [FromQuery] string? eventNames,
             [FromQuery] Guid? appId,
@@ -225,8 +225,8 @@ public static partial class StatisticsController
         .WithDescription("事件属性键菜单");
 
         routeGroup.MapGet("getanalysispropertiesvaluemenulist", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] string? appVersion,
             [FromQuery] string? eventNames,
             [FromQuery] string? key,
@@ -240,8 +240,8 @@ public static partial class StatisticsController
         .WithDescription("事件属性值菜单");
 
         routeGroup.MapGet("getanalysiseventsummary", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] string? appVersion,
             [FromQuery] string? eventNames,
             [FromQuery] string? key,
@@ -263,19 +263,17 @@ public static partial class StatisticsController
         }).PermissionFilter(ControllerNameAnalysisLog, BMButtonType.Query)
         .WithDescription("获取统计的 App 平台数据");
 
-        routeGroup.MapGet("getanalysisappver", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime) =>
+        routeGroup.MapGet("getanalysisappver", async (HttpContext context) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
-            var r = await statisticsRepo.GetAnalysisAppVer(startTime, endTime, context.RequestAborted);
+            var r = await statisticsRepo.GetAnalysisAppVer(context.RequestAborted);
             return BMApiRsp.OK(r);
         }).PermissionFilter(ControllerNameAnalysisLog, BMButtonType.Query)
         .WithDescription("版本统计数据");
 
         routeGroup.MapGet("getanalysisappversummary", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] Guid? appId,
             [FromQuery] bool isMonth = false) =>
         {
@@ -286,8 +284,8 @@ public static partial class StatisticsController
         .WithDescription("版本使用趋势");
 
         routeGroup.MapGet("getanalysislocalesummary", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] bool isall,
             [FromQuery] string? appVersion,
             [FromQuery] Guid? appId,
@@ -300,8 +298,8 @@ public static partial class StatisticsController
         .WithDescription("活跃用户语言");
 
         routeGroup.MapGet("getanalysisequipmentsummary", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime,
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime,
             [FromQuery] string? appVersion,
             [FromQuery] bool isMonth = false) =>
         {
@@ -312,8 +310,8 @@ public static partial class StatisticsController
         .WithDescription("活跃用户设备");
 
         routeGroup.MapGet("getappverstatisticsdata", async (HttpContext context,
-            [FromQuery] DateTimeOffset startTime,
-            [FromQuery] DateTimeOffset endTime) =>
+            [FromQuery] DateOnly startTime,
+            [FromQuery] DateOnly endTime) =>
         {
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             var r = await statisticsRepo.GetAppVerStatisticsData(startTime, endTime, context.RequestAborted);

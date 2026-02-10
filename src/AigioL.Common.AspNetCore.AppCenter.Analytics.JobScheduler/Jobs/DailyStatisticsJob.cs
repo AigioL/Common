@@ -1,12 +1,11 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using StackExchange.Redis;
-using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions.IStatisticsRepository;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Jobs;
 
 /// <summary>
-/// 日活统计汇总任务
+/// 日活统计汇总任务（按天统计，使用北京时间）
 /// </summary>
 sealed partial class DailyStatisticsJob(
     IServiceProvider serviceProvider,
@@ -55,6 +54,9 @@ sealed partial class DailyStatisticsJob(
         catch (Exception e)
         {
             logger.LogError(e, "{taskName} Job 任务处理出现错误", GetTaskName());
+
+            var title = $"JobErr: {JobName}";
+            await feishuApiClient.SendMessageAsync(title, $"{GetTaskName()} Job 任务处理出现错误", CancellationToken.None); // 飞书通知不取消
         }
     }
 
@@ -91,7 +93,7 @@ partial class DailyStatisticsJob
         var keys = server.KeysAsync(CacheKeys.RedisActiveUserDb);
 
         var today = DateTime.Today;
-        var todayStr = today.ToString("yyyy-MM-dd");
+        var todayStr = today.ToDateString();
 
         var db = conn.GetDatabase(CacheKeys.RedisActiveUserDb);
 
@@ -118,17 +120,21 @@ partial class DailyStatisticsJob
         if (firstRecord != null)
         {
             logger.LogInformation("每日活跃用户汇总 Job 开始");
-            var start = ToUTC8Date(firstRecord.CreateTime);
-            TimeSpan sp = ToUTC8Date(DateTimeOffset.Now).Subtract(start);
+
+            var firstStartDay = firstRecord.CreateTime.ToUTC8Date();
+            var start = firstStartDay.GetDateOnly();
+            var now = DateTimeOffset.Now.ToUTC8();
+            TimeSpan sp = now.Subtract(firstStartDay);
             logger.LogInformation("活跃用户汇总 Job，准备开始 最早的记录是（{start}-{startAddDays1}）",
                 start,
                 start.AddDays(1));
 
+            var now_ = now.GetDateOnly();
+
             for (int i = 1; i <= sp.Days; i++)
             {
-                var now = ToUTC8(DateTimeOffset.Now);
                 var end = start.AddDays(1);
-                if (end >= now)
+                if (end >= now_)
                 {
                     logger.LogInformation("活跃用户汇总 Job，{end} 结束时间过早跳过", end);
                     return;
@@ -138,14 +144,14 @@ partial class DailyStatisticsJob
                     start,
                     end);
 
-                var allCount = await statisticsRepo.StatisticsDaysData(start, end);
+                var allCount = await statisticsRepo.StatisticsDaysData(start, end, cancellationToken);
                 if (allCount == 0)
                 {
                     logger.LogWarning("活跃用户汇总 Job 处理时间 {start} - {end} 计数为零！将在下次继续重试，此次运行跳过",
                         start,
                         end);
                 }
-                logger.LogInformation($"统计用户活跃数据结束：{now}", $"（{start}-{end}）",
+                logger.LogInformation($"统计用户活跃数据结束：{now}", "（{start}-{end}）",
                     now,
                     start,
                     end);
@@ -154,10 +160,11 @@ partial class DailyStatisticsJob
 
             // 只保留近两个月的数据
             var delStart = DateTimeOffset.MinValue;
-            var delEnd = ToUTC8Date(DateTimeOffset.Now).AddMonths(-2);
+            var delEnd = now.ToUTC8Date().AddMonths(-2);
             var deleteCount = await statisticsRepo.DeleteDaysData(
                 delStart,
-                delEnd);
+                delEnd,
+                cancellationToken);
             if (deleteCount > 0)
             {
                 logger.LogInformation("统计用户活跃数据删除（实际删除数为 {deleteCount}）", deleteCount);
@@ -178,18 +185,22 @@ partial class DailyStatisticsJob
         if (firstRecord != null)
         {
             logger.LogInformation("每日活跃用户版本汇总 Job 开始");
-            var start = ToUTC8Date(firstRecord.CreateTime);
-            TimeSpan sp = ToUTC8Date(DateTimeOffset.Now).Subtract(start);
+
+            var firstStartDay = firstRecord.CreateTime.ToUTC8Date();
+            var start = firstStartDay.GetDateOnly();
+            var now = DateTimeOffset.Now.ToUTC8();
+            TimeSpan sp = now.Subtract(firstStartDay);
+
+            var now_ = now.GetDateOnly();
 
             for (int i = 1; i <= sp.Days; i++)
             {
-                var now = ToUTC8(DateTimeOffset.Now);
                 var end = start.AddDays(1);
-                if (end >= now)
+                if (end >= now_)
                 {
                     return;
                 }
-                var allCount = await statisticsRepo.StatisticsAppVerDaysData(start, end);
+                var allCount = await statisticsRepo.StatisticsAppVerDaysData(start, end, cancellationToken);
                 start = end;
             }
         }
@@ -207,7 +218,7 @@ partial class DailyStatisticsJob
 
         var statisticsRepo = serviceProvider.GetRequiredService<IStatisticsRepository>();
         var dateStart = await GetStartDateOfAdvertisementStatisticsDaily(statisticsRepo, cancellationToken);
-        var dateEnd = dateStart != null ? ToUTC8Date(DateTimeOffset.Now) : (DateTimeOffset?)null;
+        var dateEnd = dateStart != null ? DateTimeOffset.Now.ToUTC8Date() : (DateTimeOffset?)null;
         if (dateStart == null || dateEnd == null)
         {
             logger.LogWarning($"{JOB_NAME}：未能获取到合适的统计开始日期");
@@ -221,7 +232,8 @@ partial class DailyStatisticsJob
             logger.LogInformation("{logPrefix} 开始", logPrefix);
             try
             {
-                var allCount = await statisticsRepo.PerformAdvertisementStatisticDaily(oneDay);
+                var oneDayDate = oneDay.GetDateOnly();
+                var allCount = await statisticsRepo.PerformAdvertisementStatisticDaily(oneDayDate, cancellationToken);
                 if (allCount == 0)
                 {
                     logger.LogWarning("{logPrefix} 计数为零！将在下次继续重试，此次运行跳过", logPrefix);
@@ -242,14 +254,14 @@ partial class DailyStatisticsJob
         var lastDayStatistic = await statisticsRepo.GetLastAdvertisementStatisticDaily(cancellationToken);
         if (lastDayStatistic != null)
         {
-            return ToUTC8Date(lastDayStatistic.StatisticsTime).AddDays(1);
+            return lastDayStatistic.StatisticsTime.ToUTC8Date().AddDays(1);
         }
 
         // 取第一条广告统计日期
         var firstStatistic = await statisticsRepo.GetFirstAdvertisementStatistic(cancellationToken);
         if (firstStatistic != null)
         {
-            return ToUTC8Date(firstStatistic.CreateTime);
+            return firstStatistic.CreateTime.ToUTC8Date();
         }
 
         return null;
@@ -267,7 +279,7 @@ partial class DailyStatisticsJob
 
         var statisticsRepo = serviceProvider.GetRequiredService<IStatisticsRepository>();
         var dataStart = await GetStartDateOfUserDWMStatisticDaily(statisticsRepo, cancellationToken);
-        var dateEnd = dataStart != null ? ToUTC8Date(DateTimeOffset.Now) : (DateTimeOffset?)null;
+        var dateEnd = dataStart != null ? DateTimeOffset.Now.ToUTC8Date() : (DateTimeOffset?)null;
 
         if (dataStart == null || dateEnd == null)
         {
@@ -282,7 +294,8 @@ partial class DailyStatisticsJob
             logger.LogInformation("{logPrefix} 开始", logPrefix);
             try
             {
-                var allCount = await statisticsRepo.PerformUserDWMStatisticDaily(oneDay);
+                var oneDayDate = oneDay.GetDateOnly();
+                var allCount = await statisticsRepo.PerformUserDWMStatisticDaily(oneDayDate, cancellationToken);
                 if (allCount == 0)
                 {
                     logger.LogWarning("{logPrefix} 计数为零！将在下次继续重试，此次运行跳过", logPrefix);
@@ -303,11 +316,11 @@ partial class DailyStatisticsJob
         var lastDayStatistic = await statisticsRepo.GetLastUserDWMStatisticDaily(cancellationToken);
         if (lastDayStatistic != null)
         {
-            return ToUTC8Date(lastDayStatistic.StatisticsTime).AddDays(1);
+            return lastDayStatistic.StatisticsTime.ToUTC8Date().AddDays(1);
         }
 
         // 取上月月初 1 号日期
-        var nowDate = ToUTC8Date(DateTimeOffset.Now);
+        var nowDate = DateTimeOffset.Now.ToUTC8Date();
         return nowDate.AddDays(-nowDate.Day + 1).AddMonths(-1);
     }
 
@@ -323,7 +336,7 @@ partial class DailyStatisticsJob
 
         var statisticsRepo = serviceProvider.GetRequiredService<IStatisticsRepository>();
         var dateSta = await GetStartDateOfOrderStatisticDaily(statisticsRepo, cancellationToken);
-        var dateEnd = dateSta != null ? DateTimeOffset.Now.Date : (DateTimeOffset?)null;
+        var dateEnd = dateSta != null ? DateTimeOffset.Now.ToUTC8Date() : (DateTimeOffset?)null;
 
         if (dateSta == null || dateEnd == null)
         {
@@ -338,7 +351,8 @@ partial class DailyStatisticsJob
             logger.LogInformation("{logPrefix} 开始", logPrefix);
             try
             {
-                var allCount = await statisticsRepo.PerformOrderAmountQtyStatisticDaily(oneDay);
+                var oneDayDate = oneDay.GetDateOnly();
+                var allCount = await statisticsRepo.PerformOrderAmountQtyStatisticDaily(oneDayDate, cancellationToken);
                 if (allCount == 0)
                 {
                     logger.LogWarning("{logPrefix} 计数为零！将在下次继续重试，此次运行跳过", logPrefix);
@@ -359,11 +373,11 @@ partial class DailyStatisticsJob
         var lastDayStatistic = await statisticsRepo.GetLastOrderAmountQtySummary(cancellationToken);
         if (lastDayStatistic != null)
         {
-            return ToUTC8Date(lastDayStatistic.StatisticsTime).AddDays(1);
+            return lastDayStatistic.StatisticsTime.ToUTC8Date().AddDays(1);
         }
 
         // 取上月月初 1 号日期
-        var nowDate = ToUTC8Date(DateTimeOffset.Now);
+        var nowDate = DateTimeOffset.Now.ToUTC8Date();
         return nowDate.AddDays(-nowDate.Day + 1).AddMonths(-1);
     }
 }

@@ -58,7 +58,7 @@ public partial class ActiveUserOSSummary :
     [Required]
     [Comment("OSVersion 中第 1 节数字")]
     [StringLength(5)]
-    public required string OSVersionSection1 { get; set; }
+    public string OSVersionSection1 { get; set; } = "";
 
     public int OSVersionSection1Number { get; set; }
 
@@ -68,7 +68,7 @@ public partial class ActiveUserOSSummary :
     [Required]
     [Comment("OSVersion 中第 2 节数字")]
     [StringLength(5)]
-    public required string OSVersionSection2 { get; set; }
+    public string OSVersionSection2 { get; set; } = "";
 
     public int OSVersionSection2Number { get; set; }
 
@@ -78,7 +78,7 @@ public partial class ActiveUserOSSummary :
     [Required]
     [Comment("OSVersion 中第 3 节数字")]
     [StringLength(5)]
-    public required string OSVersionSection3 { get; set; }
+    public string OSVersionSection3 { get; set; } = "";
 
     public int OSVersionSection3Number { get; set; }
 
@@ -88,7 +88,7 @@ public partial class ActiveUserOSSummary :
     [Required]
     [Comment("OSVersion 中第 4 节数字")]
     [StringLength(5)]
-    public required string OSVersionSection4 { get; set; }
+    public string OSVersionSection4 { get; set; } = "";
 
     public int OSVersionSection4Number { get; set; }
 
@@ -107,4 +107,21 @@ public partial class ActiveUserOSSummary :
     /// <inheritdoc/>
     [Comment("创建时间")]
     public DateTimeOffset CreateTime { get; set; }
+
+    public void SetOSVersionSections(Version osVersion)
+    {
+        static int GetInt32(int i) => i <= 0 ? 0 : i;
+
+        OSVersionSection1Number = GetInt32(osVersion.Major);
+        OSVersionSection1 = OSVersionSection1Number.ToString();
+
+        OSVersionSection2Number = GetInt32(osVersion.Minor);
+        OSVersionSection2 = OSVersionSection2Number.ToString();
+
+        OSVersionSection3Number = GetInt32(osVersion.Build);
+        OSVersionSection3 = OSVersionSection3Number.ToString();
+
+        OSVersionSection4Number = GetInt32(osVersion.Revision);
+        OSVersionSection4 = OSVersionSection4Number.ToString();
+    }
 }

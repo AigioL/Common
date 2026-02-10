@@ -33,7 +33,24 @@ public sealed record class StatisticsChartActiveUserOSResponse
 
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>
+    /// OSVersionSection1
+    /// </summary>
     public string Version { get; set; } = string.Empty;
+
+    //public int OSVersionSection1Number { get; set; }
+
+    //public string OSVersionSection2 { get; set; } = string.Empty;
+
+    //public int OSVersionSection2Number { get; set; }
+
+    //public string OSVersionSection3 { get; set; } = string.Empty;
+
+    //public int OSVersionSection3Number { get; set; }
+
+    //public string OSVersionSection4 { get; set; } = string.Empty;
+
+    //public int OSVersionSection4Number { get; set; }
 
     public long Count { get; set; }
 }

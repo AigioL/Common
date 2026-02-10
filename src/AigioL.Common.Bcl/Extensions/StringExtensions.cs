@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -73,5 +74,15 @@ public static partial class StringExtensions
             return string.Join(" ", new[] { format }.Concat(args));
 #endif
         }
+    }
+
+    public static bool TryGetVersion(this ReadOnlySpan<char> s, [NotNullWhen(true)] out Version? version)
+    {
+        const string winosvp = "Microsoft Windows NT ";
+        if (s.StartsWith(winosvp))
+        {
+            s = s[winosvp.Length..];
+        }
+        return Version.TryParse(s, out version);
     }
 }

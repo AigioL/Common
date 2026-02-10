@@ -13,39 +13,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions
 
 public partial interface IStatisticsRepository
 {
-    /// <summary>
-    /// 将时区转换为北京时间（UTC+8）
-    /// </summary>
-    static DateTimeOffset ToUTC8(DateTimeOffset dto)
-    {
-        var utc8Offset = TimeSpan.FromHours(8);
-        if (dto.Offset == utc8Offset)
-        {
-            return dto;
-        }
-        return dto.ToOffset(utc8Offset);
-    }
-
-    /// <summary>
-    /// 将时区转换为北京时间（UTC+8）并去除时间部分，保留日期部分
-    /// </summary>
-    static DateTimeOffset ToUTC8Date(DateTimeOffset dto)
-    {
-        dto = ToUTC8(dto);
-        return new DateTimeOffset(dto.Year, dto.Month, dto.Day, 0, 0, 0, dto.Offset);
-    }
-
-    static DateTimeOffset ToUTC8Date(DateOnly @do)
-    {
-        var utc8Offset = TimeSpan.FromHours(8);
-        return new DateTimeOffset(@do.Year, @do.Month, @do.Day, 0, 0, 0, utc8Offset);
-    }
-
-    static DateOnly GetDateOnly(DateTimeOffset dto)
-    {
-        var date = ToUTC8Date(dto);
-        return new DateOnly(date.Year, date.Month, date.Day);
-    }
 }
 
 partial interface IStatisticsRepository
@@ -60,8 +27,8 @@ partial interface IStatisticsRepository
     /// 获取注册用户相关统计数据
     /// </summary>
     Task<StatisticsLineResponse[]> GetRegisterUserStatisticsAsync(
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -190,8 +157,8 @@ partial interface IStatisticsRepository
     /// 获取事件属性菜单
     /// </summary>
     Task<string[]?> GetAnalysisPropertiesKeyMenuList(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         string? eventNames,
         Guid? appId,
@@ -202,21 +169,21 @@ partial interface IStatisticsRepository
     /// 获取事件属性 Value 菜单
     /// </summary>
     Task<string[]?> GetAnalysisPropertiesValueMenuList(
-         DateTimeOffset? startTime,
-         DateTimeOffset? endTime,
-         string? appVersion,
-         string? eventNames,
-         string? key,
-         Guid? appId,
-         bool isMonth,
+        DateOnly startTime,
+        DateOnly endTime,
+        string? appVersion,
+        string? eventNames,
+        string? key,
+        Guid? appId,
+        bool isMonth,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取事件统计数据
     /// </summary>
     Task<AnalysisResponse[]?> GetAnalysisEventSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         string? eventNames,
         string? key,
@@ -229,16 +196,14 @@ partial interface IStatisticsRepository
     /// 获取版本数据
     /// </summary>
     Task<string[]?> GetAnalysisAppVer(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取版本使用趋势
     /// </summary>
     Task<AnalysisResponse[]?> GetAnalysisAppVerSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         Guid? appId,
         bool isMonth,
         CancellationToken cancellationToken = default);
@@ -247,8 +212,8 @@ partial interface IStatisticsRepository
     /// 获取活跃用户语言
     /// </summary>
     Task<AnalysisResponse[]?> GetAnalysisLocaleSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         bool isall,
         string? appVersion,
         Guid? appId,
@@ -259,8 +224,8 @@ partial interface IStatisticsRepository
     /// 获取活跃用户设备
     /// </summary>
     Task<AnalysisResponse[]?> GetAnalysisEquipmentSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         bool isMonth,
         CancellationToken cancellationToken = default);
@@ -269,8 +234,8 @@ partial interface IStatisticsRepository
     /// 获取活跃版本统计数据
     /// </summary>
     Task<AnalysisResponse[]?> GetAppVerStatisticsData(
-        DateTimeOffset start,
-        DateTimeOffset end,
+        DateOnly start,
+        DateOnly end,
         CancellationToken cancellationToken = default);
 }
 
@@ -287,18 +252,22 @@ partial interface IStatisticsRepository
     /// </summary>
     /// <param name="start">开始时间</param>
     /// <param name="end">结束时间</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<int> StatisticsDaysData(DateTimeOffset start, DateTimeOffset end);
+    Task<int> StatisticsDaysData(DateOnly start, DateOnly end,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 删除指定区间的数据返回行数
     /// </summary>
-    Task<int> DeleteDaysData(DateTimeOffset start, DateTimeOffset end);
+    Task<int> DeleteDaysData(DateTimeOffset start, DateTimeOffset end,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 统计活跃用户版本数据
     /// </summary>
-    Task<int> StatisticsAppVerDaysData(DateTimeOffset start, DateTimeOffset end);
+    Task<int> StatisticsAppVerDaysData(DateOnly start, DateOnly end,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取最后一条广告统计每日记录
@@ -316,8 +285,10 @@ partial interface IStatisticsRepository
     /// 广告信息每日统计
     /// </summary>
     /// <param name="statisticDate">统计日期</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<int> PerformAdvertisementStatisticDaily(DateTimeOffset statisticDate);
+    Task<int> PerformAdvertisementStatisticDaily(DateOnly statisticDate,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取最后一条活跃度统计记录
@@ -329,8 +300,10 @@ partial interface IStatisticsRepository
     /// 用户活跃度信息每日统计
     /// </summary>
     /// <param name="statisticDate">统计日期</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<int> PerformUserDWMStatisticDaily(DateTimeOffset statisticDate);
+    Task<int> PerformUserDWMStatisticDaily(DateOnly statisticDate,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取最后一条订单金额数量统计记录
@@ -342,6 +315,8 @@ partial interface IStatisticsRepository
     /// 订单金额和数量每日统计
     /// </summary>
     /// <param name="statisticDate">统计日期</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<int> PerformOrderAmountQtyStatisticDaily(DateTimeOffset statisticDate);
+    Task<int> PerformOrderAmountQtyStatisticDaily(DateOnly statisticDate,
+        CancellationToken cancellationToken = default);
 }

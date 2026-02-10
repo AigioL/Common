@@ -15,15 +15,10 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
-using GameTrainer.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions.IStatisticsRepository;
 using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.LazyCalendar;
 using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.LazyStatisticUserCountDict;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories;
 
@@ -40,6 +35,13 @@ sealed partial class StatisticsRepository<TDbContext>(TDbContext dbContext, ISer
     IOrderingPaymentBaseDbContext,
     IAnalysisLogSummariesDbContext
 {
+    /// <summary>
+    /// 设置通用很长的超时时间，统计相关执行 SQL 可能非常耗时
+    /// </summary>
+    void SetCommandTimeout()
+    {
+        db.Database.SetCommandTimeout(TimeSpan.FromHours(12));
+    }
 }
 
 partial class StatisticsRepository<TDbContext>
@@ -107,6 +109,16 @@ partial class StatisticsRepository<TDbContext>
         return statistics;
     }
 
+    public Task<StatisticsLineResponse[]> GetRegisterUserStatisticsAsync(
+        DateOnly startTime,
+        DateOnly endTime,
+        CancellationToken cancellationToken = default)
+    {
+        var startTime_ = startTime.ToUTC8Date();
+        var endTime_ = endTime.AddDays(1).ToUTC8Date();
+        return GetRegisterUserStatisticsAsync(startTime_, endTime_, cancellationToken);
+    }
+
     public async Task<StatisticsLineResponse[]> GetRegisterUserStatisticsAsync(
         DateTimeOffset startTime,
         DateTimeOffset endTime,
@@ -135,7 +147,7 @@ partial class StatisticsRepository<TDbContext>
     {
         var query = db.ActiveUserStatisticSummaries
             .AsNoTrackingWithIdentityResolution()
-           .Where(x => x.StatisticsStartTime >= startTime && x.StatisticsStartTime < endTime)
+           .Where(x => x.StatisticsStartTime >= startTime && x.StatisticsStartTime <= endTime)
            .OrderBy(x => x.StatisticsStartTime)
            .Select(ActiveUserStatisticSummary.Expression);
 #if DEBUG
@@ -155,7 +167,7 @@ partial class StatisticsRepository<TDbContext>
     {
         var query = db.ActiveUserPlatformSummaries
            .AsNoTrackingWithIdentityResolution()
-           .Where(x => x.StatisticsTime >= startTime && x.StatisticsTime < endTime);
+           .Where(x => x.StatisticsTime >= startTime && x.StatisticsTime <= endTime);
         if (platform.HasValue)
             query = query.Where(x => x.Platform == platform);
 
@@ -218,7 +230,7 @@ partial class StatisticsRepository<TDbContext>
     {
         var query = db.KomaasharuStatisticPerDaySummaries
             .AsNoTrackingWithIdentityResolution()
-            .Where(x => startTime <= x.StatisticsTime && x.StatisticsTime < endTime);
+            .Where(x => startTime <= x.StatisticsTime && x.StatisticsTime <= endTime);
 
         var query2 = query
             .Select(KomaasharuStatisticPerDaySummary.Expression)
@@ -247,7 +259,7 @@ partial class StatisticsRepository<TDbContext>
     {
         var query = db.ActiveUserDayWeekMonthSummaries
              .AsNoTrackingWithIdentityResolution()
-             .Where(x => x.StatisticsTime >= startTime && x.StatisticsTime < endTime);
+             .Where(x => x.StatisticsTime >= startTime && x.StatisticsTime <= endTime);
         if (platform.HasValue)
             query = query.Where(x => x.Platform == platform);
         var query2 = query
@@ -269,20 +281,27 @@ partial class StatisticsRepository<TDbContext>
         return r;
     }
 
-    public async Task<StatisticsSmsUsageTrendResponse[]> GetSmsUsageTrendStatisticsAsync(
+    public Task<StatisticsSmsUsageTrendResponse[]> GetSmsUsageTrendStatisticsAsync(
         DateOnly startTime,
         DateOnly endTime,
         CancellationToken cancellationToken = default)
     {
-        var startTime_ = ToUTC8Date(startTime);
-        var endTime_ = ToUTC8Date(endTime);
+        var startTime_ = startTime.ToUTC8Date();
+        var endTime_ = endTime.AddDays(1).ToUTC8Date();
+        return GetSmsUsageTrendStatisticsAsync(startTime_, endTime_, cancellationToken);
+    }
 
+    public async Task<StatisticsSmsUsageTrendResponse[]> GetSmsUsageTrendStatisticsAsync(
+        DateTimeOffset startTime,
+        DateTimeOffset endTime,
+        CancellationToken cancellationToken = default)
+    {
         var query = db.AuthMessageRecords.Where(r => r.Type == AuthMessageType.PhoneNumber)
             .AsNoTrackingWithIdentityResolution();
 
         var query2 = query
             .Where(x => x.Type == AuthMessageType.PhoneNumber)
-            .Where(x => startTime_ <= x.CreateTime && x.CreateTime < endTime_)
+            .Where(x => x.CreateTime >= startTime && x.CreateTime < endTime)
             .GroupBy(x => new { x.CreateTime.ToOffset(TimeSpan.FromHours(8)).Date, x.RequestType })
             .Select(g => new StatisticsSmsUsageTrendResponse
             {
@@ -342,7 +361,7 @@ partial class StatisticsRepository<TDbContext>
         var query = db.OrderAmountQtySummaries
             .AsNoTrackingWithIdentityResolution()
             .Where(x => x.BusinessTypeId == businessTypeId)
-            .Where(x => x.StatisticsTime >= startTime && x.StatisticsTime < endTime)
+            .Where(x => x.StatisticsTime >= startTime && x.StatisticsTime <= endTime)
             .OrderBy(x => x.StatisticsTime)
             .Select(a => new StatisticsOrderAmountQtyModel
             {
@@ -392,9 +411,23 @@ partial class StatisticsRepository<TDbContext>
             _ => throw new ArgumentOutOfRangeException(nameof(unit), unit, null),
         };
 
-    public async Task<OrderAmountQtyTableModel[]> GetOrderSummaryTable(
+    public Task<OrderAmountQtyTableModel[]> GetOrderSummaryTable(
         DateOnly startTime,
         DateOnly endTime,
+        OrderType[]? orderTypes = null,
+        int[]? orderBusinessTypeIds = null,
+        string? orderBy = null,
+        bool? desc = null,
+        CancellationToken cancellationToken = default)
+    {
+        var startTime_ = startTime.ToUTC8Date();
+        var endTime_ = endTime.AddDays(1).ToUTC8Date();
+        return GetOrderSummaryTable(startTime_, endTime_, orderTypes, orderBusinessTypeIds, orderBy, desc, cancellationToken);
+    }
+
+    public async Task<OrderAmountQtyTableModel[]> GetOrderSummaryTable(
+        DateTimeOffset startTime,
+        DateTimeOffset endTime,
         OrderType[]? orderTypes = null,
         int[]? orderBusinessTypeIds = null,
         string? orderBy = null,
@@ -404,9 +437,6 @@ partial class StatisticsRepository<TDbContext>
         var taxs = await TaxHelper.GetTaxAsync(db, cancellationToken);
         var alipayTax = taxs[TaxHelper.键_支付宝税点];
         var wechatPayTax = taxs[TaxHelper.键_微信支付税点];
-
-        var startTime_ = ToUTC8Date(startTime);
-        var endTime_ = ToUTC8Date(startTime);
 
         var orders = db.Orders;
         var orderPaymentCompositions = db.OrderPaymentCompositions
@@ -422,7 +452,7 @@ partial class StatisticsRepository<TDbContext>
                     join c in orderPaymentCompositions on o.Id equals c.OrderId
                     join r in refundBills on o.Id equals r.AftersalesBill!.OrderId into rs
                     from r in rs.DefaultIfEmpty()
-                    where o.PaymentTime >= startTime_ && o.PaymentTime < endTime_
+                    where o.PaymentTime >= startTime && o.PaymentTime < endTime
                     select new
                     {
                         o.Type,
@@ -472,15 +502,13 @@ partial class StatisticsRepository<TDbContext>
 
         // 结算上月的订单在本月退款
         var lastMonthStartTime = startTime.AddDays(1 - startTime.Day).AddMonths(-1);
-        var lastMonthStartTime_ = ToUTC8Date(lastMonthStartTime);
         var lastMonthEndTime = startTime.AddDays(1 - startTime.Day);
-        var lastMonthEndTime_ = ToUTC8Date(lastMonthEndTime);
 
         var query2 = from o in orders
                      join r in refundBills on o.Id equals r.AftersalesBill!.OrderId into rs
                      from r in rs.DefaultIfEmpty()
-                     where o.PaymentTime >= lastMonthStartTime_ && o.PaymentTime < lastMonthEndTime_ &&
-                           r.RefundFinishTime >= startTime_ && r.RefundFinishTime < endTime_
+                     where o.PaymentTime >= lastMonthStartTime && o.PaymentTime < lastMonthEndTime &&
+                           r.RefundFinishTime >= startTime && r.RefundFinishTime < endTime
                      select new
                      {
                          o.Type,
@@ -642,33 +670,76 @@ partial class StatisticsRepository<TDbContext>
     }
 
     public async Task<string[]?> GetAnalysisPropertiesKeyMenuList(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         string? eventNames,
         Guid? appId,
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisEventLogSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.EventRelatedPropertie)
+            .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime
+                && x.IsTheMonthlyStatistics == isMonth
+                && x.EventName == eventNames
+                && x.EventRelatedPropertie != null);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+        if (!string.IsNullOrWhiteSpace(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        var query2 = query.SelectMany(x => x.EventRelatedPropertie!)
+            .Select(x => x.PropertieKey)
+            .Distinct();
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<string[]?> GetAnalysisPropertiesValueMenuList(
-         DateTimeOffset? startTime,
-         DateTimeOffset? endTime,
-         string? appVersion,
-         string? eventNames,
-         string? key,
-         Guid? appId,
-         bool isMonth,
+        DateOnly startTime,
+        DateOnly endTime,
+        string? appVersion,
+        string? eventNames,
+        string? key,
+        Guid? appId,
+        bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisEventLogSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.EventRelatedPropertie)
+            .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime
+                && x.IsTheMonthlyStatistics == isMonth
+                && x.EventName == eventNames
+                && x.EventRelatedPropertie != null);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+        if (!string.IsNullOrWhiteSpace(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        var query2 = query.SelectMany(x => x.EventRelatedPropertie!)
+            .Where(x => x.PropertieKey == key)
+            .Select(x => x.PropertieValue)
+            .Distinct();
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<AnalysisResponse[]?> GetAnalysisEventSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         string? eventNames,
         string? key,
@@ -677,55 +748,249 @@ partial class StatisticsRepository<TDbContext>
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisEventLogSummaries
+           .AsNoTrackingWithIdentityResolution()
+           .Include(x => x.EventRelatedPropertie)
+           .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime &&
+                x.IsTheMonthlyStatistics == isMonth &&
+                x.EventRelatedPropertie != null);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+        if (!string.IsNullOrEmpty(eventNames))
+            query = query.Where(x => x.EventName == eventNames);
+        if (!string.IsNullOrEmpty(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        IQueryable<AnalysisResponse> query2;
+        IQueryable<AnalysisResponse>? query3 = null;
+        if (!string.IsNullOrEmpty(key))
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                query2 = query
+                    .SelectMany(x => x.EventRelatedPropertie!.Select(p => new
+                    {
+                        x.StatisticsTime,
+                        p.PropertieKey,
+                        p.PropertieValue,
+                        p.StatisticalValues
+                    }))
+                    .Where(x => x.PropertieKey == key)
+                    .GroupBy(x => new { x.StatisticsTime, x.PropertieValue })
+                    .Select(g => new AnalysisResponse
+                    {
+                        Date = g.Key.StatisticsTime,
+                        StatisticsCount = g.Sum(x => x.StatisticalValues),
+                        Name = g.Key.PropertieValue
+                    })
+                    .OrderByDescending(x => x.StatisticsCount);
+            }
+            else
+            {
+                query2 = query
+                    .GroupBy(x => x.StatisticsTime)
+                    .Select(g => new AnalysisResponse
+                    {
+                        Date = g.Key,
+                        StatisticsCount = g.Sum(x => x.EventRelatedPropertie!
+                           .Where(x => (string.IsNullOrEmpty(key) || x.PropertieKey == key)
+                            && (string.IsNullOrEmpty(value) || x.PropertieValue == value)).Select(x => x.StatisticalValues).Sum()),
+                        Name = value ?? key
+                    })
+                    .OrderByDescending(x => x.StatisticsCount);
+            }
+        }
+        else if (string.IsNullOrEmpty(eventNames))
+        {
+            query2 = EventStatistics();
+        }
+        else
+        {
+            query2 = query
+                .SelectMany(x => x.EventRelatedPropertie!.Select(p => new
+                {
+                    x.StatisticsTime,
+                    p.PropertieKey,
+                    p.PropertieValue,
+                    p.StatisticalValues
+                }))
+                .GroupBy(x => new { x.StatisticsTime, x.PropertieKey })
+                .Select(g => new AnalysisResponse
+                {
+                    Date = g.Key.StatisticsTime,
+                    StatisticsCount = g.Sum(x => x.StatisticalValues),
+                    Name = g.Key.PropertieKey
+                })
+                .OrderByDescending(x => x.StatisticsCount);
+            query3 = EventStatistics();
+        }
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+        var sqlString3 = query3?.ToQueryString();
+#endif
+
+        var r = await query2.ToArrayAsync(cancellationToken);
+        if (query3 != null && r.Length == 0)
+        {
+            r = await query3.ToArrayAsync(cancellationToken);
+        }
+        return r;
+
+        IQueryable<AnalysisResponse> EventStatistics()
+        {
+            var query2 = query
+                .GroupBy(x => new { x.StatisticsTime, x.EventName })
+                .Select(g => new AnalysisResponse
+                {
+                    Date = g.Key.StatisticsTime,
+                    StatisticsCount = g.Sum(x => x.StatisticalValues),
+                    Name = g.Key.EventName
+                })
+                .OrderByDescending(x => x.StatisticsCount);
+            return query2;
+        }
     }
 
     public async Task<string[]?> GetAnalysisAppVer(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisStartServiceLogSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Select(x => x.AppVersion)
+            .Distinct();
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<AnalysisResponse[]?> GetAnalysisAppVerSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         Guid? appId,
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.AnalysisStartServiceLogSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime &&
+                x.IsTheMonthlyStatistics == isMonth);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+
+        var query2 = query.GroupBy(x => new { x.StatisticsTime, x.AppVersion })
+            .Select(x => new AnalysisResponse
+            {
+                Date = x.Key.StatisticsTime,
+                Name = x.Key.AppVersion,
+                StatisticsCount = x.Sum(a => a.StatisticalValues),
+            })
+            .OrderByDescending(x => x.StatisticsCount);
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<AnalysisResponse[]?> GetAnalysisLocaleSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         bool isall,
         string? appVersion,
         Guid? appId,
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.ActiveUserLanguageSummaries
+           .AsNoTrackingWithIdentityResolution()
+           .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime &&
+                x.IsTheMonthlyStatistics == isMonth);
+        if (appId.HasValue)
+            query = query.Where(x => x.AppId == appId);
+
+        if (!string.IsNullOrWhiteSpace(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        var query2 = query.GroupBy(x => new { x.Locale })
+            .Select(x => new AnalysisResponse
+            {
+                //Date = x.Key.StatisticalTime,
+                Name = string.IsNullOrEmpty(x.Key.Locale) ? "未知" : x.Key.Locale,
+                StatisticsCount = x.Sum(a => a.StatisticalValues),
+            })
+            .OrderByDescending(x => x.StatisticsCount)
+            .Take(isall ? 1000 : 10);
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<AnalysisResponse[]?> GetAnalysisEquipmentSummary(
-        DateTimeOffset? startTime,
-        DateTimeOffset? endTime,
+        DateOnly startTime,
+        DateOnly endTime,
         string? appVersion,
         bool isMonth,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.ActiveUserDeviceSummaries
+             .AsNoTrackingWithIdentityResolution()
+             .Where(x =>
+                x.StatisticsTime >= startTime &&
+                x.StatisticsTime <= endTime &&
+                x.IsTheMonthlyStatistics == isMonth);
+
+        if (!string.IsNullOrWhiteSpace(appVersion))
+            query = query.Where(x => x.AppVersion == appVersion);
+
+        var query2 = query.GroupBy(x => new { x.OsName })
+            .Select(x => new AnalysisResponse
+            {
+                //Date = x.Key.StatisticalTime,
+                Name = x.Key.OsName,
+                StatisticsCount = x.Sum(a => a.StatisticalValues)
+            })
+            .OrderByDescending(x => x.StatisticsCount);
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 
     public async Task<AnalysisResponse[]?> GetAppVerStatisticsData(
-        DateTimeOffset start,
-        DateTimeOffset end,
+        DateOnly start,
+        DateOnly end,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.ActiveUserAppVerSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x =>
+                x.StatisticsTime >= start &&
+                x.StatisticsTime <= end);
+
+        var query2 = query.GroupBy(x => new { x.StatisticsTime, x.AppVersion })
+            .Select(x => new AnalysisResponse
+            {
+                Date = x.Key.StatisticsTime,
+                Name = x.Key.AppVersion,
+                StatisticsCount = x.Sum(a => a.Count)
+            })
+            .OrderByDescending(x => x.StatisticsCount);
+#if DEBUG
+        var sqlString = query2.ToQueryString();
+#endif
+        var r = await query2.ToArrayAsync(cancellationToken);
+        return r;
     }
 }
 
@@ -745,58 +1010,464 @@ partial class StatisticsRepository<TDbContext>
         return r;
     }
 
-    public async Task<int> StatisticsDaysData(DateTimeOffset start, DateTimeOffset end)
+    public async Task<int> StatisticsDaysData(DateOnly start, DateOnly end,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var any = await db.ActiveUserStatisticSummaries
+            .AnyAsync(x => x.StatisticsStartTime == start && x.StatisticsEndTime == end, cancellationToken);
+
+        // 存在记录跳过此统计数据
+        if (!any)
+        {
+            var start_ = start.ToUTC8Date();
+            var end_ = end.ToUTC8Date().AddDays(1);
+
+            SetCommandTimeout();
+
+            var query = db.ActiveUserRecords
+               .AsNoTrackingWithIdentityResolution()
+               .Where(x => x.CreateTime >= start_ && x.CreateTime < end_);
+#if DEBUG
+            var sqlString = query.ToQueryString();
+#endif
+
+            // 总记录数
+            var count = await query.CountAsync(cancellationToken);
+            if (count == 0)
+            {
+                return 0;
+            }
+
+            // 登录数量
+            var loginCountQ = query.Where(x => x.IsAuthenticated == true);
+#if DEBUG
+            var sqlString_loginCountQ = loginCountQ.ToQueryString();
+#endif
+            var loginCount = await loginCountQ.CountAsync(cancellationToken);
+
+
+            // IP 计数 Distinct 去重
+            var ipCountQ = query
+                .Select(p => p.IPAddress)
+                .Distinct();
+#if DEBUG
+            var sqlString_ipCountQ = ipCountQ.ToQueryString();
+#endif
+            var ipCount = await ipCountQ.CountAsync(cancellationToken);
+
+
+            var deviceIdCountQ = query
+                .Where(x => x.DeviceId != null);
+#if DEBUG
+            var sqlString_deviceIdCountQ = deviceIdCountQ.ToQueryString();
+#endif
+            var deviceIdCount = await deviceIdCountQ.CountAsync(cancellationToken);
+
+            // 平台分布数量
+            var platformsQ = query.GroupBy(x => new
+            {
+                x.Platform,
+                x.DeviceIdiom,
+            }).Select(x => new ActiveUserPlatformSummary
+            {
+                Platform = x.Key.Platform,
+                DeviceIdiom = x.Key.DeviceIdiom,
+                StatisticsTime = start,
+                Count = x.Count(),
+            });
+#if DEBUG
+            var sqlString_platformsQ = platformsQ.ToQueryString();
+#endif
+            var platforms = await platformsQ.ToListAsync(cancellationToken);
+
+            // 设备 CPU 架构
+            var archsQ = query.GroupBy(x => new
+            {
+                x.ProcessArch,
+                x.Platform,
+                x.DeviceIdiom,
+            }).Select(x => new ActiveUserArchitectureSummary
+            {
+                Platform = x.Key.Platform,
+                DeviceIdiom = x.Key.DeviceIdiom,
+                ProcessArch = x.Key.ProcessArch,
+                StatisticsTime = start,
+                Count = x.Count(),
+            });
+#if DEBUG
+            var sqlString_archsQ = archsQ.ToQueryString();
+#endif
+            var archs = await archsQ.ToListAsync(cancellationToken);
+
+            var osVersQ = query.GroupBy(x => new
+            {
+                x.OSVersion,
+                x.Platform,
+                x.DeviceIdiom,
+            }).Select(x => new ActiveUserOSSummary
+            {
+                Platform = x.Key.Platform,
+                DeviceIdiom = x.Key.DeviceIdiom,
+                OSVersion = x.Key.OSVersion,
+                StatisticsTime = start,
+                Count = x.Count(),
+            });
+#if DEBUG
+            var sqlString_osVersQ = osVersQ.ToQueryString();
+#endif
+            var osVers = await osVersQ.ToListAsync(cancellationToken);
+            for (int i = 0; i < osVers.Count; i++)
+            {
+                var it = osVers[i];
+                if (!string.IsNullOrWhiteSpace(it.OSVersion) && it.OSVersion.AsSpan().TryGetVersion(out var osVersion))
+                {
+                    it.SetOSVersionSections(osVersion);
+                }
+            }
+
+            var summary = new ActiveUserStatisticSummary
+            {
+                StatisticsStartTime = start,
+                StatisticsEndTime = end,
+                IPCount = ipCount,
+                DeviceIdCount = deviceIdCount,
+                AllCount = count,
+                LoginCount = loginCount,
+                Platforms = platforms,
+                Architectures = archs,
+                OSVersions = osVers,
+            };
+
+            await db.ActiveUserStatisticSummaries.AddAsync(summary, cancellationToken);
+            var rowCount = await db.SaveChangesAsync(cancellationToken);
+            return rowCount;
+        }
+
+        return 0;
     }
 
-    public async Task<int> DeleteDaysData(DateTimeOffset start, DateTimeOffset end)
+    public async Task<int> DeleteDaysData(DateTimeOffset start, DateTimeOffset end,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        SetCommandTimeout();
+        var query = db.ActiveUserRecords
+            .Where(x => x.CreateTime >= start && x.CreateTime < end);
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.ExecuteDeleteAsync(cancellationToken);
+        return r;
     }
 
-    public async Task<int> StatisticsAppVerDaysData(DateTimeOffset start, DateTimeOffset end)
+    public async Task<int> StatisticsAppVerDaysData(DateOnly start, DateOnly end,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        SetCommandTimeout();
+        var query = db.ActiveUserAppVerSummaries
+            .Where(x => x.StatisticsTime == start);
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var any = await query.AnyAsync(cancellationToken);
+        if (!any)
+        {
+            var start_ = start.ToUTC8Date();
+            var end_ = end.ToUTC8Date().AddDays(1);
+
+            var query2 = db.ActiveUserRecords
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.CreateTime >= start_ && x.CreateTime < end_)
+                .GroupBy(x => x.AppVersion)
+                .Select(x => new ActiveUserAppVerSummary
+                {
+                    AppVersion = x.Key,
+                    Count = x.Count(),
+                    StatisticsTime = start,
+                    CreateTime = DateTimeOffset.Now,
+                });
+#if DEBUG
+            var sqlString2 = query2.ToQueryString();
+#endif
+            var summaries = await query2.ToArrayAsync(cancellationToken);
+            await db.ActiveUserAppVerSummaries.AddRangeAsync(summaries, cancellationToken);
+            var rowCount = await db.SaveChangesAsync(cancellationToken);
+            return rowCount;
+        }
+        return 0;
     }
 
     public async Task<KomaasharuStatisticPerDaySummary?> GetLastAdvertisementStatisticDaily(
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.KomaasharuStatisticPerDaySummaries
+            .AsNoTrackingWithIdentityResolution()
+            .OrderByDescending(a => a.StatisticsTime)
+            .Take(1);
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
     }
 
     public async Task<KomaasharuStatistic?> GetFirstAdvertisementStatistic(
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.KomaasharuStatistics
+            .AsNoTrackingWithIdentityResolution()
+            .OrderBy(a => a.StatisticsTime)
+            .Take(1);
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
     }
 
-    public async Task<int> PerformAdvertisementStatisticDaily(DateTimeOffset statisticDate)
+    public async Task<int> PerformAdvertisementStatisticDaily(DateOnly statisticDate,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        SetCommandTimeout();
+
+        var query = db.KomaasharuStatisticPerDaySummaries
+            .Where(x => x.StatisticsTime == statisticDate);
+        var any = await query.AnyAsync(cancellationToken);
+        if (any)
+        {
+            // 存在记录跳过此统计
+            return 0;
+        }
+
+        var start = statisticDate.ToUTC8Date();
+        var end = start.AddDays(1);
+
+        var query2 = db.KomaasharuStatistics
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.CreateTime >= start && x.CreateTime < end);
+
+        var query3 = query2
+            .GroupBy(a => new { a.KomaasharuId, a.Platform, a.DeviceIdiom })
+            .Select(g => new KomaasharuStatisticPerDaySummary
+            {
+                KomaasharuId = g.Key.KomaasharuId,
+                Platform = g.Key.Platform,
+                DeviceIdiom = g.Key.DeviceIdiom,
+                NumDisplay = g.Sum(a => a.NumDisplay),
+                NumClick = g.Sum(a => a.NumClick),
+                StatisticsTime = statisticDate,
+            });
+#if DEBUG
+        var sqlString3 = query3.ToQueryString();
+#endif
+        var summaries = await query3.ToArrayAsync(cancellationToken);
+        await db.KomaasharuStatisticPerDaySummaries.AddRangeAsync(summaries, cancellationToken);
+        var rowCount = await db.SaveChangesAsync(cancellationToken);
+        return rowCount;
     }
 
     public async Task<ActiveUserDayWeekMonthSummary?> GetLastUserDWMStatisticDaily(
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.ActiveUserDayWeekMonthSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .OrderByDescending(a => a.StatisticsTime)
+            .Take(1);
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
     }
 
-    public async Task<int> PerformUserDWMStatisticDaily(DateTimeOffset statisticDate)
+    public async Task<int> PerformUserDWMStatisticDaily(DateOnly statisticDate,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        SetCommandTimeout();
+
+        var query = db.ActiveUserDayWeekMonthSummaries
+            .Where(x => x.StatisticsTime == statisticDate);
+        var any = await query.AnyAsync(cancellationToken);
+        if (any)
+        {
+            // 存在记录跳过此统计
+            return 0;
+        }
+
+        var startTime = statisticDate.ToUTC8Date();
+        var endTime = startTime.AddDays(1);
+
+        ActiveUserStatisticsType?[] statisticsTypes =
+        [
+            ActiveUserStatisticsType.AU_1,
+            ActiveUserStatisticsType.AU_7,
+            ActiveUserStatisticsType.AU_30,
+            endTime.Day == 1? ActiveUserStatisticsType.AU_Month:null
+        ];
+
+        for (int i = 0; i < statisticsTypes.Length; i++)
+        {
+            var it = statisticsTypes[i];
+            if (it.HasValue)
+            {
+                var summaries = await GetUserActivityStatisticAsync(statisticDate, endTime, it.Value, cancellationToken);
+                await db.ActiveUserDayWeekMonthSummaries.AddRangeAsync(summaries, cancellationToken);
+            }
+        }
+
+        var rowCount = await db.SaveChangesAsync(cancellationToken);
+        return rowCount;
+    }
+
+    async Task<ActiveUserDayWeekMonthSummary[]> GetUserActivityStatisticAsync(
+        DateOnly statisticDate,
+        DateTimeOffset endTime,
+        ActiveUserStatisticsType auType,
+        CancellationToken cancellationToken = default)
+    {
+        var startTime = auType switch
+        {
+            ActiveUserStatisticsType.AU_1 => endTime.AddDays(-1),
+            ActiveUserStatisticsType.AU_7 => endTime.AddDays(-7),
+            ActiveUserStatisticsType.AU_30 => endTime.AddDays(-30),
+            ActiveUserStatisticsType.AU_Month => endTime.AddMonths(-1),
+            _ => throw new ArgumentOutOfRangeException(nameof(auType), auType, null),
+        };
+
+        var query = db.ActiveUserRecords
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x =>
+                x.DeviceId != null &&
+                x.CreateTime >= startTime && x.CreateTime < endTime)
+            .GroupBy(r => new { r.Platform, r.DeviceIdiom })
+            .Select(g => new ActiveUserDayWeekMonthSummary
+            {
+                Platform = g.Key.Platform,
+                DeviceIdiom = g.Key.DeviceIdiom,
+                ActiveUserCount = g.Select(r => r.DeviceId).Distinct().Count(), //  以设备 Id 去重后的用户数量
+            });
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.ToArrayAsync(cancellationToken);
+        var startTime_ = startTime.GetDateOnly();
+        var endTime_ = endTime.GetDateOnly();
+        for (int i = 0; i < r.Length; i++)
+        {
+            var it = r[i];
+            it.AUType = auType;
+            it.StatisticsTime = statisticDate;
+            it.StatisticsStartTime = startTime_;
+            it.StatisticsEndTime = endTime_;
+        }
+        return r;
     }
 
     public async Task<OrderAmountQtySummary?> GetLastOrderAmountQtySummary(
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var query = db.OrderAmountQtySummaries
+            .AsNoTrackingWithIdentityResolution()
+            .OrderByDescending(a => a.StatisticsTime)
+            .Take(1);
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
     }
 
-    public async Task<int> PerformOrderAmountQtyStatisticDaily(DateTimeOffset statisticDate)
+    public async Task<int> PerformOrderAmountQtyStatisticDaily(DateOnly statisticDate,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        SetCommandTimeout();
+
+        var query = db.OrderAmountQtySummaries
+            .Where(x => x.StatisticsTime == statisticDate);
+        var any = await query.AnyAsync(cancellationToken);
+        if (any)
+        {
+            // 存在记录跳过此统计
+            return 0;
+        }
+
+        var startTime = statisticDate.ToUTC8Date();
+        var endTime = startTime.AddDays(1);
+
+        var query1 = from order in db.Orders
+                     join payment in db.OrderPaymentCompositions on order.Id equals payment.OrderId
+                     where order.PaymentTime >= startTime &&
+                          order.PaymentTime < endTime &&
+                          payment.PaymentStatus != PaymentStatus.WaitPay &&
+                          payment.PaymentMethod == PaymentMethod.Online
+                     group new { order, payment } by new
+                     {
+                         order.BusinessTypeId,
+                         order.Note,
+                         payment.PaymentType,
+                     }
+                     into groupItem
+                     select new OrderAmountQtySummary
+                     {
+                         Amount = groupItem.Sum(a => a.payment.PaymentAmount),
+                         Quantity = groupItem.Count(),
+                         BusinessTypeId = groupItem.Key.BusinessTypeId,
+                         GoodsType = groupItem.Key.Note ?? string.Empty,
+                         PaymentType = groupItem.Key.PaymentType,
+                         StatisticsTime = statisticDate,
+                     };
+
+        var query2 = from order in db.Orders
+                     join payment in db.OrderPaymentCompositions on order.Id equals payment.OrderId
+                     join refund in db.RefundBills on order.Id equals refund.AftersalesBill!.OrderId
+                     where refund.RefundFinishTime >= endTime.AddDays(-1) &&
+                           refund.RefundFinishTime < endTime &&
+                           payment.PaymentStatus != PaymentStatus.WaitPay &&
+                           payment.PaymentMethod == PaymentMethod.Online
+                     group new { order, payment, refund } by new
+                     {
+                         order.BusinessTypeId,
+                         order.Note,
+                         payment.PaymentType,
+                     }
+                     into groupItem
+                     select new OrderAmountQtySummary
+                     {
+                         RefundAmount = groupItem.Sum(a => a.refund.RefundAmount),
+                         RefundQuantity = groupItem.Count(),
+                         BusinessTypeId = groupItem.Key.BusinessTypeId,
+                         GoodsType = groupItem.Key.Note ?? string.Empty,
+                         PaymentType = groupItem.Key.PaymentType,
+                         StatisticsTime = statisticDate,
+                     };
+#if DEBUG
+        var sqlString1 = query1.ToQueryString();
+        var sqlString2 = query2.ToQueryString();
+#endif
+
+        var summaries1 = await query1.ToArrayAsync(cancellationToken);
+        var summaries2 = await query2.ToArrayAsync(cancellationToken);
+
+        var summaries = summaries1.Union(summaries2).GroupBy(a => new
+        {
+            a.BusinessTypeId,
+            a.GoodsType,
+            a.PaymentType,
+            a.StatisticsTime,
+        }).Select(g => new OrderAmountQtySummary
+        {
+            BusinessTypeId = g.Key.BusinessTypeId,
+            GoodsType = g.Key.GoodsType,
+            PaymentType = g.Key.PaymentType,
+            StatisticsTime = g.Key.StatisticsTime,
+            Amount = g.Sum(a => a.Amount),
+            Quantity = g.Sum(a => a.Quantity),
+            RefundAmount = g.Sum(a => a.RefundAmount),
+            RefundQuantity = g.Sum(a => a.RefundQuantity),
+        }).ToArray();
+
+        await db.OrderAmountQtySummaries.AddRangeAsync(summaries, cancellationToken);
+        var rowCount = await db.SaveChangesAsync(cancellationToken);
+        return rowCount;
     }
 }
 

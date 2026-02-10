@@ -51,6 +51,8 @@ public sealed record class SmsOptions
                 return nameof(NetEaseCloud);
             if (options.HuaweiCloud.HasValue())
                 return nameof(HuaweiCloud);
+            if (options.TencentCloud.HasValue())
+                return nameof(TencentCloud);
         }
         return null;
     }
