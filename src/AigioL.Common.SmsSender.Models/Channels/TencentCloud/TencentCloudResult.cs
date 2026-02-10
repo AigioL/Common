@@ -4,12 +4,11 @@ using System.Text.Json.Serialization;
 
 namespace AigioL.Common.SmsSender.Models.Channels.TencentCloud;
 
-public class TencentCloudResult<T> : ISmsSubResult, IJsonSerializerContext where T : ITencentCloud, IJsonSerializerContext
+public class TencentCloudResult<T> : ISmsSubResult, IJsonSerializerContext where T : TencentCloudResultResponse, IJsonSerializerContext
 {
     static JsonSerializerContext IJsonSerializerContext.GetDefault() => SmsSenderJsonSerializerContext.Default;
 
-    [global::System.Text.Json.Serialization.JsonPropertyName("Response")]
-    //[global::Newtonsoft.Json.JsonProperty("Response")]
+    [JsonPropertyName("Response")]
     public required T Response { get; set; }
 
     /// <summary>

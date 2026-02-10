@@ -277,7 +277,9 @@ public static partial class VerificationCodesController
             var now = DateTimeOffset.Now;
             if (adds >= now)
             {
+#if !DEBUG
                 return R.当前手机号发送短信过于频繁_.Format(Math.Ceiling(TimeSpan.FromSeconds(SMSConstants.SmsSendTooFrequently).TotalMinutes));
+#endif
             }
             else
             {

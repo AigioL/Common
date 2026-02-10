@@ -50,7 +50,7 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
 
     #region 常量
 
-    private const string Endpoint = "https://sms.tencentcloudapi.com";
+    private const string Endpoint = "sms.tencentcloudapi.com";
     private const string Version = "2021-01-11";
     private const string SdkVersion = "SDK_NET_3.0.1207";
     private const string Action = "SendSms";
@@ -197,7 +197,7 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
 
         var headers = BuildHeaders(requestPayload);
 
-        var requestUri = $"{Endpoint}/{Action}";
+        var requestUri = $"https://{Endpoint}/{Action}";
         var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
 
         foreach (KeyValuePair<string, string> kvp in headers)
@@ -214,11 +214,11 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
             {
                 requestMessage.Headers.Host = kvp.Value;
             }
-            else if (kvp.Key.Equals("Authorization"))
-            {
-                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("TC3-HMAC-SHA256",
-                    kvp.Value["TC3-HMAC-SHA256".Length..]);
-            }
+            //else if (kvp.Key.Equals("Authorization"))
+            //{
+            //    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("TC3-HMAC-SHA256",
+            //        kvp.Value["TC3-HMAC-SHA256".Length..]);
+            //}
             else
             {
                 requestMessage.Headers.TryAddWithoutValidation(kvp.Key, kvp.Value);
@@ -244,6 +244,9 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
         {
             using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
             tencentCloudResult = await JsonSerializer.DeserializeAsync(stream, SmsSenderJsonSerializerContext.Default.TencentCloudResultSendSmsTencentCloudResult, cancellationToken);
+
+            //var j = await response.Content.ReadAsStringAsync(cancellationToken);
+            //tencentCloudResult = JsonSerializer.Deserialize(j, SmsSenderJsonSerializerContext.Default.TencentCloudResultSendSmsTencentCloudResult);
 
             isSuccess =
                 tencentCloudResult != null &&
