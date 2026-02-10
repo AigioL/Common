@@ -1,14 +1,14 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.SmsSender.Models;
 using AigioL.Common.SmsSender.Models.Abstractions;
 using AigioL.Common.SmsSender.Models.Channels.TencentCloud;
-using Microsoft.Extensions.Logging;
+using Microsoft.IO;
 using System.Buffers;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using SmsOptions = AigioL.Common.SmsSender.Models.Channels.TencentCloud.SmsTencentCloudOptions;
 
 namespace AigioL.Common.SmsSender.Services.Implementation.SmsSender.Channels.TencentCloud;
@@ -47,17 +47,6 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
         this.options = options;
         this.httpClient = httpClient;
     }
-
-    #region 常量
-
-    private const string Endpoint = "sms.tencentcloudapi.com";
-    private const string Version = "2021-01-11";
-    private const string SdkVersion = "SDK_NET_3.0.1207";
-    private const string Action = "SendSms";
-    private const string Method = "POST";
-    private const string ContentType = "application/json";
-
-    #endregion
 
     static string GetHashedCanonicalRequest(string httpRequestMethod, string canonicalURI, string canonicalQueryString, string canonicalHeaders, string signedHeaders, string hashedRequestPayload)
     {
@@ -118,114 +107,63 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
         return result;
     }
 
-    private Dictionary<string, string> BuildHeaders(Stream requestPayload)
-    {
-        // https://github.com/TencentCloud/tencentcloud-sdk-dotnet/blob/8a2d9b3e0247eb258058d8a557e5f2e08cdb6b34/TencentCloud/Common/AbstractClient.cs#L302
+    static readonly RecyclableMemoryStreamManager m = new();
 
-        string endpoint = Endpoint;
-        string httpRequestMethod = Method;
-        string contentType = ContentType;
-        string canonicalQueryString = "";
-
-        string canonicalURI = "/";
-        string canonicalHeaders = "content-type:" + contentType + "\nhost:" + endpoint + "\n";
-        string signedHeaders = "content-type;host";
-
-        Span<byte> hashBytes = stackalloc byte[SHA256.HashSizeInBytes];
-        SHA256.HashData(requestPayload, hashBytes);
-        StringBuilder builder = new StringBuilder();
-        string hashedRequestPayload = Convert.ToHexStringLower(hashBytes);
-
-        string algorithm = "TC3-HMAC-SHA256";
-        long timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
-        string requestTimestamp = timestamp.ToString();
-        string date = DateTimeOffset.FromUnixTimeSeconds(timestamp).ToString("yyyy-MM-dd");
-        string service = endpoint.Split('.')[0];
-        string credentialScope = date + "/" + service + "/" + "tc3_request";
-        string hashedCanonicalRequest = GetHashedCanonicalRequest(httpRequestMethod, canonicalURI, canonicalQueryString, canonicalHeaders, signedHeaders, hashedRequestPayload);
-        string stringToSign = algorithm + "\n"
-                                        + requestTimestamp + "\n"
-                                        + credentialScope + "\n"
-                                        + hashedCanonicalRequest;
-
-        byte[] tc3SecretKey = Encoding.UTF8.GetBytes("TC3" + options.SecretKey);
-        byte[] secretDate = HMACSHA256.HashData(tc3SecretKey, Encoding.UTF8.GetBytes(date));
-        byte[] secretService = HMACSHA256.HashData(secretDate, Encoding.UTF8.GetBytes(service));
-        byte[] secretSigning = HMACSHA256.HashData(secretService, Encoding.UTF8.GetBytes("tc3_request"));
-        byte[] signatureBytes = HMACSHA256.HashData(secretSigning, Encoding.UTF8.GetBytes(stringToSign));
-        string signature = Convert.ToHexStringLower(signatureBytes);
-
-        string authorization = algorithm + " "
-                                         + "Credential=" + options.SecretId + "/" + credentialScope + ", "
-                                         + "SignedHeaders=" + signedHeaders + ", "
-                                         + "Signature=" + signature;
-
-        Dictionary<string, string> headers = new Dictionary<string, string>();
-        headers.Add("Authorization", authorization);
-        headers.Add("Host", new Uri(endpoint).Host);
-        headers.Add("Content-Type", contentType);
-        headers.Add("X-TC-Timestamp", requestTimestamp);
-        headers.Add("X-TC-Version", Version);
-        headers.Add("X-TC-Region", "");
-        headers.Add("X-TC-RequestClient", SdkVersion);
-        headers.Add("X-TC-Language", "zh-CN");
-        headers.Add("X-TC-Action", Action);
-
-        return headers;
-    }
-
-    private HttpRequestMessage GenerateHttpRequestMessage(string number, string message, string templateId)
+    HttpRequestMessage GenerateHttpRequestMessage(Stream requestPayload, string number, string message, string templateId)
     {
         // https://cloud.tencent.com/document/api/382/55981
+        // https://github.com/TencentCloud/tencentcloud-sdk-dotnet/blob/master/TencentCloud/Sms/V20210111/SmsClient.cs
+        // 使用签名方法 v3 时，公共参数需要统一放到 HTTP Header 请求头部中
 
-        var params_dic = new JsonObject();
-        params_dic.Add("Action", Action);
-        params_dic.Add("Version", Version);
-        params_dic.Add("Region", "");
-        params_dic.Add("SmsSdkAppId", options.SmsSdkAppId!);
-        params_dic.Add("TemplateId", templateId);
-        params_dic.Add("SignName", options.SignName!);
-        params_dic.Add("PhoneNumberSet", new JsonArray(JsonValue.Create(number)));
-        params_dic.Add("TemplateParamSet", new JsonArray(JsonValue.Create(message)));
+        var secretId = options.SecretId;
+        ArgumentNullException.ThrowIfNull(secretId);
+        var secretKey = options.SecretKey;
+        ArgumentNullException.ThrowIfNull(secretKey);
+        var smsSdkAppId = options.SmsSdkAppId;
+        ArgumentNullException.ThrowIfNull(smsSdkAppId);
 
-        MemoryStream requestPayload = new();
-#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
-#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-        JsonSerializer.Serialize(requestPayload, params_dic, SmsSenderJsonSerializerContext.Default.Options);
-#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+        var region = string.IsNullOrWhiteSpace(options.Region) ? region_广州_华南地区 : options.Region;
+        var sendSmsRequest = new SendSmsRequest
+        {
+            PhoneNumberSet = [number],
+            SmsSdkAppId = smsSdkAppId,
+            TemplateId = templateId,
+            SignName = options.SignName,
+            TemplateParamSet = [message],
+        };
 
-        var headers = BuildHeaders(requestPayload);
+        const string canonicalQueryString = "";
+        requestPayload.Position = 0;
+        JsonSerializer.Serialize(requestPayload, sendSmsRequest, TencentCloudSmsSenderJsonSerializerContext.Default.SendSmsRequest);
+        requestPayload.SetLength(requestPayload.Position);
 
-        var requestUri = $"https://{Endpoint}/{Action}";
-        var requestMessage = new HttpRequestMessage(HttpMethod.Post, requestUri);
+        var method = HttpMethod.Post;
+        const string contentType = MediaTypeNames.JSON;
+        var headers = BuildHeaders(
+            secretId, secretKey, endpoint,
+            method, contentType, requestPayload,
+            canonicalQueryString,
+            region: region);
+
+        var requestUri = $"https://{endpoint}/";
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
+        requestPayload.Position = 0; // 重置流位置，以便读取内容
+        var content = new StreamContent(requestPayload);
+        content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        request.Content = content;
 
         foreach (KeyValuePair<string, string> kvp in headers)
         {
-            if (kvp.Key.Equals("Content-Type"))
+            if (kvp.Key.Equals("Content-Type", StringComparison.OrdinalIgnoreCase))
             {
-                requestPayload.Position = 0; // 重置流位置，以便读取内容
-                var content = new StreamContent(requestPayload);
-                content.Headers.Remove("Content-Type");
-                content.Headers.Add("Content-Type", kvp.Value);
-                requestMessage.Content = content;
             }
-            else if (kvp.Key.Equals("Host"))
-            {
-                requestMessage.Headers.Host = kvp.Value;
-            }
-            //else if (kvp.Key.Equals("Authorization"))
-            //{
-            //    requestMessage.Headers.Authorization = new AuthenticationHeaderValue("TC3-HMAC-SHA256",
-            //        kvp.Value["TC3-HMAC-SHA256".Length..]);
-            //}
             else
             {
-                requestMessage.Headers.TryAddWithoutValidation(kvp.Key, kvp.Value);
+                request.Headers.TryAddWithoutValidation(kvp.Key, kvp.Value);
             }
         }
 
-        return requestMessage;
+        return request;
     }
 
     /// <inheritdoc/>
@@ -234,7 +172,8 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
         var template_code = options.Templates?.FirstOrDefault(x => x.Type == type)?.Template ?? options.DefaultTemplate;
         ArgumentNullException.ThrowIfNull(template_code);
 
-        using var request = GenerateHttpRequestMessage(number, message, template_code);
+        using var requestPayload = m.GetStream();
+        using var request = GenerateHttpRequestMessage(requestPayload, number, message, template_code);
         using var response = await httpClient.SendAsync(request, cancellationToken);
 
         var isSuccess = false;
@@ -242,11 +181,13 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
 
         if (response.IsSuccessStatusCode)
         {
+#if DEBUG
+            var jsonString = await response.Content.ReadAsStringAsync(cancellationToken);
+            tencentCloudResult = JsonSerializer.Deserialize(jsonString, SmsSenderJsonSerializerContext.Default.TencentCloudResultSendSmsTencentCloudResult);
+#else
             using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
             tencentCloudResult = await JsonSerializer.DeserializeAsync(stream, SmsSenderJsonSerializerContext.Default.TencentCloudResultSendSmsTencentCloudResult, cancellationToken);
-
-            //var j = await response.Content.ReadAsStringAsync(cancellationToken);
-            //tencentCloudResult = JsonSerializer.Deserialize(j, SmsSenderJsonSerializerContext.Default.TencentCloudResultSendSmsTencentCloudResult);
+#endif
 
             isSuccess =
                 tencentCloudResult != null &&
@@ -281,5 +222,115 @@ public partial class SmsSenderProvider : SmsSenderBase, ISmsSender
     public override Task<ICheckSmsResult> CheckSmsAsync(string number, string message, CancellationToken cancellationToken)
     {
         throw new NotSupportedException();
+    }
+}
+
+partial class SmsSenderProvider
+{
+    static string SHA256Hex(string s) => SHA256Hex(Encoding.UTF8.GetBytes(s));
+
+    static string SHA256Hex(byte[] b)
+    {
+        Span<byte> hash = stackalloc byte[SHA256.HashSizeInBytes];
+        SHA256.HashData(b, hash);
+        var hex = Convert.ToHexStringLower(hash);
+        return hex;
+    }
+
+    static string SHA256Hex(Stream s)
+    {
+        Span<byte> hash = stackalloc byte[SHA256.HashSizeInBytes];
+        s.Position = 0; // 重置流位置，以便读取内容
+        SHA256.HashData(s, hash);
+        var hex = Convert.ToHexStringLower(hash);
+        return hex;
+    }
+
+    static string GetSplitFirst(ReadOnlySpan<char> s, char separator)
+    {
+        var split = s.Split(separator);
+        split.MoveNext();
+        return new(s[split.Current]);
+    }
+
+    internal const string endpoint = "sms.tencentcloudapi.com";
+    internal const string action = "SendSms";
+    internal const string version = "2021-01-11";
+    internal const string sdkVersion = "SDK_NET_3.0.1207";
+    internal const string region_广州_华南地区 = "ap-guangzhou";
+    internal const string region_北京_华北地区 = "ap-beijing";
+    internal const string region_南京_华东地区 = "ap-nanjing";
+
+    internal static Dictionary<string, string> BuildHeaders(
+        string secretId, string secretKey, string endpoint,
+        HttpMethod method, string contentType, Stream requestPayload,
+        string canonicalQueryString, string? action = action, string region = region_广州_华南地区,
+        string version = version, string sdkVersion = sdkVersion)
+    {
+        // https://github.com/TencentCloud/tencentcloud-sdk-dotnet/blob/8a2d9b3e0247eb258058d8a557e5f2e08cdb6b34/TencentCloud/Common/AbstractClient.cs#L261
+        // https://console.cloud.tencent.com/api/explorer?Product=sms&Version=2021-01-11&Action=SendSms&SignVersion=api3v3
+
+        string canonicalURI = "/";
+        string canonicalHeaders = "content-type:" + contentType + "\nhost:" + endpoint + "\n";
+        //if (action != null)
+        //{
+        //    canonicalHeaders += "x-tc-action:" + action.ToLowerInvariant() + "\n";
+        //}
+        string signedHeaders = "content-type;host";
+        //if (action != null)
+        //{
+        //    signedHeaders += ";x-tc-action";
+        //}
+        string hashedRequestPayload = SHA256Hex(requestPayload);
+        // 拼接规范请求串
+        string canonicalRequest = method.Method + "\n"
+                                                + canonicalURI + "\n"
+                                                + canonicalQueryString + "\n"
+                                                + canonicalHeaders + "\n"
+                                                + signedHeaders + "\n"
+                                                + hashedRequestPayload;
+
+        const string algorithm = "TC3-HMAC-SHA256";
+        var now = DateTimeOffset.Now;
+        long timestamp = now.ToUnixTimeSeconds();
+        string requestTimestamp = timestamp.ToString();
+        string date = now.ToString("yyyy-MM-dd");
+        string service = GetSplitFirst(endpoint, '.');
+        string credentialScope = date + "/" + service + "/" + "tc3_request";
+        string hashedCanonicalRequest = SHA256Hex(canonicalRequest);
+        // 拼接待签名字符串
+        string stringToSign = algorithm + "\n"
+                                        + requestTimestamp + "\n"
+                                        + credentialScope + "\n"
+                                        + hashedCanonicalRequest;
+
+        byte[] tc3SecretKey = Encoding.UTF8.GetBytes("TC3" + secretKey);
+        byte[] secretDate = HMACSHA256.HashData(tc3SecretKey, Encoding.UTF8.GetBytes(date));
+        byte[] secretService = HMACSHA256.HashData(secretDate, Encoding.UTF8.GetBytes(service));
+        byte[] secretSigning = HMACSHA256.HashData(secretService, "tc3_request"u8);
+        byte[] signatureBytes = HMACSHA256.HashData(secretSigning, Encoding.UTF8.GetBytes(stringToSign));
+        // 计算签名
+        string signature = Convert.ToHexStringLower(signatureBytes);
+
+        string authorization = algorithm + " "
+                                         + "Credential=" + secretId + "/" + credentialScope + ", "
+                                         + "SignedHeaders=" + signedHeaders + ", "
+                                         + "Signature=" + signature;
+
+        Dictionary<string, string> headers = new Dictionary<string, string>();
+        headers.Add("Authorization", authorization);
+        headers.Add("Host", endpoint);
+        headers.Add("Content-Type", contentType);
+        headers.Add("X-TC-Timestamp", requestTimestamp);
+        headers.Add("X-TC-Version", version);
+        headers.Add("X-TC-Region", region);
+        headers.Add("X-TC-RequestClient", sdkVersion);
+        headers.Add("X-TC-Language", "zh-CN");
+        if (action != null)
+        {
+            headers.Add("X-TC-Action", action);
+        }
+
+        return headers;
     }
 }

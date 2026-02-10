@@ -279,6 +279,8 @@ public static partial class VerificationCodesController
             {
 #if !DEBUG
                 return R.当前手机号发送短信过于频繁_.Format(Math.Ceiling(TimeSpan.FromSeconds(SMSConstants.SmsSendTooFrequently).TotalMinutes));
+#else
+                logger.LogCritical("当前手机号发送短信过于频繁_");
 #endif
             }
             else
@@ -286,7 +288,11 @@ public static partial class VerificationCodesController
                 var isMaxSendSmsDay = await authMessageRecordRepo.IsMaxSendSmsDay(phoneNumber, phoneNumberRegionCode);
                 if (isMaxSendSmsDay)
                 {
+#if !DEBUG
                     return R.当前手机号今日发送短信数量超过最大上限;
+#else
+                    logger.LogCritical("当前手机号今日发送短信数量超过最大上限");
+#endif
                 }
             }
         }

@@ -38,6 +38,12 @@ public class SmsTencentCloudOptions : ChannelSmsOptions
     public string? DefaultTemplate { get; set; }
 
     /// <summary>
+    /// 地域列表
+    /// <para>https://cloud.tencent.com/document/api/382/52071#.E5.9C.B0.E5.9F.9F.E5.88.97.E8.A1.A8</para>
+    /// </summary>
+    public string? Region { get; set; }
+
+    /// <summary>
     /// 验证配置是否有效的方法，检查必要的属性不为空，并且短信模板列表不为空或默认模板不为默认值
     /// </summary>
     /// <returns></returns>

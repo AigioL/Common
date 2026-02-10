@@ -10,7 +10,7 @@ using Polly.Retry;
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Jobs;
 
 /// <summary>
-/// 商家协议扣款任务
+/// 商家协议扣款任务（需要由业务重写 CreateOrderAsync）
 /// </summary>
 public abstract partial class MerchantDeductionJob(
     IAliPayServices aliPayService,

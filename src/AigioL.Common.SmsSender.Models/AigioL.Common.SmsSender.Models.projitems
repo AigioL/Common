@@ -26,10 +26,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Channels\NetEaseCloud\SendSmsNetEaseCloudResponseCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\NetEaseCloud\SendSmsNetEaseCloudResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\NetEaseCloud\SmsNetEaseCloudOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\AbstractModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\SendSmsRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\SendSmsTencentCloudResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\SmsTencentCloudOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\TencentCloudResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\TencentCloudResultResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Channels\TencentCloud\TencentCloudSmsSenderJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\_21VianetBlueCloud\RequestData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\_21VianetBlueCloud\SendSms21VianetBlueCloudResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Channels\_21VianetBlueCloud\Sms21VianetBlueCloudOptions.cs" />
