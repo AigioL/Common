@@ -48,12 +48,6 @@ public partial class OrderAmountQtySummary :
     public int BusinessTypeId { get; set; }
 
     /// <summary>
-    /// 商品类型（订单备注字段）
-    /// </summary>
-    [Comment("商品类型")]
-    public string? GoodsType { get; set; }
-
-    /// <summary>
     /// 支付类型
     /// </summary>
     [Comment("支付类型")]

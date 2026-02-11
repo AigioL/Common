@@ -34,11 +34,6 @@ public sealed partial class StatisticsOrderAmountQtyModel
     public int BusinessTypeId { get; set; }
 
     /// <summary>
-    /// 商品类型（订单备注字段）
-    /// </summary>
-    public string GoodsType { get; set; } = string.Empty;
-
-    /// <summary>
     /// 支付类型
     /// </summary>
     public PaymentType PaymentType { get; set; }
