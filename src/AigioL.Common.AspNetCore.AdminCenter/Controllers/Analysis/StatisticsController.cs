@@ -60,10 +60,6 @@ public static partial class StatisticsController
                 // 不能查今天的数据
                 endTime = nowDate.AddDays(-1);
             }
-            if (startTime.AddMonths(1) > endTime)
-            {
-                return "筛选天数不能大于 1 个月";
-            }
             var statisticsRepo = context.RequestServices.GetRequiredService<IStatisticsRepository>();
             BMApiRsp<StatisticsLineResponse[]?> r = await statisticsRepo.GetRegisterUserStatisticsAsync(startTime, endTime, context.RequestAborted);
             return r;
