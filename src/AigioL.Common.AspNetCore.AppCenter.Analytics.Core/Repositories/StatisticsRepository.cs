@@ -376,7 +376,6 @@ partial class StatisticsRepository<TDbContext>
                 RefundAmount = a.RefundAmount,
                 RefundQuantity = a.RefundQuantity,
                 BusinessTypeId = a.BusinessTypeId,
-                GoodsType = a.GoodsType,
                 PaymentType = a.PaymentType,
                 StatisticsTime = a.StatisticsTime,
             });
@@ -395,10 +394,9 @@ partial class StatisticsRepository<TDbContext>
                      select new StatisticsOrderAmountQtyModel
                      {
                          StatisticsTime = first.StatisticsTime,
-                         BusinessTypeId = first.BusinessTypeId,
+                         BusinessTypeId = m.Key.BusinessTypeId,
                          Amount = m.Sum(static x => x.Amount),
                          Quantity = m.Sum(static x => x.Quantity),
-                         GoodsType = first.GoodsType,
                      };
         return [.. query2];
     }
@@ -406,14 +404,14 @@ partial class StatisticsRepository<TDbContext>
     static int GetWeekOfYear(DateOnly d) =>
         gregorianCalendar.GetWeekOfYear(d.ToDateTime(default), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
-    static IEnumerable<IGrouping<(string UnitKey, string GoodsType), StatisticsOrderAmountQtyModel>> GroupByUnit(
+    static IEnumerable<IGrouping<(string UnitKey, int BusinessTypeId), StatisticsOrderAmountQtyModel>> GroupByUnit(
         string? unit,
         StatisticsOrderAmountQtyModel[] models) => unit switch
         {
-            "day" => models.GroupBy(a => (a.StatisticsTime.ToString(), a.GoodsType)),
-            "week" => models.GroupBy(a => (a.StatisticsTime.Year.ToString() + GetWeekOfYear(a.StatisticsTime), a.GoodsType)),
-            "month" => models.GroupBy(a => (a.StatisticsTime.Year.ToString() + a.StatisticsTime.Month, a.GoodsType)),
-            "year" => models.GroupBy(a => (a.StatisticsTime.Year.ToString(), a.GoodsType)),
+            "day" => models.GroupBy(a => (a.StatisticsTime.ToString(), a.BusinessTypeId)),
+            "week" => models.GroupBy(a => (a.StatisticsTime.Year.ToString() + GetWeekOfYear(a.StatisticsTime), a.BusinessTypeId)),
+            "month" => models.GroupBy(a => (a.StatisticsTime.Year.ToString() + a.StatisticsTime.Month, a.BusinessTypeId)),
+            "year" => models.GroupBy(a => (a.StatisticsTime.Year.ToString(), a.BusinessTypeId)),
             _ => throw new ArgumentOutOfRangeException(nameof(unit), unit, null),
         };
 
