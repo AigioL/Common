@@ -51,7 +51,7 @@ public partial class OrderAmountQtySummary :
     /// 商品类型（订单备注字段）
     /// </summary>
     [Comment("商品类型")]
-    public required string GoodsType { get; set; }
+    public string? GoodsType { get; set; }
 
     /// <summary>
     /// 支付类型

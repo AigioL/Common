@@ -54,6 +54,12 @@ public static partial class StatisticsController
             [FromQuery] DateOnly startTime,
             [FromQuery] DateOnly endTime) =>
         {
+            var nowDate = DateTimeOffset.Now.ToUTC8Date().GetDateOnly();
+            if (endTime >= nowDate)
+            {
+                // 不能查今天的数据
+                endTime = nowDate.AddDays(-1);
+            }
             if (startTime.AddMonths(1) > endTime)
             {
                 return "筛选天数不能大于 1 个月";

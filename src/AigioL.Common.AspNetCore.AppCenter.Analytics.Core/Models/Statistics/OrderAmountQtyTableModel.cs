@@ -17,7 +17,7 @@ public sealed partial class OrderAmountQtyTableModel
     /// <summary>
     /// 商品类型
     /// </summary>
-    public string GoodsType { get; set; } = string.Empty;
+    public string? GoodsType { get; set; }
 
     /// <summary>
     /// 销售数量

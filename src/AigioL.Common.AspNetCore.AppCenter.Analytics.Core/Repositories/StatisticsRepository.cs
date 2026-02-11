@@ -486,14 +486,12 @@ partial class StatisticsRepository<TDbContext>
                     {
                         row.Type,
                         row.BusinessTypeId,
-                        row.Note,
                     } into g
-                    orderby g.Key.Type, g.Key.BusinessTypeId, g.Key.Note
+                    orderby g.Key.Type, g.Key.BusinessTypeId
                     select new OrderAmountQtyTableModel
                     {
                         OrderType = g.Key.Type,
                         OrderBusinessTypeId = g.Key.BusinessTypeId,
-                        GoodsType = g.Key.Note,
                         PaymentCount = g.Count(),
                         RefundCount = g.Count(a => a.RefundAmount > 0),
                         PaymentAmount = g.Sum(o => o.PaymentAmount),
@@ -1408,7 +1406,6 @@ partial class StatisticsRepository<TDbContext>
                      group new { order, payment } by new
                      {
                          order.BusinessTypeId,
-                         order.Note,
                          payment.PaymentType,
                      }
                      into groupItem
@@ -1417,7 +1414,6 @@ partial class StatisticsRepository<TDbContext>
                          Amount = groupItem.Sum(a => a.payment.PaymentAmount),
                          Quantity = groupItem.Count(),
                          BusinessTypeId = groupItem.Key.BusinessTypeId,
-                         GoodsType = groupItem.Key.Note ?? string.Empty,
                          PaymentType = groupItem.Key.PaymentType,
                          StatisticsTime = statisticDate,
                      };
@@ -1432,7 +1428,6 @@ partial class StatisticsRepository<TDbContext>
                      group new { order, payment, refund } by new
                      {
                          order.BusinessTypeId,
-                         order.Note,
                          payment.PaymentType,
                      }
                      into groupItem
@@ -1441,7 +1436,6 @@ partial class StatisticsRepository<TDbContext>
                          RefundAmount = groupItem.Sum(a => a.refund.RefundAmount),
                          RefundQuantity = groupItem.Count(),
                          BusinessTypeId = groupItem.Key.BusinessTypeId,
-                         GoodsType = groupItem.Key.Note ?? string.Empty,
                          PaymentType = groupItem.Key.PaymentType,
                          StatisticsTime = statisticDate,
                      };
@@ -1456,13 +1450,11 @@ partial class StatisticsRepository<TDbContext>
         var summaries = summaries1.Union(summaries2).GroupBy(a => new
         {
             a.BusinessTypeId,
-            a.GoodsType,
             a.PaymentType,
             a.StatisticsTime,
         }).Select(g => new OrderAmountQtySummary
         {
             BusinessTypeId = g.Key.BusinessTypeId,
-            GoodsType = g.Key.GoodsType,
             PaymentType = g.Key.PaymentType,
             StatisticsTime = g.Key.StatisticsTime,
             Amount = g.Sum(a => a.Amount),
