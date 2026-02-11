@@ -85,9 +85,9 @@ partial class StatisticsRepository<TDbContext>
             return 0;
         }
 
-        for (int i = 0; i < userCountEnumHashSet.Count; i++)
+        int i = 0;
+        foreach (var it in userCountEnumHashSet)
         {
-            var it = userCountEnums[i];
             var count = it switch
             {
                 StatisticUserCount.UserCount => await queryUsers.CountAsync(cancellationToken),
@@ -104,6 +104,7 @@ partial class StatisticsRepository<TDbContext>
                 Name = it.GetDescription() ?? it.ToString(),
                 Count = count,
             };
+            i++;
         }
 
         return statistics;
@@ -126,7 +127,7 @@ partial class StatisticsRepository<TDbContext>
     {
         var queryUsers = from m in db.Users.AsNoTrackingWithIdentityResolution()
                          where m.CreateTime >= startTime && m.CreateTime < endTime
-                         let date = m.CreateTime.ToOffset(TimeSpan.FromHours(8)).Date
+                         let date = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(m.CreateTime.UtcDateTime, "Asia/Shanghai").Date // https://github.com/dotnet/efcore/issues/32340
                          group m by date into g
                          select new StatisticsLineResponse
                          {
@@ -302,7 +303,11 @@ partial class StatisticsRepository<TDbContext>
         var query2 = query
             .Where(x => x.Type == AuthMessageType.PhoneNumber)
             .Where(x => x.CreateTime >= startTime && x.CreateTime < endTime)
-            .GroupBy(x => new { x.CreateTime.ToOffset(TimeSpan.FromHours(8)).Date, x.RequestType })
+            .GroupBy(x => new
+            {
+                TimeZoneInfo.ConvertTimeBySystemTimeZoneId(x.CreateTime.UtcDateTime, "Asia/Shanghai").Date, // https://github.com/dotnet/efcore/issues/32340
+                x.RequestType
+            })
             .Select(g => new StatisticsSmsUsageTrendResponse
             {
                 RequestType = g.Key.RequestType,
@@ -345,7 +350,7 @@ partial class StatisticsRepository<TDbContext>
         //        var r = await query2.ToArrayAsync(cancellationToken);
         //        return r;
 
-        throw new NotImplementedException();
+        return [];
     }
 
     public async Task<StatisticsOrderAmountQtyModel[]> GetOrderAmountQtyStatisticsAsync(

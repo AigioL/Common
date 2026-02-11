@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using StackExchange.Redis;
+using F = System.Func<Microsoft.Extensions.Logging.ILogger, System.IServiceProvider, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask>;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Jobs;
 
@@ -18,12 +19,12 @@ sealed partial class DailyStatisticsJob(
         // 并行化执行每个统计任务
         ParallelTaskItem[] parallelTasks =
         [
-            (Delegate)DeleteCacheKey,
-            (Delegate)ActiveUserStatisticsDaily,
-            (Delegate)ActiveUserStatisticsDWMDaily,
-            (Delegate)AdvertisementStatisticsDaily,
-            (Delegate)OrderAmountQtyStatisticsDaily,
-            (Delegate)ActiveUserAppVerStatisticsDaily,
+            (F)DeleteCacheKey,
+            (F)ActiveUserStatisticsDaily,
+            (F)ActiveUserStatisticsDWMDaily,
+            (F)AdvertisementStatisticsDaily,
+            (F)OrderAmountQtyStatisticsDaily,
+            (F)ActiveUserAppVerStatisticsDaily,
         ];
         await Parallel.ForEachAsync(parallelTasks, cancellationToken, Invoke);
         return true;
@@ -32,7 +33,7 @@ sealed partial class DailyStatisticsJob(
     async ValueTask Invoke(ParallelTaskItem it, CancellationToken cancellationToken = default)
     {
         string? taskName = null;
-        Delegate? @delegate = null;
+        F? @delegate = null;
 
         string GetTaskName()
         {
@@ -47,6 +48,7 @@ sealed partial class DailyStatisticsJob(
         {
             if (it.TaskFunc != null)
             {
+                @delegate = it.TaskFunc;
                 using var s = serviceProvider.CreateScope();
                 await it.TaskFunc(logger, s.ServiceProvider, cancellationToken);
             }
@@ -64,9 +66,9 @@ sealed partial class DailyStatisticsJob(
     {
         public string? TaskName { get; set; }
 
-        public Func<ILogger, IServiceProvider, CancellationToken, ValueTask>? TaskFunc { get; init; }
+        public F? TaskFunc { get; init; }
 
-        public static implicit operator ParallelTaskItem(Delegate func) => new() { TaskFunc = (Func<ILogger, IServiceProvider, CancellationToken, ValueTask>)func };
+        public static implicit operator ParallelTaskItem(F func) => new() { TaskFunc = func };
     }
 }
 
