@@ -129,6 +129,7 @@ partial class StatisticsRepository<TDbContext>
                          where m.CreateTime >= startTime && m.CreateTime < endTime
                          let date = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(m.CreateTime.UtcDateTime, "Asia/Shanghai").Date // https://github.com/dotnet/efcore/issues/32340
                          group m by date into g
+                         orderby g.Key
                          select new StatisticsLineResponse
                          {
                              Time = g.Key,
