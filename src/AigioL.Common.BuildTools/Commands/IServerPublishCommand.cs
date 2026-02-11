@@ -470,6 +470,12 @@ public partial interface IServerPublishCommand : ICommand
                     tag_ver = "latest";
                 }
 
+                if (tag_ver == "DateTime")
+                {
+                    // 如果版本号为 DateTime，使用当前时间作为版本号
+                    tag_ver = DateTimeOffset.Now.ToString("yyyy-MM-dd_HH:mm");
+                }
+
                 var tag_with_push_array = domains.SelectMany(domain => proj_datas.ToArray().Select(y => KeyValuePair.Create(y.Key, (y.Value, domain)))).ToArray();
 
                 await ForEachAsync(
