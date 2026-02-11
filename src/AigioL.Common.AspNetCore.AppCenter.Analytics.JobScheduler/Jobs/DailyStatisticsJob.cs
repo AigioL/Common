@@ -26,19 +26,25 @@ sealed partial class DailyStatisticsJob(
             (F)OrderAmountQtyStatisticsDaily,
             (F)ActiveUserAppVerStatisticsDaily,
         ];
+        foreach (var it in parallelTasks)
+        {
+            it.JobExecutionContext = context;
+        }
         await Parallel.ForEachAsync(parallelTasks, cancellationToken, Invoke);
         return true;
     }
 
     async ValueTask Invoke(ParallelTaskItem it, CancellationToken cancellationToken = default)
     {
-        string? taskName = null;
+        cancellationToken = it.JobExecutionContext?.CancellationToken ?? default; // Parallel.ForEachAsync 传递的 cancellationToken 不是原值，且会莫名其妙取消
+
+        string? tn = null;
         F? @delegate = null;
 
         string GetTaskName()
         {
-            if (taskName is not null)
-                return taskName;
+            if (tn is not null)
+                return tn;
             if (@delegate is not null)
                 return @delegate.Method.Name;
             return "Unknown";
@@ -55,10 +61,11 @@ sealed partial class DailyStatisticsJob(
         }
         catch (Exception e)
         {
+            var title = $"JobErr: {JobName}";
+            var taskName = GetTaskName();
             logger.LogError(e, "{taskName} Job 任务处理出现错误", GetTaskName());
 
-            var title = $"JobErr: {JobName}";
-            await feishuApiClient.SendMessageAsync(title, $"{GetTaskName()} Job 任务处理出现错误", CancellationToken.None); // 飞书通知不取消
+            await feishuApiClient.SendMessageAsync(title, $"{taskName} Job 任务处理出现错误", CancellationToken.None); // 飞书通知不取消
         }
     }
 
@@ -69,6 +76,8 @@ sealed partial class DailyStatisticsJob(
         public F? TaskFunc { get; init; }
 
         public static implicit operator ParallelTaskItem(F func) => new() { TaskFunc = func };
+
+        public IJobExecutionContext? JobExecutionContext { get; set; }
     }
 }
 
