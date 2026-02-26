@@ -24,7 +24,7 @@ public partial class MembershipProductKeyRecord :
     /// 会员商品 Id
     /// </summary>
     [Required]
-    [Comment("会员商品Id")]
+    [Comment("会员商品 Id")]
     public Guid MembershipGoodsId { get; set; }
 
     /// <summary>
@@ -47,6 +47,19 @@ public partial class MembershipProductKeyRecord :
     /// <inheritdoc/>
     [Comment("是否禁用")]
     public bool Disable { get; set; }
+
+    /// <summary>
+    /// 分成 KOL 用户 Id
+    /// </summary>
+    [Comment("分成 KOL 用户 Id")]
+    public Guid? RevenueShareRecipientKolUserId { get; set; }
+
+    /// <summary>
+    /// 分成比例
+    /// </summary>
+    [Comment("分成比例")]
+    [Precision(10, 8)]
+    public decimal RevenueSharePercentage { get; set; }
 
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<MembershipProductKeyRecord>
     {

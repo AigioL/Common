@@ -54,7 +54,9 @@ public static partial class MembershipProductKeyRecordController
         {
             var userId = context.GetBMUserId();
             var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
-            BMApiRsp<string[]?> r = await membershipProductKeyRecordRepo.BatchCreateProductKeyRecordAsync(userId, model.MembershipGoodsId, model.Count, context.RequestAborted);
+            BMApiRsp<string[]?> r = await membershipProductKeyRecordRepo.BatchCreateProductKeyRecordAsync(
+                userId, model.MembershipGoodsId, model.Count,
+                model.RevenueShareRecipientKolUserId, model.RevenueSharePercentage, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("批量创建会员产品密钥（CDKey）");
