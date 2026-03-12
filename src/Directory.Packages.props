@@ -192,4 +192,17 @@
   <ItemGroup>
     <PackageVersion Include="ExcelDataReader" Version="3.8.0" />
   </ItemGroup>
+	<!-- 👇 AppCenter -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.AppCenter.Analytics" Version="5.0.7" />
+		<PackageVersion Include="Microsoft.AppCenter.Crashes" Version="5.0.7" />
+	</ItemGroup>
+	<!-- 👇 PowerShell -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.PowerShell.5.1.ReferenceAssemblies" Version="1.0.0" />
+	</ItemGroup>
+	<!-- 👇 Costura.Fody -->
+	<ItemGroup>
+		<PackageVersion Include="Costura.Fody" Version="6.0.0" />
+	</ItemGroup>
 </Project>
