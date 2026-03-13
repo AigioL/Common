@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 
 /// <summary>
-/// 管理后台实体基类（修改时间与操作后台用户）
+/// 管理后台实体基类（修改时间与操作管理后台用户）
 /// </summary>
 /// <typeparam name="TPrimaryKey"></typeparam>
 public abstract class OperatorBaseEntity<[DynamicallyAccessedMembers(IEntity.DAMT)] TPrimaryKey> :

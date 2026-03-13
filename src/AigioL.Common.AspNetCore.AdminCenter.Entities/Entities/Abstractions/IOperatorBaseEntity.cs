@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 
 /// <summary>
-/// 管理后台实体接口（修改时间与操作后台用户）
+/// 管理后台实体接口（修改时间与操作管理后台用户）
 /// </summary>
 public interface IOperatorBaseEntity :
     IEntity,
