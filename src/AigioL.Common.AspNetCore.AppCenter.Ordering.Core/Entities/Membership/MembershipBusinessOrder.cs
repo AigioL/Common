@@ -147,9 +147,19 @@ public partial class MembershipBusinessOrder :
 
     public virtual MembershipGoods MembershipGoods { get; set; } = null!;
 
+    /// <summary>
+    /// 渠道包 Id
+    /// </summary>
+    [Comment("渠道包 Id")]
     public Guid? ChannelPackageId { get; set; }
 
     public virtual ChannelPackage? ChannelPackage { get; set; }
+
+    /// <summary>
+    /// 绑定的合作伙伴用户 Id
+    /// </summary>
+    [Comment("绑定的合作伙伴用户 Id")]
+    public Guid? BindPCUserId { get; set; }
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<MembershipBusinessOrder>
     {

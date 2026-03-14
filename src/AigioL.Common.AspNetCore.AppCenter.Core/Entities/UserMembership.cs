@@ -1,6 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
-using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +53,18 @@ public partial class UserMembership :
 
     [Comment("修改时间")]
     public DateTimeOffset UpdateTime { get; set; }
+
+    /// <summary>
+    /// 绑定的合作伙伴用户 Id
+    /// </summary>
+    [Comment("绑定的合作伙伴用户 Id")]
+    public Guid? BindPCUserId { get; set; }
+
+    /// <summary>
+    /// 绑定的合作伙伴用户到期时间
+    /// </summary>
+    [Comment("绑定的合作伙伴用户到期时间")]
+    public DateTimeOffset BindPCUserExpireDate { get; set; }
 
     public virtual List<UserMembershipChangeRecord>? UserMembershipChangeRecords { get; set; } = null!;
 
