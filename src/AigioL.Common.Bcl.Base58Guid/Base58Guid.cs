@@ -5,6 +5,7 @@ namespace System;
 /// <summary>
 /// Base58 是比特币系统核心的编码方式，专为地址及私钥的可读性处理而设计。
 /// 该编码从 Base64 改进而来，移除易混淆字符 0、O、I、l 及特殊符号 +/，采用 58 个字符构成字符集
+/// 字符串长度在 21 ~ 22 之间，较 Guid 的 36 个字符大幅缩短，且不包含连字符，更适合在 URL、文件名等场景使用
 /// </summary>
 public static class Base58Guid
 {
