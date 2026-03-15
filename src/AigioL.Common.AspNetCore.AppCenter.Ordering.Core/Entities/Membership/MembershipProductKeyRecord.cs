@@ -55,6 +55,12 @@ public partial class MembershipProductKeyRecord :
     public Guid? RevenueShareRecipientKolUserId { get; set; }
 
     /// <summary>
+    /// 绑定的合作伙伴用户到期时间
+    /// </summary>
+    [Comment("绑定的合作伙伴用户到期时间")]
+    public DateTimeOffset BindPCUserExpireDate { get; set; }
+
+    /// <summary>
     /// 分成比例
     /// </summary>
     [Comment("分成比例")]

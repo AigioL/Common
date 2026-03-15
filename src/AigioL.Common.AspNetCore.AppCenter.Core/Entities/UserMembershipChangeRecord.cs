@@ -56,6 +56,18 @@ public partial class UserMembershipChangeRecord :
     [Comment("变更后的实际到期时间")]
     public DateTimeOffset CurrentRealExpireDate { get; set; }
 
+    /// <summary>
+    /// 绑定的合作伙伴用户 Id
+    /// </summary>
+    [Comment("绑定的合作伙伴用户 Id")]
+    public Guid? BindPCUserId { get; set; }
+
+    /// <summary>
+    /// 绑定的合作伙伴用户到期时间
+    /// </summary>
+    [Comment("绑定的合作伙伴用户到期时间")]
+    public DateTimeOffset BindPCUserExpireDate { get; set; }
+
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<UserMembershipChangeRecord>
     {
         public sealed override void Configure(EntityTypeBuilder<UserMembershipChangeRecord> builder)

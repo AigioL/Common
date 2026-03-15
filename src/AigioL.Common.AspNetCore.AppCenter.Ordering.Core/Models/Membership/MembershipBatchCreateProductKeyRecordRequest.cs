@@ -21,6 +21,11 @@ public sealed partial class MembershipBatchCreateProductKeyRecordRequest
     public Guid? RevenueShareRecipientKolUserId { get; set; }
 
     /// <summary>
+    /// 绑定的合作伙伴用户到期时间
+    /// </summary>
+    public DateTimeOffset BindPCUserExpireDate { get; set; }
+
+    /// <summary>
     /// 分成比例
     /// </summary>
     public decimal RevenueSharePercentage { get; set; }
