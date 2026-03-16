@@ -241,7 +241,7 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         CancellationToken cancellationToken = default)
     {
         var query = db.UserMemberships
-            .Where(x => x.Id == userId && x.BindPCUserExpireDate <= DateTimeOffset.UtcNow)
+            .Where(x => x.Id == userId && x.BindPCUserExpireDate >= DateTimeOffset.UtcNow)
             .Select(x => x.BindPCUserId);
 
         var r = await query.FirstOrDefaultAsync(cancellationToken);

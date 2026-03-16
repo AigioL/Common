@@ -129,4 +129,12 @@ public sealed partial class OrderTableItem : IReadOnlyId<string>, INote
     /// 最后一次操作的人（记录后台管理员禁用或启用或编辑该条的操作）
     /// </summary>
     public string? OperatorUser { get; set; }
+    /// <summary>
+    /// 渠道包 Id
+    /// </summary>
+    public Guid? ChannelPackageId { get; set; }
+    /// <summary>
+    /// 绑定的合作伙伴用户 Id
+    /// </summary>
+    public Guid? BindPCUserId { get; set; }
 }
