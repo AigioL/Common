@@ -88,14 +88,9 @@ sealed partial class UserMembershipService(
             BusinessSource = MembershipBusinessSource.CDK激活,
             ProductKeyRecordId = productKeyRecord.Id,
             ChannelPackageId = channelPackageId,
-            BindPCUserId = productKeyRecord.RevenueShareRecipientKolUserId,
         };
 
-        (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser =
-            productKeyRecord.RevenueShareRecipientKolUserId.HasValue ?
-                (productKeyRecord.RevenueShareRecipientKolUserId.Value, productKeyRecord.BindPCUserExpireDate) :
-                null;
-        var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder, bindPCUser: bindPCUser);
+        var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder);
         return (result.Success, result.record);
     }
 

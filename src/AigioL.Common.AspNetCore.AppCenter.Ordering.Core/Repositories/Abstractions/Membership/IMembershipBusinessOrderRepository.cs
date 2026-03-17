@@ -50,7 +50,7 @@ partial interface IMembershipBusinessOrderRepository
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
         string? orderId = null,
-        (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null);
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null);
 
     /// <summary>
     /// <see cref="EntityFrameworkQueryableExtensions.FirstOrDefaultAsync{TSource}(IQueryable{TSource}, Expression{Func{TSource, bool}}, CancellationToken)"/>
@@ -100,5 +100,5 @@ partial interface IMembershipBusinessOrderRepository
        MembershipLicenseFlags membershipLicenseFlags,
        MembershipBusinessSource membershipBusinessSource,
        DateTimeOffset? now = null,
-       (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null);
+       (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null);
 }

@@ -46,9 +46,6 @@ partial interface IMembershipProductKeyRecordRepository // 管理后台
         Guid createUserId,
         Guid membershipGoodsId,
         uint count,
-        Guid? revenueShareRecipientKolUserId,
-        decimal revenueSharePercentage,
-        DateTimeOffset bindPCUserExpireDate,
         CancellationToken cancellationToken = default);
 
     Task<int> BatchDisableProductKeyRecordAsync(

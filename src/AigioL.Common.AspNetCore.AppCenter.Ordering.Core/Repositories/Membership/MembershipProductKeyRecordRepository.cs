@@ -91,9 +91,6 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
         Guid createUserId,
         Guid membershipGoodsId,
         uint count,
-        Guid? revenueShareRecipientKolUserId,
-        decimal revenueSharePercentage,
-        DateTimeOffset bindPCUserExpireDate,
         CancellationToken cancellationToken = default)
     {
         if (membershipGoodsId == default)
@@ -122,9 +119,6 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
                 UsageTime = null,
                 Disable = false,
                 CreateUserId = createUserId,
-                RevenueSharePercentage = revenueSharePercentage,
-                RevenueShareRecipientKolUserId = revenueShareRecipientKolUserId,
-                BindPCUserExpireDate = bindPCUserExpireDate,
             };
         }
 

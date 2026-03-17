@@ -55,7 +55,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
         string? orderId = null,
-        (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null)
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         // 自动续费订单
         if (isAgreementDeduction)
@@ -299,12 +299,14 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
     static void SetBindPCUser(
         UserMembership userMembership,
-        (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null)
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         if (bindPCUser.HasValue)
         {
             userMembership.BindPCUserId = bindPCUser.Value.bindPCUserId;
-            userMembership.BindPCUserExpireDate = bindPCUser.Value.bindPCUserExpireDate;
+            userMembership.BindPCUserExpireDate = bindPCUser.Value.bindPCUserExpirePeriod.HasValue ?
+                DateTimeOffset.UtcNow.Add(bindPCUser.Value.bindPCUserExpirePeriod.Value) :
+                DateTimeOffset.MaxValue;
         }
     }
 
@@ -315,7 +317,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         MembershipLicenseFlags membershipLicenseFlags,
         MembershipBusinessSource membershipBusinessSource,
         DateTimeOffset? now_ = null,
-       (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null)
+       (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         if (db.Database.CurrentTransaction is null)
         {
@@ -398,7 +400,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(
         MembershipBusinessOrder business_order,
         DateTimeOffset? now,
-        (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null)
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         var rechargeDays = business_order.RechargeDays;
         var rechargeTimeSpan = TimeSpan.FromDays(rechargeDays);
@@ -416,7 +418,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         DateTimeOffset now,
         DateTimeOffset currentRealExpireDate,
         MembershipLicenseFlags membershipLicenseFlags,
-       (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null)
+       (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         var userMembership = new UserMembership()
         {
@@ -665,7 +667,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// </summary>
     async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipBusinessOrderByCDKeyAsync(
         MembershipBusinessOrder business_order,
-        (Guid bindPCUserId, DateTimeOffset bindPCUserExpireDate)? bindPCUser = null)
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         var now = DateTimeOffset.Now;
         return await db.Database.CreateExecutionStrategy().ExecuteAsync(CoreAsync);
