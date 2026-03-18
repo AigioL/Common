@@ -7,6 +7,8 @@ namespace AigioL.Common.Essentials.Storage;
 /// </summary>
 public partial interface ISecureStorage
 {
+    static ISecureStorage Instance => EssentialInit.SecureStorage;
+
     /// <summary>
     /// 获取并解密给定密钥的值
     /// </summary>

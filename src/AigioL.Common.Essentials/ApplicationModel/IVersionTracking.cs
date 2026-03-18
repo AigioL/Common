@@ -7,6 +7,8 @@ namespace AigioL.Common.Essentials.ApplicationModel;
 /// </summary>
 public interface IVersionTracking
 {
+    static IVersionTracking Instance => EssentialInit.VersionTracking;
+
     /// <summary>
     /// 获取在此设备上运行的应用的内部版本号集合
     /// </summary>
