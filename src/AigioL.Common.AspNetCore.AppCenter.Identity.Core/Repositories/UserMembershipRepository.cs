@@ -235,4 +235,16 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         Message = "GetUserMembership fail")]
     private static partial void LogErrorOnGetUserMembership(
         ILogger logger, Exception ex);
+
+    public async Task<Guid?> GetBindPCUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = db.UserMemberships
+            .Where(x => x.Id == userId && x.BindPCUserExpireDate >= DateTimeOffset.UtcNow)
+            .Select(x => x.BindPCUserId);
+
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
 }

@@ -14,15 +14,11 @@ using SimpleBase;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Membership;
 
-sealed partial class MembershipProductKeyRecordRepository<TDbContext> :
-    Repository<TDbContext, MembershipProductKeyRecord, Guid>,
+sealed partial class MembershipProductKeyRecordRepository<TDbContext>(TDbContext dbContext, IServiceProvider serviceProvider) :
+    Repository<TDbContext, MembershipProductKeyRecord, Guid>(dbContext, serviceProvider),
     IMembershipProductKeyRecordRepository
     where TDbContext : DbContext, IPaymentDbContext
 {
-    public MembershipProductKeyRecordRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
-    {
-    }
-
     public async Task<MembershipProductKeyRecord?> GetProductKeyRecord(Guid recordId, bool? disable, bool? isUsed, CancellationToken cancellationToken = default)
     {
         IQueryable<MembershipProductKeyRecord> query = db.MembershipProductKeyRecords
@@ -95,8 +91,6 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
         Guid createUserId,
         Guid membershipGoodsId,
         uint count,
-        Guid? revenueShareRecipientKolUserId,
-        decimal revenueSharePercentage,
         CancellationToken cancellationToken = default)
     {
         if (membershipGoodsId == default)
@@ -125,8 +119,6 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
                 UsageTime = null,
                 Disable = false,
                 CreateUserId = createUserId,
-                RevenueSharePercentage = revenueSharePercentage,
-                RevenueShareRecipientKolUserId = revenueShareRecipientKolUserId,
             };
         }
 

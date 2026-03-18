@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>dbe67ca0-bf0d-4c0a-8753-519fd2eb59cf</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.AspNetCore.PartnerCenter</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreatePCUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreatePCUserId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreatePCUserIdNullable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\IOperatorPCUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Columns\IOperatorPCUserId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\CreationPCBaseEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICreationPCBaseEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IOperatorPCBaseEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\OperatorPCBaseEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\TenantPCBaseEntity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\Identitys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCMenuButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCMenuButtonRole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCRole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserRole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCButtonType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCMenuOpenMethod.cs" />
+  </ItemGroup>
+</Project>

@@ -123,6 +123,12 @@ public partial class Order :
 
     public virtual ChannelPackage? ChannelPackage { get; set; }
 
+    /// <summary>
+    /// 绑定的合作伙伴用户 Id
+    /// </summary>
+    [Comment("绑定的合作伙伴用户 Id")]
+    public Guid? BindPCUserId { get; set; }
+
     public virtual User User { get; set; } = null!;
 
     /// <summary>

@@ -30,9 +30,15 @@ public partial class MembershipProductKeyRecord :
     /// <summary>
     /// 充值天数
     /// </summary>
-    [Required]
     [Comment("充值天数")]
+    [Obsolete("use RechargeTimeSpan")]
     public int RechargeDays { get; set; }
+
+    /// <summary>
+    /// 充值时间跨度
+    /// </summary>
+    [Comment("充值时间跨度")]
+    public TimeSpan RechargeTimeSpan { get; set; }
 
     /// <summary>
     /// 是否已使用
@@ -47,19 +53,6 @@ public partial class MembershipProductKeyRecord :
     /// <inheritdoc/>
     [Comment("是否禁用")]
     public bool Disable { get; set; }
-
-    /// <summary>
-    /// 分成 KOL 用户 Id
-    /// </summary>
-    [Comment("分成 KOL 用户 Id")]
-    public Guid? RevenueShareRecipientKolUserId { get; set; }
-
-    /// <summary>
-    /// 分成比例
-    /// </summary>
-    [Comment("分成比例")]
-    [Precision(10, 8)]
-    public decimal RevenueSharePercentage { get; set; }
 
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<MembershipProductKeyRecord>
     {

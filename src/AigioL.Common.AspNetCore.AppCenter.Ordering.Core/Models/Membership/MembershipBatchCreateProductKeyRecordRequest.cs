@@ -14,14 +14,4 @@ public sealed partial class MembershipBatchCreateProductKeyRecordRequest
     /// 批量创建数量
     /// </summary>
     public uint Count { get; set; }
-
-    /// <summary>
-    /// 分成 KOL 用户 Id
-    /// </summary>
-    public Guid? RevenueShareRecipientKolUserId { get; set; }
-
-    /// <summary>
-    /// 分成比例
-    /// </summary>
-    public decimal RevenueSharePercentage { get; set; }
 }

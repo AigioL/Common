@@ -44,7 +44,14 @@ public partial class MembershipGoods :
     /// 充值天数
     /// </summary>
     [Comment("充值天数")]
+    [Obsolete("use RechargeTimeSpan")]
     public int RechargeDays { get; set; }
+
+    /// <summary>
+    /// 充值时间跨度
+    /// </summary>
+    [Comment("充值时间跨度")]
+    public TimeSpan RechargeTimeSpan { get; set; }
 
     /// <summary>
     /// 首充原价

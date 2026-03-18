@@ -1,6 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
-using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.Primitives.Columns;
@@ -58,7 +57,14 @@ public partial class MembershipBusinessOrder :
     /// 充值天数
     /// </summary>
     [Comment("充值天数")]
+    [Obsolete("use RechargeTimeSpan")]
     public int RechargeDays { get; set; }
+
+    /// <summary>
+    /// 充值时间跨度
+    /// </summary>
+    [Comment("充值时间跨度")]
+    public TimeSpan RechargeTimeSpan { get; set; }
 
     /// <summary>
     /// 通用订单 Id
@@ -147,9 +153,19 @@ public partial class MembershipBusinessOrder :
 
     public virtual MembershipGoods MembershipGoods { get; set; } = null!;
 
+    /// <summary>
+    /// 渠道包 Id
+    /// </summary>
+    [Comment("渠道包 Id")]
     public Guid? ChannelPackageId { get; set; }
 
     public virtual ChannelPackage? ChannelPackage { get; set; }
+
+    /// <summary>
+    /// 绑定的合作伙伴用户 Id
+    /// </summary>
+    [Comment("绑定的合作伙伴用户 Id")]
+    public Guid? BindPCUserId { get; set; }
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<MembershipBusinessOrder>
     {

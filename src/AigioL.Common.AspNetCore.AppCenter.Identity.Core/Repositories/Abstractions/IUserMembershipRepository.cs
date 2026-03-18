@@ -43,4 +43,8 @@ public partial interface IUserMembershipRepository : IRepository<UserMembership,
         DateTimeOffset? endTime,
         TimeSpan? timeSpan,
         string? note);
+
+    Task<Guid?> GetBindPCUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
 }

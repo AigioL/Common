@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 
 /// <summary>
-/// 管理后台实体接口（创建时间与创建后台用户）
+/// 管理后台实体接口（创建时间与创建管理后台用户）
 /// </summary>
 public interface ICreationBaseEntity :
     IEntity,

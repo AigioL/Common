@@ -59,6 +59,8 @@
     <Project Path="src/AigioL.Common.AspNetCore.ApiGateway.Core/AigioL.Common.AspNetCore.ApiGateway.Core.shproj" Id="bb5339c8-0ab7-4b32-bd60-4a8004d4deae" />
     <Project Path="src/AigioL.Common.AspNetCore.ApiGateway/AigioL.Common.AspNetCore.ApiGateway.shproj" Id="b3f85f86-61ed-4d3b-8d6f-780b1ad07a60" />
     <Project Path="src/AigioL.Common.AspNetCore.Helpers.ProgramMain/AigioL.Common.AspNetCore.Helpers.ProgramMain.shproj" Id="276306f9-8c73-4b7a-a517-e7a502cd5f2b" />
+    <Project Path="src/AigioL.Common.AspNetCore.PartnerCenter.Entities/AigioL.Common.AspNetCore.PartnerCenter.Entities.shproj" Id="dbe67ca0-bf0d-4c0a-8753-519fd2eb59cf" />
+    <Project Path="src/AigioL.Common.AspNetCore.PartnerCenter/AigioL.Common.AspNetCore.PartnerCenter.shproj" Id="e8fb1a60-1426-4974-8802-6d167c505cc9" />
   </Folder>
   <Folder Name="/2.Libraries/AspNetCore/AppCenter/">
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Analytics.Core.ClientSide/AigioL.Common.AspNetCore.AppCenter.Analytics.Core.ClientSide.shproj" Id="caf78f1d-0d61-483a-aef0-ddbc18800c6e" />

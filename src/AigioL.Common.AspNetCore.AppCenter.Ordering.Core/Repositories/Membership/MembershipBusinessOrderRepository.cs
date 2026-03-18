@@ -1,4 +1,3 @@
-using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Helpers.SnowFlake;
@@ -19,7 +18,6 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Primitives;
 using System.Data;
 using System.Linq.Expressions;
 using static AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Membership.LogMembershipBusinessOrderRepository;
@@ -56,7 +54,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         MembershipBusinessOrder business_order,
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
-        string? orderId = null)
+        string? orderId = null,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         // 自动续费订单
         if (isAgreementDeduction)
@@ -73,7 +72,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         // CDKey 兑换
         else if (business_order.BusinessSource == MembershipBusinessSource.CDK激活)
         {
-            var (isOK, record) = await CreateMembershipBusinessOrderByCDKeyAsync(business_order);
+            var (isOK, record) = await CreateMembershipBusinessOrderByCDKeyAsync(business_order, bindPCUser: bindPCUser);
             return (isOK, null, record);
         }
         // 普通订单
@@ -298,13 +297,27 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         }
     }
 
+    static void SetBindPCUser(
+        UserMembership userMembership,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
+    {
+        if (bindPCUser.HasValue)
+        {
+            userMembership.BindPCUserId = bindPCUser.Value.bindPCUserId;
+            userMembership.BindPCUserExpireDate = bindPCUser.Value.bindPCUserExpirePeriod.HasValue ?
+                DateTimeOffset.UtcNow.Add(bindPCUser.Value.bindPCUserExpirePeriod.Value) :
+                DateTimeOffset.MaxValue;
+        }
+    }
+
     public async Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(
         Guid businessOrderId,
         TimeSpan rechargeTimeSpan,
         Guid userId,
         MembershipLicenseFlags membershipLicenseFlags,
         MembershipBusinessSource membershipBusinessSource,
-        DateTimeOffset? now_ = null)
+        DateTimeOffset? now_ = null,
+       (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         if (db.Database.CurrentTransaction is null)
         {
@@ -324,7 +337,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
             (bool flags, userMembership) = await CreateNewUserMembership(
                 userId, now, currentRealExpireDate,
-                membershipLicenseFlags);
+                membershipLicenseFlags,
+                bindPCUser);
             if (flags)
             {
                 flags = await AddUserTypeAsync(userId, UserType.Membership);
@@ -351,6 +365,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
             var membershipLicenseType = ConvertMembershipLicenseType(membershipLicenseFlags, membershipBusinessSource);
             userMembership.MemberLicenseFlags |= membershipLicenseType;
+            SetBindPCUser(userMembership, bindPCUser);
             db.UserMemberships.Update(userMembership);
 
             var rowCount = await db.SaveChangesAsync();
@@ -368,6 +383,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 MemberLicenseType = membershipLicenseFlags,
                 CreateTime = now,
                 CurrentRealExpireDate = currentRealExpireDate,
+                BindPCUserId = userMembership.BindPCUserId,
+                BindPCUserExpireDate = userMembership.BindPCUserExpireDate,
             };
 
             db.UserMembershipChangeRecords.Add(record);
@@ -380,13 +397,17 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
     #region Private Methods
 
-    Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(MembershipBusinessOrder business_order, DateTimeOffset? now)
+    Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(
+        MembershipBusinessOrder business_order,
+        DateTimeOffset? now,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         var rechargeDays = business_order.RechargeDays;
         var rechargeTimeSpan = TimeSpan.FromDays(rechargeDays);
         return CreateOrUpdateUserMembershipAsync(
             business_order.Id, rechargeTimeSpan, business_order.UserId,
-            business_order.MemberLicenseType, business_order.BusinessSource, now);
+            business_order.MemberLicenseType, business_order.BusinessSource, now,
+            bindPCUser: bindPCUser);
     }
 
     /// <summary>
@@ -396,7 +417,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         Guid userId,
         DateTimeOffset now,
         DateTimeOffset currentRealExpireDate,
-        MembershipLicenseFlags membershipLicenseFlags)
+        MembershipLicenseFlags membershipLicenseFlags,
+       (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         var userMembership = new UserMembership()
         {
@@ -406,6 +428,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             MemberLicenseFlags = membershipLicenseFlags,
             FirstMembershipDate = now,
         };
+        SetBindPCUser(userMembership, bindPCUser);
         await db.UserMemberships.AddAsync(userMembership);
         var rowCount = await db.SaveChangesAsync();
         return (rowCount > 0, userMembership);
@@ -616,6 +639,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                     Note = business_order.Note,
                     MerchantDeductionAgreementId = null,
                     ChannelPackageId = business_order.ChannelPackageId,
+                    BindPCUserId = business_order.BindPCUserId,
                 };
 
                 db.Orders.Add(order);
@@ -642,7 +666,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// CDKey 渠道创建会员业务订单
     /// </summary>
     async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipBusinessOrderByCDKeyAsync(
-        MembershipBusinessOrder business_order)
+        MembershipBusinessOrder business_order,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         var now = DateTimeOffset.Now;
         return await db.Database.CreateExecutionStrategy().ExecuteAsync(CoreAsync);
@@ -658,21 +683,23 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 business_order.PaymentTime = now;
                 business_order.RechargeCompletionTime = now;
 
-                Entity.Add(business_order);
-                var orderAdd = await db.SaveChangesAsync() > 0;
+                await db.MembershipBusinessOrders.AddAsync(business_order);
+                var business_order_rowCount = await db.SaveChangesAsync();
 
                 // 会员充值
-                var (rowCount, record) = await CreateOrUpdateUserMembershipAsync(business_order, now);
-                var userMembershipChangeSuccess = rowCount > 0;
+                var (userMembershipChange_rowCount, record) = await CreateOrUpdateUserMembershipAsync(
+                    business_order, now, bindPCUser: bindPCUser);
 
                 // CDKey 可以使用则提交事务
-                var r = await db.MembershipProductKeyRecords
+                var membershipProductKeyRecords_rowCount = await db.MembershipProductKeyRecords
                     .AsNoTrackingWithIdentityResolution()
                     .Where(x => x.Id == business_order.ProductKeyRecordId && !x.IsUsed && !x.Disable)
                     .ExecuteUpdateAsync(e =>
                     e.SetProperty(s => s.IsUsed, true)
-                    .SetProperty(s => s.UsageTime, DateTimeOffset.Now)) > 0;
-                if (orderAdd && userMembershipChangeSuccess && r)
+                    .SetProperty(s => s.UsageTime, DateTimeOffset.Now));
+                if (business_order_rowCount > 0 &&
+                    userMembershipChange_rowCount > 0 &&
+                    membershipProductKeyRecords_rowCount > 0)
                 {
                     await transaction.CommitAsync();
                     return (true, record);

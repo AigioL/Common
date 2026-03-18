@@ -44,6 +44,8 @@ sealed partial class UserMembershipService(
             ? goods.FirstCurrentPrice.Value
             : goods.CurrentPrice;
 
+        var bindPcUserId = await userMembershipRepo.GetBindPCUserIdAsync(userId, cancellationToken);
+
         var membershipOrder = new MembershipBusinessOrder
         {
             RechargeDays = goods.RechargeDays,
@@ -56,6 +58,7 @@ sealed partial class UserMembershipService(
             MembershipGoodsId = goods.Id,
             BusinessSource = MembershipBusinessSource.普通订单,
             ChannelPackageId = channelPackageId,
+            BindPCUserId = bindPcUserId,
         };
 
         var result = await membershipBusinessOrderRepo.CreateBusinessOrder(membershipOrder, orderId: orderId);

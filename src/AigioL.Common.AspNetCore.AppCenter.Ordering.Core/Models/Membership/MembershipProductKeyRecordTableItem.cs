@@ -18,16 +18,34 @@ public sealed partial class MembershipProductKeyRecordTableItem : IReadOnlyId<Gu
         }
     }
 
-    public string Key { get; set; } = default!;
-
-    public string ProductName { get; set; } = string.Empty;
-
-    public DateTimeOffset? UsageTime { get; set; }
-
+    /// <summary>
+    /// 充值天数
+    /// </summary>
     public int RechargeDays { get; set; }
 
+    /// <summary>
+    /// 是否已使用
+    /// </summary>
     public bool IsUsed { get; set; }
 
+    /// <summary>
+    /// 分成 KOL 用户 Id
+    /// </summary>
+    public Guid? RevenueShareRecipientKolUserId { get; set; }
+
+    /// <summary>
+    /// 绑定的合作伙伴用户到期时间
+    /// </summary>
+    public DateTimeOffset BindPCUserExpireDate { get; set; }
+
+    /// <summary>
+    /// 分成比例
+    /// </summary>
+    public decimal RevenueSharePercentage { get; set; }
+
+    /// <summary>
+    /// 是否禁用
+    /// </summary>
     public bool Disable { get; set; }
 
     /// <summary>
