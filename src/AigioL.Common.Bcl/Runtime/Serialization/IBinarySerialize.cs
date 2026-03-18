@@ -38,6 +38,10 @@ partial interface IBinarySerialize
         }
 
         var ttype = typeof(T);
+        if (ttype == typeof(object))
+        {
+            ttype = value.GetType();
+        }
 
         if (ttype == typeof(byte[]))
         {
