@@ -1,5 +1,7 @@
 using AigioL.Common.Essentials.ApplicationModel;
 using AigioL.Common.Essentials.ApplicationModel.Implementation;
+using AigioL.Common.Essentials.Devices;
+using AigioL.Common.Essentials.Devices.Implementation;
 using AigioL.Common.Essentials.Storage;
 using AigioL.Common.Essentials.Storage.Implementation;
 
@@ -13,7 +15,8 @@ public static partial class EssentialInit
         string versionString,
         string buildString,
         string appDataDirectory,
-        bool isSecureStorageCurrentUserOrLocalMachine = false)
+        bool isSecureStorageCurrentUserOrLocalMachine = false,
+        IDeviceInfo? deviceInfo = null)
     {
         Preferences = new UnpackagedPreferencesImplementation(appDataDirectory);
         SecureStorage = new UnpackagedSecureStorageImplementation(
@@ -27,6 +30,7 @@ public static partial class EssentialInit
             packageName,
             versionString,
             buildString);
+        DeviceInfo = deviceInfo ?? new DeviceInfoImplementation();
     }
 }
 
@@ -61,6 +65,17 @@ static partial class EssentialInit
             var versionTracking = field;
             ArgumentNullException.ThrowIfNull(versionTracking);
             return versionTracking;
+        }
+        private set => field = value;
+    }
+
+    internal static IDeviceInfo DeviceInfo
+    {
+        get
+        {
+            var deviceInfo = field;
+            ArgumentNullException.ThrowIfNull(deviceInfo);
+            return deviceInfo;
         }
         private set => field = value;
     }

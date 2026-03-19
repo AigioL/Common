@@ -15,7 +15,7 @@ public static partial class ServiceCollectionExtensions
         services.AddSingleton<IPreferences>(EssentialInit.Preferences);
         services.AddSingleton<ISecureStorage>(EssentialInit.SecureStorage);
         services.AddSingleton<IVersionTracking>(EssentialInit.VersionTracking);
-        services.TryAddSingleton<IDeviceInfo, DeviceInfoImplementation>();
+        services.AddSingleton<IDeviceInfo>(EssentialInit.DeviceInfo);
         return services;
     }
 }
