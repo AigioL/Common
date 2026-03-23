@@ -181,7 +181,7 @@ static partial class CacheKeys
                             {
                                 expiry ??= TimeSpan.FromHours(1);
                             }
-                            await database.StringSetAsync(cacheKey, serializeData, expiry);
+                            await database.StringSetAsync(cacheKey, serializeData, expiry, When.Always);
                             return r;
                         }
                     }
