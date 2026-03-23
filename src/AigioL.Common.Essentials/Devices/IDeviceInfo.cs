@@ -7,6 +7,8 @@ namespace AigioL.Common.Essentials.Devices;
 /// </summary>
 public partial interface IDeviceInfo
 {
+    static IDeviceInfo Instance => EssentialInit.DeviceInfo;
+
     /// <summary>
     /// 获取运行应用程序的设备的类型
     /// </summary>

@@ -7,6 +7,8 @@ namespace AigioL.Common.Essentials.Storage;
 /// </summary>
 public partial interface IPreferences
 {
+    static IPreferences Instance => EssentialInit.Preferences;
+
     /// <summary>
     /// 清除所有键和值
     /// </summary>

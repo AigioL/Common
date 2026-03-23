@@ -291,10 +291,12 @@ partial class SmsSenderProvider
                                                 + hashedRequestPayload;
 
         const string algorithm = "TC3-HMAC-SHA256";
-        var now = DateTimeOffset.Now;
-        long timestamp = now.ToUnixTimeSeconds();
+        var utcNow = DateTimeOffset.UtcNow;
+        long timestamp = utcNow.ToUnixTimeSeconds();
         string requestTimestamp = timestamp.ToString();
-        string date = now.ToString("yyyy-MM-dd");
+        //https://cloud.tencent.com/document/api/382/52072#3.-.E8.AE.A1.E7.AE.97.E7.AD.BE.E5.90.8D
+        //Date 必须从时间戳 X-TC-Timestamp 计算得到，且时区为 UTC+0。如果加入系统本地时区信息，例如东八区，将导致白天和晚上调用成功，但是凌晨时调用必定失败。假设时间戳为 1551113065，在东八区的时间是 2019-02-26 00:44:25，但是计算得到的 Date 取 UTC+0 的日期应为 2019-02-25，而不是 2019-02-26。
+        string date = utcNow.ToString("yyyy-MM-dd");
         string service = GetSplitFirst(endpoint, '.');
         string credentialScope = date + "/" + service + "/" + "tc3_request";
         string hashedCanonicalRequest = SHA256Hex(canonicalRequest);

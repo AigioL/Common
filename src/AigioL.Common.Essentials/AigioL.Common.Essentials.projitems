@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ApplicationModel\IVersionTracking.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Devices\IDeviceInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Devices\Implementation\DeviceInfoImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EssentialInit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Storage\Implementation\UnpackagedPreferencesImplementation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Storage\Implementation\UnpackagedSecureStorageImplementation.cs" />
