@@ -59,7 +59,6 @@ public static partial class ExceptionHandlerExtensions
                     TraceId = traceId,
                 };
 
-                context.Response.StatusCode = StatusCodes.Status200OK;
                 await apiRsp.WriteAsync(
                     context.Response,
                     cancellationToken: context.RequestAborted);
