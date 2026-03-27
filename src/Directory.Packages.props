@@ -205,4 +205,8 @@
   <ItemGroup>
     <PackageVersion Include="Costura.Fody" Version="6.0.0" />
   </ItemGroup>
+	<!-- 👇 SignalR -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.5" />
+	</ItemGroup>
 </Project>
