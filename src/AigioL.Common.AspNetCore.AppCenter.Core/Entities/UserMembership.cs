@@ -46,6 +46,12 @@ public partial class UserMembership :
     public DateTimeOffset ExpireDate { get; set; }
 
     /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    [Comment("按量付费的会员时长")]
+    public TimeSpan PayAsYoGo { get; set; }
+
+    /// <summary>
     /// 会员订阅类型，跟随变更记录更新
     /// </summary>
     [Comment("会员订阅类型")]

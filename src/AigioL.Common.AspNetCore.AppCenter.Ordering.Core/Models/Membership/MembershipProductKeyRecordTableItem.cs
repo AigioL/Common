@@ -19,9 +19,14 @@ public sealed partial class MembershipProductKeyRecordTableItem : IReadOnlyId<Gu
     }
 
     /// <summary>
-    /// 充值天数
+    /// 充值时间跨度
     /// </summary>
-    public int RechargeDays { get; set; }
+    public TimeSpan RechargeTimeSpan { get; set; }
+
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    public TimeSpan PayAsYoGo { get; set; }
 
     /// <summary>
     /// 是否已使用

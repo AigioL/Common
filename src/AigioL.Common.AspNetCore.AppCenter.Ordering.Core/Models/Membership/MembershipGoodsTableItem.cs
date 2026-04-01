@@ -23,9 +23,14 @@ public sealed partial class MembershipGoodsTableItem : IReadOnlyId<Guid>, ICreat
     public MembershipLicenseFlags MemberLicenseType { get; set; }
 
     /// <summary>
-    /// 充值天数
+    /// 充值时间跨度
     /// </summary>
-    public int RechargeDays { get; set; }
+    public TimeSpan RechargeTimeSpan { get; set; }
+
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    public TimeSpan PayAsYoGo { get; set; }
 
     /// <summary>
     /// 首充原价
@@ -110,9 +115,14 @@ public sealed partial class AddOrEditMembershipGoodsModel : IReadOnlyId<Guid>
     public MembershipLicenseFlags MemberLicenseType { get; set; }
 
     /// <summary>
-    /// 充值天数
+    /// 充值时间跨度
     /// </summary>
-    public int RechargeDays { get; set; }
+    public TimeSpan RechargeTimeSpan { get; set; }
+
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    public TimeSpan PayAsYoGo { get; set; }
 
     /// <summary>
     /// 首次优惠价格 原价

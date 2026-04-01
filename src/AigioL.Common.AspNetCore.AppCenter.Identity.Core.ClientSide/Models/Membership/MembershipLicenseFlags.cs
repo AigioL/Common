@@ -63,4 +63,10 @@ public enum MembershipLicenseFlags
     /// </summary>
     [Description("口令码兑换")]
     PromoCode = 1 << 8,
+
+    /// <summary>
+    /// 按量付费
+    /// </summary>
+    [Description("按量付费")]
+    PayAsYoGo = 1 << 9,
 }

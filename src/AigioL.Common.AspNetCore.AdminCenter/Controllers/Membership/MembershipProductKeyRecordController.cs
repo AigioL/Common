@@ -28,11 +28,13 @@ public static partial class MembershipProductKeyRecordController
             .WithDescription("会员产品密钥（CDKey）记录管理");
 
         routeGroup.MapGet("", async (HttpContext context,
-            [FromQuery] Guid? membershipGoodsId,
-            [FromQuery] bool? isUsed,
-            [FromQuery] bool? disable,
-            [FromQuery] int? rechargeDays,
-            [FromQuery][StringLength(MaxLengths.Guid)] string? key,
+            [FromQuery] Guid? membershipGoodsId = null,
+            [FromQuery] bool? isUsed = null,
+            [FromQuery] bool? disable = null,
+            [FromQuery] int? rechargeDays = null,
+            [FromQuery] TimeSpan? rechargeTimeSpan = null,
+            [FromQuery] TimeSpan? payAsYoGo = null,
+            [FromQuery][StringLength(MaxLengths.Guid)] string? key = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
@@ -41,7 +43,8 @@ public static partial class MembershipProductKeyRecordController
             Guid? keyGN = ShortGuid.TryParse(key, out Guid keyG) ? keyG : null;
             var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await membershipProductKeyRecordRepo.QueryAsync(
-                keyGN, rechargeDays, membershipGoodsId,
+                keyGN, rechargeDays, rechargeTimeSpan,
+                payAsYoGo, membershipGoodsId,
                 isUsed, disable, orderBy,
                 desc, current, pageSize,
                 context.RequestAborted);

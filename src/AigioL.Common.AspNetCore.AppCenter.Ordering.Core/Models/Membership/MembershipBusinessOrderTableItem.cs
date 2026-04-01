@@ -38,6 +38,16 @@ public sealed partial class MembershipBusinessOrderTableItem : IReadOnlyId<Guid>
     public int RechargeDays { get; set; }
 
     /// <summary>
+    /// 充值时间跨度
+    /// </summary>
+    public TimeSpan RechargeTimeSpan { get; set; }
+
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    public TimeSpan PayAsYoGo { get; set; }
+
+    /// <summary>
     /// 通用订单 Id
     /// </summary>
     public string? GenericOrderId { get; set; }

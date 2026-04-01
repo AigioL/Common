@@ -79,6 +79,8 @@ partial class MembershipGoodsRepository<TDbContext> // 管理后台
         string? goodsNo,
         MembershipLicenseFlags? memberLicenseType,
         int? rechargeDays,
+        TimeSpan? rechargeTimeSpan,
+        TimeSpan? payAsYoGo,
         decimal? currentPrice,
         bool? enable,
         int current = IPagedModel.DefaultCurrent,
@@ -99,7 +101,13 @@ partial class MembershipGoodsRepository<TDbContext> // 管理后台
         if (memberLicenseType.HasValue)
             query = query.Where(x => x.MemberLicenseType == memberLicenseType);
         if (rechargeDays.HasValue)
+#pragma warning disable CS0618 // 类型或成员已过时
             query = query.Where(x => x.RechargeDays == rechargeDays);
+#pragma warning restore CS0618 // 类型或成员已过时
+        if (rechargeTimeSpan.HasValue)
+            query = query.Where(x => x.RechargeTimeSpan == rechargeTimeSpan);
+        if (payAsYoGo.HasValue)
+            query = query.Where(x => x.PayAsYoGo == payAsYoGo);
         if (currentPrice.HasValue)
             query = query.Where(x => x.CurrentPrice == currentPrice);
         if (enable.HasValue)
@@ -192,7 +200,8 @@ file static class ProjectToMapper
         GoodsName = it.GoodsName,
         GoodsNo = it.GoodsNo,
         MemberLicenseType = it.MemberLicenseType,
-        RechargeDays = it.RechargeDays,
+        RechargeTimeSpan = it.RechargeTimeSpan,
+        PayAsYoGo = it.PayAsYoGo,
         FirstPrice = it.FirstPrice,
         FirstCurrentPrice = it.FirstCurrentPrice,
         Price = it.Price,

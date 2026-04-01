@@ -23,4 +23,9 @@ public sealed partial record class UserMembershipModel
     /// 会员订阅类型，跟随变更记录更新
     /// </summary>
     public MembershipLicenseFlags MemberLicenseFlags { get; set; }
+
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    public TimeSpan PayAsYoGo { get; set; }
 }

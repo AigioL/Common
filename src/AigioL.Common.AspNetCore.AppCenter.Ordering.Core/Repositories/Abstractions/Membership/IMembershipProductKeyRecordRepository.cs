@@ -33,6 +33,8 @@ partial interface IMembershipProductKeyRecordRepository // 管理后台
     Task<PagedModel<MembershipProductKeyRecordTableItem>> QueryAsync(
         Guid? key = null,
         int? rechargeDays = null,
+        TimeSpan? rechargeTimeSpan = null,
+        TimeSpan? payAsYoGo = null,
         Guid? membershipGoodsId = null,
         bool? isUsed = null,
         bool? disable = null,

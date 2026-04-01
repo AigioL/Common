@@ -12,7 +12,9 @@ public sealed partial record class MembershipInfo
     /// 是否是会员
     /// </summary>
     [global::MemoryPack.MemoryPackIgnore]
-    public bool IsMembership => ExpireDate.HasValue && ExpireDate > DateTimeOffset.Now;
+    public bool IsMembership =>
+        (ExpireDate.HasValue && ExpireDate > DateTimeOffset.Now) ||
+        (PayAsYoGo > TimeSpan.Zero);
 
     /// <summary>
     /// 会员订阅类型
@@ -37,4 +39,10 @@ public sealed partial record class MembershipInfo
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(3)]
     public DateTimeOffset? FirstMembershipDate { get; set; }
+
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    [global::MemoryPack.MemoryPackOrder(4)]
+    public TimeSpan PayAsYoGo { get; set; }
 }

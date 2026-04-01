@@ -1,5 +1,4 @@
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
-using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
@@ -31,11 +30,31 @@ public partial record class MembershipGoodsModel
     [global::MemoryPack.MemoryPackOrder(3)]
     public MembershipLicenseFlags MemberLicenseType { get; set; }
 
+    static int ToTotalDays(TimeSpan timeSpan) => Convert.ToInt32(Math.Floor(timeSpan.TotalDays));
+
     /// <summary>
     /// 充值天数
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(4)]
-    public int RechargeDays { get; set; }
+    public int RechargeDays
+    {
+        get
+        {
+            if (field == default)
+            {
+                if (PayAsYoGo != default)
+                {
+                    return ToTotalDays(PayAsYoGo);
+                }
+                else if (RechargeTimeSpan != default)
+                {
+                    return ToTotalDays(RechargeTimeSpan);
+                }
+            }
+            return field;
+        }
+        set => field = value;
+    }
 
     /// <summary>
     /// 首次购买价格（原价）
@@ -76,4 +95,16 @@ public partial record class MembershipGoodsModel
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(10)]
     public List<MerchantDeductionConfigurationInfo> Configurations { get; set; } = [];
+
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    [global::MemoryPack.MemoryPackOrder(11)]
+    public TimeSpan PayAsYoGo { get; set; }
+
+    /// <summary>
+    /// 充值时间跨度
+    /// </summary>
+    [global::MemoryPack.MemoryPackOrder(12)]
+    public TimeSpan RechargeTimeSpan { get; set; }
 }

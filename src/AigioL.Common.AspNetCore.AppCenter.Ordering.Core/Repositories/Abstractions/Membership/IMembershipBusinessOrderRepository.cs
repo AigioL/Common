@@ -96,6 +96,7 @@ partial interface IMembershipBusinessOrderRepository
     Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(
        Guid businessOrderId,
        TimeSpan rechargeTimeSpan,
+       TimeSpan payAsYoGo,
        Guid userId,
        MembershipLicenseFlags membershipLicenseFlags,
        MembershipBusinessSource membershipBusinessSource,

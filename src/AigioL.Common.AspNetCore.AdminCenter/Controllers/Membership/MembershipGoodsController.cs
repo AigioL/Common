@@ -29,20 +29,23 @@ public static partial class MembershipGoodsController
             .WithDescription("会员商品管理");
 
         routeGroup.MapGet("", async (HttpContext context,
-            [FromQuery] Guid? id,
-            [FromQuery] string? goodsName,
-            [FromQuery] string? goodsNo,
-            [FromQuery] MembershipLicenseFlags? memberLicenseType,
-            [FromQuery] int? rechargeDays,
-            [FromQuery] decimal? currentPrice,
-            [FromQuery] bool? enable,
+            [FromQuery] Guid? id = null,
+            [FromQuery] string? goodsName = null,
+            [FromQuery] string? goodsNo = null,
+            [FromQuery] MembershipLicenseFlags? memberLicenseType = null,
+            [FromQuery] int? rechargeDays = null,
+            [FromQuery] TimeSpan? rechargeTimeSpan = null,
+            [FromQuery] TimeSpan? payAsYoGo = null,
+            [FromQuery] decimal? currentPrice = null,
+            [FromQuery] bool? enable = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
             var membershipGoodsRepo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await membershipGoodsRepo.QueryAsync(
                 id, goodsName, goodsNo,
-                memberLicenseType, rechargeDays, currentPrice,
+                memberLicenseType, rechargeDays, rechargeTimeSpan,
+                payAsYoGo, currentPrice,
                 enable, current, pageSize,
                 context.RequestAborted);
             return r;
