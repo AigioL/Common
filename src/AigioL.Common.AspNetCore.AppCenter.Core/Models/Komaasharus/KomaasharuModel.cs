@@ -26,6 +26,9 @@ public sealed partial record class KomaasharuModel
     /// <inheritdoc cref="KomaasharuOrientation"/>
     public KomaasharuOrientation Orientation { get; set; }
 
+    /// <inheritdoc cref="KomaasharuClientAction"/>
+    public KomaasharuClientAction ClientAction { get; set; }
+
     /// <summary>
     /// 名称
     /// </summary>

@@ -14,6 +14,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Primitives.Models;
+using GameTrainer.Models.AdminCenter;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -168,6 +169,12 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 [JsonSerializable(typeof(KomaasharuEdit))]
 [JsonSerializable(typeof(BMApiRsp<KomaasharuEdit?>))]
 [JsonSerializable(typeof(BMApiRsp<StatisticsKomaasharuResponse[]?>))]
+#endregion
+#region GameTrainerController
+[JsonSerializable(typeof(BMApiRsp<PagedModel<GameTrainerTableItem>?>))]
+[JsonSerializable(typeof(GameTrainerEditModel))]
+[JsonSerializable(typeof(BMApiRsp<GameTrainerDetailModel?>))]
+[JsonSerializable(typeof(BMApiRsp<IEnumerable<GameTrainerOptionItem>?>))]
 #endregion
 #region MembershipBusinessOrderController
 [JsonSerializable(typeof(BMApiRsp<PagedModel<MembershipBusinessOrderTableItem>?>))]

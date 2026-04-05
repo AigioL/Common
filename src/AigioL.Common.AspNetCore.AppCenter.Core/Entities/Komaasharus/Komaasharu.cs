@@ -97,6 +97,12 @@ public partial class Komaasharu :
     [Comment("广告方向")]
     public KomaasharuOrientation Orientation { get; set; } = KomaasharuOrientation.Horizontal;
 
+    /// <summary>
+    /// 客户端动作
+    /// </summary>
+    [Comment("客户端动作")]
+    public KomaasharuClientAction ClientAction { get; set; } = KomaasharuClientAction.Display;
+
     /// <inheritdoc/>
     [Comment("排序")]
     public long Sort { get; set; }
