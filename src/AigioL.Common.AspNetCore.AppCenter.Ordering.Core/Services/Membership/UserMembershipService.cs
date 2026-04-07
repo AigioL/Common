@@ -48,7 +48,11 @@ sealed partial class UserMembershipService(
 
         var membershipOrder = new MembershipBusinessOrder
         {
+#pragma warning disable CS0618 // 类型或成员已过时
             RechargeDays = goods.RechargeDays,
+#pragma warning restore CS0618 // 类型或成员已过时
+            RechargeTimeSpan = goods.RechargeTimeSpan,
+            PayAsYoGo = goods.PayAsYoGo,
             AmountReceivable = amountReceivable,
             UserId = userId,
             Note = "购买会员",
@@ -78,7 +82,11 @@ sealed partial class UserMembershipService(
 
         var membershipOrder = new MembershipBusinessOrder
         {
+#pragma warning disable CS0618 // 类型或成员已过时
             RechargeDays = productKeyRecord.RechargeDays,
+#pragma warning restore CS0618 // 类型或成员已过时
+            RechargeTimeSpan = productKeyRecord.RechargeTimeSpan,
+            PayAsYoGo = productKeyRecord.PayAsYoGo,
             UserId = userId,
             Note = "CDKey 兑换会员",
             GoodsNo = goods.GoodsNo,
@@ -140,7 +148,11 @@ sealed partial class UserMembershipService(
 
         var lockKey = CacheKeys.GetUserRechargeOperationLockKey(cdKey);
         var r = await conn.LockHandleAsync(lockKey, HandleCoreAsync, errorHandle: ErrorHandleAsync);
-        if (!r.IsSuccess())
+        if (r.IsSuccess())
+        {
+            await RefreshUserMembershipCacheAsync(userId); // 兑换 CDKey 成功后刷新用户会员信息缓存
+        }
+        else
         {
             var ipAccessFailedCountS = new byte[sizeof(int)];
             BinaryPrimitives.WriteInt32BigEndian(ipAccessFailedCountS, ipAccessFailedCount + 1);
@@ -193,7 +205,7 @@ sealed partial class UserMembershipService(
     {
         (var isSuccess, var userId) = await membershipBusinessOrderRepo.OrderPaymentSuccess(orderId);
 
-        if (isSuccess) await RefreshUserMembershipCacheAsync(userId!.Value);
+        if (isSuccess) await RefreshUserMembershipCacheAsync(userId!.Value); // 支付订单成功通知后刷新用户会员信息缓存
 
         return isSuccess;
     }
@@ -202,7 +214,7 @@ sealed partial class UserMembershipService(
     {
         (var isSuccess, var userId) = await membershipBusinessOrderRepo.OrderRefunded(orderId);
 
-        if (isSuccess) await RefreshUserMembershipCacheAsync(userId!.Value);
+        if (isSuccess) await RefreshUserMembershipCacheAsync(userId!.Value); // 订单退款完成通知后刷新用户会员信息缓存
 
         return isSuccess;
     }
@@ -223,9 +235,13 @@ sealed partial class UserMembershipService(
         if (agreement_business_order is null)
             return null;
 
+        var rechargeDays = GetRechargeDays(agreement.PeriodType, agreement.Period);
         var membershipOrder = new MembershipBusinessOrder
         {
-            RechargeDays = GetRechargeDays(agreement.PeriodType, agreement.Period),
+#pragma warning disable CS0618 // 类型或成员已过时
+            RechargeDays = rechargeDays,
+#pragma warning restore CS0618 // 类型或成员已过时
+            RechargeTimeSpan = TimeSpan.FromDays(rechargeDays),
             AmountReceivable = agreement.SingleAmount,
             UserId = agreement.UserId,
             Note = agreement.Note,
@@ -272,7 +288,7 @@ sealed partial class UserMembershipService(
 
         var handleSuccess = await userMembershipRepo.AddUserMembershipFlagAsync(business_order.UserId, business_order.MemberLicenseType);
 
-        if (handleSuccess) await RefreshUserMembershipCacheAsync(business_order.UserId);
+        if (handleSuccess) await RefreshUserMembershipCacheAsync(business_order.UserId); // 签约商户扣款成功时处理后刷新用户会员信息缓存
 
         return handleSuccess;
     }
@@ -290,7 +306,7 @@ sealed partial class UserMembershipService(
 
         var handleSuccess = await userMembershipRepo.RemoveUserMembershipFlagAndCheckExpiredAsync(business_order.UserId, business_order.MemberLicenseType);
 
-        if (handleSuccess) await RefreshUserMembershipCacheAsync(business_order.UserId);
+        if (handleSuccess) await RefreshUserMembershipCacheAsync(business_order.UserId); // 签约商户解约成功时处理后刷新用户会员信息缓存
 
         return handleSuccess;
     }
@@ -329,7 +345,7 @@ sealed partial class UserMembershipService(
         var isOK = rowCount > 0;
         if (isOK)
         {
-            isOK = await RefreshUserMembershipCacheAsync(userId);
+            isOK = await RefreshUserMembershipCacheAsync(userId); // 后台编辑用户会员时刷新用户会员信息缓存
             return isOK;
         }
         return false;

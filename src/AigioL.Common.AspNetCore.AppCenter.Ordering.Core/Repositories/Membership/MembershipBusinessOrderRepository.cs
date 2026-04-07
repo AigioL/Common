@@ -313,6 +313,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     public async Task<(int rowCount, UserMembershipChangeRecord? record)> CreateOrUpdateUserMembershipAsync(
         Guid businessOrderId,
         TimeSpan rechargeTimeSpan,
+        TimeSpan payAsYoGo,
         Guid userId,
         MembershipLicenseFlags membershipLicenseFlags,
         MembershipBusinessSource membershipBusinessSource,
@@ -337,7 +338,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
             (bool flags, userMembership) = await CreateNewUserMembership(
                 userId, now, currentRealExpireDate,
-                membershipLicenseFlags,
+                membershipLicenseFlags, payAsYoGo,
                 bindPCUser);
             if (flags)
             {
@@ -379,6 +380,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 UserId = userId,
                 MembershipChangeDirection = MembershipChangeDirection.In,
                 Value = rechargeTimeSpan,
+                PayAsYoGo = payAsYoGo,
                 Note = membershipLicenseFlags.GetDescription(),
                 MemberLicenseType = membershipLicenseFlags,
                 CreateTime = now,
@@ -402,10 +404,15 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         DateTimeOffset? now,
         (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
-        var rechargeDays = business_order.RechargeDays;
-        var rechargeTimeSpan = TimeSpan.FromDays(rechargeDays);
+        var rechargeTimeSpan = business_order.RechargeTimeSpan;
+#pragma warning disable CS0618 // 类型或成员已过时
+        if (rechargeTimeSpan == default && business_order.RechargeDays != default)
+        {
+            rechargeTimeSpan = TimeSpan.FromDays(business_order.RechargeDays);
+        }
+#pragma warning restore CS0618 // 类型或成员已过时
         return CreateOrUpdateUserMembershipAsync(
-            business_order.Id, rechargeTimeSpan, business_order.UserId,
+            business_order.Id, rechargeTimeSpan, business_order.PayAsYoGo, business_order.UserId,
             business_order.MemberLicenseType, business_order.BusinessSource, now,
             bindPCUser: bindPCUser);
     }
@@ -418,6 +425,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         DateTimeOffset now,
         DateTimeOffset currentRealExpireDate,
         MembershipLicenseFlags membershipLicenseFlags,
+        TimeSpan payAsYoGo,
        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
     {
         var userMembership = new UserMembership()
@@ -427,6 +435,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             ExpireDate = currentRealExpireDate,
             MemberLicenseFlags = membershipLicenseFlags,
             FirstMembershipDate = now,
+            PayAsYoGo = payAsYoGo,
         };
         SetBindPCUser(userMembership, bindPCUser);
         await db.UserMemberships.AddAsync(userMembership);
@@ -461,16 +470,24 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// </summary>
     Task<bool> UserMembershipRechargeReturnAsync(MembershipBusinessOrder business_order)
     {
-        var rechargeDays = business_order.RechargeDays;
-        var rechargeTimeSpan = TimeSpan.FromDays(rechargeDays).Negate();
+        var rechargeTimeSpan = business_order.RechargeTimeSpan;
+#pragma warning disable CS0618 // 类型或成员已过时
+        if (rechargeTimeSpan == default && business_order.RechargeDays != default)
+        {
+            rechargeTimeSpan = TimeSpan.FromDays(business_order.RechargeDays);
+        }
+#pragma warning restore CS0618 // 类型或成员已过时
+        rechargeTimeSpan = rechargeTimeSpan.Negate();
+        var payAsYoGo = business_order.PayAsYoGo.Negate();
         return UserMembershipRechargeReturnAsync(
-            business_order.Id, rechargeTimeSpan, business_order.UserId,
+            business_order.Id, rechargeTimeSpan, payAsYoGo, business_order.UserId,
             business_order.MemberLicenseType, business_order.BusinessSource);
     }
 
     async Task<bool> UserMembershipRechargeReturnAsync(
         Guid businessOrderId,
         TimeSpan rechargeTimeSpan,
+        TimeSpan payAsYoGo,
         Guid userId,
         MembershipLicenseFlags membershipLicenseFlags,
         MembershipBusinessSource membershipBusinessSource)
@@ -480,16 +497,10 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             throw new InvalidOperationException("必须在事务中调用此方法");
         }
 
-        var now = DateTimeOffset.Now;
-        if (rechargeTimeSpan == default)
+        if (rechargeTimeSpan == default && payAsYoGo == default)
         {
             LogRechargeTimeSpanIsZero(logger, nameof(UserMembershipRechargeReturnAsync), businessOrderId);
             return false;
-        }
-        else if (rechargeTimeSpan > TimeSpan.Zero)
-        {
-            // 取负值
-            rechargeTimeSpan = rechargeTimeSpan.Negate();
         }
         var membership = await db.UserMemberships.FirstOrDefaultAsync(x => x.Id == userId);
         if (membership is null)
@@ -499,12 +510,15 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
         var membershipLicenseType = ConvertMembershipLicenseType(membershipLicenseFlags, membershipBusinessSource);
         var currentRealExpireDate = membership.ExpireDate.Add(rechargeTimeSpan);
-        var membershipExpired = currentRealExpireDate <= now; // 会员资格已过期
 
-        var r = await MembershipChangeAsync(businessOrderId, userId, currentRealExpireDate, membershipExpired, membership, membershipLicenseType);
+        var now = DateTimeOffset.Now;
+        var membershipExpired = (currentRealExpireDate <= now) &&
+            ((membership.PayAsYoGo - payAsYoGo) <= TimeSpan.Zero); // 会员资格已过期
+
+        var r = await MembershipChangeAsync(businessOrderId, userId, currentRealExpireDate, membership, membershipLicenseType, membershipExpired, payAsYoGo);
         if (r)
         {
-            var flags = await AddMembershipRecordAsync(rechargeTimeSpan, userId, currentRealExpireDate, now);
+            var flags = await AddMembershipRecordAsync(rechargeTimeSpan, payAsYoGo, userId, currentRealExpireDate, now);
             if (flags)
             {
                 flags = await RemoveUserTypeAsync(userId, membershipExpired, UserType.Membership);
@@ -519,9 +533,10 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         Guid businessOrderId,
         Guid userId,
         DateTimeOffset currentRealExpireDate,
-        bool membershipExpired,
         UserMembership membership,
-        MembershipLicenseFlags membershipLicenseType)
+        MembershipLicenseFlags membershipLicenseType,
+        bool membershipExpired,
+        TimeSpan payAsYoGo)
     {
         if (membershipExpired) // 会员过期订阅类型清空
         {
@@ -530,7 +545,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         else
         {
             // 检查当前会员订阅类型是否在当前会员期限内还存在，没有则未用户去除该订阅类型
-            var hasFlag = await Entity.AsNoTracking()
+            var hasFlag = await Entity.AsNoTrackingWithIdentityResolution()
                 .AnyAsync(x =>
                 x.Id != businessOrderId &&
                 x.MemberLicenseType == membershipLicenseType &&
@@ -544,6 +559,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         }
 
         membership.ExpireDate = currentRealExpireDate;
+        membership.PayAsYoGo += payAsYoGo;
 
         db.UserMemberships.Update(membership);
         var r = await db.SaveChangesAsync();
@@ -552,6 +568,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
     async Task<bool> AddMembershipRecordAsync(
         TimeSpan rechargeTimeSpan,
+        TimeSpan payAsYoGo,
         Guid userId,
         DateTimeOffset currentRealExpireDate,
         DateTimeOffset? now = null)
@@ -564,6 +581,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             Note = "用户退款，撤回",
             CurrentRealExpireDate = currentRealExpireDate,
             CreateTime = now ?? DateTimeOffset.Now,
+            PayAsYoGo = payAsYoGo,
         };
 
         await db.UserMembershipChangeRecords.AddAsync(record);
@@ -775,7 +793,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                logger.LogError(ex, "创建瓦特会员订单错误");
+                logger.LogError(ex, "创建会员订单错误");
                 return null;
             }
         }

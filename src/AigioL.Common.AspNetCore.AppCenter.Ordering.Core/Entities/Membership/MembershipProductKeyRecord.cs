@@ -23,7 +23,6 @@ public partial class MembershipProductKeyRecord :
     /// <summary>
     /// 会员商品 Id
     /// </summary>
-    [Required]
     [Comment("会员商品 Id")]
     public Guid MembershipGoodsId { get; set; }
 
@@ -41,9 +40,14 @@ public partial class MembershipProductKeyRecord :
     public TimeSpan RechargeTimeSpan { get; set; }
 
     /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    [Comment("按量付费的会员时长")]
+    public TimeSpan PayAsYoGo { get; set; }
+
+    /// <summary>
     /// 是否已使用
     /// </summary>
-    [Required]
     [Comment("是否已使用")]
     public bool IsUsed { get; set; }
 

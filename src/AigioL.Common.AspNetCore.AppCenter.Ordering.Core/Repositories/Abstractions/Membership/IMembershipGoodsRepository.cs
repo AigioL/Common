@@ -35,6 +35,8 @@ partial interface IMembershipGoodsRepository
         string? goodsNo,
         MembershipLicenseFlags? memberLicenseType,
         int? rechargeDays,
+        TimeSpan? rechargeTimeSpan,
+        TimeSpan? payAsYoGo,
         decimal? currentPrice,
         bool? enable,
         int current = IPagedModel.DefaultCurrent,

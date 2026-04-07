@@ -54,6 +54,12 @@ public partial class MembershipGoods :
     public TimeSpan RechargeTimeSpan { get; set; }
 
     /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    [Comment("按量付费的会员时长")]
+    public TimeSpan PayAsYoGo { get; set; }
+
+    /// <summary>
     /// 首充原价
     /// </summary>
     [Precision(18, 4)]

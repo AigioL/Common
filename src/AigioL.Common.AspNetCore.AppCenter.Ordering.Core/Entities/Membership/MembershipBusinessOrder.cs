@@ -67,6 +67,12 @@ public partial class MembershipBusinessOrder :
     public TimeSpan RechargeTimeSpan { get; set; }
 
     /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    [Comment("按量付费的会员时长")]
+    public TimeSpan PayAsYoGo { get; set; }
+
+    /// <summary>
     /// 通用订单 Id
     /// </summary>
     [StringLength(MaxLengths.OrderId)]

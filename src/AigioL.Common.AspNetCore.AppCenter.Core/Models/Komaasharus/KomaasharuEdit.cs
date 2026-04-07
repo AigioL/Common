@@ -51,6 +51,11 @@ public sealed partial record class KomaasharuEdit : IReadOnlyId<Guid>
     /// </summary>
     public KomaasharuOrientation Orientation { get; set; }
 
+    /// <summary>
+    /// 客户端动作
+    /// </summary>
+    public KomaasharuClientAction ClientAction { get; set; } = KomaasharuClientAction.Display;
+
     [Obsolete("use Sort")]
     public long Order
     {

@@ -41,6 +41,8 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
     public async Task<PagedModel<MembershipProductKeyRecordTableItem>> QueryAsync(
         Guid? key = null,
         int? rechargeDays = null,
+        TimeSpan? rechargeTimeSpan = null,
+        TimeSpan? payAsYoGo = null,
         Guid? membershipGoodsId = null,
         bool? isUsed = null,
         bool? disable = null,
@@ -68,7 +70,14 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
             query = query.Where(x => x.Id == key.Value);
 
         if (rechargeDays.HasValue)
+#pragma warning disable CS0618 // 类型或成员已过时
             query = query.Where(x => x.RechargeDays == rechargeDays);
+#pragma warning restore CS0618 // 类型或成员已过时
+        if (rechargeTimeSpan.HasValue)
+            query = query.Where(x => x.RechargeTimeSpan == rechargeTimeSpan);
+        if (payAsYoGo.HasValue)
+            query = query.Where(x => x.PayAsYoGo == payAsYoGo);
+
         if (!string.IsNullOrEmpty(orderBy))
         {
             query = query.OrderByPropertyName(orderBy, desc);
@@ -100,7 +109,8 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
         var membershipGoods = await db.MembershipGoods.Select(x => new
         {
             x.Id,
-            x.RechargeDays,
+            x.RechargeTimeSpan,
+            x.PayAsYoGo,
         }).FirstOrDefaultAsync(x => x.Id == membershipGoodsId, cancellationToken);
         if (membershipGoods == null)
         {
@@ -113,7 +123,8 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
             records[i] = new MembershipProductKeyRecord()
             {
                 Id = Guid.NewGuid(), // 这里要保证随机性，不要使用 Guid v7
-                RechargeDays = membershipGoods.RechargeDays,
+                RechargeTimeSpan = membershipGoods.RechargeTimeSpan,
+                PayAsYoGo = membershipGoods.PayAsYoGo,
                 MembershipGoodsId = membershipGoods.Id,
                 IsUsed = false,
                 UsageTime = null,

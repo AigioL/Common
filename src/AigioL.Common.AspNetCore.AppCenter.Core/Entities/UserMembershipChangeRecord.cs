@@ -45,6 +45,12 @@ public partial class UserMembershipChangeRecord :
     [Comment("变更值")]
     public TimeSpan Value { get; set; }
 
+    /// <summary>
+    /// 按量付费的会员时长
+    /// </summary>
+    [Comment("按量付费的会员时长")]
+    public TimeSpan PayAsYoGo { get; set; }
+
     /// <inheritdoc/>
     [Comment("备注")]
     [StringLength(MaxLengths.Text)]
@@ -67,6 +73,12 @@ public partial class UserMembershipChangeRecord :
     /// </summary>
     [Comment("绑定的合作伙伴用户到期时间")]
     public DateTimeOffset BindPCUserExpireDate { get; set; }
+
+    /// <summary>
+    /// 是否为按量付费的时长
+    /// </summary>
+    [Comment("是否为按需付费的时长")]
+    public bool IsPayAsYoGo { get; set; }
 
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<UserMembershipChangeRecord>
     {
