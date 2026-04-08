@@ -212,5 +212,6 @@
 	<!-- 👇 ⬇️ -->
 	<ItemGroup>
 		<PackageVersion Include="Downloader" Version="5.1.0" />
+		<PackageVersion Include="System.Net.Http.WinHttpHandler" Version="10.0.5" />
 	</ItemGroup>
 </Project>
