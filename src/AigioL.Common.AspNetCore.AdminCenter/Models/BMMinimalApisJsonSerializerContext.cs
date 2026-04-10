@@ -172,7 +172,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 #endregion
 #region GameTrainerController
 [JsonSerializable(typeof(BMApiRsp<PagedModel<GameTrainerTableItem>?>))]
-[JsonSerializable(typeof(GameTrainerEditModel))]
+//[JsonSerializable(typeof(GameTrainerEditModel))]
 [JsonSerializable(typeof(BMApiRsp<GameTrainerDetailModel?>))]
 [JsonSerializable(typeof(BMApiRsp<IEnumerable<GameTrainerOptionItem>?>))]
 #endregion

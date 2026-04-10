@@ -28,7 +28,7 @@ public static partial class MembershipController
             // tbd 待定传参，保留值
             var r = await GetUserIsMembershipAsync(context, context.RequestAborted);
             return r;
-        }).WithDescription("获取用户是否是会员")
+        }).WithDescription("获取用户是否是会员（弃用，改用 MembershipHub）")
         .WithRequiredSecurityKey();
         routeGroup.MapGet("info", async (HttpContext context) =>
         {
@@ -37,6 +37,11 @@ public static partial class MembershipController
         }).WithDescription("获取会员信息")
         .WithRequiredSecurityKey();
     }
+
+    /// <summary>
+    /// 是否是会员（用于兼容旧的接口）
+    /// </summary>
+    static bool IsMembershipOld(MembershipInfo m) => m.ExpireDate.HasValue && m.ExpireDate > DateTimeOffset.Now;
 
     /// <summary>
     /// 获取用户是否是会员
@@ -60,7 +65,7 @@ public static partial class MembershipController
             false,
             cancellationToken);
 
-        var isMembership = membershipInfo != null && membershipInfo.IsMembership;
+        var isMembership = membershipInfo != null && IsMembershipOld(membershipInfo);
         return new ApiRsp<bool>
         {
             Code = unchecked((uint)ApiRspCode.OK),
