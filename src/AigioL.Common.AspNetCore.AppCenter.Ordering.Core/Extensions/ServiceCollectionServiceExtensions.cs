@@ -44,17 +44,26 @@ public static partial class ServiceCollectionServiceExtensions
         return services;
     }
 
+    public static IServiceCollection AddMembershipCoreRepositories<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
+        this IServiceCollection services)
+        where TDbContext : DbContext, IIdentityDbContext
+    {
+        services.TryAddScoped<IUserMembershipRepository, UserMembershipRepository<TDbContext>>();
+        AddMembershipServices(services);
+        return services;
+    }
+
     public static IServiceCollection AddMembershipRepositories<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext>(
         this IServiceCollection services)
         where TDbContext : DbContext, IPaymentDbContext, IIdentityDbContext
     {
-        services.TryAddScoped<IUserMembershipRepository, UserMembershipRepository<TDbContext>>();
         //services.TryAddScoped<IUserMembershipChangeRecordRepository, UserMembershipChangeRecordRepository<TDbContext>>();
         services.TryAddScoped<IMembershipBusinessOrderRepository, MembershipBusinessOrderRepository<TDbContext>>();
         services.TryAddScoped<IMembershipGoodsRepository, MembershipGoodsRepository<TDbContext>>();
         services.TryAddScoped<IMembershipProductKeyRecordRepository, MembershipProductKeyRecordRepository<TDbContext>>();
-        AddMembershipServices(services);
+        AddMembershipCoreRepositories<TDbContext>(services);
         return services;
     }
 

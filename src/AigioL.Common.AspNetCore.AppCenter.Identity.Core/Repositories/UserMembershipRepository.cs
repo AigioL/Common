@@ -172,6 +172,38 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         return Result(r);
     }
 
+    public async Task<int> DeductionPayAsYoGoAsync(
+        Guid userId,
+        TimeSpan changeValue,
+        DateTimeOffset? now = null)
+    {
+        now ??= DateTimeOffset.UtcNow;
+        var query = db.UserMemberships.Where(x => x.Id == userId);
+
+        var rowCount = await query.ExecuteUpdateAsync(p => p
+            .SetProperty(x => x.UpdateTime, now.Value)
+            .SetProperty(x => x.PayAsYoGo, y => (y.PayAsYoGo - changeValue > TimeSpan.Zero ? y.PayAsYoGo - changeValue : TimeSpan.Zero)));
+
+        if (rowCount > 0)
+        {
+            var expireDate = await query.Select(x => x.ExpireDate).SingleOrDefaultAsync();
+            UserMembershipChangeRecord record = new()
+            {
+                UserId = userId,
+                MembershipChangeDirection = changeValue < TimeSpan.Zero ? MembershipChangeDirection.Out : MembershipChangeDirection.In,
+                PayAsYoGo = changeValue,
+                Note = "按量付费的扣费",
+                CurrentRealExpireDate = expireDate,
+                CreateTime = now.Value,
+            };
+            await db.UserMembershipChangeRecords.AddAsync(record);
+            rowCount += await db.SaveChangesAsync();
+        }
+
+
+        return rowCount;
+    }
+
     public async Task<int> EditUserMembershipAsync(
         Guid userId,
         Guid? bmUserId,

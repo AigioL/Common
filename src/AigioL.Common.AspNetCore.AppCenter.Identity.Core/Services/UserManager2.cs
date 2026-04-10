@@ -21,6 +21,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Services;
@@ -81,6 +82,22 @@ partial class UserManager2<TDbContext> : IIdentityUserManager<User>
 {
     /// <inheritdoc/>
     UserManager<User> IIdentityUserManager<User>.Impl => this;
+
+    /// <inheritdoc/>
+    public new Guid? GetUserId(ClaimsPrincipal? principal)
+    {
+        if (principal == null)
+        {
+            return null;
+        }
+
+        var userId = base.GetUserId(principal);
+        if (ShortGuid.TryParse(userId, out Guid userIdG))
+        {
+            return userIdG;
+        }
+        return null;
+    }
 
     /// <inheritdoc/>
     public async Task<IdentityResult> SetPhoneNumberAsync(User user, string? phoneNumber, string? phoneNumberRegionCode)

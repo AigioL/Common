@@ -314,6 +314,11 @@ public enum ApiRspCode : uint
     /// </summary>
     ChannelPackageServiceIsNull = 1100,
 
+    /// <summary>
+    /// 会员功能被锁定，用来禁止账号会员功能多个设备使用
+    /// </summary>
+    UserMembershipIsLock = 1101,
+
     #endregion
 
     #region 错误状态码 5000~5999

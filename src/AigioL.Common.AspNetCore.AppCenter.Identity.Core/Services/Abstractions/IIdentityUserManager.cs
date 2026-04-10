@@ -2,6 +2,7 @@ using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.Primitives.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
 
@@ -45,7 +46,8 @@ public partial interface IIdentityUserManager<TUser> : IDisposable where TUser :
     Task<TUser?> FindByIdAsync(Guid id);
 
     /// <inheritdoc cref="UserManager{TUser}.GenerateChangePhoneNumberTokenAsync(TUser, string)"/>
-    Task<string> GenerateChangePhoneNumberTokenAsync(TUser user, string phoneNumber);
+    Task<string> GenerateChangePhoneNumberTokenAsync(TUser user, string
+        phoneNumber);
 
     /// <inheritdoc cref="UserManager{TUser}.ChangePhoneNumberAsync(TUser, string, string)"/>
     Task<IdentityResult> ChangePhoneNumberAsync(TUser user, string phoneNumber, string token);
@@ -55,6 +57,8 @@ public partial interface IIdentityUserManager<TUser> : IDisposable where TUser :
 
 partial interface IIdentityUserManager<TUser> // 自定义方法
 {
+    Guid? GetUserId(ClaimsPrincipal? principal);
+
     /// <summary>
     /// 根据手机号查找用户
     /// </summary>

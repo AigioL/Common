@@ -35,6 +35,14 @@ public partial interface IUserMembershipRepository : IRepository<UserMembership,
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 按量付费的扣费
+    /// </summary>
+    Task<int> DeductionPayAsYoGoAsync(
+        Guid userId,
+        TimeSpan changeValue,
+        DateTimeOffset? now = null);
+
+    /// <summary>
     /// 编辑用户会员时长
     /// </summary>
     Task<int> EditUserMembershipAsync(
