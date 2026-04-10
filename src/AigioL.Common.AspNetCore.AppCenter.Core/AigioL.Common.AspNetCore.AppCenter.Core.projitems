@@ -74,6 +74,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\AuthMessageType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ClientDistributionChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuEdit.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuClientAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuOrientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Komaasharus\KomaasharuRedisModel.cs" />

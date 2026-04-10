@@ -50,4 +50,8 @@ public sealed partial record class KomaasharuRedisModel
 
     [global::MemoryPack.MemoryPackOrder(10)]
     public string? JumpUrl { get; set; }
+
+    [global::MemoryPack.MemoryPackOrder(11)]
+    [global::MemoryPack.MemoryPackAllowSerialize]
+    public KomaasharuClientAction ClientAction { get; set; }
 }

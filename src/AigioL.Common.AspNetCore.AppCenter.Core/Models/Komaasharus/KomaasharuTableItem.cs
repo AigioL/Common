@@ -61,6 +61,11 @@ public sealed partial record class KomaasharuTableItem : IReadOnlyId<Guid>
     public KomaasharuOrientation Orientation { get; set; } = KomaasharuOrientation.Horizontal;
 
     /// <summary>
+    /// 客户端动作
+    /// </summary>
+    public KomaasharuClientAction ClientAction { get; set; } = KomaasharuClientAction.Display;
+
+    /// <summary>
     /// 排序
     /// </summary>
     public long Order { get; set; }
