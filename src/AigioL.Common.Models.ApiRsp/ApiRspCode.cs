@@ -240,7 +240,7 @@ public enum ApiRspCode : uint
     #region 通用状态码，1000~1999
 
     /// <summary>
-    /// 无响应正文内容
+    /// 无响应正文内容或 ApiRsp 为 <see langword="null"/>
     /// </summary>
     NoApiRspContent = 1000,
 
