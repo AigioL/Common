@@ -6,13 +6,13 @@ using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
+using GameTrainer.Repositories.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text.Json.Nodes;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Controllers;
 
@@ -30,55 +30,58 @@ public static partial class VersionsController
         var routeGroup = b.MapGroup(pattern)
             .AllowAnonymous();
 
-        routeGroup.MapGet("f3766643/{target}/{arch}/{current_version}", async (HttpContext context,
-            [FromRoute] string target,
-            [FromRoute] string arch,
-            [FromRoute] string current_version) =>
-        {
-            if (IsVersionString(current_version))
-            {
-                var clientPlatform = Tauri.GetClientPlatform(target, arch);
-                if (clientPlatform.HasValue)
-                {
-                    var r = await CheckUpdate3_2(
-                        context,
-                        current_version,
-                        clientPlatform.Value,
-                        0, 0, 0,
-                        DeploymentMode.SCD,
-                        false);
-                    if (r.Content != null)
-                    {
-                        var r2 = r.Content.ToTauri();
-                        if (r2 != null)
-                        {
-                            r2.Url = r2.Url.Replace("{channelPackageId}", ShortGuid.Empty.Value);
-                            return Results.Json(r2,
-                                AppVersionTauriModelJsonSerializerContext.Default.AppVersionTauriModel);
-                        }
-                    }
-                }
-            }
-            return Results.NoContent(); // 如果无可用更新，你的服务器应响应状态代码 204 无内容。
-        })
-            .WithDescription(
-"""
-检查更新（Tauri）
-https://tauri.org.cn/v1/guides/distribution/updater
-""")
-            .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status204NoContent);
+        //         routeGroup.MapGet("f3766643/{target}/{arch}/{current_version}", async (HttpContext context,
+        //             [FromRoute] string target,
+        //             [FromRoute] string arch,
+        //             [FromRoute] string current_version) =>
+        //         {
+        //             if (IsVersionString(current_version))
+        //             {
+        //                 var clientPlatform = Tauri.GetClientPlatform(target, arch);
+        //                 if (clientPlatform.HasValue)
+        //                 {
+        //                     var r = await CheckUpdate3_2(
+        //                         context,
+        //                         current_version,
+        //                         clientPlatform.Value,
+        //                         0, 0, 0,
+        //                         DeploymentMode.SCD,
+        //                         false);
+        //                     if (r.Content != null)
+        //                     {
+        //                         var r2 = r.Content.ToTauri();
+        //                         if (r2 != null)
+        //                         {
+        //                             r2.Url = r2.Url.Replace("{channelPackageId}", ShortGuid.Empty.Value);
+        //                             return Results.Json(r2,
+        //                                 AppVersionTauriModelJsonSerializerContext.Default.AppVersionTauriModel);
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //             return Results.NoContent(); // 如果无可用更新，你的服务器应响应状态代码 204 无内容。
+        //         })
+        //             .WithDescription(
+        // """
+        // 检查更新（Tauri）
+        // https://tauri.org.cn/v1/guides/distribution/updater
+        // """)
+        //             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
+        //             .Produces(StatusCodes.Status204NoContent);
 
         routeGroup.MapGet("f3766644/{target}/{arch}", async (HttpContext context,
             [FromRoute] string target,
             [FromRoute] string arch) =>
         {
-            var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
-            var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
-            var key = string.Format(CacheKeys.TauriUpdaterStaticJSONFile, target, arch);
-            var json = await keyValuePairRepo.GetAsync<string>(cache, key, null, context.RequestAborted);
-            json = json?.Replace("{channelPackageId}", ShortGuid.Empty.Value);
-            return Results.Text(json, "application/json");
+            var repo = context.RequestServices.GetRequiredService<ITauriUpdateRepository>();
+            var model = await repo.GetStaticJsonAsync(target, arch, ShortGuid.Empty.Value, context.RequestAborted);
+            if (model == null)
+            {
+                return Results.NoContent();
+            }
+
+            return Results.Json(model,
+                AppVersionTauriModelJsonSerializerContext.Default.AppVersionTauriModel);
         })
             .WithDescription(
 """
@@ -93,33 +96,11 @@ https://tauri.app/plugin/updater/#static-json-file
             [FromRoute] string arch,
             [FromRoute] string? channelPackageId = null) =>
         {
-            var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
-            var keyValuePairRepo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
-            var key = string.Format(CacheKeys.TauriUpdaterStaticJSONFile, target, arch);
-            var json = await keyValuePairRepo.GetAsync<string>(cache, key, null, context.RequestAborted);
-            if (!string.IsNullOrWhiteSpace(json))
+            var repo = context.RequestServices.GetRequiredService<ITauriUpdateRepository>();
+            var url = await repo.GetRedirectUrlAsync(target, arch, channelPackageId, context.RequestAborted);
+            if (!string.IsNullOrWhiteSpace(url))
             {
-                if (JsonNode.Parse(json) is JsonObject jobj)
-                {
-                    if (jobj.TryGetPropertyValue("url", out var urlNode))
-                    {
-                        if (urlNode != null && urlNode.GetValue<string>() is string urlStr)
-                        {
-                            string channelPackageIdStr;
-                            if (ShortGuid.TryParse(channelPackageId, out ShortGuid channelPackageIdG))
-                            {
-                                channelPackageIdStr = channelPackageIdG.Value;
-                            }
-                            else
-                            {
-                                channelPackageIdStr = ShortGuid.Empty.Value;
-                            }
-
-                            urlStr = urlStr.Replace("{channelPackageId}", channelPackageIdStr);
-                            return Results.Redirect(urlStr);
-                        }
-                    }
-                }
+                return Results.Redirect(url);
             }
             return Results.NotFound();
         })
@@ -131,27 +112,27 @@ https://tauri.app/plugin/updater/#static-json-file
             .Produces(StatusCodes.Status302Found)
             .Produces(StatusCodes.Status404NotFound);
 
-        routeGroup.MapGet("{platform}/{osVersionMajor}/{osVersionMinor}/{osVersionBuild}/{deploymentMode=0}", async (HttpContext context,
-            [FromRoute] ClientPlatform platform,
-            [FromRoute] int osVersionMajor,
-            [FromRoute] int osVersionMinor,
-            [FromRoute] int osVersionBuild,
-            [FromRoute] DeploymentMode deploymentMode,
-            [FromQuery] bool includeBeta = false) =>
-        {
-            var r = await CheckUpdate3_2(
-                context,
-                null,
-                platform,
-                osVersionMajor,
-                osVersionMinor,
-                osVersionBuild,
-                deploymentMode,
-                includeBeta
-                );
-            return r;
-        })
-        .WithDescription("检查更新 v3.2");
+        // routeGroup.MapGet("{platform}/{osVersionMajor}/{osVersionMinor}/{osVersionBuild}/{deploymentMode=0}", async (HttpContext context,
+        //     [FromRoute] ClientPlatform platform,
+        //     [FromRoute] int osVersionMajor,
+        //     [FromRoute] int osVersionMinor,
+        //     [FromRoute] int osVersionBuild,
+        //     [FromRoute] DeploymentMode deploymentMode,
+        //     [FromQuery] bool includeBeta = false) =>
+        // {
+        //     var r = await CheckUpdate3_2(
+        //         context,
+        //         null,
+        //         platform,
+        //         osVersionMajor,
+        //         osVersionMinor,
+        //         osVersionBuild,
+        //         deploymentMode,
+        //         includeBeta
+        //         );
+        //     return r;
+        // })
+        // .WithDescription("检查更新 v3.2");
     }
 
     /// <summary>
