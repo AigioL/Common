@@ -69,12 +69,13 @@ public static partial class VersionsController
         //             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
         //             .Produces(StatusCodes.Status204NoContent);
 
-        routeGroup.MapGet("f3766644/{target}/{arch}", async (HttpContext context,
+        routeGroup.MapGet("f3766644/{target}/{arch}/{channelPackageId?}", async (HttpContext context,
             [FromRoute] string target,
-            [FromRoute] string arch) =>
+            [FromRoute] string arch,
+            [FromRoute] string? channelPackageId = null) =>
         {
             var repo = context.RequestServices.GetRequiredService<ITauriUpdateRepository>();
-            var model = await repo.GetStaticJsonAsync(target, arch, ShortGuid.Empty.Value, context.RequestAborted);
+            var model = await repo.GetStaticJsonAsync(target, arch, channelPackageId, context.RequestAborted);
             if (model == null)
             {
                 return Results.NoContent();
