@@ -79,6 +79,16 @@ static partial class ProgramHelper
                     IsJobScheduler = true;
                     projectNameSpan = projectNameSpan[..^endsWith_JobScheduler.Length];
                 }
+                const string endsWith_SignalR = ".SignalR";
+                if (projectNameSpan.EndsWith(endsWith_SignalR, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    projectNameSpan = projectNameSpan[..^endsWith_SignalR.Length];
+                    const string endsWith_SignalR_Id = "hub";
+                    Span<char> s = stackalloc char[projectNameSpan.Length + endsWith_SignalR_Id.Length];
+                    projectNameSpan.CopyTo(s);
+                    endsWith_SignalR_Id.AsSpan().CopyTo(s[projectNameSpan.Length..]);
+                    projectNameSpan = new string(s).AsSpan();
+                }
                 var projectNameSpanSplitDian = projectNameSpan.Split('.');
                 Range? lastRange = null;
                 while (projectNameSpanSplitDian.MoveNext())
