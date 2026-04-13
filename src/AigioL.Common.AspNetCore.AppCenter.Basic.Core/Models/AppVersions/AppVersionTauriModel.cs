@@ -11,6 +11,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
 ///   "pub_date": "2020-09-18T12:29:53+01:00",
 ///   "url": "https://mycompany.example.com/myapp/releases/myrelease.tar.gz",
 ///   "signature": "Content of the relevant .sig file",
+///   "sha256": "SHA256 of the relevant update package",
 ///   "notes": "These are some release notes"
 /// }
 /// </para>
@@ -57,10 +58,19 @@ public sealed partial record class AppVersionTauriModel
     public string? Signature { get; set; }
 
     /// <summary>
-    /// 此处可以添加有关更新的说明，例如发行说明。Tauri 的默认对话框会在询问是否允许更新时向用户显示此说明。
+    /// 更新包的 SHA256 值。
     /// </summary>
 #if !NETFRAMEWORK
     [global::MemoryPack.MemoryPackOrder(4)]
+#endif
+    [JsonPropertyName("sha256")]
+    public string? Sha256 { get; set; }
+
+    /// <summary>
+    /// 此处可以添加有关更新的说明，例如发行说明。Tauri 的默认对话框会在询问是否允许更新时向用户显示此说明。
+    /// </summary>
+#if !NETFRAMEWORK
+    [global::MemoryPack.MemoryPackOrder(5)]
 #endif
     [JsonPropertyName("notes")]
     public required string Notes { get; set; }
