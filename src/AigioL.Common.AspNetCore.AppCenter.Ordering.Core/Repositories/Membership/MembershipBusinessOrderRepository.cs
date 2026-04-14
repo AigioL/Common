@@ -366,6 +366,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
             var membershipLicenseType = ConvertMembershipLicenseType(membershipLicenseFlags, membershipBusinessSource);
             userMembership.MemberLicenseFlags |= membershipLicenseType;
+            userMembership.PayAsYoGo += payAsYoGo;
             SetBindPCUser(userMembership, bindPCUser);
             db.UserMemberships.Update(userMembership);
 
@@ -512,8 +513,11 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         var currentRealExpireDate = membership.ExpireDate.Add(rechargeTimeSpan);
 
         var now = DateTimeOffset.Now;
-        var membershipExpired = (currentRealExpireDate <= now) &&
-            ((membership.PayAsYoGo - payAsYoGo) <= TimeSpan.Zero); // 会员资格已过期
+        var membershipExpired = MembershipBusinessOrderRepositoryHelper.IsMembershipExpiredAfterRefund(
+            currentRealExpireDate,
+            membership.PayAsYoGo,
+            payAsYoGo,
+            now);
 
         var r = await MembershipChangeAsync(businessOrderId, userId, currentRealExpireDate, membership, membershipLicenseType, membershipExpired, payAsYoGo);
         if (r)
@@ -677,6 +681,19 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                 await transaction.RollbackAsync();
             }
             return null;
+        }
+    }
+
+    internal static class MembershipBusinessOrderRepositoryHelper
+    {
+        internal static bool IsMembershipExpiredAfterRefund(
+            DateTimeOffset currentRealExpireDate,
+            TimeSpan currentPayAsYoGo,
+            TimeSpan payAsYoGoChange,
+            DateTimeOffset now)
+        {
+            return currentRealExpireDate <= now &&
+                (currentPayAsYoGo + payAsYoGoChange) <= TimeSpan.Zero;
         }
     }
 
