@@ -81,6 +81,7 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
                          StartDate = x.StartDate,
                          ExpireDate = x.ExpireDate,
                          FirstMembershipDate = x.FirstMembershipDate,
+                         PayAsYoGo = x.PayAsYoGo,
                      });
         var r = query.FirstOrDefaultAsync(cancellationToken);
         return r;
@@ -136,13 +137,7 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
                     {
                         var serializeData = MemoryPackSerializer.Serialize(r);
 
-                        var defaultExpireTime = TimeSpan.FromMinutes(5);
-                        if (r.IsMembership)
-                        {
-                            var expire = r.ExpireDate!.Value - DateTimeOffset.Now;
-                            if (expire < defaultExpireTime)
-                                defaultExpireTime = expire;
-                        }
+                        var defaultExpireTime = UserMembershipRepositoryHelper.GetMembershipCacheTtl(r, DateTimeOffset.Now);
                         await database.StringSetAsync(cacheKey, serializeData, defaultExpireTime);
                         return Result(r);
                     }
@@ -187,11 +182,12 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         if (rowCount > 0)
         {
             var expireDate = await query.Select(x => x.ExpireDate).SingleOrDefaultAsync();
+            var (direction, payAsYoGo) = UserMembershipRepositoryHelper.CreatePayAsYoGoDeductionChange(changeValue);
             UserMembershipChangeRecord record = new()
             {
                 UserId = userId,
-                MembershipChangeDirection = changeValue < TimeSpan.Zero ? MembershipChangeDirection.Out : MembershipChangeDirection.In,
-                PayAsYoGo = changeValue,
+                MembershipChangeDirection = direction,
+                PayAsYoGo = payAsYoGo,
                 Note = "按量付费的扣费",
                 CurrentRealExpireDate = expireDate,
                 CreateTime = now.Value,
@@ -278,5 +274,32 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
 
         var r = await query.FirstOrDefaultAsync(cancellationToken);
         return r;
+    }
+}
+
+internal static class UserMembershipRepositoryHelper
+{
+    internal static TimeSpan GetMembershipCacheTtl(
+        MembershipInfo membershipInfo,
+        DateTimeOffset now,
+        TimeSpan? defaultExpireTime = null)
+    {
+        var cacheTtl = defaultExpireTime ?? TimeSpan.FromMinutes(5);
+        if (membershipInfo.ExpireDate.HasValue)
+        {
+            var expire = membershipInfo.ExpireDate.Value - now;
+            if (expire < cacheTtl)
+            {
+                cacheTtl = expire;
+            }
+        }
+        return cacheTtl;
+    }
+
+    internal static (MembershipChangeDirection direction, TimeSpan payAsYoGo) CreatePayAsYoGoDeductionChange(TimeSpan changeValue)
+    {
+        return changeValue > TimeSpan.Zero
+            ? (MembershipChangeDirection.Out, changeValue.Negate())
+            : (MembershipChangeDirection.In, changeValue.Negate());
     }
 }
