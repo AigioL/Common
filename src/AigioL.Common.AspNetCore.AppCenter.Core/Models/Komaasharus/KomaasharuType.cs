@@ -29,4 +29,9 @@ public enum KomaasharuType
     /// 主页
     /// </summary>
     HomePage = 16,
+
+    /// <summary>
+    /// 支付中心
+    /// </summary>
+    PayCenter = 32,
 }
