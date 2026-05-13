@@ -1025,7 +1025,7 @@ partial class StatisticsRepository<TDbContext>
         if (!any)
         {
             var start_ = start.ToUTC8Date();
-            var end_ = end.ToUTC8Date().AddDays(1);
+            var end_ = end.ToUTC8Date();
 
             SetCommandTimeout();
 
@@ -1182,7 +1182,7 @@ partial class StatisticsRepository<TDbContext>
         if (!any)
         {
             var start_ = start.ToUTC8Date();
-            var end_ = end.ToUTC8Date().AddDays(1);
+            var end_ = end.ToUTC8Date();
 
             var query2 = db.ActiveUserRecords
                 .AsNoTrackingWithIdentityResolution()
