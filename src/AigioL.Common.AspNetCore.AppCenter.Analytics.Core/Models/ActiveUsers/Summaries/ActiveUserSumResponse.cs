@@ -16,6 +16,11 @@ public record class ActiveUserSumResponse
     public int LoginCount { get; set; }
 
     /// <summary>
+    /// 注册用户数量
+    /// </summary>
+    public int RegisterUserCount { get; set; }
+
+    /// <summary>
     /// 带设备 Id 数量
     /// </summary>
     public int DeviceIdCount { get; set; }

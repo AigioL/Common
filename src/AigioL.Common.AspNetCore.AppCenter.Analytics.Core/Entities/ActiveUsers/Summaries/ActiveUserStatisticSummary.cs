@@ -29,6 +29,11 @@ public partial class ActiveUserStatisticSummary :
     public int LoginCount { get; set; }
 
     /// <summary>
+    /// 注册用户数量
+    /// </summary>
+    public int RegisterUserCount { get; set; }
+
+    /// <summary>
     /// 带设备 Id 数量
     /// </summary>
     public int DeviceIdCount { get; set; }
@@ -108,6 +113,7 @@ file static class _Expr
     {
         AllCount = x.AllCount,
         LoginCount = x.LoginCount,
+        RegisterUserCount = x.RegisterUserCount,
         DeviceIdCount = x.DeviceIdCount,
         IPCount = x.IPCount,
         Time = x.StatisticsStartTime,

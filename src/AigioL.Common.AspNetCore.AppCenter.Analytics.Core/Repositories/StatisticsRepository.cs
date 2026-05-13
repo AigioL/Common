@@ -115,9 +115,19 @@ partial class StatisticsRepository<TDbContext>
         DateOnly endTime,
         CancellationToken cancellationToken = default)
     {
-        var startTime_ = startTime.ToUTC8Date();
-        var endTime_ = endTime.AddDays(1).ToUTC8Date();
-        return GetRegisterUserStatisticsAsync(startTime_, endTime_, cancellationToken);
+        var query = db.ActiveUserStatisticSummaries
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.StatisticsStartTime >= startTime && x.StatisticsStartTime <= endTime)
+            .OrderBy(x => x.StatisticsStartTime)
+            .Select(x => new StatisticsLineResponse
+            {
+                Time = x.StatisticsStartTime.ToUTC8Date(),
+                Count = x.RegisterUserCount,
+            });
+#if DEBUG
+        var sqlString = query.ToQueryString();
+#endif
+        return query.ToArrayAsync(cancellationToken);
     }
 
     public async Task<StatisticsLineResponse[]> GetRegisterUserStatisticsAsync(
@@ -125,21 +135,14 @@ partial class StatisticsRepository<TDbContext>
         DateTimeOffset endTime,
         CancellationToken cancellationToken = default)
     {
-        var queryUsers = from m in db.Users.AsNoTrackingWithIdentityResolution()
-                         where m.CreateTime >= startTime && m.CreateTime < endTime
-                         let date = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(m.CreateTime.UtcDateTime, "Asia/Shanghai").Date // https://github.com/dotnet/efcore/issues/32340
-                         group m by date into g
-                         orderby g.Key
-                         select new StatisticsLineResponse
-                         {
-                             Time = g.Key,
-                             Count = g.LongCount(),
-                         };
-#if DEBUG
-        var sqlString = queryUsers.ToQueryString();
-#endif
-        var r = await queryUsers.ToArrayAsync(cancellationToken);
-        return r;
+        var startDate = DateOnly.FromDateTime(startTime.Date);
+        var endDateExclusive = DateOnly.FromDateTime(endTime.Date);
+        if (endDateExclusive <= startDate)
+        {
+            return [];
+        }
+
+        return await GetRegisterUserStatisticsAsync(startDate, endDateExclusive.AddDays(-1), cancellationToken);
     }
 
     public async Task<ActiveUserSumResponse[]> GetActiveUserStatisticsAsync(
@@ -1026,6 +1029,10 @@ partial class StatisticsRepository<TDbContext>
 
             SetCommandTimeout();
 
+            var registerUserCount = await db.Users
+                .AsNoTrackingWithIdentityResolution()
+                .CountAsync(x => x.CreateTime >= start_ && x.CreateTime < end_, cancellationToken);
+
             var query = db.ActiveUserRecords
                .AsNoTrackingWithIdentityResolution()
                .Where(x => x.CreateTime >= start_ && x.CreateTime < end_);
@@ -1035,7 +1042,7 @@ partial class StatisticsRepository<TDbContext>
 
             // 总记录数
             var count = await query.CountAsync(cancellationToken);
-            if (count == 0)
+            if (count == 0 && registerUserCount == 0)
             {
                 return 0;
             }
@@ -1135,6 +1142,7 @@ partial class StatisticsRepository<TDbContext>
                 DeviceIdCount = deviceIdCount,
                 AllCount = count,
                 LoginCount = loginCount,
+                RegisterUserCount = registerUserCount,
                 Platforms = platforms,
                 Architectures = archs,
                 OSVersions = osVers,
