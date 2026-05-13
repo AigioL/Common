@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace System.IO;
 
 public static partial class IOPath
@@ -86,5 +88,131 @@ public static partial class IOPath
         }
         var fileStream = new FileStream(path, mode, access, share);
         return fileStream;
+    }
+}
+
+static partial class IOPath
+{
+    public static string WriteFile(string dirPath, string fileName, Stream stream)
+    {
+        var filePath = Path.Combine(dirPath, fileName);
+        try
+        {
+            using var fileStreamR = GetFileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+
+            Span<byte> hashDest = stackalloc byte[SHA384.HashSizeInBytes];
+            var lenDest = SHA384.HashData(fileStreamR, hashDest);
+            hashDest = hashDest[..lenDest];
+
+            Span<byte> hash = stackalloc byte[SHA384.HashSizeInBytes];
+            var len = SHA384.HashData(stream, hash);
+            hash = hash[..len];
+
+            if (hash.SequenceEqual(hashDest))
+            {
+                return filePath; // 文件已存在且内容相同
+            }
+        }
+        catch (FileNotFoundException)
+        {
+        }
+        catch (DirectoryNotFoundException)
+        {
+        }
+        catch (Exception)
+        {
+            DeleteFile(filePath);
+        }
+        var parent = Directory.GetParent(filePath);
+        if (parent != null)
+        {
+            CreateDirectory(parent.FullName);
+        }
+        using var fileStreamW = GetFileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+        stream.Position = 0; // 重置流位置
+        stream.CopyTo(fileStreamW);
+        fileStreamW.Flush();
+        fileStreamW.SetLength(fileStreamW.Position); // 确保文件长度正确
+        return filePath; // 返回新创建的文件路径
+    }
+}
+
+public sealed class ReverseByteStream : Stream
+{
+    readonly Stream _baseStream;
+    readonly long _length;
+    long _position;
+
+    internal ReverseByteStream(Stream baseStream)
+    {
+        _baseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
+        if (!_baseStream.CanSeek)
+            throw new ArgumentException("Base stream must support seeking", nameof(baseStream));
+
+        _length = _baseStream.Length;
+        _position = 0;
+    }
+
+    public override bool CanRead => _baseStream.CanRead;
+
+    public override bool CanSeek => true;
+
+    public override bool CanWrite => false;
+
+    public override long Length => _length;
+
+    public override long Position { get => _position; set => _position = value; }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        var bytesToRead = Math.Min(count, (int)(_length - _position));
+        if (bytesToRead <= 0) return 0;
+
+        for (int i = 0; i < bytesToRead; i++)
+        {
+            // 从末尾开始逐字节读取
+            var basePosition = _length - _position - 1 - i;
+            _baseStream.Seek(basePosition, SeekOrigin.Begin);
+
+            var byteValue = _baseStream.ReadByte();
+            if (byteValue == -1) break;
+
+            buffer[offset + i] = (byte)byteValue;
+        }
+
+        _position += bytesToRead;
+        return bytesToRead;
+    }
+
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        long newPosition = origin switch
+        {
+            SeekOrigin.Begin => offset,
+            SeekOrigin.Current => _position + offset,
+            SeekOrigin.End => _length + offset,
+            _ => throw new ArgumentException("Invalid seek origin", nameof(origin))
+        };
+
+        if (newPosition < 0 || newPosition > _length)
+            throw new ArgumentOutOfRangeException(nameof(offset));
+
+        _position = newPosition;
+        return _position;
+    }
+
+    public override void SetLength(long value) => throw new NotSupportedException();
+
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+    public override void Flush() { }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _baseStream?.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

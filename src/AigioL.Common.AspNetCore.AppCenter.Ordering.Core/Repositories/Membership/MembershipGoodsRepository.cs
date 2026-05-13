@@ -31,8 +31,7 @@ sealed partial class MembershipGoodsRepository<TDbContext> :
             .AsNoTrackingWithIdentityResolution()
             .Include(x => x.MerchantDeductionAgreementConfigurations)
             .Where(x => x.Enable)
-            .OrderBy(x => x.MemberLicenseType)
-            .ThenBy(x => x.Price)
+            .OrderByDescending(x => x.Price)
             .Select(ProjectToMapper.MembershipGoodsModelExpr);
 
         var r = await query.ToArrayAsync(cancellationToken);
