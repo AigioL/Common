@@ -63,135 +63,141 @@ public sealed partial class SecurityKeyMiddleware<[DynamicallyAccessedMembers(Dy
     /// <returns>A task that represents the execution of this middleware.</returns>
     public async Task Invoke(HttpContext context)
     {
-        if (context.Request.Path.StartsWithSegments("/health", StringComparison.InvariantCultureIgnoreCase))
+        try
         {
-            await _next(context);
-            return;
-        }
-
-        (Stream originalResponseBody, Stream originalRequestBody, Aes aes, string? responseContentType)? t = null;
-
-        var endpoint = context.GetEndpoint();
-        if (endpoint != null)
-        {
-            var sk = endpoint.Metadata.OfType<RequiredSecurityKeyAttribute>().FirstOrDefault();
-            if (sk != null)
+            if (context.Request.Path.StartsWithSegments("/health", StringComparison.InvariantCultureIgnoreCase))
             {
-                // 没有请求正文时允许不加密调用需要加密的接口，兼容性
-                var hasRequest = context.Request.ContentLength.HasValue &&
-                    context.Request.ContentLength.Value > 0;
-                StringValues contentTypeOrAccept = context.Request.ContentType;
-                if (StringValues.IsNullOrEmpty(contentTypeOrAccept))
-                {
-                    contentTypeOrAccept = context.Request.Headers.Accept;
-                }
+                await _next(context);
+                return;
+            }
 
-                if (!MSMinimalApis.TryParse(contentTypeOrAccept,
-                    out var isSecurity,
-                    out var serializableImplType,
-                    out var algorithmType,
-                    out var responseContentType))
-                {
-                    if (hasRequest)
-                    {
-                        await EndHandleAsync(context, serializableImplType,
-                            ApiRspCode.RequiredSecurityKey);
-                        return;
-                    }
-                }
+            (Stream originalResponseBody, Stream originalRequestBody, Aes aes, string? responseContentType)? t = null;
 
-                if (isSecurity)
+            var endpoint = context.GetEndpoint();
+            if (endpoint != null)
+            {
+                var sk = endpoint.Metadata.OfType<RequiredSecurityKeyAttribute>().FirstOrDefault();
+                if (sk != null)
                 {
-                    if (algorithmType != sk.AlgorithmType)
+                    // 没有请求正文时允许不加密调用需要加密的接口，兼容性
+                    var hasRequest = context.Request.ContentLength.HasValue &&
+                        context.Request.ContentLength.Value > 0;
+                    StringValues contentTypeOrAccept = context.Request.ContentType;
+                    if (StringValues.IsNullOrEmpty(contentTypeOrAccept))
                     {
-                        await EndHandleAsync(context, serializableImplType,
-                            ApiRspCode.SecurityTypeInconsistent);
-                        return;
+                        contentTypeOrAccept = context.Request.Headers.Accept;
                     }
 
-                    var code = await ReadAes(context, algorithmType, _options);
-                    if (code.HasValue)
+                    if (!MSMinimalApis.TryParse(contentTypeOrAccept,
+                        out var isSecurity,
+                        out var serializableImplType,
+                        out var algorithmType,
+                        out var responseContentType))
                     {
                         if (hasRequest)
                         {
                             await EndHandleAsync(context, serializableImplType,
-                                code.Value);
+                                ApiRspCode.RequiredSecurityKey);
                             return;
                         }
                     }
 
-                    switch (serializableImplType)
+                    if (isSecurity)
                     {
-                        case SerializableImplType.SystemTextJson:
-                            {
-                                // 将类型固定为 json，避免 RDG 生成引发 415
-                                context.Request.Headers.ContentType = MediaTypeNames.JSON;
-                            }
-                            break;
-                    }
-
-                    if (context.Items[ApiConstants.Headers_SecurityKey] is Aes aes)
-                    {
-                        var originalRequestBody = context.Request.Body;
-                        if (hasRequest)
+                        if (algorithmType != sk.AlgorithmType)
                         {
-                            // 启用可重新读取请求正文
-                            context.Request.EnableBuffering();
-                            // 将请求正文复制到内存流中
-                            using var memoryStream = m.GetStream();
-                            await context.Request.Body.CopyToAsync(memoryStream, context.RequestAborted);
-                            memoryStream.Position = 0;
-                            // 创建解密流
-                            using CryptoStream cryptoStream = new(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
-                            // 创建新的正文流
-                            var newRequestBody = m.GetStream();
-                            // 将解密流写入新的正文流
-                            await cryptoStream.CopyToAsync(newRequestBody, context.RequestAborted);
-                            newRequestBody.Position = 0;
-                            context.Response.RegisterForDispose(newRequestBody);
-                            context.Request.Body = newRequestBody;
+                            await EndHandleAsync(context, serializableImplType,
+                                ApiRspCode.SecurityTypeInconsistent);
+                            return;
                         }
 
-                        var originalResponseBody = context.Response.Body;
-                        t = (originalResponseBody, originalRequestBody, aes, responseContentType);
+                        var code = await ReadAes(context, algorithmType, _options);
+                        if (code.HasValue)
+                        {
+                            if (hasRequest)
+                            {
+                                await EndHandleAsync(context, serializableImplType,
+                                    code.Value);
+                                return;
+                            }
+                        }
 
-                        // 替换响应正文为新的内存流
-                        var newResponseBody = m.GetStream();
-                        context.Response.RegisterForDispose(newResponseBody);
-                        context.Response.Body = newResponseBody;
-                    }
-                    else
-                    {
-                        await EndHandleAsync(context, serializableImplType,
-                            ApiRspCode.AesKeyIsNull);
-                        return;
+                        switch (serializableImplType)
+                        {
+                            case SerializableImplType.SystemTextJson:
+                                {
+                                    // 将类型固定为 json，避免 RDG 生成引发 415
+                                    context.Request.Headers.ContentType = MediaTypeNames.JSON;
+                                }
+                                break;
+                        }
+
+                        if (context.Items[ApiConstants.Headers_SecurityKey] is Aes aes)
+                        {
+                            var originalRequestBody = context.Request.Body;
+                            if (hasRequest)
+                            {
+                                // 启用可重新读取请求正文
+                                context.Request.EnableBuffering();
+                                // 将请求正文复制到内存流中
+                                using var memoryStream = m.GetStream();
+                                await context.Request.Body.CopyToAsync(memoryStream, context.RequestAborted);
+                                memoryStream.Position = 0;
+                                // 创建解密流
+                                using CryptoStream cryptoStream = new(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Read, true);
+                                // 创建新的正文流
+                                var newRequestBody = m.GetStream();
+                                // 将解密流写入新的正文流
+                                await cryptoStream.CopyToAsync(newRequestBody, context.RequestAborted);
+                                newRequestBody.Position = 0;
+                                context.Response.RegisterForDispose(newRequestBody);
+                                context.Request.Body = newRequestBody;
+                            }
+
+                            var originalResponseBody = context.Response.Body;
+                            t = (originalResponseBody, originalRequestBody, aes, responseContentType);
+
+                            // 替换响应正文为新的内存流
+                            var newResponseBody = m.GetStream();
+                            context.Response.RegisterForDispose(newResponseBody);
+                            context.Response.Body = newResponseBody;
+                        }
+                        else
+                        {
+                            await EndHandleAsync(context, serializableImplType,
+                                ApiRspCode.AesKeyIsNull);
+                            return;
+                        }
                     }
                 }
             }
-        }
 
-        await _next(context);
+            await _next(context);
 
-        if (t.HasValue)
-        {
-            if (!string.IsNullOrWhiteSpace(t.Value.responseContentType))
+            if (t.HasValue)
             {
-                context.Response.Headers.ContentType = t.Value.responseContentType;
+                if (!string.IsNullOrWhiteSpace(t.Value.responseContentType))
+                {
+                    context.Response.Headers.ContentType = t.Value.responseContentType;
+                }
+
+                // 使用原始流创建加密流并写入
+                using var memoryStream = m.GetStream();
+                using CryptoStream cryptoStream = new(memoryStream, t.Value.aes.CreateEncryptor(), CryptoStreamMode.Write);
+                context.Response.Body.Position = 0;
+                // 将响应正文流写入缓冲区
+                await context.Response.Body.CopyToAsync(cryptoStream, context.RequestAborted);
+                await cryptoStream.FlushFinalBlockAsync(context.RequestAborted);
+
+                memoryStream.Position = 0;
+                await memoryStream.CopyToAsync(t.Value.originalResponseBody, context.RequestAborted);
+
+                // 恢复原始响应流
+                context.Response.Body = t.Value.originalResponseBody;
             }
-
-            // 使用原始流创建加密流并写入
-            using var memoryStream = m.GetStream();
-            using CryptoStream cryptoStream = new(memoryStream, t.Value.aes.CreateEncryptor(), CryptoStreamMode.Write);
-            context.Response.Body.Position = 0;
-            // 将响应正文流写入缓冲区
-            await context.Response.Body.CopyToAsync(cryptoStream, context.RequestAborted);
-            await cryptoStream.FlushFinalBlockAsync(context.RequestAborted);
-
-            memoryStream.Position = 0;
-            await memoryStream.CopyToAsync(t.Value.originalResponseBody, context.RequestAborted);
-
-            // 恢复原始响应流
-            context.Response.Body = t.Value.originalResponseBody;
+        }
+        catch (TaskCanceledException)
+        {
         }
     }
 }
