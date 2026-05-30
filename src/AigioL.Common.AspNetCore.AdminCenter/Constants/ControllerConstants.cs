@@ -152,4 +152,9 @@ public static partial class ControllerConstants
     /// 网络代理管理
     /// </summary>
     public const string WebProxys = "WebProxys";
+
+    /// <summary>
+    /// KOL 用户管理
+    /// </summary>
+    public const string KolUser = "KolUser";
 }
