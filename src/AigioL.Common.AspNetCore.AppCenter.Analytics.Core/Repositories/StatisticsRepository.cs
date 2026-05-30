@@ -10,11 +10,15 @@ using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Summaries;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using GameTrainer.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.LazyCalendar;
@@ -32,7 +36,7 @@ sealed partial class StatisticsRepository<TDbContext>(TDbContext dbContext, ISer
     IIdentityDbContext,
     IOrderSummariesDbContext,
     IKeyValuePairsDbContext,
-    IOrderingPaymentBaseDbContext,
+    IPaymentDbContext,
     IAnalysisLogSummariesDbContext
 {
     /// <summary>
@@ -445,7 +449,7 @@ partial class StatisticsRepository<TDbContext>
         var alipayTax = taxs[TaxHelper.键_支付宝税点];
         var wechatPayTax = taxs[TaxHelper.键_微信支付税点];
 
-        var orders = db.Orders;
+        var orders = ApplyMembershipBusinessSourceFilter(db.Orders.AsNoTracking());
         var orderPaymentCompositions = db.OrderPaymentCompositions
              .Where(x =>
                 x.PaymentStatus != PaymentStatus.WaitPay &&
@@ -1403,7 +1407,9 @@ partial class StatisticsRepository<TDbContext>
         var startTime = statisticDate.ToUTC8Date();
         var endTime = startTime.AddDays(1);
 
-        var query1 = from order in db.Orders
+        var orders = ApplyMembershipBusinessSourceFilter(db.Orders.AsNoTracking());
+
+        var query1 = from order in orders
                      join payment in db.OrderPaymentCompositions on order.Id equals payment.OrderId
                      where order.PaymentTime >= startTime &&
                           order.PaymentTime < endTime &&
@@ -1424,7 +1430,7 @@ partial class StatisticsRepository<TDbContext>
                          StatisticsTime = statisticDate,
                      };
 
-        var query2 = from order in db.Orders
+        var query2 = from order in orders
                      join payment in db.OrderPaymentCompositions on order.Id equals payment.OrderId
                      join refund in db.RefundBills on order.Id equals refund.AftersalesBill!.OrderId
                      where refund.RefundFinishTime >= endTime.AddDays(-1) &&
@@ -1473,6 +1479,13 @@ partial class StatisticsRepository<TDbContext>
         var rowCount = await db.SaveChangesAsync(cancellationToken);
         return rowCount;
     }
+
+    IQueryable<AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order> ApplyMembershipBusinessSourceFilter(IQueryable<AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order> orders) =>
+        orders.Where(order =>
+            order.BusinessTypeId != (int)OrderBusinessType.Membership ||
+            db.MembershipBusinessOrders.Any(x =>
+                x.Id == order.BusinessOrderId &&
+                x.BusinessSource == MembershipBusinessSource.普通订单));
 }
 
 static partial class TaxHelper

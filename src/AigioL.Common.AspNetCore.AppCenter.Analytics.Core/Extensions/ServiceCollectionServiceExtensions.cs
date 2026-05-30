@@ -40,7 +40,7 @@ public static partial class ServiceCollectionServiceExtensions
         IIdentityDbContext,
         IOrderSummariesDbContext,
         IKeyValuePairsDbContext,
-        IOrderingPaymentBaseDbContext,
+        IPaymentDbContext,
         IAnalysisLogSummariesDbContext
     {
         services.TryAddScoped<IStatisticsRepository, StatisticsRepository<TDbContext>>();
