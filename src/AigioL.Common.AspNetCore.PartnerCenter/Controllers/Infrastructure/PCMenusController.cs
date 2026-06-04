@@ -15,7 +15,7 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// <summary>
 /// 合作伙伴后台菜单管理
 /// </summary>
-public static partial class BMMenusController
+public static partial class PCMenusController
 {
     const string ControllerName = ControllerConstants.SystemMenuManage;
 

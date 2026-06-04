@@ -7,6 +7,8 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 /// </summary>
 public sealed partial class BMUserInfoModel
 {
+    public const string DefaultAvatarUrl = "/img/default-avatar.png";
+
     /// <summary>
     /// 用户名
     /// </summary>
@@ -22,7 +24,7 @@ public sealed partial class BMUserInfoModel
     /// <summary>
     /// 头像 Url 地址
     /// </summary>
-    public string? Avatar { get; set; }
+    public string? Avatar { get; set; } = DefaultAvatarUrl;
 
     /// <summary>
     /// 是否是管理员

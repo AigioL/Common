@@ -17,7 +17,7 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// <summary>
 /// 合作伙伴后台角色权限管理
 /// </summary>
-public static partial class BMRolesController
+public static partial class PCRolesController
 {
     const string ControllerName = ControllerConstants.RoleManage;
 

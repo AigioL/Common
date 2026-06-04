@@ -19,7 +19,7 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// <summary>
 /// 合作伙伴后台的用户管理
 /// </summary>
-public static partial class BMUsersController
+public static partial class PCUsersController
 {
     const string ControllerName = ControllerConstants.SystemUser;
 

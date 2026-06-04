@@ -18,8 +18,6 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMUserController
 {
-    const string DefaultACUserAvatarUrl = "/img/default-avatar.png";
-
     public static void MapBMUser<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/user") where TUser : BMUser
     {
         var routeGroup = b.MapGroup(pattern)
@@ -73,7 +71,7 @@ public static partial class BMUserController
         {
             UserName = user.UserName,
             NickName = user.NickName,
-            Avatar = DefaultACUserAvatarUrl,
+            Avatar = BMUserInfoModel.DefaultAvatarUrl,
             TenantId = user.TenantId,
             Menus = menus,
         };

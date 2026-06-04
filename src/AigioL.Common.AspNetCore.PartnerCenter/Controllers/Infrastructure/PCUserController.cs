@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter;
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
@@ -18,10 +19,8 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// <summary>
 /// 合作伙伴后台当前登录的后台用户个人资料修改
 /// </summary>
-public static partial class BMUserController
+public static partial class PCUserController
 {
-    const string DefaultACUserAvatarUrl = "/img/default-avatar.png";
-
     public static void MapPCUser<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "pc/user") where TUser : PCUser
     {
         var routeGroup = b.MapGroup(pattern)
@@ -75,7 +74,7 @@ public static partial class BMUserController
         {
             UserName = user.UserName,
             NickName = user.NickName,
-            Avatar = DefaultACUserAvatarUrl,
+            Avatar = BMUserInfoModel.DefaultAvatarUrl,
             TenantId = user.TenantId,
             Menus = menus,
         };
