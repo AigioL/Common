@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\OperatorBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\TenantBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\BMButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Entities\BMInformational.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\BMMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\BMMenuButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\BMMenuButtonRole.cs" />

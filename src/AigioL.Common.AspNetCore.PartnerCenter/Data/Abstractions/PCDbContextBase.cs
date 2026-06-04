@@ -1,5 +1,5 @@
-using AigioL.Common.AspNetCore.AdminCenter.Columns;
-using AigioL.Common.AspNetCore.AdminCenter.Entities;
+using AigioL.Common.AspNetCore.PartnerCenter.Columns;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -10,24 +10,23 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Diagnostics.CodeAnalysis;
-using TableNames = AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions.IBMDbContextBase.TableNames;
 
-namespace AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
+namespace AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions;
 
 /// <summary>
-/// 管理后台的 Identity 数据库上下文基类
+/// 合作伙伴后台的 Identity 数据库上下文基类
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
 /// <typeparam name="TRole"></typeparam>
 /// <typeparam name="TUserRole"></typeparam>
-public abstract partial class BMDbContextBase<
+public abstract partial class PCDbContextBase<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
-    IdentityDbContext<TUser, TRole, Guid, BMUserClaim, TUserRole, BMUserLogin, BMRoleClaim, BMUserToken>, IBMDbContextBase, IDbContextBase
-    where TUser : BMUser
-    where TRole : BMRole
-    where TUserRole : BMUserRole
+    IdentityDbContext<TUser, TRole, Guid, PCUserClaim, TUserRole, PCUserLogin, PCRoleClaim, PCUserToken>, IPCDbContextBase, IDbContextBase
+    where TUser : PCUser
+    where TRole : PCRole
+    where TUserRole : PCUserRole
 {
     /// <inheritdoc/>
     DbContext IDbContextBase.GetDbContext() => this;
@@ -37,7 +36,7 @@ public abstract partial class BMDbContextBase<
 
     protected readonly IHttpContextAccessor httpContextAccessor;
 
-    protected BMDbContextBase(
+    protected PCDbContextBase(
         DbContextOptions options,
         IHttpContextAccessor httpContextAccessor) : base(options)
     {
@@ -63,15 +62,6 @@ public abstract partial class BMDbContextBase<
     {
         base.OnModelCreating(b);
 
-        // 重命名 Identity 相关表名
-        b.Entity<TUser>().ToTable(TableNames.Users);
-        b.Entity<TRole>().ToTable(TableNames.Roles);
-        b.Entity<BMRoleClaim>().ToTable(TableNames.RoleClaims);
-        b.Entity<BMUserClaim>().ToTable(TableNames.UserClaims);
-        b.Entity<BMUserLogin>().ToTable(TableNames.UserLogins);
-        b.Entity<TUserRole>().ToTable(TableNames.UserRoles);
-        b.Entity<BMUserToken>().ToTable(TableNames.UserTokens);
-
         // 与 AppDbContextBase 同步调用 BuildEntities 扩展函数
         b.BuildEntities(AppendBuildEntities_);
     }
@@ -90,31 +80,31 @@ public abstract partial class BMDbContextBase<
         return buildAction;
     }
 
-    /// <inheritdoc cref="BMButton"/>
-    public DbSet<BMButton> Buttons { get; set; }
+    /// <inheritdoc cref="PCButton"/>
+    public DbSet<PCButton> Buttons { get; set; }
 
-    /// <inheritdoc cref="BMMenu"/>
-    public DbSet<BMMenu> Menus { get; set; }
+    /// <inheritdoc cref="PCMenu"/>
+    public DbSet<PCMenu> Menus { get; set; }
 
-    /// <inheritdoc cref="BMMenuButton"/>
-    public DbSet<BMMenuButton> MenuButtons { get; set; }
+    /// <inheritdoc cref="PCMenuButton"/>
+    public DbSet<PCMenuButton> MenuButtons { get; set; }
 
-    /// <inheritdoc cref="BMMenuButtonRole"/>
-    public DbSet<BMMenuButtonRole> MenuButtonRoles { get; set; }
+    /// <inheritdoc cref="PCMenuButtonRole"/>
+    public DbSet<PCMenuButtonRole> MenuButtonRoles { get; set; }
 
-    /// <inheritdoc cref="BMTenant"/>
-    public DbSet<BMTenant> Tenants { get; set; }
+    /// <inheritdoc cref="PCTenant"/>
+    public DbSet<PCTenant> Tenants { get; set; }
 
-    sealed record UserIdM(Guid? UserId);
+    sealed record PCUserIdM(Guid? UserId);
 
     protected virtual void OnSaveChanges()
     {
-        UserIdM? userIdM = null;
+        PCUserIdM? userIdM = null;
         Guid? GetCurrentlyLoggedInUserId()
         {
             if (userIdM == null)
             {
-                userIdM = new UserIdM(GetUserId(httpContextAccessor.HttpContext));
+                userIdM = new PCUserIdM(GetUserId(httpContextAccessor.HttpContext));
             }
             return userIdM?.UserId;
         }
@@ -128,30 +118,30 @@ public abstract partial class BMDbContextBase<
                     {
                         u.UpdateTime = DateTimeOffset.Now;
                     }
-                    if (entity.Entity is IOperatorUserId operatorUserId) // 设置操作人
+                    if (entity.Entity is IOperatorPCUserId operatorUserId) // 设置操作人
                     {
                         var uid = GetCurrentlyLoggedInUserId();
                         if (uid.HasValue)
                         {
-                            operatorUserId.OperatorUserId = uid;
+                            operatorUserId.OperatorPCUserId = uid;
                         }
                     }
                     break;
                 case EntityState.Added:
-                    if (entity.Entity is ICreateUserId createUserId) // 设置创建人
+                    if (entity.Entity is ICreatePCUserId createUserId) // 设置创建人
                     {
                         var uid = GetCurrentlyLoggedInUserId();
                         if (uid.HasValue)
                         {
-                            createUserId.CreateUserId = uid.Value;
+                            createUserId.CreatePCUserId = uid.Value;
                         }
                     }
-                    else if (entity.Entity is ICreateUserIdNullable createUserIdNullable)
+                    else if (entity.Entity is ICreatePCUserIdNullable createUserIdNullable)
                     {
                         var uid = GetCurrentlyLoggedInUserId();
                         if (uid.HasValue)
                         {
-                            createUserIdNullable.CreateUserId = uid.Value;
+                            createUserIdNullable.CreatePCUserId = uid.Value;
                         }
                     }
                     break;

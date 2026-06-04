@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.Primitives.Columns;
@@ -7,14 +8,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AigioL.Common.AspNetCore.AdminCenter.Entities;
+namespace AigioL.Common.AspNetCore.PartnerCenter.Entities;
 
 /// <summary>
-/// 管理后台的租户表实体
+/// 合作伙伴后台的租户表实体
 /// </summary>
-[Table("BMTenants")]
+[Table("PCTenants")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
-public partial class BMTenant :
+public partial class PCTenant :
     OperatorBaseEntity<Guid>,
     INEWSEQUENTIALID,
     IDisable,
@@ -162,27 +163,17 @@ public partial class BMTenant :
     [StringLength(MaxLengths.Url)]
     public string? WebsiteDomainName { get; set; }
 
-    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<BMTenant>
+    public sealed class EntityTypeConfiguration : EntityTypeConfiguration<PCTenant>
     {
         /// <inheritdoc/>
-        public sealed override void Configure(EntityTypeBuilder<BMTenant> builder)
+        public sealed override void Configure(EntityTypeBuilder<PCTenant> builder)
         {
             base.Configure(builder);
 
             builder.HasOne(x => x.Auditor)
-                .WithMany(x => x.AuditorTenants)
+                .WithMany(x => x.AuditorPCTenants)
                 .HasForeignKey(x => x.AuditorId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }
-
-    /// <summary>
-    /// 管理员 TenantId
-    /// </summary>
-    public static Guid AdministratorTenantId => _StaticFields.AdministratorTenantId;
-}
-
-file static class _StaticFields
-{
-    internal static readonly Guid AdministratorTenantId = Guid.ParseExact("00000000000000000000000000000001", "N");
 }

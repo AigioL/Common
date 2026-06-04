@@ -8,7 +8,12 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
 /// </summary>
 /// <param name="controllerName"></param>
 /// <param name="buttonType"></param>
-public sealed record class PermissionAuthorizationRequirement(string controllerName, BMButtonType buttonType) : IAuthorizationRequirement
+public sealed record class PermissionAuthorizationRequirement(string controllerName, BMButtonType buttonType) : PermissionAuthorizationRequirement<BMButtonType>(controllerName, buttonType)
+{
+    public static implicit operator AuthorizationPolicy(PermissionAuthorizationRequirement obj) => obj.GetAuthorizationPolicy();
+}
+
+public abstract record class PermissionAuthorizationRequirement<TButtonType>(string controllerName, TButtonType buttonType) : IAuthorizationRequirement
 {
     /// <summary>
     /// 控制器名称
@@ -18,13 +23,11 @@ public sealed record class PermissionAuthorizationRequirement(string controllerN
     /// <summary>
     /// 按钮类型
     /// </summary>
-    public BMButtonType ButtonType => buttonType;
+    public TButtonType ButtonType => buttonType;
 
     public AuthorizationPolicy GetAuthorizationPolicy() => new([this], [BMMinimalApis.BearerScheme]);
 
-    public static implicit operator AuthorizationPolicy(PermissionAuthorizationRequirement obj) => obj.GetAuthorizationPolicy();
-
-    public static string GetPolicyName(string controllerName, BMButtonType buttonType) => $"{controllerName}{buttonType}";
+    public static string GetPolicyName(string controllerName, TButtonType buttonType) => $"{controllerName}{buttonType}";
 
     public string GetPolicyName() => GetPolicyName(controllerName, buttonType);
 }

@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCMenuButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCMenuButtonRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCRole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCTenant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCButtonType.cs" />

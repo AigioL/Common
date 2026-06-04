@@ -2,7 +2,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Entities;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Columns;
 
-/// <inheritdoc cref="ICreateUserId.CreateUserId"/>
+/// <inheritdoc cref="IOperatorUserId.OperatorUserId"/>
 public interface IOperatorBMUser
 {
     /// <inheritdoc cref="IOperatorUserId.OperatorUserId"/>

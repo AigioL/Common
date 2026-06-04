@@ -1,15 +1,15 @@
-using AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
-using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
+using AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 
-namespace AigioL.Common.AspNetCore.AdminCenter.Policies.Handlers;
+namespace AigioL.Common.AspNetCore.PartnerCenter.Policies.Handlers;
 
 /// <summary>
-/// 管理后台的基于策略的授权
+/// 合作伙伴后台的基于策略的授权
 /// <para>https://learn.microsoft.com/zh-cn/aspnet/core/security/authorization/policies#authorization-handlers</para>
 /// </summary>
 /// <typeparam name="TDbContext"></typeparam>
@@ -22,10 +22,10 @@ public sealed class PermissionAuthorizationHandler<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole>
     : AuthorizationHandler<PermissionAuthorizationRequirement>
-    where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>
-    where TUser : BMUser
-    where TRole : BMRole
-    where TUserRole : BMUserRole
+    where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>
+    where TUser : PCUser
+    where TRole : PCRole
+    where TUserRole : PCUserRole
 {
     readonly IServiceProvider serviceProvider;
 

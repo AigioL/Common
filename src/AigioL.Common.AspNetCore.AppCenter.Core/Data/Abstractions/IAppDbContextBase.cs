@@ -190,7 +190,7 @@ public interface IAppDbContextBase : IDbContextBase
     /// <param name="builder">
     /// The builder being used to construct the model for this context.
     /// </param>
-    private static void OnModelCreatingVersion2<
+    public static void OnModelCreatingVersion2<
         [DynamicallyAccessedMembers(IEntity.DAMT)] TUser,
         [DynamicallyAccessedMembers(IEntity.DAMT)] TRole,
         [DynamicallyAccessedMembers(IEntity.DAMT)] TKey,
