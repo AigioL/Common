@@ -40,7 +40,7 @@
   </ItemGroup>
   <!-- 👇 JsonWebToken -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.1" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.18.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.18.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
   </ItemGroup>
@@ -56,8 +56,8 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="10.0.8" />
     <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.8" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
-    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.2" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.3.1" />
     <PackageVersion Include="EFCore.BulkExtensions.PostgreSql" Version="10.0.0" />
   </ItemGroup>
   <!-- 👇 序列化 -->
@@ -85,9 +85,9 @@
   </ItemGroup>
   <!-- 👇 Redis -->
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.4.2" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.3.1" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.0.2" />
-    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.2" />
+    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.3.1" />
   </ItemGroup>
   <!-- 👇 Quartz -->
   <ItemGroup>
@@ -106,8 +106,8 @@
   </ItemGroup>
   <!-- 👇 Aspire -->
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.2" />
-    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.4.2" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.3.1" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.3.1" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.6.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.6.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.3" />
@@ -115,15 +115,15 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
-    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.4.2" />
-    <PackageVersion Include="Aspire.Hosting.Docker" Version="13.4.2" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Docker" Version="13.3.1" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.1.0-preview.1.25616.3" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="13.4.0" />
-    <PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.4.0" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.4.2" />
-    <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.4.2" />
-    <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.4.2" />
-    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.4.2" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="13.1.1" />
+    <PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.1.1" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.3.1" />
+    <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.3.1" />
+    <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.3.1" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.3.1" />
     <PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
   </ItemGroup>
   <!-- 👇 Docker -->
@@ -177,7 +177,7 @@
   </ItemGroup>
   <!-- 👇 Magick 图片处理 -->
   <ItemGroup>
-    <PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="14.13.1" />
+    <PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="14.13.0" />
   </ItemGroup>
   <!-- 👇 Steam -->
   <ItemGroup>
@@ -203,7 +203,7 @@
   </ItemGroup>
   <!-- 👇 Costura.Fody -->
   <ItemGroup>
-    <PackageVersion Include="Costura.Fody" Version="6.1.0" />
+    <PackageVersion Include="Costura.Fody" Version="6.2.0" />
   </ItemGroup>
   <!-- 👇 SignalR -->
   <ItemGroup>
@@ -211,11 +211,11 @@
   </ItemGroup>
   <!-- 👇 ⬇️ -->
   <ItemGroup>
-    <PackageVersion Include="Downloader" Version="5.5.0" />
+    <PackageVersion Include="Downloader" Version="5.8.0" />
     <PackageVersion Include="System.Net.Http.WinHttpHandler" Version="10.0.6" />
   </ItemGroup>
   <!-- 👇 DotNext -->
   <ItemGroup>
-    <PackageVersion Include="DotNext.Threading" Version="6.2.1" />
+    <PackageVersion Include="DotNext.Threading" Version="6.3.0" />
   </ItemGroup>
 </Project>
