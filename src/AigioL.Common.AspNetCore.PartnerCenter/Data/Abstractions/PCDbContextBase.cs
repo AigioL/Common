@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Diagnostics.CodeAnalysis;
+using TableNames = AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions.IPCDbContextBase.TableNames;
 
 namespace AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions;
 
@@ -61,6 +62,15 @@ public abstract partial class PCDbContextBase<
     protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);
+
+        // 重命名 Identity PC 相关表名
+        b.Entity<TUser>().ToTable(TableNames.Users);
+        b.Entity<TRole>().ToTable(TableNames.Roles);
+        b.Entity<PCRoleClaim>().ToTable(TableNames.RoleClaims);
+        b.Entity<PCUserClaim>().ToTable(TableNames.UserClaims);
+        b.Entity<PCUserLogin>().ToTable(TableNames.UserLogins);
+        b.Entity<TUserRole>().ToTable(TableNames.UserRoles);
+        b.Entity<PCUserToken>().ToTable(TableNames.UserTokens);
 
         // 与 AppDbContextBase 同步调用 BuildEntities 扩展函数
         b.BuildEntities(AppendBuildEntities_);

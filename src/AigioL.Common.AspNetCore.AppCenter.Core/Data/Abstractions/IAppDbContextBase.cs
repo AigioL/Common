@@ -12,6 +12,9 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 
 public interface IAppDbContextBase : IDbContextBase
 {
+    /// <summary>
+    /// AC 相关表名
+    /// </summary>
     static class TableNames
     {
         public const string Users = "ACUsers";
@@ -33,9 +36,11 @@ public interface IAppDbContextBase : IDbContextBase
         public const string ExternalAccounts = "ACExternalAccounts";
     }
 
-    protected static void ToIdentitysTable(ModelBuilder b)
+    /// <summary>
+    /// 重命名 Identity AC 相关表名
+    /// </summary>
+    public static void ToIdentitysTable(ModelBuilder b)
     {
-        // 重命名 Identity 相关表名
         b.Entity<User>().ToTable(TableNames.Users);
         b.Entity<Role>().ToTable(TableNames.Roles);
         b.Entity<RoleClaim>().ToTable(TableNames.RoleClaims);
@@ -245,7 +250,7 @@ public interface IAppDbContextBase : IDbContextBase
         });
     }
 
-    protected static void OnModelCreatingVersion2(IInfrastructure<IServiceProvider> accessor, ModelBuilder builder)
+    public static void OnModelCreatingVersion2(IInfrastructure<IServiceProvider> accessor, ModelBuilder builder)
         => OnModelCreatingVersion2<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>("AC", accessor, builder);
 
     /// <summary>

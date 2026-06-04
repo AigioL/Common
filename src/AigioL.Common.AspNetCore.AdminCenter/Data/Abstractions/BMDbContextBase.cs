@@ -63,7 +63,7 @@ public abstract partial class BMDbContextBase<
     {
         base.OnModelCreating(b);
 
-        // 重命名 Identity 相关表名
+        // 重命名 Identity BM 相关表名
         b.Entity<TUser>().ToTable(TableNames.Users);
         b.Entity<TRole>().ToTable(TableNames.Roles);
         b.Entity<BMRoleClaim>().ToTable(TableNames.RoleClaims);

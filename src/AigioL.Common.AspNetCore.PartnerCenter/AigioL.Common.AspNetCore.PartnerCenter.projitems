@@ -9,8 +9,15 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.PartnerCenter</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCLoginController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCMenusController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCRolesController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCUserController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCUsersController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IPCDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\PCDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthorizationEndpointConventionBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\PermissionAuthorizationHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Requirements\PermissionAuthorizationRequirement.cs" />
   </ItemGroup>
