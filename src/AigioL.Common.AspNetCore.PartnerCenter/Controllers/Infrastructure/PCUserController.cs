@@ -1,9 +1,12 @@
+using AigioL.Common.AspNetCore.AdminCenter;
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,18 +14,18 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
-namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
+namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 
 /// <summary>
-/// 管理后台当前登录的后台用户个人资料修改
+/// 合作伙伴后台当前登录的后台用户个人资料修改
 /// </summary>
-public static partial class BMUserController
+public static partial class PCUserController
 {
-    public static void MapBMUser<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/user") where TUser : BMUser
+    public static void MapPCUser<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "pc/user") where TUser : PCUser
     {
         var routeGroup = b.MapGroup(pattern)
             .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
-            .WithDescription("管理后台的登录用户个人资料管理");
+            .WithDescription("合作伙伴后台的登录用户个人资料管理");
 
         routeGroup.MapGet("", async (HttpContext context) =>
         {
@@ -31,13 +34,13 @@ public static partial class BMUserController
             var r = await Get<TUser>(context, tenantId);
             return r.SetHttpContext(context);
         })
-        .WithDescription("获取当前登录管理后台的用户个人资料");
+        .WithDescription("获取当前登录合作伙伴后台的用户个人资料");
         routeGroup.MapPut("", async (HttpContext context, [FromBody] EditBMUserInfoModel model) =>
         {
             var r = await Put<TUser>(context, model);
             return r.SetHttpContext(context);
         })
-        .WithDescription("编辑当前登录管理后台的用户个人资料");
+        .WithDescription("编辑当前登录合作伙伴后台的用户个人资料");
         routeGroup.MapGet("menus", async (HttpContext context) =>
         {
             var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
@@ -45,16 +48,16 @@ public static partial class BMUserController
             var r = await GetRoleMenus<TUser>(context, tenantId);
             return r.SetHttpContext(context);
         })
-        .WithDescription("获取当前登录管理后台的用户角色菜单主键列表");
+        .WithDescription("获取当前登录合作伙伴后台的用户角色菜单主键列表");
         routeGroup.MapPut("cpwd", async (HttpContext context, [FromBody] BMChangePasswordRequest model) =>
         {
             var r = await Put<TUser>(context, model);
             return r.SetHttpContext(context);
         })
-        .WithDescription("修改当前登录管理后台用户的密码（验证旧密码相同）");
+        .WithDescription("修改当前登录合作伙伴后台用户的密码（验证旧密码相同）");
     }
 
-    static async Task<BMApiRsp<BMUserInfoModel?>> Get<TUser>(HttpContext context, Guid tenantId) where TUser : BMUser
+    static async Task<BMApiRsp<BMUserInfoModel?>> Get<TUser>(HttpContext context, Guid tenantId) where TUser : PCUser
     {
         var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
@@ -78,7 +81,7 @@ public static partial class BMUserController
         return r;
     }
 
-    static async Task<BMApiRsp> Put<TUser>(HttpContext context, EditBMUserInfoModel model) where TUser : BMUser
+    static async Task<BMApiRsp> Put<TUser>(HttpContext context, EditBMUserInfoModel model) where TUser : PCUser
     {
         var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
@@ -110,7 +113,7 @@ public static partial class BMUserController
         return HttpStatusCode.OK;
     }
 
-    static async Task<BMApiRsp<List<Guid>?>> GetRoleMenus<TUser>(HttpContext context, Guid tenantId) where TUser : BMUser
+    static async Task<BMApiRsp<List<Guid>?>> GetRoleMenus<TUser>(HttpContext context, Guid tenantId) where TUser : PCUser
     {
         var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
@@ -125,7 +128,7 @@ public static partial class BMUserController
         return r;
     }
 
-    static async Task<BMApiRsp> Put<TUser>(HttpContext context, BMChangePasswordRequest model) where TUser : BMUser
+    static async Task<BMApiRsp> Put<TUser>(HttpContext context, BMChangePasswordRequest model) where TUser : PCUser
     {
         var appSettings = context.RequestServices.GetRequiredService<IOptions<BMAppSettings>>().Value;
 

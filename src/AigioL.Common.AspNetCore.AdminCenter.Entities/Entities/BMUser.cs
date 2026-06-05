@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -109,9 +110,14 @@ public partial class BMUser :
     public bool Disable { get; set; }
 
     /// <summary>
-    /// 由此用户审核的租户列表
+    /// 由此用户审核的管理后台的租户列表
     /// </summary>
     public virtual List<BMTenant>? AuditorTenants { get; set; }
+
+    /// <summary>
+    /// 由此用户审核的合作伙伴后台的租户列表
+    /// </summary>
+    public virtual List<PCTenant>? AuditorPCTenants { get; set; }
 
     ///// <inheritdoc cref="BMUserOrganization"/>
     //public List<BMUserOrganization>? Organizations { get; set; }
