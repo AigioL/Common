@@ -2,9 +2,10 @@ using AigioL.Common.AspNetCore.AdminCenter;
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Menus;
-using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
+using AigioL.Common.AspNetCore.PartnerCenter.Models.Menus;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -169,7 +170,7 @@ public static partial class PCMenusController
         routeGroup.MapPost("bottons/{roleId}/{menuId}", async (HttpContext context,
             [FromRoute] Guid roleId,
             [FromRoute] Guid menuId,
-            [FromBody] IEnumerable<BMButtonModel> buttons) =>
+            [FromBody] IEnumerable<PCButtonModel> buttons) =>
         {
             var r = await AddMenuButtons(context, roleId, menuId, buttons);
             return r.SetHttpContext(context);
@@ -179,7 +180,7 @@ public static partial class PCMenusController
             [FromRoute] Guid roleId,
             [FromRoute] Guid menuId,
             [FromQuery] string name,
-            [FromBody] IEnumerable<BMButtonModel> buttons) =>
+            [FromBody] IEnumerable<PCButtonModel> buttons) =>
         {
             var r = await EditMenuButtons(context, roleId, menuId, name, buttons);
             return r.SetHttpContext(context);
@@ -199,7 +200,7 @@ public static partial class PCMenusController
     {
         try
         {
-            var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+            var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
             var r = await repo.SetMenuSort(items);
             return BMApiRsp.OkBoolean(r);
         }
@@ -211,14 +212,14 @@ public static partial class PCMenusController
 
     static async Task<BMApiRsp<List<BMMenuTreeItem>?>> Tree(HttpContext context)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var r = await repo.GetTreeAsync();
         return r;
     }
 
     static async Task<BMApiRsp<BMMenuModel?>> Get(HttpContext context, Guid id)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var r = await repo.InfoAsync(id);
         return r;
     }
@@ -234,7 +235,7 @@ public static partial class PCMenusController
                 Content = 0,
             };
         }
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var userId = context.GetBMUserId();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
@@ -248,7 +249,7 @@ public static partial class PCMenusController
 
     static async Task<BMApiRsp<bool>> Delete(HttpContext context, Guid id)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.DeleteMenuAsync(id, tenantId);
@@ -263,21 +264,21 @@ public static partial class PCMenusController
 
     static async Task<BMApiRsp<List<BMMenuModel>?>> RoleTree(HttpContext context)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var r = await repo.GetRoleTreeAsync();
         return r;
     }
 
-    static async Task<BMApiRsp<List<BMButtonModel>?>> GetButtons(HttpContext context)
+    static async Task<BMApiRsp<List<PCButtonModel>?>> GetButtons(HttpContext context)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var r = await repo.GetButtonsAsync();
         return r;
     }
 
     static async Task<BMApiRsp<List<Guid>?>> GetMenuButtons(HttpContext context, Guid menuId)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.GetMenuButtonsAsync(menuId, tenantId);
@@ -286,7 +287,7 @@ public static partial class PCMenusController
 
     static async Task<BMApiRsp<bool>> AddMenuButtons(HttpContext context, Guid menuId, params IEnumerable<Guid> buttons)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.EditMenuButtonsAsync(menuId, tenantId, buttons);
@@ -299,7 +300,7 @@ public static partial class PCMenusController
 
     static async Task<BMApiRsp<bool>> EditMenuButtons(HttpContext context, Guid menuId, params IEnumerable<Guid> buttons)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.EditMenuButtonsAsync(menuId, tenantId, buttons);
@@ -310,19 +311,19 @@ public static partial class PCMenusController
         };
     }
 
-    static async Task<BMApiRsp<List<BMButtonModel>?>> GetRoleMenuButtonsAsync(HttpContext context, Guid roleId, Guid menuId)
+    static async Task<BMApiRsp<List<PCButtonModel>?>> GetRoleMenuButtonsAsync(HttpContext context, Guid roleId, Guid menuId)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.GetRoleMenuButtonsAsync(roleId, menuId, tenantId);
         return r;
     }
 
-    static async Task<BMApiRsp<bool>> AddMenuButtons(HttpContext context, Guid roleId, Guid menuId, params IEnumerable<BMButtonModel> buttons)
+    static async Task<BMApiRsp<bool>> AddMenuButtons(HttpContext context, Guid roleId, Guid menuId, params IEnumerable<PCButtonModel> buttons)
     {
         var userId = context.GetBMUserId();
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.AddMenuButtonsAsync(userId, roleId, menuId, tenantId, buttons);
@@ -333,10 +334,10 @@ public static partial class PCMenusController
         };
     }
 
-    static async Task<BMApiRsp<bool>> EditMenuButtons(HttpContext context, Guid roleId, Guid menuId, string name, params IEnumerable<BMButtonModel> buttons)
+    static async Task<BMApiRsp<bool>> EditMenuButtons(HttpContext context, Guid roleId, Guid menuId, string name, params IEnumerable<PCButtonModel> buttons)
     {
         var userId = context.GetBMUserId();
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.EditMenuButtonsAsync(name, userId, roleId, menuId, tenantId, buttons);
@@ -350,7 +351,7 @@ public static partial class PCMenusController
     static async Task<BMApiRsp<bool>> DeleteMenuButtons(HttpContext context, Guid roleId, Guid menuId)
     {
         var userId = context.GetBMUserId();
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var adminCenterService = context.RequestServices.GetRequiredService<IAdminCenterService>();
         var tenantId = adminCenterService.RootTenantIdG;
         var r = await repo.DeleteMenuButtonsAsync(userId, roleId, menuId, tenantId);

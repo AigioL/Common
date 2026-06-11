@@ -1,7 +1,7 @@
-using AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
-using AigioL.Common.AspNetCore.AdminCenter.Entities;
-using AigioL.Common.AspNetCore.AdminCenter.Repositories;
-using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
 
@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class ServiceCollectionExtensions
     {
         /// <summary>
-        /// 添加管理后台的仓储层服务接口
+        /// 添加合作伙伴后台的仓储层服务接口
         /// </summary>
         /// <typeparam name="TDbContext"></typeparam>
         /// <typeparam name="TUser"></typeparam>
@@ -20,21 +20,21 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="TUserRole"></typeparam>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static IServiceCollection AddACRepositories<
+        public static IServiceCollection AddPartnerCenterRepositories<
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole>(
             this IServiceCollection services)
-            where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>
-            where TUser : BMUser
-            where TRole : BMRole
-            where TUserRole : BMUserRole
+            where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>
+            where TUser : PCUser
+            where TRole : PCRole
+            where TUserRole : PCUserRole
         {
             services.AddScoped<IUserManagerExtensions, UserManagerExtensions<TDbContext, TUser, TRole, TUserRole>>();
-            services.TryAddScoped<IBMUserRepository, BMUserRepository<TDbContext, TUser, TRole, TUserRole>>();
-            services.TryAddScoped<IBMRoleRepository, BMRoleRepository<TDbContext, TUser, TRole, TUserRole>>();
-            services.TryAddScoped<IBMMenuRepository, BMMenuRepository<TDbContext, TUser, TRole, TUserRole>>();
+            services.TryAddScoped<IPCUserRepository, PCUserRepository<TDbContext, TUser, TRole, TUserRole>>();
+            services.TryAddScoped<IPCRoleRepository, PCRoleRepository<TDbContext, TUser, TRole, TUserRole>>();
+            services.TryAddScoped<IPCMenuRepository, PCMenuRepository<TDbContext, TUser, TRole, TUserRole>>();
             return services;
         }
     }
@@ -42,14 +42,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
 namespace Microsoft.AspNetCore.Http
 {
-    public static partial class BM_HttpContextExtensions
+    public static partial class PC_HttpContextExtensions
     {
         /// <summary>
-        /// 从 HTTP 上下文中获取管理后台用户 Id
+        /// 从 HTTP 上下文中获取合作伙伴后台用户 Id
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public static Guid GetBMUserId(this HttpContext ctx)
+        public static Guid GetPCUserId(this HttpContext ctx)
         {
             var userManager = ctx.RequestServices.GetRequiredService<IUserManagerExtensions>();
             var userId = userManager.GetUserId(ctx);
@@ -69,10 +69,10 @@ file sealed class UserManagerExtensions<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
     IUserManagerExtensions
-    where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>
-    where TUser : BMUser
-    where TRole : BMRole
-    where TUserRole : BMUserRole
+    where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>
+    where TUser : PCUser
+    where TRole : PCRole
+    where TUserRole : PCUserRole
 {
     readonly TDbContext db;
 

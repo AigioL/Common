@@ -1,0 +1,26 @@
+using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Primitives.Models.Abstractions;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
+namespace AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
+
+public partial interface IPCUserRepository
+{
+    DatabaseFacade Database { get; }
+
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    Task<PagedModel<BMUserTableItem>> QueryAsync(
+             string? userName, string? nickName, string? name,
+             int current = IPagedModel.DefaultCurrent,
+             int pageSize = IPagedModel.DefaultPageSize);
+
+    /// <summary>
+    /// 更新用户与角色关联的租户 Id
+    /// </summary>
+    Task<int> UpdateTenantIdToUserRoleAsync(
+        Guid userId,
+        Guid tenantId);
+}

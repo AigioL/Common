@@ -2,10 +2,10 @@ using AigioL.Common.AspNetCore.AdminCenter;
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
-using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Identity;
@@ -54,7 +54,7 @@ public static partial class PCUsersController
 
     static async Task<BMApiRsp<PagedModel<BMUserTableItem>>> Get(HttpContext context, int current, int pageSize, string? userName = null, string? nickName = null, string? name = null)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMUserRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCUserRepository>();
         var r = await repo.QueryAsync(userName, nickName, name, current, pageSize);
         return r;
     }
@@ -99,7 +99,7 @@ public static partial class PCUsersController
             return $"用户名 {model.UserName} 已存在";
         }
 
-        var repo = context.RequestServices.GetRequiredService<IBMUserRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCUserRepository>();
         using var transaction = repo.Database.BeginTransaction();
         user = new()
         {
@@ -141,7 +141,7 @@ public static partial class PCUsersController
         }
 
         var userName = await userManager.GetUserNameAsync(user);
-        var repo = context.RequestServices.GetRequiredService<IBMUserRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCUserRepository>();
         using var transaction = repo.Database.BeginTransaction();
         if (model.UserName != userName)
         {

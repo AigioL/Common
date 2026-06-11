@@ -18,7 +18,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\PCDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthorizationEndpointConventionBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddPartnerCenterRepositories.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\PCButtonModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Menus\PCMenuButtonModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Users\PCUserInfoModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Handlers\PermissionAuthorizationHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Policies\Requirements\PermissionAuthorizationRequirement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IPCMenuRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IPCRoleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IPCUserRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\PCMenuRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\PCRoleRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\PCUserRepository.cs" />
   </ItemGroup>
 </Project>

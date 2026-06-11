@@ -1,13 +1,10 @@
 using AigioL.Common.AspNetCore.AdminCenter;
-using AigioL.Common.AspNetCore.AdminCenter.Constants;
-using AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
-using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
-using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
-using Microsoft.AspNetCore.Authorization;
+using AigioL.Common.AspNetCore.PartnerCenter.Models.Users;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -57,7 +54,7 @@ public static partial class PCUserController
         .WithDescription("修改当前登录合作伙伴后台用户的密码（验证旧密码相同）");
     }
 
-    static async Task<BMApiRsp<BMUserInfoModel?>> Get<TUser>(HttpContext context, Guid tenantId) where TUser : PCUser
+    static async Task<BMApiRsp<PCUserInfoModel?>> Get<TUser>(HttpContext context, Guid tenantId) where TUser : PCUser
     {
         var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
         var user = await userManager.GetUserAsync(context.User);
@@ -67,14 +64,14 @@ public static partial class PCUserController
         }
         ArgumentNullException.ThrowIfNull(user.UserName);
 
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var menus = await repo.GetUserMenuAsync(user.Id, tenantId);
 
-        BMUserInfoModel r = new()
+        PCUserInfoModel r = new()
         {
             UserName = user.UserName,
             NickName = user.NickName,
-            Avatar = BMUserInfoModel.DefaultAvatarUrl,
+            Avatar = PCUserInfoModel.DefaultAvatarUrl,
             TenantId = user.TenantId,
             Menus = menus,
         };
@@ -123,7 +120,7 @@ public static partial class PCUserController
         }
         ArgumentNullException.ThrowIfNull(user.UserName);
 
-        var repo = context.RequestServices.GetRequiredService<IBMMenuRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCMenuRepository>();
         var r = await repo.GetRoleMenus(user.Id, tenantId);
         return r;
     }

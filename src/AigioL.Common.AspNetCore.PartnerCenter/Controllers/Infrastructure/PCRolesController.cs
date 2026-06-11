@@ -1,10 +1,10 @@
 using AigioL.Common.AspNetCore.AdminCenter;
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
-using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Identity;
@@ -81,14 +81,14 @@ public static partial class PCRolesController
 
     static async Task<BMApiRsp<List<SelectItemModel<Guid>>?>> GetList(HttpContext context)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMRoleRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCRoleRepository>();
         var r = await repo.GetSelectAsync();
         return r;
     }
 
     static async Task<BMApiRsp<PagedModel<BMRoleModel>?>> Get(HttpContext context, int current, int pageSize, string? name = null)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMRoleRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCRoleRepository>();
         var r = await repo.QueryAsync(name, current, pageSize);
         return r;
     }
@@ -143,7 +143,7 @@ public static partial class PCRolesController
 
     static async Task<BMApiRsp<List<Guid>?>> GetRoleMenus(HttpContext context, Guid roleId, Guid tenantId)
     {
-        var repo = context.RequestServices.GetRequiredService<IBMRoleRepository>();
+        var repo = context.RequestServices.GetRequiredService<IPCRoleRepository>();
         var r = await repo.GetRoleMenus(roleId, tenantId);
         return r;
     }

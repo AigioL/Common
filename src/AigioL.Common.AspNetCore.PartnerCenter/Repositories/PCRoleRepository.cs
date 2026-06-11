@@ -1,0 +1,86 @@
+using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
+using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.Primitives.Models;
+using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+
+namespace AigioL.Common.AspNetCore.PartnerCenter.Repositories;
+
+sealed partial class PCRoleRepository<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
+    Repository<TDbContext, PCMenu, Guid>,
+    IPCRoleRepository
+    where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>
+    where TUser : PCUser
+    where TRole : PCRole
+    where TUserRole : PCUserRole
+{
+    public PCRoleRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
+    {
+    }
+
+    public async Task<PagedModel<BMRoleModel>> QueryAsync(string? name, int current = 1, int pageSize = 10)
+    {
+        var query = db.Roles.AsNoTrackingWithIdentityResolution();
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            query = query.Where(x => x.Name!.Contains(name));
+        }
+        query = query.OrderByDescending(static x => x.CreateTime);
+
+        var q2 = query.OrderByDescending(static x => x.CreateTime)
+            .Select(_Expr.RoleExpr);
+
+#if DEBUG
+        var sql = q2.ToQueryString();
+#endif
+
+        var r = await q2.PagingAsync(current, pageSize, RequestAborted);
+        return r;
+    }
+
+    public async Task<List<SelectItemModel<Guid>>> GetSelectAsync(int takeCount = 100)
+    {
+        var query = db.Roles.AsNoTrackingWithIdentityResolution();
+
+        var q2 = query.Select(static x => new SelectItemModel<Guid>
+        {
+            Id = x.Id,
+            Title = x.Name,
+        }).Take(takeCount);
+
+        var r = await q2.ToListAsync(RequestAborted);
+        return r;
+    }
+
+    public async Task<List<Guid>> GetRoleMenus(Guid roleId, Guid? tenantId)
+    {
+        var query = db.MenuButtonRoles.AsNoTrackingWithIdentityResolution()
+            .Where(x => x.RoleId == roleId);
+        if (tenantId.HasValue)
+        {
+            query = query.Where(x => x.TenantId == tenantId);
+        }
+
+        var r = await query.Select(x => x.MenuId).Distinct().ToListAsync(RequestAborted);
+        return r;
+    }
+}
+
+file static class _Expr
+{
+    internal static readonly Expression<Func<PCRole, BMRoleModel>> RoleExpr = x => new()
+    {
+        Id = x.Id,
+        Name = x.Name!,
+    };
+}

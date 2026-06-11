@@ -1,7 +1,7 @@
-using AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
-using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
-using AigioL.Common.AspNetCore.AdminCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
+using AigioL.Common.AspNetCore.PartnerCenter.Repositories.Abstractions;
 using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -9,21 +9,21 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 
-namespace AigioL.Common.AspNetCore.AdminCenter.Repositories;
+namespace AigioL.Common.AspNetCore.PartnerCenter.Repositories;
 
-sealed partial class BMUserRepository<
+sealed partial class PCUserRepository<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TDbContext,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
     Repository<TDbContext, TUser, Guid>,
-    IBMUserRepository
-    where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>
-    where TUser : BMUser
-    where TRole : BMRole
-    where TUserRole : BMUserRole
+    IPCUserRepository
+    where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>
+    where TUser : PCUser
+    where TRole : PCRole
+    where TUserRole : PCUserRole
 {
-    public BMUserRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
+    public PCUserRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
     {
     }
 

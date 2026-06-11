@@ -57,7 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\RSAExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.MapGetRSADemoHtml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddProblemDetails.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddACRepositories.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddAdminCenterRepositories.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMAppSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMButtonModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMRoleModel.cs" />
