@@ -10,23 +10,25 @@ using AigioL.Common.AspNetCore.AppCenter.Entities.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Summaries;
-using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
-using GameTrainer.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.LazyCalendar;
 using static AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories.LazyStatisticUserCountDict;
+using Order = AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Analytics.Repositories;
 
-sealed partial class StatisticsRepository<TDbContext>(TDbContext dbContext, IServiceProvider serviceProvider) :
+sealed partial class StatisticsRepository<TDbContext>(
+    TDbContext dbContext,
+    IServiceProvider serviceProvider,
+    IOrderBusinessTypeService orderBusinessTypeService) :
     Repository<TDbContext, ActiveUserStatisticSummary, Guid>(dbContext, serviceProvider),
     IStatisticsRepository
     where TDbContext : DbContext,
@@ -449,7 +451,7 @@ partial class StatisticsRepository<TDbContext>
         var alipayTax = taxs[TaxHelper.键_支付宝税点];
         var wechatPayTax = taxs[TaxHelper.键_微信支付税点];
 
-        var orders = ApplyMembershipBusinessSourceFilter(db.Orders.AsNoTracking());
+        var orders = ApplyMembershipBusinessSourceFilter(db.Orders.AsNoTrackingWithIdentityResolution());
         var orderPaymentCompositions = db.OrderPaymentCompositions
              .Where(x =>
                 x.PaymentStatus != PaymentStatus.WaitPay &&
@@ -1480,9 +1482,9 @@ partial class StatisticsRepository<TDbContext>
         return rowCount;
     }
 
-    IQueryable<AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order> ApplyMembershipBusinessSourceFilter(IQueryable<AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Order> orders) =>
+    IQueryable<Order> ApplyMembershipBusinessSourceFilter(IQueryable<Order> orders) =>
         orders.Where(order =>
-            order.BusinessTypeId != (int)OrderBusinessType.Membership ||
+            order.BusinessTypeId != orderBusinessTypeService.Membership ||
             db.MembershipBusinessOrders.Any(x =>
                 x.Id == order.BusinessOrderId &&
                 x.BusinessSource == MembershipBusinessSource.普通订单));
