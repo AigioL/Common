@@ -1,12 +1,13 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 
 /// <summary>
 /// 后台助手服务接口，由业务方实现
 /// </summary>
-public interface IAdminCenterService
+public partial interface IAdminCenterService
 {
     /// <summary>
     /// 默认管理员角色名称
@@ -36,6 +37,13 @@ public interface IAdminCenterService
 #pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
 
     void HandleMenus(bool isRootTenant, List<BMMenu> menus)
+    {
+    }
+}
+
+partial interface IAdminCenterService
+{
+    void HandleMenus(bool isRootTenant, List<PCMenu> menus)
     {
     }
 }

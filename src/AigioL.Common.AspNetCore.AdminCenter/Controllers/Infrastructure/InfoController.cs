@@ -310,9 +310,9 @@ public static partial class InfoController
 
         #region 添加预设菜单按钮关系
 
-        var expandBMMenus = new HashSet<BMMenu>();
-        ExpandBMMenus(expandBMMenus, addMenus);
-        foreach (var menu in expandBMMenus)
+        var expandMenus = new HashSet<BMMenu>();
+        ExpandBMMenus(expandMenus, addMenus);
+        foreach (var menu in expandMenus)
         {
             if (menu.Key == "dashboard" || (menu.Children != null && menu.Children.Count != 0))
             {

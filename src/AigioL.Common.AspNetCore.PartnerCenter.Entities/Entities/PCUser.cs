@@ -1,6 +1,8 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using AigioL.Common.Primitives.Models;
@@ -8,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
 namespace AigioL.Common.AspNetCore.PartnerCenter.Entities;
@@ -28,6 +31,19 @@ public partial class PCUser :
     IPasswordHash
 {
     string DebuggerDisplay() => $"{NickName ?? UserName}, {Id}";
+
+    /// <summary>
+    /// 用户类型
+    /// </summary>
+    [Comment("用户类型")]
+    public PCUserType UserType { get; set; }
+
+    /// <summary>
+    /// 关联业务 Id
+    /// </summary>
+    [Comment("关联业务Id")]
+    [Column(TypeName = "jsonb")]
+    public Guid[] BusinessIds { get; set; } = [];
 
     ///// <summary>
     ///// 组织架构 Id
@@ -112,6 +128,8 @@ public partial class PCUser :
 
     ///// <inheritdoc cref="PCUserOrganization"/>
     //public List<PCUserOrganization>? Organizations { get; set; }
+
+    public virtual List<AuthMessageRecord> AuthMessageRecords { get; set; } = null!;
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<PCUser>
     {

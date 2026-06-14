@@ -9,3 +9,5 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 /// <param name="Password">密码</param>
 /// <param name="InitPassword">初始化密码</param>
 public sealed record BMInitSystemRequest(string TenantId, string TenantName, string UserName, string Password, string InitPassword);
+
+public sealed record PCInitSystemRequest(string TenantId, string TenantName, string? UserId, string? PCUserId, string InitPassword);

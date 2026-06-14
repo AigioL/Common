@@ -1,6 +1,6 @@
 namespace AigioL.Common.AspNetCore.AdminCenter.Constants;
 
-public static partial class ControllerConstants
+public static partial class ControllerConstants // 管理后台（通用）
 {
     /// <summary>
     /// 管理后台角色权限管理
@@ -154,7 +154,25 @@ public static partial class ControllerConstants
     public const string WebProxys = "WebProxys";
 
     /// <summary>
-    /// KOL 用户管理
+    /// 合作伙伴后台用户管理
     /// </summary>
-    public const string KolUser = "KolUser";
+    public const string PCUsers = "KolUser";
+}
+
+partial class ControllerConstants // PartnerCenter 👇 合作伙伴后台（通用）
+{
+    const string PartnerCenterPrefix = "PC_";
+
+    /// <summary>
+    /// 合作伙伴后台角色权限管理
+    /// </summary>
+    public const string PC_RoleManage = $"{PartnerCenterPrefix}RoleManage";
+    /// <summary>
+    /// 合作伙伴后台的用户管理
+    /// </summary>
+    public const string PC_SystemUser = $"{PartnerCenterPrefix}SystemUser";
+    /// <summary>
+    /// 合作伙伴后台菜单管理
+    /// </summary>
+    public const string PC_SystemMenuManage = $"{PartnerCenterPrefix}SystemMenuManage";
 }

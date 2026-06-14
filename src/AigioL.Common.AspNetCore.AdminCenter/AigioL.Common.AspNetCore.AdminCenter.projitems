@@ -48,6 +48,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Ordering\OrderController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Ordering\RefundBillController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\BMDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\BMDbContextBase.IPCDbContextBase2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IBMDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApiRspExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthorizationEndpointConventionBuilderExtensions.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\OpenApiOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\RSAExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.MapGetRSADemoHtml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddBMUserManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddProblemDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddAdminCenterRepositories.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\BMAppSettings.cs" />

@@ -55,6 +55,8 @@
   <Folder Name="/2.Libraries/AspNetCore/">
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.Entities/AigioL.Common.AspNetCore.AdminCenter.Entities.shproj" Id="e6c5f93e-333f-41c9-8e27-e0046d5ce19c" />
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.Helpers.Login/AigioL.Common.AspNetCore.AdminCenter.Helpers.Login.shproj" Id="1fb75988-2bb5-4867-abed-3bae34abbb48" />
+    <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Core/AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Core.shproj" Id="f1f51603-5eaa-495b-8471-8816c891cb44" />
+    <Project Path="src/AigioL.Common.AspNetCore.AdminCenter.PartnerCenter/AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.shproj" Id="5b106d22-53c1-4f86-a7d4-aead7753bcd4" />
     <Project Path="src/AigioL.Common.AspNetCore.AdminCenter/AigioL.Common.AspNetCore.AdminCenter.shproj" Id="66c06857-99f9-4aa4-9504-e2f1070aa7ae" />
     <Project Path="src/AigioL.Common.AspNetCore.ApiGateway.Core/AigioL.Common.AspNetCore.ApiGateway.Core.shproj" Id="bb5339c8-0ab7-4b32-bd60-4a8004d4deae" />
     <Project Path="src/AigioL.Common.AspNetCore.ApiGateway/AigioL.Common.AspNetCore.ApiGateway.shproj" Id="b3f85f86-61ed-4d3b-8d6f-780b1ad07a60" />

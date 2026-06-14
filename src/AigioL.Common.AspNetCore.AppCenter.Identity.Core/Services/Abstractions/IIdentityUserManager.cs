@@ -53,6 +53,12 @@ public partial interface IIdentityUserManager<TUser> : IDisposable where TUser :
     Task<IdentityResult> ChangePhoneNumberAsync(TUser user, string phoneNumber, string token);
 
     Task<IdentityResult> UpdateUserAsync(TUser user);
+
+    Task<IdentityResult> UpdateAsync(TUser user);
+
+    Task<IList<string>> GetRolesAsync(TUser user);
+
+    Task<TUser?> FindByNameAsync(string userName);
 }
 
 partial interface IIdentityUserManager<TUser> // 自定义方法
@@ -67,7 +73,7 @@ partial interface IIdentityUserManager<TUser> // 自定义方法
     /// <summary>
     /// 根据 JWT Id 获取用户实体
     /// </summary>
-    Task<TUser?> FindByTokenIdAsync(Guid jwtId);
+    Task<TUser?> FindByTokenIdAsync(Guid jwtId) => throw new NotImplementedException("当前用户架构不支持此操作");
 
     /// <summary>
     /// 根据 RefreshToken 刷新 Token 与新的 JwtId
@@ -75,7 +81,7 @@ partial interface IIdentityUserManager<TUser> // 自定义方法
     Task<JsonWebTokenValue?> RefreshTokenAsync(
         DevicePlatform2 platform,
         string? deviceId,
-        string refresh_token);
+        string refresh_token) => throw new NotImplementedException("当前用户架构不支持此操作");
 
     /// <summary>
     /// 通过多个条件查找用户。用户名/邮箱/手机号
@@ -91,13 +97,15 @@ partial interface IIdentityUserManager<TUser> // 自定义方法
     /// <summary>
     /// 检查邮箱是否已注册
     /// </summary>
-    Task<bool> ExistsEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<bool> ExistsEmailAsync(string email, CancellationToken cancellationToken = default) => throw new NotImplementedException("当前用户架构不支持此操作");
 
     /// <summary>
     /// 刷新缓存的用户信息
     /// </summary>
-    Task RefreshUserInfoCacheAsync(TUser user);
+    Task RefreshUserInfoCacheAsync(TUser user) => throw new NotImplementedException("当前用户架构不支持此操作");
 
     /// <inheritdoc cref="RefreshUserInfoCacheAsync(TUser)"/>
-    Task RefreshUserInfoCacheAsync(UserInfoModel userInfo);
+    Task RefreshUserInfoCacheAsync(UserInfoModel userInfo) => throw new NotImplementedException("当前用户架构不支持此操作");
+
+    Task<int> UpdateTenantIdAsync(Guid userId, Guid tenantId) => throw new NotImplementedException("当前用户架构不支持此操作");
 }

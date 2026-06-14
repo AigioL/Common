@@ -13,21 +13,34 @@ public sealed record class PermissionAuthorizationRequirement(string controllerN
     public static implicit operator AuthorizationPolicy(PermissionAuthorizationRequirement obj) => obj.GetAuthorizationPolicy();
 }
 
-public abstract record class PermissionAuthorizationRequirement<TButtonType>(string controllerName, TButtonType buttonType) : IAuthorizationRequirement
+public abstract record class PermissionAuthorizationRequirementBase : IAuthorizationRequirement
 {
     /// <summary>
     /// 控制器名称
     /// </summary>
-    public string ControllerName => controllerName;
+    public abstract string ControllerName { get; }
+
+    public abstract string ButtonTypeString { get; }
+
+    public AuthorizationPolicy GetAuthorizationPolicy() => new([this], [BMMinimalApis.BearerScheme]);
+
+    public static string GetPolicyName(string controllerName, string buttonType) => $"{controllerName}{buttonType}";
+
+    public string GetPolicyName() => GetPolicyName(ControllerName, ButtonTypeString);
+}
+
+public abstract record class PermissionAuthorizationRequirement<TButtonType>(string controllerName, TButtonType buttonType) : PermissionAuthorizationRequirementBase where TButtonType : struct, Enum
+{
+    public override string ControllerName => controllerName;
 
     /// <summary>
     /// 按钮类型
     /// </summary>
     public TButtonType ButtonType => buttonType;
 
-    public AuthorizationPolicy GetAuthorizationPolicy() => new([this], [BMMinimalApis.BearerScheme]);
+    static string GetButtonTypeString(TButtonType buttonType) => buttonType.ToString()!;
 
-    public static string GetPolicyName(string controllerName, TButtonType buttonType) => $"{controllerName}{buttonType}";
+    public override string ButtonTypeString => GetButtonTypeString(buttonType);
 
-    public string GetPolicyName() => GetPolicyName(controllerName, buttonType);
+    public static string GetPolicyName(string controllerName, TButtonType buttonType) => GetPolicyName(controllerName, GetButtonTypeString(buttonType));
 }

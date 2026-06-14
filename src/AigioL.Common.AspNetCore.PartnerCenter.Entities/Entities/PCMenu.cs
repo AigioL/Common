@@ -1,3 +1,5 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
+using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.Primitives.Columns;
@@ -104,6 +106,9 @@ public partial class PCMenu :
         {
             base.Configure(builder);
 
+            IOperatorBaseEntity.Configure(builder);
+            ICreationBaseEntity.Configure(builder);
+
             builder.HasMany(x => x.Children)
                    .WithOne(x => x.Parent)
                    .HasForeignKey(x => x.ParentId)
@@ -125,4 +130,25 @@ public partial class PCMenu :
                    );
         }
     }
+}
+
+partial class PCMenu : ICreationBaseEntity<Guid>
+{
+
+    /// <inheritdoc/>
+    [Comment("创建人")]
+    public Guid? CreateUserId { get; set; }
+
+    /// <inheritdoc/>
+    public virtual BMUser? CreateUser { get; set; }
+}
+
+partial class PCMenu : IOperatorBaseEntity<Guid>
+{
+    /// <inheritdoc/>
+    [Comment("操作人")]
+    public Guid? OperatorUserId { get; set; }
+
+    /// <inheritdoc/>
+    public virtual BMUser? OperatorUser { get; set; }
 }

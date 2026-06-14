@@ -18,9 +18,9 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class PCMenusController
 {
-    const string ControllerName = ControllerConstants.SystemMenuManage;
+    const string ControllerName = ControllerConstants.PC_SystemMenuManage;
 
-    public static void MapPCMenus(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "pc/menus")
+    public static void MapPCMenus(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/menus")
     {
         var routeGroup = b.MapGroup(pattern)
             .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)

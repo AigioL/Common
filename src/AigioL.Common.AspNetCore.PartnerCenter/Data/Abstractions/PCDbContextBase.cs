@@ -24,7 +24,7 @@ public abstract partial class PCDbContextBase<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole> :
-    IdentityDbContext<TUser, TRole, Guid, PCUserClaim, TUserRole, PCUserLogin, PCRoleClaim, PCUserToken>, IPCDbContextBase, IDbContextBase
+    IdentityDbContext<TUser, TRole, Guid, PCUserClaim, TUserRole, PCUserLogin, PCRoleClaim, PCUserToken>, IPCDbContext2, IPCDbContextBase, IDbContextBase
     where TUser : PCUser
     where TRole : PCRole
     where TUserRole : PCUserRole
@@ -64,13 +64,7 @@ public abstract partial class PCDbContextBase<
         base.OnModelCreating(b);
 
         // 重命名 Identity PC 相关表名
-        b.Entity<TUser>().ToTable(TableNames.Users);
-        b.Entity<TRole>().ToTable(TableNames.Roles);
-        b.Entity<PCRoleClaim>().ToTable(TableNames.RoleClaims);
-        b.Entity<PCUserClaim>().ToTable(TableNames.UserClaims);
-        b.Entity<PCUserLogin>().ToTable(TableNames.UserLogins);
-        b.Entity<TUserRole>().ToTable(TableNames.UserRoles);
-        b.Entity<PCUserToken>().ToTable(TableNames.UserTokens);
+        TableNames.RenamePCTables<TUser, TRole, TUserRole>(b);
 
         // 与 AppDbContextBase 同步调用 BuildEntities 扩展函数
         b.BuildEntities(AppendBuildEntities_);

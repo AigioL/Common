@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
@@ -121,6 +122,8 @@ public partial class BMUser :
 
     ///// <inheritdoc cref="BMUserOrganization"/>
     //public List<BMUserOrganization>? Organizations { get; set; }
+
+    public virtual List<AuthMessageRecord> AuthMessageRecords { get; set; } = null!;
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<BMUser>
     {

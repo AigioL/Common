@@ -21,7 +21,7 @@ public sealed class PermissionAuthorizationHandler<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUser,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TRole,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields | DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties | DynamicallyAccessedMemberTypes.Interfaces)] TUserRole>
-    : AuthorizationHandler<PermissionAuthorizationRequirement>
+    : AuthorizationHandler<PermissionAuthorizationRequirementBase>
     where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>
     where TUser : PCUser
     where TRole : PCRole
@@ -34,7 +34,7 @@ public sealed class PermissionAuthorizationHandler<
         this.serviceProvider = serviceProvider;
     }
 
-    protected sealed override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionAuthorizationRequirement requirement)
+    protected sealed override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionAuthorizationRequirementBase requirement)
     {
         var cancellationToken = serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext?.RequestAborted ?? default;
         return HandleRequirementAsync(context, requirement, cancellationToken);
@@ -58,7 +58,7 @@ public sealed class PermissionAuthorizationHandler<
         return query;
     }
 
-    async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionAuthorizationRequirement requirement, CancellationToken cancellationToken)
+    async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionAuthorizationRequirementBase requirement, CancellationToken cancellationToken)
     {
         using var s = serviceProvider.CreateScope();
         var db = s.ServiceProvider.GetRequiredService<TDbContext>();

@@ -1,8 +1,13 @@
 using AigioL.Common.AspNetCore.AdminCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.JsonWebTokens.Models;
 using AigioL.Common.JsonWebTokens.Services.Abstractions;
 using AigioL.Common.Primitives.Columns;
+using AigioL.Common.SmsSender.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
@@ -12,6 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using R = AigioL.Common.AspNetCore.AppCenter.Identity.UI.Properties.Resources;
 
 namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 
@@ -20,18 +26,42 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class PCLoginController
 {
-    public static void MapPCLogin<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "pc/login") where TUser : PCUser
+    public static void MapPCLogin<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUser,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "bm/login",
+        bool enablePwdLogin = true,
+        bool enableSmsLogin = true)
+        where TUser : PCUser
+        where TAppSettings : class, IDisableSms
     {
         var routeGroup = b.MapGroup(pattern)
             .WithDescription("合作伙伴后台用户登录");
 
-        routeGroup.MapPost("", async (HttpContext context, [FromBody] string[] args) =>
+        if (enablePwdLogin)
         {
-            var r = await LoginAsync<TUser>(context, args);
-            return r.SetHttpContext(context);
-        })
-        .AllowAnonymous()
-        .WithDescription("合作伙伴后台用户登录");
+            routeGroup.MapPost("", async (HttpContext context, [FromBody] string[] args) =>
+            {
+                var r = await LoginAsync<TUser>(context, args);
+                return r.SetHttpContext(context);
+            })
+            .AllowAnonymous()
+            .WithDescription("合作伙伴后台用户登录（密码）");
+        }
+
+        if (enableSmsLogin)
+        {
+            routeGroup.MapIdentityVerificationCodesV5_PC<TAppSettings>();
+
+            routeGroup.MapPost("sms", async (HttpContext context, [FromBody] string[] args) =>
+            {
+                var r = await LoginBySmsAsync<TUser>(context, args);
+                return r.SetHttpContext(context);
+            })
+            .AllowAnonymous()
+            .WithDescription("合作伙伴后台用户登录（短信）");
+        }
     }
 
     const int MaxIpAccessFailedCount = 10;
@@ -52,7 +82,7 @@ public static partial class PCLoginController
 
         var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
         var options = context.RequestServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
-        var userManager = context.RequestServices.GetRequiredService<UserManager<TUser>>();
+        var userManager = context.RequestServices.GetRequiredService<IIdentityUserManager<TUser>>();
 
         TUser? user = null;
 
@@ -113,7 +143,7 @@ public static partial class PCLoginController
             }
 
             var isLockedOut = await userManager.IsLockedOutAsync(user);
-            if (isLockedOut)
+            if (user.Disable || isLockedOut)
             {
                 return "该账号已被锁定";
             }
@@ -124,7 +154,112 @@ public static partial class PCLoginController
         }
     }
 
-    static async Task<JsonWebTokenValue> GenerateTokenAsync<TUser>(HttpContext context, IJsonWebTokenValueProvider jwtValueProvider, UserManager<TUser> userManager, TUser user) where TUser : PCUser
+    static async Task<BMApiRsp<JsonWebTokenValue?>> LoginBySmsAsync<TUser>(HttpContext context, string[] args) where TUser : PCUser
+    {
+        if (args.Length < 2)
+        {
+            return HttpStatusCode.BadRequest;
+        }
+
+        var ip = context.Connection.RemoteIpAddress?.ToString();
+        if (string.IsNullOrWhiteSpace(ip))
+        {
+            return "未知的 IP 地址";
+        }
+
+        var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
+        var options = context.RequestServices.GetRequiredService<IOptions<IdentityOptions>>().Value;
+        var userManager = context.RequestServices.GetRequiredService<IIdentityUserManager<TUser>>();
+
+        TUser? user = null;
+
+        // IP Redis 键检查周期内失败次数过多限制
+        var ipCacheKey = $"PC_Login_Ip_[{ip}]";
+        var ipAccessFailedCountB = await cache.GetAsync(ipCacheKey, context.RequestAborted);
+        var ipAccessFailedCount = ipAccessFailedCountB == null ? 0 : BinaryPrimitives.ReadInt32BigEndian(ipAccessFailedCountB);
+        if (ipAccessFailedCount >= MaxIpAccessFailedCount)
+        {
+            return HttpStatusCode.TooManyRequests;
+        }
+
+        var result = await LoginCoreAsync();
+        if (!result.IsSuccess)
+        {
+            var ipAccessFailedCountS = new byte[sizeof(int)];
+            BinaryPrimitives.WriteInt32BigEndian(ipAccessFailedCountS, ipAccessFailedCount + 1);
+
+            if (user != null)
+            {
+                user.AccessFailedCount++;
+                await userManager.UpdateAsync(user);
+            }
+
+            await cache.SetAsync(ipCacheKey, ipAccessFailedCountS, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = options.Lockout.DefaultLockoutTimeSpan,
+            }, CancellationToken.None);
+        }
+
+        return result;
+
+        async Task<BMApiRsp<JsonWebTokenValue?>> LoginCoreAsync()
+        {
+            var jwtValueProvider = context.RequestServices.GetRequiredService<IJsonWebTokenValueProvider>();
+            var appSettings = context.RequestServices.GetRequiredService<IOptions<BMAppSettings>>().Value;
+            var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
+            var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
+
+            var rsaPrivateKey = appSettings.AdminRSAPrivateKey;
+            ArgumentNullException.ThrowIfNull(rsaPrivateKey);
+            var rsaParameters = RSAUtils.ReadParameters(rsaPrivateKey);
+            using var rsa = RSA.Create(rsaParameters);
+
+            var phoneNumber = rsa.BMDecrypt(args[0]);
+            var phoneNumberRegionCode = args.Length > 2 ? rsa.BMDecrypt(args[1]) : IPhoneNumber.DefaultPhoneNumberRegionCode;
+
+            user = await userManager.FindByPhoneNumberAsync(phoneNumber, phoneNumberRegionCode);
+            if (user == null)
+            {
+                return ResponseDataUserNameNotFoundOrPasswordInvalid;
+            }
+
+            var isLockedOut = await userManager.IsLockedOutAsync(user);
+            if (user.Disable || isLockedOut)
+            {
+                return "该账号已被锁定";
+            }
+
+            var smsCode = args.Length > 2 ? rsa.BMDecrypt(args[2]) : rsa.BMDecrypt(args[1]);
+
+            var smsType = SmsCodeType.Login;
+            var record = await authMessageRecordRepo.CheckAuthMessageAsync(
+                   smsSender,
+                   phoneNumber,
+                   phoneNumberRegionCode,
+                   smsCode,
+                   smsType); // 校验短信验证码
+
+            if (record == null || record.Abandoned)
+            {
+                return R.验证码已过期或不存在;
+            }
+            if (!record.CheckSuccess)
+            {
+                return R.短信验证码不正确;
+            }
+
+            // 登录成功，生成 JWT 返回
+            var token = await GenerateTokenAsync(context, jwtValueProvider, userManager, user);
+            return token;
+        }
+    }
+
+    static async Task<JsonWebTokenValue> GenerateTokenAsync<TUser>(
+        HttpContext context,
+        IJsonWebTokenValueProvider jwtValueProvider,
+        IIdentityUserManager<TUser> userManager,
+        TUser user)
+        where TUser : PCUser
     {
         var roles = await userManager.GetRolesAsync(user);
         var token = await jwtValueProvider.GenerateTokenAsync(user.Id, roles, aciton: (list) =>

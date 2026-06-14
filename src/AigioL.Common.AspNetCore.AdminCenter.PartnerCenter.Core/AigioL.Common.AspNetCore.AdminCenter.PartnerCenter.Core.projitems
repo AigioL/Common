@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>f1f51603-5eaa-495b-8471-8816c891cb44</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.AspNetCore.AdminCenter.PartnerCenter</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ProfileExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddRepositories.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\AddOrEditPCUserModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserOrderFilterModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserTableItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\SetPCUserPasswordModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IPCUserRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\PCUserRepository.cs" />
+  </ItemGroup>
+</Project>

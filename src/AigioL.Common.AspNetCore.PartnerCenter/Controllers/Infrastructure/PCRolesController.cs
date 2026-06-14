@@ -19,9 +19,9 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class PCRolesController
 {
-    const string ControllerName = ControllerConstants.RoleManage;
+    const string ControllerName = ControllerConstants.PC_RoleManage;
 
-    public static void MapPCRoles<TRole>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "pc/roles") where TRole : PCRole, new()
+    public static void MapPCRoles<TRole>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/roles") where TRole : PCRole, new()
     {
         var routeGroup = b.MapGroup(pattern)
             .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)

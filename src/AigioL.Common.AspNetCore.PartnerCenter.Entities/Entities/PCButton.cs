@@ -1,3 +1,5 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
+using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.Primitives.Columns;
@@ -54,6 +56,30 @@ public partial class PCButton :
         public sealed override void Configure(EntityTypeBuilder<PCButton> builder)
         {
             base.Configure(builder);
+
+            IOperatorBaseEntity.Configure(builder);
+            ICreationBaseEntity.Configure(builder);
         }
     }
+}
+
+partial class PCButton : ICreationBaseEntity<Guid>
+{
+
+    /// <inheritdoc/>
+    [Comment("创建人")]
+    public Guid? CreateUserId { get; set; }
+
+    /// <inheritdoc/>
+    public virtual BMUser? CreateUser { get; set; }
+}
+
+partial class PCButton : IOperatorBaseEntity<Guid>
+{
+    /// <inheritdoc/>
+    [Comment("操作人")]
+    public Guid? OperatorUserId { get; set; }
+
+    /// <inheritdoc/>
+    public virtual BMUser? OperatorUser { get; set; }
 }

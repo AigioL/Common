@@ -1,4 +1,6 @@
+using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Models;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -111,7 +113,29 @@ public partial class AuthMessageRecord :
     [Comment("用户 Id")]
     public Guid? UserId { get; set; }
 
-    public virtual User User { get; set; } = null!;
+    public virtual User? User { get; set; }
+
+    /// <summary>
+    /// 合作伙伴后台用户 Id
+    /// </summary>
+    [Comment("合作伙伴后台用户 Id")]
+    public Guid? PCUserId { get; set; }
+
+    /// <summary>
+    /// 合作伙伴后台用户
+    /// </summary>
+    public virtual PCUser? PCUser { get; set; }
+
+    /// <summary>
+    /// 后台用户 Id
+    /// </summary>
+    [Comment("后台用户 Id")]
+    public Guid? BMUserId { get; set; }
+
+    /// <summary>
+    /// 后台用户
+    /// </summary>
+    public virtual BMUser? BMUser { get; set; }
 
     /// <summary>
     /// 类型（是属于邮箱验证还是短信验证）
@@ -132,6 +156,16 @@ public partial class AuthMessageRecord :
             builder.HasOne(x => x.User)
                 .WithMany(x => x.AuthMessageRecords)
                 .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasOne(x => x.PCUser)
+                .WithMany(x => x.AuthMessageRecords)
+                .HasForeignKey(x => x.PCUserId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasOne(x => x.BMUser)
+                .WithMany(x => x.AuthMessageRecords)
+                .HasForeignKey(x => x.BMUserId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

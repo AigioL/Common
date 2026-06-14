@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Columns\ICreatePCUserIdNullable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IOperatorPCUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Columns\IOperatorPCUserId.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IPCDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\CreationPCBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\ICreationPCBaseEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\Abstractions\IOperatorPCBaseEntity.cs" />
@@ -28,7 +29,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCTenant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserRole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IdentityEntityFrameworkBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCButtonType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCMenuOpenMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserType.cs" />
   </ItemGroup>
 </Project>

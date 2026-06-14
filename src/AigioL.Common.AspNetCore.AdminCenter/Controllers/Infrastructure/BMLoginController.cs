@@ -20,18 +20,39 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class BMLoginController
 {
-    public static void MapBMLogin<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/login") where TUser : BMUser
+    public static void MapBMLogin<TUser>(
+        this IEndpointRouteBuilder b,
+        [StringSyntax("Route")] string pattern = "bm/login",
+        bool enablePwdLogin = true,
+        bool enableSmsLogin = true)
+        where TUser : BMUser
     {
         var routeGroup = b.MapGroup(pattern)
             .WithDescription("管理后台用户登录");
 
-        routeGroup.MapPost("", async (HttpContext context, [FromBody] string[] args) =>
+        if (enablePwdLogin)
         {
-            var r = await LoginAsync<TUser>(context, args);
-            return r.SetHttpContext(context);
-        })
-        .AllowAnonymous()
-        .WithDescription("管理后台用户登录");
+            routeGroup.MapPost("", async (HttpContext context, [FromBody] string[] args) =>
+            {
+                var r = await LoginAsync<TUser>(context, args);
+                return r.SetHttpContext(context);
+            })
+            .AllowAnonymous()
+            .WithDescription("管理后台用户登录（密码）");
+        }
+
+        if (enableSmsLogin)
+        {
+            //routeGroup.MapIdentityVerificationCodesV5_BM<TAppSettings>();
+
+            //routeGroup.MapPost("sms", async (HttpContext context, [FromBody] string[] args) =>
+            //{
+            //    var r = await LoginBySmsAsync<TUser>(context, args);
+            //    return r.SetHttpContext(context);
+            //})
+            //.AllowAnonymous()
+            //.WithDescription("管理后台用户登录（短信）");
+        }
     }
 
     const int MaxIpAccessFailedCount = 10;
@@ -113,7 +134,7 @@ public static partial class BMLoginController
             }
 
             var isLockedOut = await userManager.IsLockedOutAsync(user);
-            if (isLockedOut)
+            if (user.Disable || isLockedOut)
             {
                 return "该账号已被锁定";
             }
@@ -124,7 +145,17 @@ public static partial class BMLoginController
         }
     }
 
-    static async Task<JsonWebTokenValue> GenerateTokenAsync<TUser>(HttpContext context, IJsonWebTokenValueProvider jwtValueProvider, UserManager<TUser> userManager, TUser user) where TUser : BMUser
+    //static async Task<BMApiRsp<JsonWebTokenValue?>> LoginBySmsAsync<TUser>(HttpContext context, string[] args) where TUser : BMUser
+    //{
+    //    throw new NotImplementedException("TODO");
+    //}
+
+    static async Task<JsonWebTokenValue> GenerateTokenAsync<TUser>(
+        HttpContext context,
+        IJsonWebTokenValueProvider jwtValueProvider,
+        UserManager<TUser> userManager,
+        TUser user)
+        where TUser : BMUser
     {
         var roles = await userManager.GetRolesAsync(user);
         var token = await jwtValueProvider.GenerateTokenAsync(user.Id, roles, aciton: (list) =>

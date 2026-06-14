@@ -18,7 +18,7 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class PCUserController
 {
-    public static void MapPCUser<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "pc/user") where TUser : PCUser
+    public static void MapPCUser<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/user") where TUser : PCUser
     {
         var routeGroup = b.MapGroup(pattern)
             .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)

@@ -1,6 +1,8 @@
+using AigioL.Common.AspNetCore.AppCenter.Models.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 using AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
+using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
@@ -15,13 +17,19 @@ public static partial class EndpointRouteBuilderExtensions
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TDbContext,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUser,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TRole,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserRole>(this IEndpointRouteBuilder b)
-        where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>, IPCDbContextBase
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserRole,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings>(
+        this IEndpointRouteBuilder b,
+        bool enablePwdLogin = true,
+        bool enableSmsLogin = true)
+        where TDbContext : PCDbContextBase<TUser, TRole, TUserRole>, IPCDbContextBase, IPCDbContext2, IIdentityDbContext<TUser, TRole, Guid, PCUserClaim, TUserRole, PCUserLogin, PCRoleClaim, PCUserToken>, IDbContextBase
         where TUser : PCUser, new()
         where TRole : PCRole, new()
         where TUserRole : PCUserRole
+        where TAppSettings : class, IDisableSms
     {
-        b.MapPCLogin<TUser>();
+        // Infrastructure
+        b.MapPCLogin<TUser, TAppSettings>(enablePwdLogin: enablePwdLogin, enableSmsLogin: enableSmsLogin);
         b.MapPCMenus();
         b.MapPCRoles<TRole>();
         b.MapPCUser<TUser>();

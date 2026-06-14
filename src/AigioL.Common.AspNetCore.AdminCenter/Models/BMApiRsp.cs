@@ -112,13 +112,30 @@ public partial record class BMApiRsp
         Content = content,
     };
 
-    public static implicit operator BMApiRsp(ApiRsp apiRsp) => new()
+    public static implicit operator BMApiRsp(ApiRsp apiRsp)
     {
-        Code = apiRsp.Code,
-        Messages = apiRsp.Message == null ? [] : [apiRsp.Message],
-        Url = apiRsp.Url,
-        TraceId = apiRsp.TraceId,
-    };
+        if (apiRsp is ApiRsp<IdentityResult?> apiRspIR)
+        {
+            if (apiRspIR.Content != null)
+            {
+                return apiRspIR.Content;
+            }
+        }
+        else if (apiRsp is ApiRsp<ModelStateDictionary> apiRspMSD)
+        {
+            if (apiRspMSD.Content != null)
+            {
+                return apiRspMSD.Content;
+            }
+        }
+        return new()
+        {
+            Code = apiRsp.Code,
+            Messages = apiRsp.Message == null ? [] : [apiRsp.Message],
+            Url = apiRsp.Url,
+            TraceId = apiRsp.TraceId,
+        };
+    }
 
     protected static IEnumerable<string> GetErrors(IdentityResult identityResult)
     {

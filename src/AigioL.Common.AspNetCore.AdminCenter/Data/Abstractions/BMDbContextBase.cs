@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter.Columns;
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.EntityFrameworkCore.Extensions;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Diagnostics.CodeAnalysis;
+using PC_TableNames = AigioL.Common.AspNetCore.PartnerCenter.Data.Abstractions.IPCDbContextBase.TableNames;
 using TableNames = AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions.IBMDbContextBase.TableNames;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.Data.Abstractions;
@@ -71,6 +73,9 @@ public abstract partial class BMDbContextBase<
         b.Entity<BMUserLogin>().ToTable(TableNames.UserLogins);
         b.Entity<TUserRole>().ToTable(TableNames.UserRoles);
         b.Entity<BMUserToken>().ToTable(TableNames.UserTokens);
+
+        // 重命名 Identity PC 相关表名
+        PC_TableNames.RenamePCTables<PCUser, PCRole, PCUserRole>(b);
 
         // 与 AppDbContextBase 同步调用 BuildEntities 扩展函数
         b.BuildEntities(AppendBuildEntities_);

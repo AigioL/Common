@@ -23,7 +23,9 @@ public static partial class EndpointRouteBuilderExtensions
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUser,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TRole,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserRole>(this IEndpointRouteBuilder b,
-        bool ignoreInfoController = false)
+        bool ignoreInfoController = false,
+        bool enablePwdLogin = true,
+        bool enableSmsLogin = true)
         where TDbContext : BMDbContextBase<TUser, TRole, TUserRole>, IBMDbContextBase
         where TUser : BMUser, new()
         where TRole : BMRole, new()
@@ -59,7 +61,7 @@ public static partial class EndpointRouteBuilderExtensions
         {
             b.MapPostInfo<TDbContext, TUser, TRole, TUserRole>();
         }
-        b.MapBMLogin<TUser>();
+        b.MapBMLogin<TUser>(enablePwdLogin: enablePwdLogin, enableSmsLogin: enableSmsLogin);
         b.MapBMMenus();
         b.MapBMRoles<TRole>();
         b.MapBMUser<TUser>();

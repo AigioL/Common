@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCRolesController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCUserController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\PCUsersController.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\IPCDbContextBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\VerificationCodesController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Abstractions\PCDbContextBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthorizationEndpointConventionBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />

@@ -21,9 +21,9 @@ namespace AigioL.Common.AspNetCore.PartnerCenter.Controllers.Infrastructure;
 /// </summary>
 public static partial class PCUsersController
 {
-    const string ControllerName = ControllerConstants.SystemUser;
+    const string ControllerName = ControllerConstants.PC_SystemUser;
 
-    public static void MapPCUsers<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "pc/users") where TUser : PCUser, new()
+    public static void MapPCUsers<TUser>(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/users") where TUser : PCUser, new()
     {
         var routeGroup = b.MapGroup(pattern)
         .RequireAuthorization(BMMinimalApis.ApiControllerBaseAuthorize)
