@@ -238,6 +238,12 @@ public static partial class InfoController
         adminCenterService.HandleMenus(isRootTenant, addMenus);
         SetUserIdAndTenantId(addMenus, user.Id, tenantId);
 
+        var expandMenus = new HashSet<BMMenu>();
+        ExpandBMMenus(expandMenus, addMenus);
+
+        var expandDbMenus = new HashSet<BMMenu>();
+        ExpandBMMenus(expandDbMenus, dbMenus);
+
         if (dbMenus.Count == 0)
         {
             await db.Menus.AddRangeAsync(addMenus);
@@ -245,9 +251,9 @@ public static partial class InfoController
         }
         else
         {
-            foreach (var menu in addMenus)
+            foreach (var menu in expandMenus)
             {
-                var dbMenu = dbMenus.FirstOrDefault(x => x.Key == menu.Key);
+                var dbMenu = expandDbMenus.FirstOrDefault(x => x.Key == menu.Key);
                 if (dbMenu == null)
                 {
                     // 添加新菜单
@@ -310,8 +316,6 @@ public static partial class InfoController
 
         #region 添加预设菜单按钮关系
 
-        var expandMenus = new HashSet<BMMenu>();
-        ExpandBMMenus(expandMenus, addMenus);
         foreach (var menu in expandMenus)
         {
             if (menu.Key == "dashboard" || (menu.Children != null && menu.Children.Count != 0))

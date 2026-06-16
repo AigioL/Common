@@ -18,7 +18,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
 sealed partial class AuthMessageRecordRepository<TDbContext> :
     Repository<TDbContext, AuthMessageRecord, Guid>,
     IAuthMessageRecordRepository
-    where TDbContext : DbContext, IIdentityDbContext
+    where TDbContext : DbContext, IAuthMessageRecordDbContext
 {
     public AuthMessageRecordRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
     {

@@ -162,6 +162,7 @@ sealed partial class PCUserRepository<TDbContext>(
         entity.Id = default;
         entity.PhoneNumber = phoneNumber;
         entity.PhoneNumberRegionCode = phoneNumberRegionCode;
+        entity.UserName = $"{phoneNumberRegionCode}{phoneNumber}";
         entity.PhoneNumberConfirmed = true;
         entity.BusinessIds = NormalizeBusinessIds(model.BusinessIds);
         entity.CreateUserId = userId;
@@ -227,6 +228,21 @@ sealed partial class PCUserRepository<TDbContext>(
         }
 
         return await query.AnyAsync(x => x.PhoneNumber == phoneNumber && x.PhoneNumberRegionCode == phoneNumberRegionCode, cancellationToken);
+    }
+
+    async Task<PCUser?> FindByPhoneNumberAsync(
+        string phoneNumber,
+        string? phoneNumberRegionCode,
+        Guid? currentId,
+        CancellationToken cancellationToken)
+    {
+        IQueryable<PCUser> query = db.Users;
+        if (currentId.HasValue)
+        {
+            query = query.Where(x => x.Id != currentId.Value);
+        }
+
+        return await query.FirstOrDefaultAsync(x => x.PhoneNumber == phoneNumber && x.PhoneNumberRegionCode == phoneNumberRegionCode, cancellationToken);
     }
 
     static Guid[] NormalizeBusinessIds(Guid[]? businessIds) => businessIds?.Distinct().ToArray() ?? [];
@@ -336,7 +352,7 @@ partial class PCUserRepository<TDbContext> // Init 初始化 PC 后台的权限�
             {
                 Id = tenantId,
                 CreateUserId = userId,
-                Name = tenantName,
+                Name = tenantName ?? "",
             });
             await db.SaveChangesAsync();
         }
@@ -354,6 +370,12 @@ partial class PCUserRepository<TDbContext> // Init 初始化 PC 后台的权限�
         // 要添加或更新的菜单
         SetUserIdAndTenantId(addMenus, userId, pcUserId, tenantId);
 
+        var expandMenus = new HashSet<PCMenu>();
+        ExpandPCMenus(expandMenus, addMenus);
+
+        var expandDbMenus = new HashSet<PCMenu>();
+        ExpandPCMenus(expandDbMenus, dbMenus);
+
         if (dbMenus.Count == 0)
         {
             await db.Menus.AddRangeAsync(addMenus);
@@ -361,9 +383,9 @@ partial class PCUserRepository<TDbContext> // Init 初始化 PC 后台的权限�
         }
         else
         {
-            foreach (var menu in addMenus)
+            foreach (var menu in expandMenus)
             {
-                var dbMenu = dbMenus.FirstOrDefault(x => x.Key == menu.Key);
+                var dbMenu = expandDbMenus.FirstOrDefault(x => x.Key == menu.Key);
                 if (dbMenu == null)
                 {
                     // 添加新菜单
@@ -426,8 +448,6 @@ partial class PCUserRepository<TDbContext> // Init 初始化 PC 后台的权限�
 
         #region 添加预设菜单按钮关系
 
-        var expandMenus = new HashSet<PCMenu>();
-        ExpandPCMenus(expandMenus, addMenus);
         foreach (var menu in expandMenus)
         {
             if (menu.Key == "dashboard" || (menu.Children != null && menu.Children.Count != 0))

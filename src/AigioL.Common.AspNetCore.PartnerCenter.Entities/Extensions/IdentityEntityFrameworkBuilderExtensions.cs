@@ -20,8 +20,8 @@ public static class IdentityEntityFrameworkBuilderExtensions
 
         IServiceCollection services = builder.Services;
 
-        services.TryAddScoped<IUserStore<PCUser>, UserStore<PCUser, PCRole, TContext, Guid>>();
-        services.TryAddScoped<IRoleStore<PCRole>, RoleStore<PCRole, TContext, Guid>>();
+        services.TryAddScoped<IUserStore<PCUser>, UserStore<PCUser, PCRole, TContext, Guid, PCUserClaim, PCUserRole, PCUserLogin, PCUserToken, PCRoleClaim>>();
+        services.TryAddScoped<IRoleStore<PCRole>, RoleStore<PCRole, TContext, Guid, PCUserRole, PCRoleClaim>>();
 
         return builder;
     }

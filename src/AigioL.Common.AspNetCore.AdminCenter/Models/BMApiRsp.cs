@@ -152,7 +152,7 @@ public partial record class BMApiRsp
         {
             Messages = [.. GetErrors(identityResult)],
         };
-        r.SetIsSuccess(false);
+        r.SetIsSuccess(identityResult.Succeeded);
         return r;
     }
 }

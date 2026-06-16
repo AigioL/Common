@@ -57,7 +57,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="10.0.9" />
     <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.9" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
-    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.3" />
+    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.4" />
     <PackageVersion Include="EFCore.BulkExtensions.PostgreSql" Version="10.0.0" />
   </ItemGroup>
   <!-- 👇 序列化 -->
@@ -85,9 +85,9 @@
   </ItemGroup>
   <!-- 👇 Redis -->
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.4.3" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.4.4" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.0.2" />
-    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.3" />
+    <PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.4" />
   </ItemGroup>
   <!-- 👇 Quartz -->
   <ItemGroup>
@@ -106,8 +106,8 @@
   </ItemGroup>
   <!-- 👇 Aspire -->
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.3" />
-    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.4.3" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.4" />
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.4.4" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
     <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.7.0" />
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.0" />
@@ -115,15 +115,15 @@
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
-    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.4.3" />
-    <PackageVersion Include="Aspire.Hosting.Docker" Version="13.4.3" />
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.4.4" />
+    <PackageVersion Include="Aspire.Hosting.Docker" Version="13.4.4" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.1.0-preview.1.25616.3" />
     <PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="13.4.0" />
     <PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.4.0" />
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.4.3" />
-    <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.4.3" />
-    <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.4.3" />
-    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.4.3" />
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.4.4" />
+    <PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.4.4" />
+    <PackageVersion Include="Aspire.Hosting.Yarp" Version="13.4.4" />
+    <PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.4.4" />
     <PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
   </ItemGroup>
   <!-- 👇 Docker -->

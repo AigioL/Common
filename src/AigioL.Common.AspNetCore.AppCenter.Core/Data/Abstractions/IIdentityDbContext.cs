@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 
-public partial interface IIdentityDbContext : IDbContextBase
+public partial interface IIdentityDbContext : IAuthMessageRecordDbContext, IDbContextBase
 {
-    DbSet<AuthMessageRecord> AuthMessageRecords { get; }
-
     #region 用户模块
 
     DbSet<User> Users { get; }
@@ -43,4 +41,9 @@ public partial interface IIdentityDbContext : IDbContextBase
     DbSet<UserRefreshJsonWebToken> UserRefreshJsonWebTokens { get; }
 
     #endregion
+}
+
+public partial interface IAuthMessageRecordDbContext : IDbContextBase
+{
+    DbSet<AuthMessageRecord> AuthMessageRecords { get; }
 }
