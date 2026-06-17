@@ -1,3 +1,4 @@
+using AigioL.Common.Essentials;
 using System.Reflection;
 
 namespace AigioL.Common.UnitTest;
@@ -41,10 +42,12 @@ sealed class Program
         currentVersion = typeof(Program).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()!.Version;
         currentBuild = Version.Parse(currentVersion).Build.ToString();
 
-        ServiceCollection services = new();
-        services.AddEssential(
+        EssentialInit.InitEssential(
             pkgName, default, currentVersion,
             currentBuild, appDataDirectory);
+
+        ServiceCollection services = new();
+        services.AddEssential();
 
         serviceProvider = services.BuildServiceProvider();
 

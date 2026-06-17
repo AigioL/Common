@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net$(DotNet_Version)</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants>$(DefineConstants);USE_IO_HASHING</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,6 +22,7 @@
 		</PackageReference>
 		<PackageReference Include="System.Security.Cryptography.ProtectedData" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="System.IO.Hashing" />
 	</ItemGroup>
 
 	<ItemGroup>
