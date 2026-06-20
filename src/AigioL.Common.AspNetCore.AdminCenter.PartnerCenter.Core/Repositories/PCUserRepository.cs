@@ -162,7 +162,10 @@ sealed partial class PCUserRepository<TDbContext>(
         entity.Id = default;
         entity.PhoneNumber = phoneNumber;
         entity.PhoneNumberRegionCode = phoneNumberRegionCode;
-        entity.UserName = $"{phoneNumberRegionCode}{phoneNumber}";
+        if (string.IsNullOrWhiteSpace(entity.UserName))
+        {
+            entity.UserName = $"+{phoneNumberRegionCode.TrimStart('+')}{phoneNumber}";
+        }
         entity.PhoneNumberConfirmed = true;
         entity.BusinessIds = NormalizeBusinessIds(model.BusinessIds);
         entity.CreateUserId = userId;

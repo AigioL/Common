@@ -16,4 +16,6 @@ public sealed record class AddOrEditPCUserModel : IReadOnlyId<Guid>
     public Guid[] BusinessIds { get; set; } = [];
 
     public bool Disable { get; set; }
+
+    public string? UserName { get; set; }
 }
