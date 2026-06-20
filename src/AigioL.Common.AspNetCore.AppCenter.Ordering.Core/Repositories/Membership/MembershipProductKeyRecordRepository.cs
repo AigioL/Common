@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
@@ -111,10 +112,15 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
             x.Id,
             x.RechargeTimeSpan,
             x.PayAsYoGo,
+            x.MemberLicenseType,
         }).FirstOrDefaultAsync(x => x.Id == membershipGoodsId, cancellationToken);
         if (membershipGoods == null)
         {
             return "找不到商品 Id";
+        }
+        if (!membershipGoods.MemberLicenseType.HasFlag(MembershipLicenseFlags.CDKey))
+        {
+            return "商品的会员订阅类型不支持 CDKey";
         }
 
         var records = new MembershipProductKeyRecord[count];
