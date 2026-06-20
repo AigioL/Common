@@ -35,12 +35,15 @@ public static partial class MembershipProductKeyRecordController
             [FromQuery] TimeSpan? rechargeTimeSpan = null,
             [FromQuery] TimeSpan? payAsYoGo = null,
             [FromQuery][StringLength(MaxLengths.Guid)] string? key = null,
+            [FromQuery][StringLength(MaxLengths.Guid)] string? idBase58 = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
             Guid? keyGN = ShortGuid.TryParse(key, out Guid keyG) ? keyG : null;
+            if (!keyGN.HasValue)
+                keyGN = Base58Guid.Decode(idBase58);
             var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await membershipProductKeyRecordRepo.QueryAsync(
                 keyGN, rechargeDays, rechargeTimeSpan,
