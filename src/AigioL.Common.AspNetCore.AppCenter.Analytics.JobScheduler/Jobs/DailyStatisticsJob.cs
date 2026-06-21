@@ -111,7 +111,7 @@ partial class DailyStatisticsJob
         await foreach (var it in keys)
         {
             var keyStr = it.ToString();
-            if (keyStr.StartsWith(todayStr))
+            if (!keyStr.StartsWith(todayStr))
             {
                 await db.KeyDeleteAsync(it);
             }
