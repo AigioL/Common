@@ -871,7 +871,7 @@ partial class MembershipBusinessOrderRepository<TDbContext> // 管理后台
         if (!string.IsNullOrEmpty(goodsNo))
             query = query.Where(x => x.GoodsNo.Contains(goodsNo));
         if (memberLicenseType.HasValue)
-            query = query.Where(x => x.MemberLicenseType == memberLicenseType.Value);
+            query = query.Where(x => x.MemberLicenseType.HasFlag(memberLicenseType.Value));
         if (!string.IsNullOrWhiteSpace(genericOrderId))
             query = query.Where(x => x.OrderId == genericOrderId);
         if (paymentStatus.HasValue)

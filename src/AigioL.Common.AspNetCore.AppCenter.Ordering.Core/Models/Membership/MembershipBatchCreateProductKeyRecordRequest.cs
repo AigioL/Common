@@ -14,4 +14,14 @@ public sealed partial class MembershipBatchCreateProductKeyRecordRequest
     /// 批量创建数量
     /// </summary>
     public uint Count { get; set; }
+
+    /// <summary>
+    /// 这批密钥可选的标识用于哪个合作伙伴用户 Id
+    /// </summary>
+    public Guid? PCUserId { get; set; }
+
+    /// <summary>
+    /// 备注（可选）
+    /// </summary>
+    public string? Note { get; set; }
 }

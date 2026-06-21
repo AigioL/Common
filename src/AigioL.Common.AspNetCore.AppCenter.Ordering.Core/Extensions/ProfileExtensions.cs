@@ -23,7 +23,8 @@ public static partial class ProfileExtensions
 
         p.CreateMap<MembershipProductKeyRecord, MembershipProductKeyRecordTableItem>()
             .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName))
-            .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName));
+            .ForMember(d => d.OperatorUser, opt => opt.MapFrom(s => s.OperatorUser == null ? default : s.OperatorUser.NickName))
+            .ForMember(d => d.PCUser, opt => opt.MapFrom(s => s.PCUser == null ? default : s.PCUser.NickName ?? s.PCUser.UserName));
 
         p.CreateMap<AddOrEditMembershipGoodsModel, MembershipGoods>();
         p.CreateMap<MembershipGoods, AddOrEditMembershipGoodsModel>()

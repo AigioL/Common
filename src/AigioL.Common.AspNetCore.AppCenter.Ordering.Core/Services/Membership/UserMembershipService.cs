@@ -173,8 +173,8 @@ sealed partial class UserMembershipService(
 
             var goods = await membershipGoodsRepo.FindAsync(productKey.MembershipGoodsId, cancellationToken: cancellationToken);
             if (goods == null ||
-                (goods.MemberLicenseType != MembershipLicenseFlags.CDKey &&
-                goods.MemberLicenseType != MembershipLicenseFlags.Points))
+                (!goods.MemberLicenseType.HasFlag(MembershipLicenseFlags.CDKey) &&
+                !goods.MemberLicenseType.HasFlag(MembershipLicenseFlags.Points)))
             {
                 return "充值商品类型未找到或充值类型不匹配";
             }

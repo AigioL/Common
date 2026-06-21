@@ -38,6 +38,9 @@ partial interface IMembershipProductKeyRecordRepository // 管理后台
         Guid? membershipGoodsId = null,
         bool? isUsed = null,
         bool? disable = null,
+        Guid? pcUserId = null,
+        string? pcUserName = null,
+        string? note = null,
         string? orderBy = null,
         bool? desc = null,
         int current = IPagedModel.DefaultCurrent,
@@ -48,6 +51,8 @@ partial interface IMembershipProductKeyRecordRepository // 管理后台
         Guid createUserId,
         Guid membershipGoodsId,
         uint count,
+        Guid? pcUserId,
+        string? note,
         CancellationToken cancellationToken = default);
 
     Task<int> BatchDisableProductKeyRecordAsync(

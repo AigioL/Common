@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities;
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.Primitives.Columns;
@@ -130,6 +131,8 @@ public partial class PCUser :
     //public List<PCUserOrganization>? Organizations { get; set; }
 
     public virtual List<AuthMessageRecord> AuthMessageRecords { get; set; } = null!;
+
+    public virtual List<MembershipProductKeyRecord> MembershipProductKeyRecords { get; set; } = null!;
 
     public sealed class EntityTypeConfiguration : IEntityTypeConfiguration<PCUser>
     {

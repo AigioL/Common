@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.AdminCenter.Entities.Abstractions;
+using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,8 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 public partial class MembershipProductKeyRecord :
     OperatorBaseEntity<Guid>,
     INEWSEQUENTIALID,
-    IDisable
+    IDisable,
+    INote
 {
     public virtual MembershipGoods MembershipGoods { get; set; } = null!;
 
@@ -58,6 +60,21 @@ public partial class MembershipProductKeyRecord :
     [Comment("是否禁用")]
     public bool Disable { get; set; }
 
+    /// <inheritdoc/>
+    [StringLength(MaxLengths.Text)]
+    public string? Note { get; set; }
+
+    /// <summary>
+    /// 合作伙伴用户 Id
+    /// </summary>
+    [Comment("合作伙伴用户 Id")]
+    public Guid? PCUserId { get; set; }
+
+    /// <summary>
+    /// 合作伙伴用户
+    /// </summary>
+    public virtual PCUser? PCUser { get; set; }
+
     public sealed class EntityTypeConfiguration : EntityTypeConfiguration<MembershipProductKeyRecord>
     {
         public override void Configure(EntityTypeBuilder<MembershipProductKeyRecord> builder)
@@ -68,6 +85,11 @@ public partial class MembershipProductKeyRecord :
                 .HasOne(x => x.MembershipGoods)
                 .WithMany()
                 .HasForeignKey(x => x.MembershipGoodsId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasOne(x => x.PCUser)
+                .WithMany(x => x.MembershipProductKeyRecords)
+                .HasForeignKey(x => x.PCUserId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
     }

@@ -98,7 +98,7 @@ partial class MembershipGoodsRepository<TDbContext> // 管理后台
         if (!string.IsNullOrWhiteSpace(goodsNo))
             query = query.Where(x => x.GoodsNo.Contains(goodsNo));
         if (memberLicenseType.HasValue)
-            query = query.Where(x => x.MemberLicenseType == memberLicenseType);
+            query = query.Where(x => x.MemberLicenseType.HasFlag(memberLicenseType.Value));
         if (rechargeDays.HasValue)
 #pragma warning disable CS0618 // 类型或成员已过时
             query = query.Where(x => x.RechargeDays == rechargeDays);

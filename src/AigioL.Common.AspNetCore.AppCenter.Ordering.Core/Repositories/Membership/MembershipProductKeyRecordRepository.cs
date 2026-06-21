@@ -11,7 +11,6 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using SimpleBase;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Membership;
 
@@ -47,6 +46,9 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
         Guid? membershipGoodsId = null,
         bool? isUsed = null,
         bool? disable = null,
+        Guid? pcUserId = null,
+        string? pcUserName = null,
+        string? note = null,
         string? orderBy = null,
         bool? desc = null,
         int current = IPagedModel.DefaultCurrent,
@@ -78,6 +80,24 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
             query = query.Where(x => x.RechargeTimeSpan == rechargeTimeSpan);
         if (payAsYoGo.HasValue)
             query = query.Where(x => x.PayAsYoGo == payAsYoGo);
+        if (pcUserId.HasValue)
+            query = query.Where(x => x.PCUserId == pcUserId);
+        else if (!string.IsNullOrEmpty(pcUserName))
+        {
+            if (pcUserName.Length == 11 && pcUserName.All(char.IsAsciiDigit))
+            {
+                query = query.Where(x => x.PCUser != null && x.PCUser.PhoneNumber == pcUserName);
+            }
+            else
+            {
+                query = query.Where(x =>
+                    x.PCUser != null &&
+                    ((x.PCUser.NickName != null && x.PCUser.NickName.Contains(pcUserName)) ||
+                        (x.PCUser.UserName != null && x.PCUser.UserName.Contains(pcUserName))));
+            }
+        }
+        if (!string.IsNullOrEmpty(note))
+            query = query.Where(x => x.Note == note);
 
         if (!string.IsNullOrEmpty(orderBy))
         {
@@ -101,6 +121,8 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
         Guid createUserId,
         Guid membershipGoodsId,
         uint count,
+        Guid? pcUserId,
+        string? note,
         CancellationToken cancellationToken = default)
     {
         if (membershipGoodsId == default)
@@ -136,6 +158,8 @@ partial class MembershipProductKeyRecordRepository<TDbContext> // 管理后台
                 UsageTime = null,
                 Disable = false,
                 CreateUserId = createUserId,
+                PCUserId = pcUserId,
+                Note = note,
             };
         }
 

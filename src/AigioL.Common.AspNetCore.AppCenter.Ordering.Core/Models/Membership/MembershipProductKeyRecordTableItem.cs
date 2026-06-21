@@ -82,4 +82,16 @@ public sealed partial class MembershipProductKeyRecordTableItem : IReadOnlyId<Gu
     /// 最后一次操作的人（记录后台管理员禁用或启用或编辑该条的操作）
     /// </summary>
     public string? OperatorUser { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    public string? Note { get; set; }
+
+    /// <summary>
+    /// 用于哪个合作伙伴用户 Id
+    /// </summary>
+    public Guid? PCUserId { get; set; }
+
+    public string? PCUser { get; set; }
 }

@@ -136,8 +136,8 @@ public static class MembershipController
 
             // 支付订单商品类型不能为 CDKey 或 积分兑换
             if (goods == null ||
-                goods.MemberLicenseType == MembershipLicenseFlags.CDKey ||
-                goods.MemberLicenseType == MembershipLicenseFlags.Points)
+                goods.MemberLicenseType.HasFlag(MembershipLicenseFlags.CDKey) ||
+                goods.MemberLicenseType.HasFlag(MembershipLicenseFlags.Points))
             {
                 return ApiRsp.Fail<string>("充值商品类型未找到 或充值类型不匹配");
             }

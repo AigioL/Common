@@ -36,6 +36,9 @@ public static partial class MembershipProductKeyRecordController
             [FromQuery] TimeSpan? payAsYoGo = null,
             [FromQuery][StringLength(MaxLengths.Guid)] string? key = null,
             [FromQuery][StringLength(MaxLengths.Guid)] string? idBase58 = null,
+            [FromQuery] Guid? pcUserId = null,
+            [FromQuery] string? pcUserName = null, // Kol 用户名或昵称或11位手机号
+            [FromQuery] string? note = null,
             [FromQuery] string? orderBy = null,
             [FromQuery] bool? desc = null,
             [FromQuery] int current = IPagedModel.DefaultCurrent,
@@ -48,7 +51,7 @@ public static partial class MembershipProductKeyRecordController
             BMApiRsp<PagedModel<TableItemM>?> r = await membershipProductKeyRecordRepo.QueryAsync(
                 keyGN, rechargeDays, rechargeTimeSpan,
                 payAsYoGo, membershipGoodsId,
-                isUsed, disable, orderBy,
+                isUsed, disable, pcUserId, pcUserName, note, orderBy,
                 desc, current, pageSize,
                 context.RequestAborted);
             return r;
@@ -61,7 +64,7 @@ public static partial class MembershipProductKeyRecordController
             var userId = context.GetBMUserId();
             var membershipProductKeyRecordRepo = context.RequestServices.GetRequiredService<IMembershipProductKeyRecordRepository>();
             BMApiRsp<string[]?> r = await membershipProductKeyRecordRepo.BatchCreateProductKeyRecordAsync(
-                userId, model.MembershipGoodsId, model.Count, context.RequestAborted);
+                userId, model.MembershipGoodsId, model.Count, model.PCUserId, model.Note, context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("批量创建会员产品密钥（CDKey）");
