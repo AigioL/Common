@@ -134,12 +134,10 @@ public static class MembershipController
         {
             var goods = await repo.FindAsync(membershipGoodsId);
 
-            // 支付订单商品类型不能为 CDKey 或 积分兑换
-            if (goods == null ||
-                goods.MemberLicenseType.HasFlag(MembershipLicenseFlags.CDKey) ||
-                goods.MemberLicenseType.HasFlag(MembershipLicenseFlags.Points))
+            // 购买不在判断会员类型，上架则视为可购买
+            if (goods == null)
             {
-                return ApiRsp.Fail<string>("充值商品类型未找到 或充值类型不匹配");
+                return ApiRsp.Fail<string>("充值商品未找到");
             }
 
             if (!goods.Enable)
