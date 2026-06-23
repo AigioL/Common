@@ -1,5 +1,6 @@
 using Microsoft.IO;
 using System.Buffers;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -60,14 +61,43 @@ public static partial class ApiSignatureHelper
 
         return (accessKey, signedHeaders, signature);
     }
+
+    public static (HashAlgorithmTypeName? hashAlgorithmTypeName, ReadOnlyMemory<char> authorizationValue, ReadOnlyMemory<char> authorizationLeft) GetAuthorizationValue(ReadOnlyMemory<char> authorization)
+    {
+        if (authorization.IsEmpty)
+        {
+            return default;
+        }
+
+        var index = authorization.Span.IndexOf(' ');
+        if (index >= 0)
+        {
+            var authorizationLeft = authorization[..index].Trim();
+            index = authorizationLeft.Span.IndexOf(DefaultSignatureAlgorithmPrefix, StringComparison.InvariantCultureIgnoreCase);
+            if (index >= 0)
+            {
+                var chars = authorizationLeft.Span[(index + DefaultSignatureAlgorithmPrefix.Length)..];
+                chars = chars.Trim();
+                if (Enum.TryParse<HashAlgorithmTypeName>(chars, true, out var hashAlgorithmTypeName))
+                {
+                    var authorizationValue = authorization[index..].Trim();
+                    return (hashAlgorithmTypeName, authorizationValue, authorizationLeft);
+                }
+            }
+        }
+
+        return default;
+    }
 }
 
 static partial class ApiSignatureHelper // Const
 {
+    const string DefaultSignatureAlgorithmPrefix = "HMAC-";
+
     /// <summary>
     /// 默认的签名算法，使用 <see cref="HMACSHA256"/> 哈希算法进行签名计算
     /// </summary>
-    public const string DefaultSignatureAlgorithm = "HMAC-SHA256";
+    public const string DefaultSignatureAlgorithm = $"{DefaultSignatureAlgorithmPrefix}SHA256";
 
     const string accessKeyPrefix = "AK=";
     const string signaturePrefix = "Signature=";
@@ -83,47 +113,33 @@ static partial class ApiSignatureHelper // Private
     static readonly RecyclableMemoryStreamManager m = new();
 
     /// <summary>
-    /// 将请求正文通过 <see cref="HMACSHA256"/> 哈希算法进行哈希计算，并将结果写入 buffer 中，如果传递了 chars 缓冲区，则将哈希结果转换为小写十六进制字符串并写入 chars 中
-    /// </summary>
-    /// <param name="hmacHashkey">HMAC-SHA256 哈希算法的密钥</param>
-    /// <param name="requestBody">请求正文流</param>
-    /// <param name="buffer">用于存储哈希结果的缓冲区，长度应大于或等于 <see cref="HMACSHA256.HashSizeInBytes"/></param>
-    /// <param name="chars">可选的字符缓冲区，用于存储哈希结果的十六进制表示，长度应大于或等于 <see cref="HMACSHA256.HashSizeInBytes"/> * 2</param>
-    /// <param name="cancellationToken">取消令牌</param>
-    /// <returns></returns>
-    static async ValueTask WriteHashedRequestPayloadAsync(
-        ReadOnlyMemory<byte> hmacHashkey,
-        Stream requestBody,
-        Memory<byte> buffer,
-        Memory<char> chars = default,
-        CancellationToken cancellationToken = default)
-    {
-        var len = await HMACSHA256.HashDataAsync(hmacHashkey, requestBody, buffer, cancellationToken);
-        buffer = buffer[..len];
-        if (!chars.IsEmpty && chars.Length >= HMACSHA256.HashSizeInBytes * 2)
-        {
-            Convert.TryToHexStringLower(buffer.Span, chars.Span, out var _);
-        }
-    }
-
-    /// <summary>
-    /// 向流中写入规范化请求
+    /// 向缓冲区中写入规范化请求的哈希值
     /// </summary>
     /// <param name="s"></param>
     /// <param name="method">HTTP 请求方法，全大写字母</param>
+    /// <param name="destinationChars"></param>
+    /// <param name="hashAlgorithmTypeName"></param>
+    /// <param name="cancellationToken"></param>
     /// <param name="canonicalUri">规范化 URI</param>
     /// <param name="canonicalQueryString">规范化查询字符串</param>
     /// <param name="headers">请求头</param>
     /// <param name="hashedRequestPayload">RequestBody 的哈希值</param>
-    static void WriteCanonicalRequest<THeaderValue>(
-        RecyclableMemoryStream s,
+    /// <param name="key"></param>
+    /// <param name="destination"></param>
+    public static async ValueTask WriteHashedCanonicalRequest<THeaderValue>(
         string method,
-        string canonicalUri,
-        string canonicalQueryString,
+        string? canonicalUri,
+        string? canonicalQueryString,
         IEnumerable<KeyValuePair<string, THeaderValue>> headers,
-        ReadOnlySpan<char> hashedRequestPayload)
+        ReadOnlyMemory<char> hashedRequestPayload,
+        Memory<byte> destination,
+        Memory<char> destinationChars = default,
+        HashAlgorithmTypeName hashAlgorithmTypeName = HashAlgorithmTypeName.SHA256,
+        CancellationToken cancellationToken = default)
         where THeaderValue : notnull
     {
+        using var s = m.GetStream();
+
         s.Write(method);
         s.Write("\n"u8);
 
@@ -139,8 +155,14 @@ static partial class ApiSignatureHelper // Private
         WriteSignedHeaders(s, headers.Select(static x => x.Key));
         s.Write("\n"u8);
 
-        s.Write(hashedRequestPayload);
+        s.Write(hashedRequestPayload.Span);
         s.Write("\n"u8);
+
+        s.Position = 0;
+
+        await hashAlgorithmTypeName.HashDataAsync(
+            s, destination, destinationChars,
+            true, cancellationToken);
     }
 
     /// <summary>
@@ -192,14 +214,25 @@ static partial class ApiSignatureHelper // Private
     /// <summary>
     /// 写入构造待签名字符串
     /// </summary>
-    static void WriteStringToSign(
-        RecyclableMemoryStream s,
-        string signatureAlgorithm,
-        ReadOnlySpan<char> hashedCanonicalRequest)
+    public static async ValueTask WriteSignatureAsync(
+        ReadOnlyMemory<byte> appSecret,
+        ReadOnlyMemory<char> signatureAlgorithm,
+        ReadOnlyMemory<char> hashedCanonicalRequest,
+        Memory<byte> destination,
+        Memory<char> destinationChars = default,
+        HashAlgorithmTypeName hashAlgorithmTypeName = HashAlgorithmTypeName.SHA256,
+        CancellationToken cancellationToken = default)
     {
-        s.Write(signatureAlgorithm);
+        using var s = m.GetStream(); // StringToSign
+
+        s.Write(signatureAlgorithm.Span);
         s.Write("\n"u8);
-        s.Write(hashedCanonicalRequest);
+        s.Write(hashedCanonicalRequest.Span);
+
+        // Signature = HexEncode(SignatureMethod(Secret, StringToSign))
+        await hashAlgorithmTypeName.HMACHashDataAsync(
+            appSecret, s, destination,
+            destinationChars, true, cancellationToken);
     }
 
     /// <summary>
@@ -227,5 +260,81 @@ static partial class ApiSignatureHelper // Private
 
         var str = Encoding.UTF8.GetString(s.GetReadOnlySequence());
         return str;
+    }
+
+    /// <summary>
+    /// 计算签名并设置 Authorization 请求头
+    /// </summary>
+    public static async ValueTask SetAuthorizationAsync(
+        string appAccessKey,
+        ReadOnlyMemory<byte> appSecret,
+        HashAlgorithmTypeName hashAlgorithmTypeName,
+        HttpRequestMessage request,
+        IEnumerable<string>? signedHeaders,
+        CancellationToken cancellationToken = default)
+    {
+        if (signedHeaders == null || !signedHeaders.Any())
+        {
+            if (string.IsNullOrWhiteSpace(request.Headers.Host))
+            {
+                request.Headers.Host = request.RequestUri?.Host;
+            }
+            signedHeaders = ["host"];
+        }
+
+        var requestBody = request.Content == null ? null : (await request.Content.ReadAsStreamAsync(cancellationToken));
+
+        var hashSizeInBytes = hashAlgorithmTypeName.GetHMACHashSizeInBytes();
+
+        var signatureBytes = ArrayPool<byte>.Shared.Rent(hashSizeInBytes);
+        var signatureChars = ArrayPool<char>.Shared.Rent(hashSizeInBytes * 2);
+
+        try
+        {
+            // 1. 将 RequestBody 进行哈希计算，得到 HashedRequestPayload
+            await hashAlgorithmTypeName.HashDataAsync(
+                requestBody, signatureBytes, signatureChars,
+                true, cancellationToken);
+
+#if DEBUG
+            var debugView_HashedRequestPayload = new string(signatureChars, 0, hashSizeInBytes * 2);
+#endif
+
+            // 2. 构造规范化请求并进行哈希计算，得到 HashedCanonicalRequest
+            var method = request.Method.Method;
+            var canonicalUri = request.RequestUri?.AbsolutePath;
+            var canonicalQueryString = request.RequestUri?.Query;
+            var headers = request.Headers.Where(x => signedHeaders.Any(y => y.Equals(x.Key, StringComparison.InvariantCultureIgnoreCase)));
+
+            await WriteHashedCanonicalRequest(
+                method, canonicalUri, canonicalQueryString,
+                headers, signatureChars.AsMemory(0, hashSizeInBytes * 2), signatureBytes,
+                signatureChars, hashAlgorithmTypeName,
+                cancellationToken);
+
+#if DEBUG
+            var debugViewHashedCanonicalRequest = new string(signatureChars, 0, hashSizeInBytes * 2);
+#endif
+
+            var signatureAlgorithm = $"{DefaultSignatureAlgorithmPrefix}{hashAlgorithmTypeName}";
+
+            // 3. 构造待签名字符串，通过 HMAC 计算签名
+            await WriteSignatureAsync(
+                appSecret, signatureAlgorithm.AsMemory(), signatureChars.AsMemory(0, hashSizeInBytes * 2),
+                signatureBytes, signatureChars, hashAlgorithmTypeName,
+                cancellationToken);
+
+#if DEBUG
+            var signature_DEBUG_VIEW = new string(signatureChars, 0, hashSizeInBytes * 2);
+#endif
+
+            var authorization = GetAuthorization(appAccessKey, signedHeaders, signatureChars.AsSpan(0, hashSizeInBytes * 2), signatureAlgorithm);
+            request.Headers.Authorization = AuthenticationHeaderValue.Parse(authorization);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(signatureBytes);
+            ArrayPool<char>.Shared.Return(signatureChars);
+        }
     }
 }

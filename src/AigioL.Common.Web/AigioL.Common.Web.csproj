@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+	
+  <PropertyGroup>
+	  <TargetFramework>net$(DotNet_Version)</TargetFramework>
+	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
+  </ItemGroup>
+	
+  <Import Project="..\AigioL.Common.AspNetCore.OpenApi\AigioL.Common.AspNetCore.OpenApi.projitems" Label="Shared" />
+
+</Project>

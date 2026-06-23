@@ -44,6 +44,7 @@
     <Project Path="src/AigioL.Common.System.Security.Cryptography.Aes/AigioL.Common.System.Security.Cryptography.Aes.shproj" Id="bafc6195-e7f9-4e81-b1ec-0d1de60d5fdc" />
     <Project Path="src/AigioL.Common.System.Security.Cryptography.HashAlgorithms/AigioL.Common.System.Security.Cryptography.HashAlgorithms.shproj" Id="49917bf7-8b4f-4bbb-a3f4-df5715759605" />
     <Project Path="src/AigioL.Common.System.Security.Cryptography.RSA/AigioL.Common.System.Security.Cryptography.RSA.shproj" Id="dc3e79b1-9785-421d-b9aa-62d2f77f124d" />
+    <Project Path="src/AigioL.Common.Web/AigioL.Common.Web.csproj" Id="2ea9df75-10a4-4a71-8b85-1569c34f244c" />
     <Project Path="src/AigioL.Common.Windows.Management.Deployment/AigioL.Common.Windows.Management.Deployment.shproj" Id="6665560f-5c89-4d1a-a2bd-7a7a9b449604" />
     <Project Path="src/AigioL.Common.Windows.Win32.NativeLibraryE/AigioL.Common.Windows.Win32.NativeLibraryE.shproj" Id="b1933abe-1634-4cbf-86e3-8f2a53ae1252" />
     <Project Path="src/AigioL.Common.Windows.Win32.RegisterHotKey/AigioL.Common.Windows.Win32.RegisterHotKey.shproj" Id="c3c8526d-e029-4c04-ba12-bed1d4a2b8a9" />
@@ -95,7 +96,6 @@
   <Folder Name="/2.Libraries/OpenAPI.Sdk/">
     <Project Path="src/AigioL.Common.ClashProxy.Models/AigioL.Common.ClashProxy.Models.shproj" Id="a6af5765-e3aa-4b44-be1a-14c9e3de7de6" />
     <Project Path="src/AigioL.Common.ClashProxy.Services/AigioL.Common.ClashProxy.Services.shproj" Id="0e236ec9-6349-4c3d-a348-3b128d51e4f0" />
-    <Project Path="src/AigioL.Common.OpenApi.Signature/AigioL.Common.OpenApi.Signature.shproj" Id="cee515fa-f84b-4b1c-b4a9-3f5138a76027" />
     <Project Path="src/AigioL.Common.SmsSender.Models/AigioL.Common.SmsSender.Models.shproj" Id="f7a3e2fa-2830-4eb6-b797-a1a80d93f85e" />
     <Project Path="src/AigioL.Common.SmsSender.Services/AigioL.Common.SmsSender.Services.shproj" Id="5238362e-d36a-430f-a92e-b9b841cd5981" />
     <Project Path="src/AigioL.Common.Storage.Models/AigioL.Common.Storage.Models.shproj" Id="bf2ae051-a657-4596-ae02-ea0b1939a55c" />
@@ -106,6 +106,10 @@
   </Folder>
   <Folder Name="/2.Libraries/OpenAPI.Sdk/NetEase/">
     <Project Path="src/AigioL.Common.NetEase.Sdk.IM/AigioL.Common.NetEase.Sdk.IM.csproj" Id="116987ce-1e94-444f-bed0-a6a0388957ea" />
+  </Folder>
+  <Folder Name="/2.Libraries/OpenApi.Sdk/OpenApi/">
+    <Project Path="src/AigioL.Common.AspNetCore.OpenApi/AigioL.Common.AspNetCore.OpenApi.shproj" Id="b6c41dee-4274-4e63-859f-a5dee42f574f" />
+    <Project Path="src/AigioL.Common.OpenApi.Signature/AigioL.Common.OpenApi.Signature.shproj" Id="cee515fa-f84b-4b1c-b4a9-3f5138a76027" />
   </Folder>
   <Folder Name="/2.Libraries/OpenAPI.Sdk/TencentCloud/">
     <Project Path="src/AigioL.Common.TencentCloud.Sdk.IM/AigioL.Common.TencentCloud.Sdk.IM.csproj" Id="8376fc65-e1c4-4cd3-8c9c-05cda1cc7c9b" />
