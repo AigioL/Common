@@ -51,4 +51,6 @@
 
 	<Import Project="..\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login.projitems" Label="Shared" />
 
+	<Import Project="..\AigioL.Common.OpenApi.Signature\AigioL.Common.OpenApi.Signature.projitems" Label="Shared" />
+
 </Project>

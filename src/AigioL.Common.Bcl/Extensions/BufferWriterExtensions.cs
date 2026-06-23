@@ -159,6 +159,19 @@ public static partial class BufferWriterExtensions
     }
 
     /// <summary>
+    /// 将字符串转为小写写入缓冲区
+    /// </summary>
+    public static void WriteToLowerInvariant(this IBufferWriter<byte> writer, string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return;
+        }
+
+        writer.WriteToLowerInvariant(value.AsSpan());
+    }
+
+    /// <summary>
     /// 将字符 Span 写入缓冲区
     /// </summary>
     public static void Write(this IBufferWriter<byte> writer, ReadOnlySpan<char> value)
@@ -186,6 +199,52 @@ public static partial class BufferWriterExtensions
             if (array is not null)
             {
                 ArrayPool<byte>.Shared.Return(array);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 将字符转为小写 Span 写入缓冲区
+    /// </summary>
+    public static void WriteToLowerInvariant(this IBufferWriter<byte> writer, ReadOnlySpan<char> value)
+    {
+        if (value.IsEmpty)
+        {
+            return;
+        }
+
+        int expectedByteCount = Encoding.UTF8.GetMaxByteCount(value.Length);
+
+        byte[]? array = null;
+        Span<byte> utf8Bytes = expectedByteCount <= StackallocByteThreshold ?
+            stackalloc byte[StackallocByteThreshold] :
+            (array = ArrayPool<byte>.Shared.Rent(expectedByteCount));
+
+        char[]? chars = null;
+        Span<char> lowerChars = value.Length <= StackallocByteThreshold ?
+            stackalloc char[StackallocByteThreshold] :
+            (chars = ArrayPool<char>.Shared.Rent(expectedByteCount));
+
+        try
+        {
+            value.ToLowerInvariant(lowerChars);
+
+            lowerChars = lowerChars[..value.Length];
+
+            var actualByteCount = Encoding.UTF8.GetBytes(lowerChars, utf8Bytes);
+            utf8Bytes = utf8Bytes[..actualByteCount];
+            writer.Write(utf8Bytes);
+        }
+        finally
+        {
+            if (array is not null)
+            {
+                ArrayPool<byte>.Shared.Return(array);
+            }
+
+            if (chars is not null)
+            {
+                ArrayPool<char>.Shared.Return(chars);
             }
         }
     }

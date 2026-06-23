@@ -95,6 +95,7 @@
   <Folder Name="/2.Libraries/OpenAPI.Sdk/">
     <Project Path="src/AigioL.Common.ClashProxy.Models/AigioL.Common.ClashProxy.Models.shproj" Id="a6af5765-e3aa-4b44-be1a-14c9e3de7de6" />
     <Project Path="src/AigioL.Common.ClashProxy.Services/AigioL.Common.ClashProxy.Services.shproj" Id="0e236ec9-6349-4c3d-a348-3b128d51e4f0" />
+    <Project Path="src/AigioL.Common.OpenApi.Signature/AigioL.Common.OpenApi.Signature.shproj" Id="cee515fa-f84b-4b1c-b4a9-3f5138a76027" />
     <Project Path="src/AigioL.Common.SmsSender.Models/AigioL.Common.SmsSender.Models.shproj" Id="f7a3e2fa-2830-4eb6-b797-a1a80d93f85e" />
     <Project Path="src/AigioL.Common.SmsSender.Services/AigioL.Common.SmsSender.Services.shproj" Id="5238362e-d36a-430f-a92e-b9b841cd5981" />
     <Project Path="src/AigioL.Common.Storage.Models/AigioL.Common.Storage.Models.shproj" Id="bf2ae051-a657-4596-ae02-ea0b1939a55c" />
