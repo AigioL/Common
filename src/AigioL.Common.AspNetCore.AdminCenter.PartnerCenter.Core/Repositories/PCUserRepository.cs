@@ -34,6 +34,7 @@ sealed partial class PCUserRepository<TDbContext>(
 
     public async Task<PagedModel<PCUserTableItem>> QueryAsync(
         Guid? id,
+        string? name,
         PCUserType? userType,
         string? phoneNumber,
         string? phoneNumberRegionCode,
@@ -54,6 +55,19 @@ sealed partial class PCUserRepository<TDbContext>(
 
         if (id.HasValue)
             query = query.Where(x => x.Id == id.Value);
+        else if (!string.IsNullOrEmpty(name))
+        {
+            if (name.Length == 11 && name.All(char.IsAsciiDigit))
+            {
+                query = query.Where(x => x.PhoneNumber == name);
+            }
+            else
+            {
+                query = query.Where(x =>
+                    (x.NickName != null && x.NickName.Contains(name)) ||
+                    (x.UserName != null && x.UserName.Contains(name)));
+            }
+        }
         if (userType.HasValue)
             query = query.Where(x => x.UserType == userType.Value);
         if (!string.IsNullOrWhiteSpace(phoneNumber))
@@ -127,6 +141,7 @@ sealed partial class PCUserRepository<TDbContext>(
         entity.PhoneNumberRegionCode = phoneNumberRegionCode;
         entity.BusinessIds = NormalizeBusinessIds(model.BusinessIds);
         entity.OperatorUserId = operatorUserId;
+        entity.NickName = model.NickName;
 
         var identityResult = await userManager.UpdateAsync(entity);
         return identityResult;
@@ -171,6 +186,7 @@ sealed partial class PCUserRepository<TDbContext>(
         entity.CreateUserId = userId;
         entity.CreatePCUserId = pcUserId;
         entity.TenantId = tenantId;
+        entity.NickName = model.NickName;
 
         await InitSysAsync(addMenus, isRootTenant, tenantId, tenantName, userId, pcUserId, adminRoleName, addRoles);
 

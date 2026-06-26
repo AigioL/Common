@@ -86,7 +86,7 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
                 Context.RequestAborted);
 
 #if DEBUG
-            var debugViewHashedCanonicalRequest = new string(signatureChars, 0, hashSizeInBytes * 2);
+            var debugView_HashedCanonicalRequest = new string(signatureChars, 0, hashSizeInBytes * 2);
 #endif
 
             // 3. 构造待签名字符串，通过 HMAC 计算签名
@@ -96,7 +96,7 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
                 Context.RequestAborted);
 
 #if DEBUG
-            var signature_DEBUG_VIEW = new string(signatureChars, 0, hashSizeInBytes * 2);
+            var debugView_Signature = new string(signatureChars, 0, hashSizeInBytes * 2);
 #endif
 
             var calcSignature = signatureChars.AsMemory(0, hashSizeInBytes * 2);

@@ -313,7 +313,7 @@ static partial class ApiSignatureHelper // Private
                 cancellationToken);
 
 #if DEBUG
-            var debugViewHashedCanonicalRequest = new string(signatureChars, 0, hashSizeInBytes * 2);
+            var debugView_HashedCanonicalRequest = new string(signatureChars, 0, hashSizeInBytes * 2);
 #endif
 
             var signatureAlgorithm = $"{DefaultSignatureAlgorithmPrefix}{hashAlgorithmTypeName}";
@@ -325,7 +325,7 @@ static partial class ApiSignatureHelper // Private
                 cancellationToken);
 
 #if DEBUG
-            var signature_DEBUG_VIEW = new string(signatureChars, 0, hashSizeInBytes * 2);
+            var debugView_Signature = new string(signatureChars, 0, hashSizeInBytes * 2);
 #endif
 
             var authorization = GetAuthorization(appAccessKey, signedHeaders, signatureChars.AsSpan(0, hashSizeInBytes * 2), signatureAlgorithm);

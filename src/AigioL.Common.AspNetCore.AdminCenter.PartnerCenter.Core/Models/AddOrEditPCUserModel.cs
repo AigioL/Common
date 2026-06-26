@@ -18,4 +18,6 @@ public sealed record class AddOrEditPCUserModel : IReadOnlyId<Guid>
     public bool Disable { get; set; }
 
     public string? UserName { get; set; }
+
+    public string? NickName { get; set; }
 }

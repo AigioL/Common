@@ -16,6 +16,7 @@ public partial interface IPCUserRepository : IRepository<PCUser, Guid>, IEFRepos
 
     Task<PagedModel<PCUserTableItem>> QueryAsync(
         Guid? id,
+        string? name,
         PCUserType? userType,
         string? phoneNumber,
         string? phoneNumberRegionCode,
