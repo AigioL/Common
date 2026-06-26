@@ -1,6 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
-using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using StackExchange.Redis;

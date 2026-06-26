@@ -30,7 +30,7 @@ public static class MembershipController
             var userId = context.GetUserIdThrowIfNull();
             var repo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
             var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
-            var r = await GoodsAsync(userId, conn, repo, context.RequestAborted);
+            var r = await repo.GoodsAsync(cacheLock, userId, conn, repo, context.RequestAborted);
             return r;
         }).WithDescription("获取会员商品列表");
         routeGroup.MapPost("create/good/{goodId}/{channelPackageId?}", async (HttpContext context,
@@ -84,31 +84,6 @@ public static class MembershipController
     }
 
     static readonly SemaphoreSlim cacheLock = new(1, 1);
-
-    /// <summary>
-    /// 获取会员商品列表
-    /// </summary>
-    static async Task<ApiRsp<MembershipGoodsModel[]?>> GoodsAsync(
-        Guid userId,
-        IConnectionMultiplexer conn,
-        IMembershipGoodsRepository repo,
-        CancellationToken cancellationToken = default)
-    {
-        var database = conn.GetDatabase(CacheKeys.RedisMessagingDb);
-        var cacheKey = CacheKeys.GetMembershipGoodsCacheKey;
-
-        var goods = await database.GetCacheDataAsync(
-            cacheKey,
-            repo.GetMembershipGoodsAsync,
-            cacheLock,
-            cancellationToken: cancellationToken);
-
-        if (goods == null)
-            return ApiRspCode.InternalServerError;
-
-        goods = await repo.CheckPriceByUserAsync(userId, goods, cancellationToken);
-        return goods;
-    }
 
     static async Task<ApiRsp<string?>> CreateOrderAsync(
         ILogger logger,
