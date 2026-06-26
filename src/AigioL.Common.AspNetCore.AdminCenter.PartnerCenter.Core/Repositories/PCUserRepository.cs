@@ -141,7 +141,6 @@ sealed partial class PCUserRepository<TDbContext>(
         entity.PhoneNumberRegionCode = phoneNumberRegionCode;
         entity.BusinessIds = NormalizeBusinessIds(model.BusinessIds);
         entity.OperatorUserId = operatorUserId;
-        entity.NickName = model.NickName;
 
         var identityResult = await userManager.UpdateAsync(entity);
         return identityResult;
@@ -186,7 +185,6 @@ sealed partial class PCUserRepository<TDbContext>(
         entity.CreateUserId = userId;
         entity.CreatePCUserId = pcUserId;
         entity.TenantId = tenantId;
-        entity.NickName = model.NickName;
 
         await InitSysAsync(addMenus, isRootTenant, tenantId, tenantName, userId, pcUserId, adminRoleName, addRoles);
 

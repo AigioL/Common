@@ -103,6 +103,9 @@ static partial class ApiSignatureHelper // Const
     const string signaturePrefix = "Signature=";
     const string signedHeadersPrefix = "SignedHeaders=";
 
+    public const string SdkDateHeaderName = "sdk-date";
+    const string HostHeaderName = "host";
+
     static ReadOnlySpan<byte> AccessKeyU8() => "AK="u8;
     static ReadOnlySpan<byte> SignatureU8() => "Signature="u8;
     static ReadOnlySpan<byte> SignedHeadersU8() => "SignedHeaders="u8;
@@ -270,16 +273,28 @@ static partial class ApiSignatureHelper // Private
         ReadOnlyMemory<byte> appSecret,
         HashAlgorithmTypeName hashAlgorithmTypeName,
         HttpRequestMessage request,
-        IEnumerable<string>? signedHeaders,
+        IEnumerable<string>? signedHeaders = null,
+        DateTime? sdkDate = null,
         CancellationToken cancellationToken = default)
     {
-        if (signedHeaders == null || !signedHeaders.Any())
+        signedHeaders ??= new HashSet<string>();
+
+        sdkDate ??= DateTime.UtcNow;
+        request.Headers.TryAddWithoutValidation(SdkDateHeaderName,
+            sdkDate.Value.ToString("o") // https://learn.microsoft.com/zh-cn/dotnet/standard/base-types/standard-date-and-time-format-strings#the-round-trip-o-o-format-specifier
+        );
+        if (!signedHeaders.Contains(SdkDateHeaderName))
         {
-            if (string.IsNullOrWhiteSpace(request.Headers.Host))
-            {
-                request.Headers.Host = request.RequestUri?.Host;
-            }
-            signedHeaders = ["host"];
+            signedHeaders = signedHeaders.Append(SdkDateHeaderName);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Headers.Host))
+        {
+            request.Headers.Host = request.RequestUri?.Host;
+        }
+        if (!signedHeaders.Contains(HostHeaderName))
+        {
+            signedHeaders = signedHeaders.Append(HostHeaderName);
         }
 
         var requestBody = request.Content == null ? null : (await request.Content.ReadAsStreamAsync(cancellationToken));

@@ -9,7 +9,9 @@
     <Import_RootNamespace>AigioL.Common.AspNetCore.OpenApi</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Authentication\OpenApiAuthenticationHandler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Authentication\OpenApiAuthenticationHandlerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Authentication\OpenApiAuthenticationSchemeOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthenticationBuilderExtensions.cs" />
   </ItemGroup>
 </Project>
