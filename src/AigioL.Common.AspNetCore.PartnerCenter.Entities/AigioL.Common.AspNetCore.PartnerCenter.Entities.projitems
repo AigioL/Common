@@ -28,10 +28,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCTenant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserMonthlySettlement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserRole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserWallet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserWalletChangeRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserWithdrawalRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\IdentityEntityFrameworkBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCButtonType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCMenuOpenMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserSettlementStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserWalletValueEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserWalletValueType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserWithdrawalStatus.cs" />
   </ItemGroup>
 </Project>

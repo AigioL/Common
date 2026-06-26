@@ -26,5 +26,7 @@ public static partial class EndpointRouteBuilderExtensions
 
         b.MapPaymentNotifyAliPay();
         b.MapPaymentNotifyWeChatPayV3();
+
+        b.MapPCUserWithdrawalEndpoints();
     }
 }

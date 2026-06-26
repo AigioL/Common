@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\MerchantDeductionAgreementUnSignJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\MerchantDeductionJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\RefreshWeChatAccessTokenJob.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Jobs\MonthlySettlementJob.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Jobs\WechatTradePayQueryJob.cs" />
   </ItemGroup>
 </Project>
