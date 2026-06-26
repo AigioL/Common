@@ -44,6 +44,11 @@ public static partial class WeChatPayV3Controller
             var r = await HandleAgreementNotice(context);
             return r;
         }).WithDescription("微信支付处理签约/解约结果通知 V2");
+        routeGroup.MapPost("transfer", async (HttpContext context) =>
+        {
+            var r = await TransferNotify(context);
+            return r;
+        }).WithDescription("微信商家转账回调通知");
     }
 
     /// <summary>
@@ -219,6 +224,39 @@ public static partial class WeChatPayV3Controller
         {
             // UNDONE: 微信还没有 V3 版本的签约/解约通知接口
             return Task.FromResult(WeChatPayNotifyResults.V3.Failure);
+        }
+    }
+
+    /// <summary>
+    /// 微信商家转账回调通知
+    /// <para>https://{host}/payment/notify/wechatpay/transfer</para>
+    /// </summary>
+    static async Task<IResult> TransferNotify(HttpContext context)
+    {
+        try
+        {
+            var clientV3 = context.RequestServices.GetRequiredService<V3.IWeChatPayNotifyClient>();
+            var paymentOptions = context.RequestServices.GetRequiredService<IOptions<WeChatPayExOptions>>().Value;
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(WeChatPayV3Controller));
+
+            var notify = await clientV3.ExecuteAsync<WeChatPayTransferBillNotify>(context.Request, paymentOptions);
+
+            logger.LogInformation(
+                "微信商家转账回调：OutBillNo={OutBillNo}, TransferBillNo={TransferBillNo}, State={State}, Amount={Amount}",
+                notify.OutBillNo, notify.TransferBillNo, notify.State, notify.TransferAmount);
+
+            // TODO: 根据 notify.OutBillNo 更新对应的 PCUserWithdrawalRecord 状态
+            // - State == "SUCCESS" → 更新提现记录为 Success
+            // - State == "FAIL" → 更新提现记录为 Failed，退回金额到钱包可提现金额
+            // - State == "CANCELLED" → 更新提现记录为 Failed，退回金额到钱包可提现金额
+
+            return WeChatPayNotifyResults.V3.Success;
+        }
+        catch (Exception ex)
+        {
+            var logger = context.RequestServices.GetService<ILoggerFactory>()?.CreateLogger(nameof(WeChatPayV3Controller));
+            logger?.LogError(ex, "微信商家转账回调处理异常");
+            return WeChatPayNotifyResults.V3.Failure;
         }
     }
 

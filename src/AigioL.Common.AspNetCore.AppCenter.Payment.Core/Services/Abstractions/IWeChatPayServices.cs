@@ -1,5 +1,6 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 
@@ -55,6 +56,21 @@ public interface IWeChatPayServices : IUnSignAgreementServices
     /// <param name="refundNumber">商户退款单号</param>
     /// <returns></returns>
     Task<RefundResult?> RefundQuery(string orderNumber, string refundNumber);
+
+    /// <summary>
+    /// 商家转账（转账到零钱）
+    /// </summary>
+    /// <param name="outBillNo">商户转账单号</param>
+    /// <param name="transferAmount">转账金额（元）</param>
+    /// <param name="transferRemark">转账备注</param>
+    /// <param name="userOpenId">收款用户OpenID</param>
+    /// <param name="userName">收款用户姓名（选填，金额>=2000元必传）</param>
+    /// <param name="transferSceneId">转账场景ID</param>
+    /// <param name="transferSceneReportInfos">转账场景报备信息</param>
+    /// <returns></returns>
+    Task<PubTransferState> Transfer(string outBillNo, decimal transferAmount, string transferRemark,
+        string userOpenId, string? userName = null, string? transferSceneId = null,
+        List<WeChatPayTransferSceneReportInfo>? transferSceneReportInfos = null);
 
     #region 商家扣款
 

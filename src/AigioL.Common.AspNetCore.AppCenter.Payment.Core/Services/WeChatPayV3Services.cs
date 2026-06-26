@@ -4,6 +4,7 @@ using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 using Essensoft.Paylink.WeChatPay;
 using Essensoft.Paylink.WeChatPay.V3;
+using Essensoft.Paylink.WeChatPay.V3;
 using Essensoft.Paylink.WeChatPay.V3.Domain;
 using Essensoft.Paylink.WeChatPay.V3.Request;
 using Microsoft.Extensions.Options;
@@ -235,6 +236,62 @@ sealed partial class WeChatPayV3Services<
             RevertAmount(res.Amount.Total));
 
         return refundResult;
+    }
+
+    public async Task<PubTransferState> Transfer(string outBillNo, decimal transferAmount, string transferRemark,
+        string userOpenId, string? userName = null, string? transferSceneId = null,
+        List<WeChatPayTransferSceneReportInfo>? transferSceneReportInfos = null)
+    {
+        var model = new WeChatPayTransferBillsBodyModel
+        {
+            AppId = PaymentOptions.AppId,
+            OutBillNo = outBillNo,
+            TransferSceneId = transferSceneId ?? "1000", // 默认：现金营销
+            OpenId = userOpenId,
+            UserName = userName,
+            TransferAmount = FormatAmount(transferAmount),
+            TransferRemark = transferRemark,
+            NotifyUrl = PaymentOptions.TransferNotifyUrl,
+            TransferSceneReportInfos = transferSceneReportInfos ?? new()
+            {
+                new() { InfoType = "活动名称", InfoContent = "商家转账" },
+                new() { InfoType = "奖励说明", InfoContent = "提现" },
+            },
+        };
+
+        var request = new WeChatPayTransferBillsRequest();
+        request.SetBodyModel(model);
+
+        LogApiInfo(model);
+        var response = await client.ExecuteAsync(request, PaymentOptions);
+        LogApiInfo(model.OutBillNo, model, response, !response.IsError);
+
+        if (response.IsError)
+        {
+            return new()
+            {
+                IsSuccess = false,
+                Message = $"{response.Code}: {response.Message}",
+                TransferStatus = TransferStatus.Failed,
+            };
+        }
+
+        // 根据 state 判断转账结果
+        var transferStatus = response.State switch
+        {
+            "SUCCESS" => TransferStatus.Success,
+            "FAIL" or "CANCELLED" => TransferStatus.Failed,
+            _ => TransferStatus.Processing,
+        };
+
+        return new()
+        {
+            IsSuccess = true,
+            ThirdPartyPlatformNumber = response.TransferBillNo,
+            TransferStatus = transferStatus,
+            FinishTime = transferStatus is TransferStatus.Success or TransferStatus.Failed
+                ? DateTimeOffset.Now : null,
+        };
     }
 
     //public override Task<UserAgreement> GetContractOrderPageUrl(

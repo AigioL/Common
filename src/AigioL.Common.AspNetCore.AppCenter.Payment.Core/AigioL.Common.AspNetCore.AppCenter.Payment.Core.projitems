@@ -19,6 +19,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatApiOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserWithdrawalModels.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayExOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayTransferBillNotify.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayTransferBillsBodyModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayTransferBillsRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayTransferBillsResponse.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IAliPayServices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IPCUserWithdrawalService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IPaymentMessageQueueService.cs" />

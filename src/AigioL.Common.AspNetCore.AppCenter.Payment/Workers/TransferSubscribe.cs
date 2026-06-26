@@ -46,6 +46,7 @@ public partial class TransferSubscribe : WorkerBackgroundService
             // 获取需要的服务
             var transferOrderRepo = scope.ServiceProvider.GetRequiredService<ITransferOrderRepository>();
             var aliPayService = scope.ServiceProvider.GetRequiredService<IAliPayServices>();
+            var weChatPayService = scope.ServiceProvider.GetRequiredService<IWeChatPayServices>();
 
             var model = JsonSerializer.Deserialize(eventArgs.Body.Span, PaymentMinimalApisJsonSerializerContext.Default.WithdrawTransferModel)
                 ?? throw new ArgumentException("处理转账 msg 参数错误");
@@ -68,8 +69,9 @@ public partial class TransferSubscribe : WorkerBackgroundService
                 case PaymentType.Alipay:
                     result = await aliPayService.Transfer(transferOrder.TransferNumber, transferOrder.TransferAmount, transferOrder.Title, transferOrder.UserOpenId);
                     break;
-                //case PaymentType.WeChatPay:
-                //    break;
+                case PaymentType.WeChatPay:
+                    result = await weChatPayService.Transfer(transferOrder.TransferNumber, transferOrder.TransferAmount, transferOrder.Title, transferOrder.UserOpenId);
+                    break;
                 default:
                     throw new ApplicationException("不支持的支付平台");
             }
