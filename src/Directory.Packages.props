@@ -1,4 +1,7 @@
 <Project>
+	<PropertyGroup>
+			<Version_OpenIddict>7.5.0</Version_OpenIddict>
+	</PropertyGroup>	
   <!-- 👇 Windows Only -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.287" />
@@ -223,4 +226,12 @@
     <PackageVersion Include="Aprillz.MewUI.Platform.Win32" Version="0.15.2" />
     <PackageVersion Include="Aprillz.MewUI.Backend.Direct2D" Version="0.15.2" />
   </ItemGroup>
+	<!-- 👇 ASP.NET Core OpenId/OAuth -->
+	<ItemGroup>
+		<PackageVersion Include="OpenIddict.Core" Version="$(Version_OpenIddict)" />
+		<PackageVersion Include="OpenIddict.Quartz" Version="$(Version_OpenIddict)" />
+		<PackageVersion Include="OpenIddict.AspNetCore" Version="$(Version_OpenIddict)" />
+		<PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="$(Version_OpenIddict)" />
+		<PackageVersion Include="OpenIddict.EntityFrameworkCore.Models" Version="$(Version_OpenIddict)" />
+	</ItemGroup>
 </Project>
