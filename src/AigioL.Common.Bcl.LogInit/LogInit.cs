@@ -27,7 +27,7 @@ public static partial class LogInit
     /// <summary>
     /// 使用日志源名称初始化日志工厂与提供程序
     /// </summary>
-    public static void InitLog(string? sourceName = null) => _8b7542f7.InitLog(sourceName);
+    public static void InitLog(string? sourceName = null, string? logsPath = null) => _8b7542f7.InitLog(sourceName, logsPath);
 
     /// <summary>
     /// 设置或获取全局日志级别
@@ -142,9 +142,11 @@ file static partial class _8b7542f7
     /// </summary>
     const int maxArchiveDays = 7;
 
-    internal static void InitLog(string? sourceName)
+    internal static void InitLog(string? sourceName, string? logsPath)
     {
-        var nlogConfig = InitNLogConfig(archiveAboveSize, maxArchiveFiles, maxArchiveDays);
+        logsPath ??= Path.Combine(IOPath.CacheDirectory, "logs");
+
+        var nlogConfig = InitNLogConfig(logsPath, archiveAboveSize, maxArchiveFiles, maxArchiveDays);
         var nlogFactory = LogManager.Setup().LoadConfiguration(nlogConfig).LogFactory;
 
         LoggerFilterOptions filterOptions = new()
@@ -170,16 +172,13 @@ file static partial class _8b7542f7
         logger.Info("init main");
 #endif
     }
-
     /// <summary>
     /// 初始化 NLog 配置
     /// </summary>
-    /// <returns></returns>
-    static LoggingConfiguration InitNLogConfig(long archiveAboveSize, int maxArchiveFiles, int maxArchiveDays)
+    static LoggingConfiguration InitNLogConfig(string logsPath, long archiveAboveSize, int maxArchiveFiles, int maxArchiveDays)
     {
         // https://github.com/NLog/NLog/wiki/Getting-started-with-ASP.NET-Core-6
 
-        var logsPath = Path.Combine(IOPath.CacheDirectory, "logs");
         CreateDirectory(logsPath);
 
         InternalLogger.LogFile = $"{logsPath}{Path.DirectorySeparatorChar}internal-nlog.txt";
