@@ -4,12 +4,12 @@
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.287" />
+		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.298" />
 		<PackageVersion Include="System.Management" Version="10.0.6" />
 		<PackageVersion Include="WmiLight" Version="7.2.0" />
 		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.9" />
-		<PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.8" />
-		<PackageVersion Include="System.Drawing.Common" Version="10.0.8" />
+		<PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.9" />
+		<PackageVersion Include="System.Drawing.Common" Version="10.0.9" />
 	</ItemGroup>
 	<!-- 👇 WinUI3 -->
 	<ItemGroup>
@@ -33,7 +33,7 @@
 	<!-- 👇 xunit 单元测试 -->
 	<ItemGroup>
 		<PackageVersion Include="coverlet.collector" Version="10.0.1" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
 		<PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
 		<PackageVersion Include="xunit.v3" Version="3.2.2" />
 	</ItemGroup>
@@ -71,7 +71,7 @@
 	<!-- 👇 OpenApi -->
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
-		<PackageVersion Include="Scalar.AspNetCore" Version="2.16.3" />
+		<PackageVersion Include="Scalar.AspNetCore" Version="2.16.6" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
 	<ItemGroup>
@@ -210,21 +210,21 @@
 	</ItemGroup>
 	<!-- 👇 SignalR -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.8" />
+		<PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.9" />
 	</ItemGroup>
 	<!-- 👇 ⬇️ -->
 	<ItemGroup>
-		<PackageVersion Include="Downloader" Version="5.8.0" />
+		<PackageVersion Include="Downloader" Version="5.9.0" />
 		<PackageVersion Include="System.Net.Http.WinHttpHandler" Version="10.0.6" />
 	</ItemGroup>
 	<!-- 👇 DotNext -->
 	<ItemGroup>
-		<PackageVersion Include="DotNext.Threading" Version="6.3.0" />
+		<PackageVersion Include="DotNext.Threading" Version="6.4.0" />
 	</ItemGroup>
 	<!-- 👇 Aprillz.MewUI -->
 	<ItemGroup>
-		<PackageVersion Include="Aprillz.MewUI.Platform.Win32" Version="0.15.2" />
-		<PackageVersion Include="Aprillz.MewUI.Backend.Direct2D" Version="0.15.2" />
+		<PackageVersion Include="Aprillz.MewUI.Platform.Win32" Version="0.18.1" />
+		<PackageVersion Include="Aprillz.MewUI.Backend.Direct2D" Version="0.18.1" />
 	</ItemGroup>
 	<!-- 👇 ASP.NET Core OpenId/OAuth -->
 	<ItemGroup>
