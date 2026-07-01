@@ -1,4 +1,5 @@
 using AigioL.Common.AspNetCore.OpenApi.Authentication;
+using AigioL.Common.OpenApi.Signature.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -15,17 +16,17 @@ public static partial class AuthenticationBuilderExtensions
         this AuthenticationBuilder builder, Action<OpenApiAuthenticationSchemeOptions>? configureOptions = null)
         where THandler : OpenApiAuthenticationHandlerBase
     {
-        builder.AddScheme<OpenApiAuthenticationSchemeOptions, THandler>("HMAC-SHA256", configureOptions);
+        builder.AddScheme<OpenApiAuthenticationSchemeOptions, THandler>(HMAC_SHA256, configureOptions);
 
         // https://github.com/dotnet/aspnetcore/blob/v10.0.9/src/Security/Authentication/Core/src/AuthenticationBuilder.cs#L34
         builder.Services.Configure<AuthenticationOptions>(o =>
         {
-            o.AddScheme("HMAC-SHA384", scheme =>
+            o.AddScheme(HMAC_SHA384, scheme =>
             {
                 scheme.HandlerType = typeof(THandler);
                 //scheme.DisplayName = displayName;
             });
-            o.AddScheme("HMAC-SHA512", scheme =>
+            o.AddScheme(HMAC_SHA512, scheme =>
             {
                 scheme.HandlerType = typeof(THandler);
                 //scheme.DisplayName = displayName;
@@ -59,7 +60,11 @@ public static partial class AuthenticationBuilderExtensions
 file static class _AA
 #pragma warning restore IDE1006 // 命名样式
 {
-    internal static readonly AuthorizeAttribute HMAC_SHA256_AA = new() { AuthenticationSchemes = "HMAC-SHA256", };
-    internal static readonly AuthorizeAttribute HMAC_SHA384_AA = new() { AuthenticationSchemes = "HMAC-SHA384", };
-    internal static readonly AuthorizeAttribute HMAC_SHA512_AA = new() { AuthenticationSchemes = "HMAC-SHA512", };
+    internal const string HMAC_SHA256 = $"{ApiSignatureHelper.DefaultSignatureAlgorithmPrefix}SHA256";
+    internal const string HMAC_SHA384 = $"{ApiSignatureHelper.DefaultSignatureAlgorithmPrefix}SHA384";
+    internal const string HMAC_SHA512 = $"{ApiSignatureHelper.DefaultSignatureAlgorithmPrefix}SHA512";
+
+    internal static readonly AuthorizeAttribute HMAC_SHA256_AA = new() { AuthenticationSchemes = HMAC_SHA256, };
+    internal static readonly AuthorizeAttribute HMAC_SHA384_AA = new() { AuthenticationSchemes = HMAC_SHA384, };
+    internal static readonly AuthorizeAttribute HMAC_SHA512_AA = new() { AuthenticationSchemes = HMAC_SHA512, };
 }

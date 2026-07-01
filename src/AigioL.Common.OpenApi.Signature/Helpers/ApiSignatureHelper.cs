@@ -92,7 +92,7 @@ public static partial class ApiSignatureHelper
 
 static partial class ApiSignatureHelper // Const
 {
-    const string DefaultSignatureAlgorithmPrefix = "HMAC-";
+    public const string DefaultSignatureAlgorithmPrefix = "HMAC-";
 
     /// <summary>
     /// 默认的签名算法，使用 <see cref="HMACSHA256"/> 哈希算法进行签名计算
