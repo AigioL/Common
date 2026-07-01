@@ -21,18 +21,11 @@ public static partial class AESUtils
         bigEndian ??= BitConverter.IsLittleEndian;
 
         const int lenGuidBytes = 16;
-        var buffer = ArrayPool<byte>.Shared.Rent(lenGuidBytes);
-        try
-        {
-            keyIv.TryWriteBytes(buffer, bigEndian.Value, out var bytesWritten);
-            if (bytesWritten != lenGuidBytes)
-                throw new ArgumentException("Invalid GUID format", nameof(keyIv));
-            aes.Key = aes.IV = buffer;
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(buffer, true);
-        }
+        Span<byte> buffer = stackalloc byte[lenGuidBytes];
+        keyIv.TryWriteBytes(buffer, bigEndian.Value, out var bytesWritten);
+        if (bytesWritten != lenGuidBytes)
+            throw new ArgumentException("Invalid GUID format", nameof(keyIv));
+        aes.Key = aes.IV = buffer.ToArray();
         return aes;
     }
 
