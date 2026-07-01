@@ -19,7 +19,9 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
     UrlEncoder encoder) :
     AuthenticationHandler<OpenApiAuthenticationSchemeOptions>(options, logger, encoder)
 {
-    protected abstract ValueTask<(ReadOnlyMemory<byte> appSecret, string appName)> GetAppSecretAsync(ReadOnlyMemory<char> appAccessKey);
+    protected abstract ValueTask<(ReadOnlyMemory<byte> appSecret, string appName)> GetAppSecretAsync(
+        ReadOnlyMemory<char> appAccessKey,
+        CancellationToken cancellationToken = default);
 
     protected sealed override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -27,6 +29,21 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
         {
             return AuthenticateResult.NoResult();
         }
+
+        string? sdkDate0;
+        if (!Request.Headers.TryGetValue(SdkDateHeaderName, out var sdkDate) || (sdkDate0 = sdkDate.First()) == null)
+        {
+            return AuthenticateResult.Fail("缺少日期头");
+        }
+        if (!sdkDate0.AsSpan().TryGetDateTime(out var sdkDateTime))
+        {
+            return AuthenticateResult.Fail("日期头格式不正确");
+        }
+        if ((DateTime.UtcNow - sdkDateTime) > TimeSpan.FromMinutes(15))
+        {
+            return AuthenticateResult.Fail("请求已过期");
+        }
+
         ReadOnlyMemory<char> authorization = Request.Headers.Authorization.ToString().AsMemory();
         (var hashAlgorithmTypeName, var authorizationValue, var authorizationLeft) = GetAuthorizationValue(authorization);
         if (!hashAlgorithmTypeName.HasValue || Options.IsUnSupported(hashAlgorithmTypeName.Value))
@@ -53,7 +70,7 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
             return AuthenticateResult.Fail($"签名长度不正确, 期望: {hashSizeInBytes * 2}, 实际: {signature.Length}");
         }
 
-        (var appSecret, var appName) = await GetAppSecretAsync(accessKey);
+        (var appSecret, var appName) = await GetAppSecretAsync(accessKey, Context.RequestAborted);
         if (appSecret.IsEmpty)
         {
             return AuthenticateResult.Fail($"无效的访问密钥: {accessKey}");
@@ -86,7 +103,7 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
                 Context.RequestAborted);
 
 #if DEBUG
-            var debugViewHashedCanonicalRequest = new string(signatureChars, 0, hashSizeInBytes * 2);
+            var debugView_HashedCanonicalRequest = new string(signatureChars, 0, hashSizeInBytes * 2);
 #endif
 
             // 3. 构造待签名字符串，通过 HMAC 计算签名
@@ -96,7 +113,7 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
                 Context.RequestAborted);
 
 #if DEBUG
-            var signature_DEBUG_VIEW = new string(signatureChars, 0, hashSizeInBytes * 2);
+            var debugView_Signature = new string(signatureChars, 0, hashSizeInBytes * 2);
 #endif
 
             var calcSignature = signatureChars.AsMemory(0, hashSizeInBytes * 2);

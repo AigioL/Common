@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
@@ -6,6 +7,7 @@ using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
+using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 
@@ -25,6 +27,35 @@ public partial interface IMembershipGoodsRepository : IRepository<MembershipGood
     /// 检查用户是否使用过商品的首次优惠
     /// </summary>
     Task<bool> CheckUserUseFirstPriceOfGoodsAsync(Guid userId, Guid goodsId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取会员商品列表
+    /// </summary>
+    async Task<ApiRsp<MembershipGoodsModel[]?>> GoodsAsync(
+        SemaphoreSlim cacheLock,
+        Guid? userId,
+        IConnectionMultiplexer conn,
+        IMembershipGoodsRepository repo,
+        CancellationToken cancellationToken = default)
+    {
+        var database = conn.GetDatabase(CacheKeys.RedisMessagingDb);
+        var cacheKey = CacheKeys.GetMembershipGoodsCacheKey;
+
+        var goods = await database.GetCacheDataAsync(
+            cacheKey,
+            repo.GetMembershipGoodsAsync,
+            cacheLock,
+            cancellationToken: cancellationToken);
+
+        if (goods == null)
+            return ApiRspCode.InternalServerError;
+
+        if (userId.HasValue)
+        {
+            goods = await repo.CheckPriceByUserAsync(userId.Value, goods, cancellationToken);
+        }
+        return goods;
+    }
 }
 
 partial interface IMembershipGoodsRepository

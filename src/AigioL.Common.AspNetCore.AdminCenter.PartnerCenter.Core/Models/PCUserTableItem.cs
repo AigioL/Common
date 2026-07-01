@@ -30,4 +30,6 @@ public sealed record class PCUserTableItem : IReadOnlyId<Guid>
     public string? OperatorUser { get; set; }
 
     public string? UserName { get; set; }
+
+    public string? NickName { get; set; }
 }

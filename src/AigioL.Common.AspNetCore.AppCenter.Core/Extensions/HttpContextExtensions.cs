@@ -530,8 +530,9 @@ file static partial class DateTimeParseHelper
                 Encoding.UTF8.TryGetBytes(s, temp, out var bytesWritten);
                 temp = temp[bytesWritten..];
                 yh.CopyTo(temp);
-                buffer = buffer[(bytesWritten + yh.Length * 2)..];
+                buffer = buffer[..(bytesWritten + yh.Length * 2)];
                 Utf8JsonReader reader = new(buffer);
+                reader.Read();
                 if (reader.TryGetDateTimeOffset(out var value2))
                 {
                     result = value2;

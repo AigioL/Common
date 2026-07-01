@@ -127,6 +127,12 @@ public partial class PCUser :
     [Comment("是否禁用")]
     public bool Disable { get; set; }
 
+    /// <summary>
+    /// 应用密钥
+    /// </summary>
+    [Comment("应用密钥")]
+    public byte[]? AppSecret { get; set; }
+
     ///// <inheritdoc cref="PCUserOrganization"/>
     //public List<PCUserOrganization>? Organizations { get; set; }
 

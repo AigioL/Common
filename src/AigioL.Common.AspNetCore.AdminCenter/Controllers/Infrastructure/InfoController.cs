@@ -133,7 +133,7 @@ public static partial class InfoController
         #region 添加管理员用户与预设角色
 
         var adminRoleName = adminCenterService.RoleNameAdministrator;
-        List<string> addRoles = adminCenterService.AddRoles;
+        var addRoles = adminCenterService.GetAddRoles(adminCenterService.RoleEnumType);
         var user = await userManager.FindByNameAsync(userName); // 查找默认初始管理员用户
         if (user == null)
         {

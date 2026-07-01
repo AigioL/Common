@@ -27,6 +27,7 @@ public static partial class PCUserController
 
         routeGroup.MapGet("", async (HttpContext context,
             [FromQuery] Guid? id = null,
+            [FromQuery] string? name = null,
             [FromQuery] PCUserType? userType = null,
             [FromQuery] string? phoneNumber = null,
             [FromQuery] string? phoneNumberRegionCode = null,
@@ -43,7 +44,7 @@ public static partial class PCUserController
         {
             var repo = context.RequestServices.GetRequiredService<IPCUserRepository>();
             BMApiRsp<PagedModel<TableItemM>?> r = await repo.QueryAsync(
-                id, userType, phoneNumber, phoneNumberRegionCode, businessId, disable,
+                id, name, userType, phoneNumber, phoneNumberRegionCode, businessId, disable,
                 createTime, updateTime, createUser, operatorUser,
                 orderBy, desc, current, pageSize,
                 context.RequestAborted);
@@ -76,10 +77,11 @@ public static partial class PCUserController
             var isRootTenant = tenantId == adminCenterService.RootTenantIdG;
             List<PCMenu> addMenus = new();
             adminCenterService.HandleMenus(isRootTenant, addMenus);
+            var addRoles = adminCenterService.GetAddRoles(adminCenterService.RoleEnumType);
 
             var userId = context.GetBMUserId();
             var repo = context.RequestServices.GetRequiredService<IPCUserRepository>();
-            BMApiRsp r = await repo.InsertAsync(model, addMenus, isRootTenant, tenantId, null, userId, null, adminRoleName, cancellationToken: context.RequestAborted);
+            BMApiRsp r = await repo.InsertAsync(model, addMenus, isRootTenant, tenantId, null, userId, null, adminRoleName, addRoles: addRoles, cancellationToken: context.RequestAborted);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("新增分页查询合作伙伴后台用户");
@@ -92,10 +94,11 @@ public static partial class PCUserController
             var isRootTenant = tenantId == adminCenterService.RootTenantIdG;
             List<PCMenu> addMenus = new();
             adminCenterService.HandleMenus(isRootTenant, addMenus);
+            var addRoles = adminCenterService.GetAddRoles(adminCenterService.RoleEnumType);
 
             var userId = context.GetBMUserId();
             var repo = context.RequestServices.GetRequiredService<IPCUserRepository>();
-            await repo.InitSysAsync(addMenus, isRootTenant, tenantId, null, userId, null, adminRoleName);
+            await repo.InitSysAsync(addMenus, isRootTenant, tenantId, null, userId, null, adminRoleName, addRoles: addRoles);
             return BMApiRsp.Ok;
         }).PermissionFilter(ControllerName, BMButtonType.Add)
         .WithDescription("初始化合作伙伴后台预设权限与菜单");
