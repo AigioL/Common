@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCTenant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserMonthlySettlement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserRole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\PCUserWallet.cs" />

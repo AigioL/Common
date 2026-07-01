@@ -12,10 +12,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ProfileExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddRepositories.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\AddOrEditPCUserModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ChangePCUserWeChatOpenIdModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserOrderFilterModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserTableItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\SetPCUserPasswordModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IPCUserRepository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Repositories\PCUserRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IPCUserConfigService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\PCUserConfigService.cs" />
   </ItemGroup>
 </Project>

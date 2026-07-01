@@ -7,6 +7,7 @@ using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.Models;
+using GameTrainer.ApiService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +33,7 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
     }
 
     /// <inheritdoc/>
-    public async Task<ApiRsp<PCUserWithdrawalResponseModel>> ApplyWithdrawalAsync(
+    public async Task<ApiRsp<PCUserWithdrawalResponseModel?>> ApplyWithdrawalAsync(
         PCUserWithdrawalRequestModel request,
         CancellationToken cancellationToken = default)
     {
@@ -49,12 +50,12 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
         // 2. 校验单次提现上限
         if (request.Amount > maxPerWithdrawal)
         {
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>($"单次提现金额不能超过 {maxPerWithdrawal} 元");
+            return $"单次提现金额不能超过 {maxPerWithdrawal} 元";
         }
 
         if (request.Amount <= 0)
         {
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>("提现金额必须大于 0");
+            return $"提现金额必须大于 0";
         }
 
         // 3. 获取钱包（带行版本乐观锁检查）
@@ -63,13 +64,13 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
 
         if (wallet == null)
         {
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>("钱包不存在");
+            return $"钱包不存在";
         }
 
         // 4. 检查可提现余额
         if (wallet.WithdrawableAmount < request.Amount)
         {
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>("可提现余额不足");
+            return $"可提现余额不足";
         }
 
         // 5. 检查当日该账号已提现金额
@@ -85,8 +86,7 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
 
         if (todayAccountWithdrawn + request.Amount > maxDailyPerAccount)
         {
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>(
-                $"单账号每日提现上限为 {maxDailyPerAccount} 元，今日已提现 {todayAccountWithdrawn} 元");
+            return $"单账号每日提现上限为 {maxDailyPerAccount} 元，今日已提现 {todayAccountWithdrawn} 元";
         }
 
         // 6. 检查当日平台总提现金额
@@ -98,8 +98,7 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
 
         if (todayTotalWithdrawn + request.Amount > maxDailyTotal)
         {
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>(
-                $"平台单日总提现上限为 {maxDailyTotal} 元，今日已提现 {todayTotalWithdrawn} 元");
+            return $"平台单日总提现上限为 {maxDailyTotal} 元，今日已提现 {todayTotalWithdrawn} 元";
         }
 
         // 7. 生成提现单号
@@ -160,18 +159,18 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
         catch (DbUpdateConcurrencyException)
         {
             await transaction.RollbackAsync(cancellationToken);
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>("钱包数据并发冲突，请稍后重试");
+            return $"钱包数据并发冲突，请稍后重试";
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
             logger.LogError(ex, "提现申请失败，UserId: {UserId}, Amount: {Amount}", request.UserId, request.Amount);
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>($"提现申请失败: {ex.Message}");
+            return $"提现申请失败: {ex.Message}";
         }
     }
 
     /// <inheritdoc/>
-    public async Task<ApiRsp<PCUserWalletInfoModel>> GetWalletInfoAsync(
+    public async Task<ApiRsp<PCUserWalletInfoModel?>> GetWalletInfoAsync(
         Guid userId,
         CancellationToken cancellationToken = default)
     {
@@ -181,7 +180,7 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
 
         if (wallet == null)
         {
-            return ApiRsp.Fail<PCUserWalletInfoModel>("钱包不存在");
+            return $"钱包不存在";
         }
 
         return ApiRsp.Ok(new PCUserWalletInfoModel
@@ -194,7 +193,7 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
     }
 
     /// <inheritdoc/>
-    public async Task<ApiRsp<PCUserWithdrawalResponseModel>> GetWithdrawalAsync(
+    public async Task<ApiRsp<PCUserWithdrawalResponseModel?>> GetWithdrawalAsync(
         string withdrawalNumber,
         CancellationToken cancellationToken = default)
     {
@@ -204,7 +203,7 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
 
         if (record == null)
         {
-            return ApiRsp.Fail<PCUserWithdrawalResponseModel>("提现记录不存在");
+            return $"提现记录不存在";
         }
 
         return ApiRsp.Ok(new PCUserWithdrawalResponseModel

@@ -14,7 +14,7 @@ public partial interface IPCUserWithdrawalService
     /// <param name="request">提现请求</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ApiRsp<PCUserWithdrawalResponseModel>> ApplyWithdrawalAsync(
+    Task<ApiRsp<PCUserWithdrawalResponseModel?>> ApplyWithdrawalAsync(
         PCUserWithdrawalRequestModel request,
         CancellationToken cancellationToken = default);
 
@@ -24,7 +24,7 @@ public partial interface IPCUserWithdrawalService
     /// <param name="userId">用户 Id</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ApiRsp<PCUserWalletInfoModel>> GetWalletInfoAsync(
+    Task<ApiRsp<PCUserWalletInfoModel?>> GetWalletInfoAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 
@@ -34,7 +34,7 @@ public partial interface IPCUserWithdrawalService
     /// <param name="withdrawalNumber">提现单号</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<ApiRsp<PCUserWithdrawalResponseModel>> GetWithdrawalAsync(
+    Task<ApiRsp<PCUserWithdrawalResponseModel?>> GetWithdrawalAsync(
         string withdrawalNumber,
         CancellationToken cancellationToken = default);
 }

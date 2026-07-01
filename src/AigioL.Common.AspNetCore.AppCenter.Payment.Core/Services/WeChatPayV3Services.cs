@@ -1,9 +1,9 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
 using Essensoft.Paylink.WeChatPay;
-using Essensoft.Paylink.WeChatPay.V3;
 using Essensoft.Paylink.WeChatPay.V3;
 using Essensoft.Paylink.WeChatPay.V3.Domain;
 using Essensoft.Paylink.WeChatPay.V3.Request;
@@ -246,7 +246,7 @@ sealed partial class WeChatPayV3Services<
         {
             AppId = PaymentOptions.AppId,
             OutBillNo = outBillNo,
-            TransferSceneId = transferSceneId ?? "1000", // 默认：现金营销
+            TransferSceneId = transferSceneId ?? "1005", // 默认：佣金报酬
             OpenId = userOpenId,
             UserName = userName,
             TransferAmount = FormatAmount(transferAmount),
@@ -254,8 +254,8 @@ sealed partial class WeChatPayV3Services<
             NotifyUrl = PaymentOptions.TransferNotifyUrl,
             TransferSceneReportInfos = transferSceneReportInfos ?? new()
             {
-                new() { InfoType = "活动名称", InfoContent = "商家转账" },
-                new() { InfoType = "奖励说明", InfoContent = "提现" },
+                new() { InfoType = "岗位类型", InfoContent = "KOL 推广" },
+                new() { InfoType = "报酬说明", InfoContent = "推广分成提现" },
             },
         };
 
@@ -281,7 +281,7 @@ sealed partial class WeChatPayV3Services<
         {
             "SUCCESS" => TransferStatus.Success,
             "FAIL" or "CANCELLED" => TransferStatus.Failed,
-            _ => TransferStatus.Processing,
+            _ => TransferStatus.Transferring,
         };
 
         return new()

@@ -17,9 +17,9 @@ static partial class CacheKeys
     public const string PCUser单账号每日提现上限 = "PCUser单账号每日提现上限";
 
     /// <summary>
-    /// PC 用户单账号每日提现上限默认值（200 元）
+    /// PC 用户单账号每日提现上限默认值（2000 元）
     /// </summary>
-    public const decimal PCUser单账号每日提现上限默认值 = 200m;
+    public const decimal PCUser单账号每日提现上限默认值 = 2000m;
 
     /// <summary>
     /// PC 用户单日总金额提现上限（元）
@@ -27,9 +27,9 @@ static partial class CacheKeys
     public const string PCUser单日总金额提现上限 = "PCUser单日总金额提现上限";
 
     /// <summary>
-    /// PC 用户单日总金额提现上限默认值（10000 元）
+    /// PC 用户单日总金额提现上限默认值（50000 元）
     /// </summary>
-    public const decimal PCUser单日总金额提现上限默认值 = 10000m;
+    public const decimal PCUser单日总金额提现上限默认值 = 50000m;
 
     /// <summary>
     /// PC 用户单次提现最大金额（元）

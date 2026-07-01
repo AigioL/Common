@@ -1,9 +1,11 @@
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Entities.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AigioL.Common.AspNetCore.PartnerCenter.Entities;
 

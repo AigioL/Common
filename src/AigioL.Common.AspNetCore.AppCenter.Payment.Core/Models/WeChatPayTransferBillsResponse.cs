@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 
 using Essensoft.Paylink.WeChatPay;
+using Essensoft.Paylink.WeChatPay.V3;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 
