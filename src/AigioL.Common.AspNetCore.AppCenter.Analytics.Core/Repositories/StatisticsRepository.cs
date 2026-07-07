@@ -476,7 +476,7 @@ partial class StatisticsRepository<TDbContext>
                                 c.PaymentType == PaymentType.Alipay ? c.PaymentAmount - c.PaymentAmount * alipayTax :
                                 c.PaymentType == PaymentType.WeChatPay ? c.PaymentAmount - c.PaymentAmount * wechatPayTax
                                 : c.PaymentAmount,
-                        RefundAmount = (decimal?)r.RefundAmount ?? 0m,
+                        RefundAmount = r != null && r.RefundFinishTime >= startTime && r.RefundFinishTime < endTime ? r.RefundAmount : 0m,
                     } into row
                     select new
                     {
@@ -511,14 +511,11 @@ partial class StatisticsRepository<TDbContext>
         if (orderBusinessTypeIds?.Length > 0)
             query = query.Where(a => orderBusinessTypeIds.Contains(a.OrderBusinessTypeId));
 
-        // 结算上月的订单在本月退款
-        var lastMonthStartTime = startTime.AddDays(1 - startTime.Day).AddMonths(-1);
-        var lastMonthEndTime = startTime.AddDays(1 - startTime.Day);
-
+        // 结算统计日期之前支付的订单在本周期内退款
         var query2 = from o in orders
                      join r in refundBills on o.Id equals r.AftersalesBill!.OrderId into rs
                      from r in rs.DefaultIfEmpty()
-                     where o.PaymentTime >= lastMonthStartTime && o.PaymentTime < lastMonthEndTime &&
+                     where o.PaymentTime < startTime &&
                            r.RefundFinishTime >= startTime && r.RefundFinishTime < endTime
                      select new
                      {
