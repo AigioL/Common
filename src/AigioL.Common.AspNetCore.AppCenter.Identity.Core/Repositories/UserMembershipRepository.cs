@@ -167,7 +167,7 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         return Result(r);
     }
 
-    public async Task<int> DeductionPayAsYoGoAsync(
+    public async Task<int?> DeductionPayAsYoGoAsync(
         Guid userId,
         TimeSpan changeValue,
         DateTimeOffset? now = null)
@@ -175,13 +175,19 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         now ??= DateTimeOffset.UtcNow;
         var query = db.UserMemberships.Where(x => x.Id == userId);
 
+        // 过期保护：包月未过期时禁止扣减按量付费时长
+        var expireDate = await query.Select(x => x.ExpireDate).SingleOrDefaultAsync();
+        if (expireDate != default && expireDate >= now.Value)
+        {
+            return null;
+        }
+
         var rowCount = await query.ExecuteUpdateAsync(p => p
             .SetProperty(x => x.UpdateTime, now.Value)
             .SetProperty(x => x.PayAsYoGo, y => (y.PayAsYoGo - changeValue > TimeSpan.Zero ? y.PayAsYoGo - changeValue : TimeSpan.Zero)));
 
         if (rowCount > 0)
         {
-            var expireDate = await query.Select(x => x.ExpireDate).SingleOrDefaultAsync();
             var (direction, payAsYoGo) = UserMembershipRepositoryHelper.CreatePayAsYoGoDeductionChange(changeValue);
             UserMembershipChangeRecord record = new()
             {
@@ -195,7 +201,6 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
             await db.UserMembershipChangeRecords.AddAsync(record);
             rowCount += await db.SaveChangesAsync();
         }
-
 
         return rowCount;
     }

@@ -36,7 +36,7 @@ public partial interface IUserMembershipRepository : IRepository<UserMembership,
     /// <summary>
     /// 按量付费的扣费
     /// </summary>
-    Task<int> DeductionPayAsYoGoAsync(
+    Task<int?> DeductionPayAsYoGoAsync(
         Guid userId,
         TimeSpan changeValue,
         DateTimeOffset? now = null);
