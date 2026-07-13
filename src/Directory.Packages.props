@@ -215,17 +215,17 @@
   </ItemGroup>
   <!-- 👇 ⬇️ -->
   <ItemGroup>
-    <PackageVersion Include="Downloader" Version="5.9.0" />
+    <PackageVersion Include="Downloader" Version="5.9.4" />
     <PackageVersion Include="System.Net.Http.WinHttpHandler" Version="10.0.6" />
   </ItemGroup>
   <!-- 👇 DotNext -->
   <ItemGroup>
-    <PackageVersion Include="DotNext.Threading" Version="6.4.0" />
+    <PackageVersion Include="DotNext.Threading" Version="6.4.1" />
   </ItemGroup>
   <!-- 👇 Aprillz.MewUI -->
   <ItemGroup>
-    <PackageVersion Include="Aprillz.MewUI.Platform.Win32" Version="0.18.1" />
-    <PackageVersion Include="Aprillz.MewUI.Backend.Direct2D" Version="0.18.1" />
+    <PackageVersion Include="Aprillz.MewUI.Platform.Win32" Version="0.19.0" />
+    <PackageVersion Include="Aprillz.MewUI.Backend.Direct2D" Version="0.19.0" />
   </ItemGroup>
   <!-- 👇 ASP.NET Core OpenId/OAuth -->
   <ItemGroup>
