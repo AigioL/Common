@@ -13,5 +13,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Authentication\OpenApiAuthenticationHandlerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Authentication\OpenApiAuthenticationSchemeOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AuthenticationBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ServiceCollectionExtensions.AddOpenIddictRepositories.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\Abstractions\IOpenIddictAuthorizationRepository.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Repositories\OpenIddictAuthorizationRepository.cs" />
   </ItemGroup>
 </Project>

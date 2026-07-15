@@ -4,6 +4,7 @@ using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Services.Abstractions;
+using AigioL.Common.AspNetCore.AppCenter.Services;
 using AigioL.Common.JsonWebTokens.Models.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +60,7 @@ public static partial class ServiceCollectionServiceExtensions
         services.AddScoped<UserManager2<TDbContext>>();
         services.AddScoped<IUserManager2>(static s => s.GetRequiredService<UserManager2<TDbContext>>());
         services.AddScoped<UserManager<User>>(static s => s.GetRequiredService<UserManager2<TDbContext>>());
+        services.AddScoped<UserManager>(static s => s.GetRequiredService<UserManager2<TDbContext>>());
         services.AddScoped<IUserValidator<User>, UserValidator2<User>>();
         return services;
     }
