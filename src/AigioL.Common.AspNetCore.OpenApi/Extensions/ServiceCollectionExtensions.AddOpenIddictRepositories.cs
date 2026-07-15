@@ -15,7 +15,7 @@ public static partial class ServiceCollectionExtensions
         this IServiceCollection services)
         where TDbContext : DbContext
     {
-        services.TryAddScoped<IOpenIddictAuthorizationRepository, OpenIddictAuthorizationRepository<TDbContext>>();
+        services.TryAddScoped<IOpenIddictAuthorizationRepository, OpenIddictAuthorizationRepository<TDbContext>();
         return services;
     }
 }
