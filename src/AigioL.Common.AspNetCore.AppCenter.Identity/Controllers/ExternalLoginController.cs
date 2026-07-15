@@ -491,8 +491,7 @@ public static partial class ExternalLoginController
             rsp.Content?.FastLRBChannel = channel;
             if (rsp.IsSuccess())
             {
-                using var encryptStream = await SerializeEncryptAsync(rsp, aes, context.RequestAborted);
-                var rspStr = Base64Url.EncodeToString(encryptStream.GetBuffer().AsSpan()[..unchecked((int)encryptStream.Length)]);
+                var rspStr = await SerializeEncryptReStringAsync(rsp, aes, context.RequestAborted);
                 var r = await EndPageAsync(null, rspStr);
                 return r;
             }
@@ -600,37 +599,11 @@ file static class D3b96193
 
     internal static readonly RecyclableMemoryStreamManager m = new();
 
-    internal static async Task<RecyclableMemoryStream> SerializeEncryptAsync<T>(T obj, Aes aes, CancellationToken cancellationToken = default)
-    {
-        using var serializeStream = m.GetStream();
-        await MemoryPackSerializer.SerializeAsync(serializeStream, obj, cancellationToken: cancellationToken);
-        serializeStream.Position = 0;
+    internal static Task<RecyclableMemoryStream> SerializeEncryptAsync<T>(T obj, Aes aes, CancellationToken cancellationToken = default) => aes.SerializeEncryptAsync<T>(m, obj, cancellationToken);
 
-        var encryptStream = m.GetStream();
-        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write, leaveOpen: true);
-        await serializeStream.CopyToAsync(cryptoStream, cancellationToken);
-        await cryptoStream.FlushFinalBlockAsync(cancellationToken);
-        encryptStream.Position = 0;
-        return encryptStream;
-    }
+    internal static Task<string> SerializeEncryptReStringAsync<T>(T obj, Aes aes, CancellationToken cancellationToken = default) => aes.SerializeEncryptReStringAsync<T>(m, obj, cancellationToken);
 
-    internal static async Task<string> SerializeEncryptToJsonAsync(ApiRsp<LoginOrRegisterResponse?> obj, Aes aes, CancellationToken cancellationToken = default)
-    {
-        using var serializeStream = m.GetStream();
-        await JsonSerializer.SerializeAsync(serializeStream, obj,
-            IdentityMinimalApisJsonSerializerContext.Default.ApiRspLoginOrRegisterResponse, cancellationToken: cancellationToken);
-        serializeStream.Position = 0;
-
-        using var encryptStream = m.GetStream();
-        using CryptoStream cryptoStream = new(encryptStream, aes.CreateEncryptor(), CryptoStreamMode.Write, leaveOpen: true);
-        await serializeStream.CopyToAsync(cryptoStream, cancellationToken);
-        await cryptoStream.FlushFinalBlockAsync(cancellationToken);
-        encryptStream.Position = 0;
-
-        var span = encryptStream.GetBuffer().AsSpan()[..unchecked((int)encryptStream.Length)];
-        var r = Base64Url.EncodeToString(span);
-        return r;
-    }
+    internal static Task<string> SerializeEncryptToJsonAsync(ApiRsp<LoginOrRegisterResponse?> obj, Aes aes, CancellationToken cancellationToken = default) => aes.SerializeEncryptToJsonAsync(m, obj, IdentityMinimalApisJsonSerializerContext.Default.ApiRspLoginOrRegisterResponse, cancellationToken);
 }
 
 /// <summary>

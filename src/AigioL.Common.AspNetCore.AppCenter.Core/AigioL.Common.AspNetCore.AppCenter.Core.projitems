@@ -46,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserRefreshJsonWebToken.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWallet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Entities\UserWalletChangeRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\AesExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApiRspExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\AspireRedisDistributedCacheExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\CacheExtensions.cs" />
