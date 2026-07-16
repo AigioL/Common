@@ -5,6 +5,7 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
@@ -68,30 +69,21 @@ partial interface IMembershipBusinessOrderRepository
     /// <summary>
     /// 订单退款成功
     /// </summary>
-    /// <param name="orderId"></param>
-    /// <returns></returns>
-    Task<(bool isSuccess, Guid? userId)> OrderRefunded(string orderId);
+    Task<ApiRsp<Guid?>> OrderRefunded(string orderId, Guid? bindPCUserId = null);
 
     /// <summary>
     /// 订单支付成功
     /// </summary>
-    /// <param name="orderId"></param>
-    /// <returns></returns>
     Task<(bool isSuccess, Guid? userId)> OrderPaymentSuccess(string orderId);
 
     /// <summary>
     /// 根据扣款协议 ID 获取业务订单
     /// </summary>
-    /// <param name="agreementId"></param>
-    /// <returns></returns>
     Task<MembershipBusinessOrder?> GetBusinessOrderByAgreementAsync(Guid agreementId);
 
     /// <summary>
     /// 添加扣款协议并绑定支付订单和业务订单
     /// </summary>
-    /// <param name="agreement"></param>
-    /// <param name="orderId"></param>
-    /// <returns></returns>
     Task<(bool isSuccess, decimal? firstAmount)> AddAgreementAndBindOrderAsync(
         MerchantDeductionAgreement agreement,
         string orderId);
