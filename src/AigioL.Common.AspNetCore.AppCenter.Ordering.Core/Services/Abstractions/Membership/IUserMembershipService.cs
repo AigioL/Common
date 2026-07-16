@@ -59,7 +59,12 @@ public interface IUserMembershipService
     /// <summary>
     /// 退款处理
     /// </summary>
-    Task<bool> OrderPaymentRefundedHandleAsync(string orderId);
+    Task<bool> OrderPaymentRefundedHandleAsync(string orderId, Guid? bindPCUserId = null);
+
+    /// <summary>
+    /// 退款处理 V2，返回值信息更多
+    /// </summary>
+    Task<ApiRsp<Guid?>> OrderPaymentRefundedHandleV2Async(string orderId, Guid? bindPCUserId = null);
 
     /// <summary>
     /// 取消订单处理

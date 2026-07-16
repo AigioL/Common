@@ -237,13 +237,23 @@ sealed partial class UserMembershipService(
         return isSuccess;
     }
 
-    public async Task<bool> OrderPaymentRefundedHandleAsync(string orderId)
+    public async Task<bool> OrderPaymentRefundedHandleAsync(string orderId, Guid? bindPCUserId = null)
     {
-        (var isSuccess, var userId) = await membershipBusinessOrderRepo.OrderRefunded(orderId);
-
-        if (isSuccess) await RefreshUserMembershipCacheAsync(userId!.Value); // 订单退款完成通知后刷新用户会员信息缓存
-
+        var r = await OrderPaymentRefundedHandleV2Async(orderId, bindPCUserId);
+        var isSuccess = r.IsSuccess() && r.Content.HasValue;
         return isSuccess;
+    }
+
+    public async Task<ApiRsp<Guid?>> OrderPaymentRefundedHandleV2Async(string orderId, Guid? bindPCUserId = null)
+    {
+        var r = await membershipBusinessOrderRepo.OrderRefunded(orderId, bindPCUserId);
+
+        if (r.IsSuccess() && r.Content.HasValue)
+        {
+            await RefreshUserMembershipCacheAsync(r.Content.Value); // 订单退款完成通知后刷新用户会员信息缓存
+        }
+
+        return r;
     }
 
     public Task<bool> OrderPaymentCancelHandleAsync(string orderId)

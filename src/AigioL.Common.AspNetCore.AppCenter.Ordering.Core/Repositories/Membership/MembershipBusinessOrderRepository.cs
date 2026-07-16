@@ -12,6 +12,8 @@ using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions;
 using AigioL.Common.EntityFrameworkCore.Extensions;
+using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
+using AigioL.Common.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
@@ -31,6 +33,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 {
     readonly ILogger logger;
     readonly IOrderBusinessTypeService orderBusinessTypeService;
+    readonly IFeishuApiClient? feishuApiClient;
 
     public MembershipBusinessOrderRepository(
         IOrderBusinessTypeService orderBusinessTypeService,
@@ -40,6 +43,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     {
         this.logger = logger;
         this.orderBusinessTypeService = orderBusinessTypeService;
+        feishuApiClient = serviceProvider.GetService<IFeishuApiClient>(); // 可选
     }
 
     /// <summary>
@@ -106,47 +110,70 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// 用户退款成功，充值相应撤回
     /// </summary>
-    /// <param name="orderId"></param>
-    /// <returns></returns>
-    public async Task<(bool isSuccess, Guid? userId)> OrderRefunded(string orderId)
+    public async Task<ApiRsp<Guid?>> OrderRefunded(string orderId, Guid? bindPCUserId = null)
     {
-        var business_order = await db.MembershipBusinessOrders
+        var query = from m in db.MembershipBusinessOrders
              .AsNoTrackingWithIdentityResolution()
-             .FirstOrDefaultAsync(x => x.OrderId == orderId);
+                    where m.OrderId == orderId
+                    select m;
+        if (bindPCUserId.HasValue)
+        {
+            query = query.Where(x => x.BindPCUserId == bindPCUserId.Value);
+        }
 
+        var business_order = await query.FirstOrDefaultAsync();
         if (business_order is null)
-            return (false, null);
+        {
+            return ApiRspCode.NotFound;
+        }
 
-        var isSuccess = await db.Database.CreateExecutionStrategy().ExecuteAsync(OrderRefundedCoreAsync);
-        return (isSuccess, business_order.UserId);
+        var r = await db.Database.CreateExecutionStrategy().ExecuteAsync(OrderRefundedCoreAsync);
+        if (!r.IsSuccess())
+        {
+            if (feishuApiClient != null)
+            {
+                await feishuApiClient.SendMessageAsync(
+                    "订单退款失败",
+                    $"orderId：{orderId}, code：{r.Code}, message: {r.Message}",
+                    CancellationToken.None);
+            }
+        }
+        return r;
 
-        async Task<bool> OrderRefundedCoreAsync()
+        async Task<ApiRsp<Guid?>> OrderRefundedCoreAsync()
         {
             using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead);
             try
             {
                 var r = await db.MembershipBusinessOrders
-                    .AsNoTrackingWithIdentityResolution()
                     .Where(x =>
-                        x.OrderId == orderId &&
-                        x.PaymentStatus == OrderStatus.Paid)
+                        x.OrderId == orderId
+                        && (x.PaymentStatus == OrderStatus.Paid || x.PaymentStatus == OrderStatus.Completed))
                     .ExecuteUpdateAsync(e => e
                         .SetProperty(s => s.PaymentStatus, OrderStatus.Refunded)
                         .SetProperty(s => s.GoodsRechargeStatus, s => GoodsRechargeStatus.RechargeReturn));
-
-                var membershipChangeSuccess = await UserMembershipRechargeReturnAsync(business_order);
-
-                await DeleteUserFirstPriceOfGoods();
-                if (r > 0 && membershipChangeSuccess)
+                if (r > 0)
                 {
-                    await transaction.CommitAsync();
-                    return true;
+                    var r2 = await db.Orders
+                        .Where(x =>
+                            x.Id == orderId)
+                        .ExecuteUpdateAsync(e => e
+                            .SetProperty(s => s.Status, OrderStatus.Refunded));
+
+                    var membershipChangeSuccess = await UserMembershipRechargeReturnAsync(business_order);
+
+                    await DeleteUserFirstPriceOfGoods();
+                    if (r2 > 0 && membershipChangeSuccess)
+                    {
+                        await transaction.CommitAsync();
+                        return business_order.UserId;
+                    }
                 }
-                throw new InvalidOperationException();
+                throw new InvalidOperationException($"执行 SQL 操作返回的受影响行数为 0，orderId: {orderId}");
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return false;
+                return e;
             }
 
             // 去除用户该商品首次优惠记录，如果有
