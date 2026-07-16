@@ -46,8 +46,10 @@ public interface IUserMembershipService
     Task<(string orderId, OrderStatus orderStatus)?> CreateMembershipOrderByDistributionAsync(
         Guid userId,
         MembershipGoods goods,
+        decimal amountReceived,
         int? orderBusinessTypeId = null,
-        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null);
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null,
+        CancellationToken cancellationToken = default);
 
     #region SubscribeHandle / 支付订单通知处理
 
