@@ -157,6 +157,11 @@ sealed partial class UserMembershipService(
         // 检查是否使用过首次优惠，使用过则按商品当前正常价格计算
         var amountReceivable = await GetAmountReceivable(userId, goods, cancellationToken);
 
+        if (amountReceived < amountReceivable)
+        {
+            return "实际收款金额不能小于商品应收金额";
+        }
+
         var membershipOrder = new MembershipBusinessOrder
         {
 #pragma warning disable CS0618 // 类型或成员已过时
@@ -182,7 +187,14 @@ sealed partial class UserMembershipService(
         var result = await membershipBusinessOrderRepo.CreateMembershipBusinessOrderByDistributionAsync(
             membershipOrder, bindPCUser,
             orderBusinessTypeId: orderBusinessTypeId);
-        return result.Success && result.Order != null ? (result.Order.Id, result.Order.Status) : null;
+        if (result.Success && result.Order != null)
+        {
+            return (result.Order.Id, result.Order.Status);
+        }
+        else
+        {
+            return "创建分销会员订单失败";
+        }
     }
 
     public async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipOrderByCDKeyAsync(
