@@ -130,12 +130,33 @@ sealed partial class UserMembershipService(
         }
     }
 
+    async Task<decimal> GetAmountReceivable(
+        Guid userId,
+        MembershipGoods goods,
+        CancellationToken cancellationToken = default)
+    {
+        // 检查是否使用过首次优惠，使用过则按商品当前正常价格计算
+        decimal amountReceivable;
+        var useFirstPrice = await membershipGoodsRepo.CheckUserUseFirstPriceOfGoodsAsync(
+            userId, goods.Id, cancellationToken);
+
+        amountReceivable = !useFirstPrice && goods.FirstCurrentPrice.HasValue
+            ? goods.FirstCurrentPrice.Value
+            : goods.CurrentPrice;
+        return amountReceivable;
+    }
+
     public async Task<(string orderId, OrderStatus orderStatus)?> CreateMembershipOrderByDistributionAsync(
         Guid userId,
         MembershipGoods goods,
+        decimal amountReceived,
         int? orderBusinessTypeId = null,
-        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null,
+        CancellationToken cancellationToken = default)
     {
+        // 检查是否使用过首次优惠，使用过则按商品当前正常价格计算
+        var amountReceivable = await GetAmountReceivable(userId, goods, cancellationToken);
+
         var membershipOrder = new MembershipBusinessOrder
         {
 #pragma warning disable CS0618 // 类型或成员已过时
@@ -143,6 +164,8 @@ sealed partial class UserMembershipService(
 #pragma warning restore CS0618 // 类型或成员已过时
             RechargeTimeSpan = goods.RechargeTimeSpan,
             PayAsYoGo = goods.PayAsYoGo,
+            AmountReceivable = amountReceivable,
+            AmountReceived = amountReceived, // 实际收款金额
             UserId = userId,
             Note = "购买会员（分销）",
             GoodsNo = goods.GoodsNo,
@@ -151,9 +174,14 @@ sealed partial class UserMembershipService(
             MembershipGoodsId = goods.Id,
             BusinessSource = MembershipBusinessSource.普通订单,
         };
+        if (bindPCUser.HasValue)
+        {
+            membershipOrder.BindPCUserId = bindPCUser.Value.bindPCUserId;
+        }
 
         var result = await membershipBusinessOrderRepo.CreateMembershipBusinessOrderByDistributionAsync(
-            membershipOrder, bindPCUser);
+            membershipOrder, bindPCUser,
+            orderBusinessTypeId: orderBusinessTypeId);
         return result.Success && result.Order != null ? (result.Order.Id, result.Order.Status) : null;
     }
 
