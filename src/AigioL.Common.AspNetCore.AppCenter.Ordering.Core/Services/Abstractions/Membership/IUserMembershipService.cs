@@ -43,7 +43,7 @@ public interface IUserMembershipService
     /// <summary>
     /// 创建会员业务订单（分销渠道）
     /// </summary>
-    Task<(string orderId, OrderStatus orderStatus)?> CreateMembershipOrderByDistributionAsync(
+    Task<ApiRsp<(string orderId, OrderStatus orderStatus)?>> CreateMembershipOrderByDistributionAsync(
         Guid userId,
         MembershipGoods goods,
         decimal amountReceived,
