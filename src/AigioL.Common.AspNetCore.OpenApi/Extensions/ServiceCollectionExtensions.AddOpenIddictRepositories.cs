@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.OpenApi.Repositories;
 using AigioL.Common.AspNetCore.OpenApi.Repositories.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,7 +15,7 @@ public static partial class ServiceCollectionExtensions
         this IServiceCollection services)
         where TDbContext : DbContext
     {
-        services.TryAddScoped<IOpenIddictAuthorizationRepository, OpenIddictAuthorizationRepository<TDbContext>();
+        services.TryAddScoped<IOpenIddictAuthorizationRepository, OpenIddictAuthorizationRepository<TDbContext>>();
         return services;
     }
 }

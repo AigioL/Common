@@ -55,7 +55,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
         string? orderId = null,
-        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null,
+        int? orderBusinessTypeId = null)
     {
         // 自动续费订单
         if (isAgreementDeduction)
@@ -78,7 +79,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         // 普通订单
         else
         {
-            var order = await CreateMembershipBusinessOrderAsync(business_order, orderId);
+            var order = await CreateMembershipBusinessOrderAsync(business_order, orderId, orderBusinessTypeId);
             return (order != null, order, null);
         }
     }
@@ -630,8 +631,10 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// </summary>
     async Task<Order?> CreateMembershipBusinessOrderAsync(
         MembershipBusinessOrder business_order,
-        string? orderId = null)
+        string? orderId = null,
+        int? orderBusinessTypeId = null)
     {
+        orderBusinessTypeId ??= OrderBusinessType;
         var timeout = DateTimeOffset.Now.AddMinutes(15);
 
         return await db.Database.CreateExecutionStrategy().ExecuteAsync(CreateMembershipBusinessOrderCoreAsync);
@@ -657,7 +660,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                     Status = OrderStatus.WaitPay,
                     UserId = business_order.UserId,
                     AmountReceivable = business_order.AmountReceivable,
-                    BusinessTypeId = OrderBusinessType,
+                    BusinessTypeId = orderBusinessTypeId.Value,
                     Note = business_order.Note,
                     MerchantDeductionAgreementId = null,
                     ChannelPackageId = business_order.ChannelPackageId,
@@ -745,6 +748,76 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
             {
                 await transaction.RollbackAsync();
                 return (false, null);
+            }
+        }
+    }
+
+
+    public async Task<(bool Success, Order? Order, UserMembershipChangeRecord? record)> CreateMembershipBusinessOrderByDistributionAsync(
+        MembershipBusinessOrder business_order,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null,
+        int? orderBusinessTypeId = null)
+    {
+        orderBusinessTypeId ??= OrderBusinessType;
+        var now = DateTimeOffset.Now;
+        return await db.Database.CreateExecutionStrategy().ExecuteAsync(CoreAsync);
+
+        async Task<(bool Success, Order? Order, UserMembershipChangeRecord? record)> CoreAsync()
+        {
+            using var transaction = await db.Database.BeginTransactionAsync();
+            try
+            {
+                // 创建已支付的业务订单
+                business_order.GoodsRechargeStatus = GoodsRechargeStatus.Recharged;
+                business_order.PaymentStatus = OrderStatus.Paid;
+                business_order.PaymentTime = now;
+                business_order.RechargeCompletionTime = now;
+
+                // 创建通用支付订单
+                var order = new Order
+                {
+                    Id = IdGeneratorHelper.GetNextId(),
+                    Type = OrderType.GeneralOrder,
+                    Source = DevicePlatform2.Windows,
+                    Status = OrderStatus.WaitPay,
+                    UserId = business_order.UserId,
+                    AmountReceivable = business_order.AmountReceivable,
+                    BusinessTypeId = orderBusinessTypeId.Value,
+                    Note = business_order.Note,
+                    MerchantDeductionAgreementId = null,
+                    ChannelPackageId = business_order.ChannelPackageId,
+                    BindPCUserId = business_order.BindPCUserId,
+                };
+
+                db.Orders.Add(order);
+                await db.MembershipBusinessOrders.AddAsync(business_order);
+                var business_order_rowCount = await db.SaveChangesAsync();
+
+                // 业务订单与通用支付订单关联
+                business_order.PaymentStatus = order.Status;
+                business_order.OrderId = order.Id;
+                order.BusinessOrderId = business_order.Id;
+                business_order_rowCount = await db.SaveChangesAsync();
+
+                // 会员充值
+                var (userMembershipChange_rowCount, record) = await CreateOrUpdateUserMembershipAsync(
+                    business_order, now, bindPCUser: bindPCUser);
+
+                business_order.PaymentStatus = order.Status = OrderStatus.Completed;
+                business_order_rowCount = await db.SaveChangesAsync();
+
+                if (business_order_rowCount > 0 &&
+                    userMembershipChange_rowCount > 0)
+                {
+                    await transaction.CommitAsync();
+                    return (true, order, record);
+                }
+                throw new InvalidOperationException();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                return (false, null, null);
             }
         }
     }
