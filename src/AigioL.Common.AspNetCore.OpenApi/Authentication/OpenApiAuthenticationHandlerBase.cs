@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using OpenIddict.Abstractions;
 using System.Buffers;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -19,7 +20,7 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
     UrlEncoder encoder) :
     AuthenticationHandler<OpenApiAuthenticationSchemeOptions>(options, logger, encoder)
 {
-    protected abstract ValueTask<(ReadOnlyMemory<byte> appSecret, string appName)> GetAppSecretAsync(
+    protected abstract ValueTask<(ReadOnlyMemory<byte> appSecret, string appName, Guid appId)> GetAppSecretAsync(
         ReadOnlyMemory<char> appAccessKey,
         CancellationToken cancellationToken = default);
 
@@ -70,7 +71,7 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
             return AuthenticateResult.Fail($"签名长度不正确, 期望: {hashSizeInBytes * 2}, 实际: {signature.Length}");
         }
 
-        (var appSecret, var appName) = await GetAppSecretAsync(accessKey, Context.RequestAborted);
+        (var appSecret, var appName, var appId) = await GetAppSecretAsync(accessKey, Context.RequestAborted);
         if (appSecret.IsEmpty)
         {
             return AuthenticateResult.Fail($"无效的访问密钥: {accessKey}");
@@ -119,9 +120,10 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
             var calcSignature = signatureChars.AsMemory(0, hashSizeInBytes * 2);
             if (signature.Span.Equals(calcSignature.Span, StringComparison.InvariantCultureIgnoreCase))
             {
-                ClaimsPrincipal claimsPrincipal = new(
-                    new ClaimsIdentity(
-                        new OpenApiIdentity(appName, authorizationLeft.ToString(), true)));
+                ClaimsIdentity claimsIdentity = new(
+                    new OpenApiIdentity(appName, authorizationLeft.ToString(), true));
+                claimsIdentity.SetClaim(ClaimTypes.NameIdentifier, ShortGuid.Encode(appId));
+                ClaimsPrincipal claimsPrincipal = new(claimsIdentity);
                 var ticket = new AuthenticationTicket(claimsPrincipal, Scheme.Name);
                 return AuthenticateResult.Success(ticket);
             }

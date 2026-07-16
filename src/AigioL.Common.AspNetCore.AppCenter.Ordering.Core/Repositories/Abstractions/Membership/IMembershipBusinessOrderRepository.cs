@@ -50,7 +50,13 @@ partial interface IMembershipBusinessOrderRepository
         bool isAgreementDeduction = false,
         PaymentType? paymentType = null,
         string? orderId = null,
-        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null);
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null,
+        int? orderBusinessTypeId = null);
+
+    Task<(bool Success, Order? Order, UserMembershipChangeRecord? record)> CreateMembershipBusinessOrderByDistributionAsync(
+        MembershipBusinessOrder business_order,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null,
+        int? orderBusinessTypeId = null);
 
     /// <summary>
     /// <see cref="EntityFrameworkQueryableExtensions.FirstOrDefaultAsync{TSource}(IQueryable{TSource}, Expression{Func{TSource, bool}}, CancellationToken)"/>

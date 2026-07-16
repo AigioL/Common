@@ -13,7 +13,7 @@ public sealed class OpenApiAuthenticationHandler<TDbContext>(
     OpenApiAuthenticationHandlerBase(options, logger, encoder)
     where TDbContext : DbContext
 {
-    protected override async ValueTask<(ReadOnlyMemory<byte> appSecret, string appName)> GetAppSecretAsync(
+    protected override async ValueTask<(ReadOnlyMemory<byte> appSecret, string appName, Guid appId)> GetAppSecretAsync(
         ReadOnlyMemory<char> appAccessKey,
         CancellationToken cancellationToken = default)
     {
@@ -21,11 +21,11 @@ public sealed class OpenApiAuthenticationHandler<TDbContext>(
         {
             var query = from m in db.Set<PCUser>().AsNoTrackingWithIdentityResolution()
                         where m.Id == pcUserId
-                        select new { m.AppSecret, m.NickName, };
+                        select new { m.AppSecret, m.NickName, m.Id, };
             var r = await query.SingleOrDefaultAsync(cancellationToken);
             if (r != null && r.AppSecret != null && r.AppSecret.Length > 0)
             {
-                return (r.AppSecret, r.NickName);
+                return (r.AppSecret, r.NickName, r.Id);
             }
         }
         return default;

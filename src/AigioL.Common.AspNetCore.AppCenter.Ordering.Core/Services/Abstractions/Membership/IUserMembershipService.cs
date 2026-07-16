@@ -1,6 +1,8 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Entities.Membership;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Repositories.Abstractions.Membership;
 using AigioL.Common.Models;
 using Microsoft.Extensions.Caching.Distributed;
@@ -37,6 +39,15 @@ public interface IUserMembershipService
         Guid? channelPackageId,
         bool isTimeSpan = false,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 创建会员业务订单（分销渠道）
+    /// </summary>
+    Task<(string orderId, OrderStatus orderStatus)?> CreateMembershipOrderByDistributionAsync(
+        Guid userId,
+        MembershipGoods goods,
+        int? orderBusinessTypeId = null,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null);
 
     #region SubscribeHandle / 支付订单通知处理
 
