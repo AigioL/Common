@@ -130,6 +130,33 @@ sealed partial class UserMembershipService(
         }
     }
 
+    public async Task<(string orderId, OrderStatus orderStatus)?> CreateMembershipOrderByDistributionAsync(
+        Guid userId,
+        MembershipGoods goods,
+        int? orderBusinessTypeId = null,
+        (Guid bindPCUserId, TimeSpan? bindPCUserExpirePeriod)? bindPCUser = null)
+    {
+        var membershipOrder = new MembershipBusinessOrder
+        {
+#pragma warning disable CS0618 // 类型或成员已过时
+            RechargeDays = goods.RechargeDays,
+#pragma warning restore CS0618 // 类型或成员已过时
+            RechargeTimeSpan = goods.RechargeTimeSpan,
+            PayAsYoGo = goods.PayAsYoGo,
+            UserId = userId,
+            Note = "购买会员（分销）",
+            GoodsNo = goods.GoodsNo,
+            GoodsName = goods.GoodsName,
+            MemberLicenseType = goods.MemberLicenseType,
+            MembershipGoodsId = goods.Id,
+            BusinessSource = MembershipBusinessSource.普通订单,
+        };
+
+        var result = await membershipBusinessOrderRepo.CreateMembershipBusinessOrderByDistributionAsync(
+            membershipOrder, bindPCUser);
+        return result.Success && result.Order != null ? (result.Order.Id, result.Order.Status) : null;
+    }
+
     public async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipOrderByCDKeyAsync(
         Guid userId,
         MembershipProductKeyRecord productKeyRecord,
