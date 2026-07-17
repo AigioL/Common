@@ -13,28 +13,28 @@ public abstract class JsonWebTokenOptions : IJsonWebTokenOptions
     string? secretAlgorithm;
 
     /// <inheritdoc/>
-    public string SecretKey
+    public virtual string SecretKey
     {
         get => secretKey ?? throw new InvalidOperationException("SecretKey is not set.");
         set => secretKey = value;
     }
 
     /// <inheritdoc/>
-    public string SecretAlgorithm
+    public virtual string SecretAlgorithm
     {
         get => string.IsNullOrWhiteSpace(secretAlgorithm) ? SecurityAlgorithms.HmacSha384Signature : secretAlgorithm;
         set => secretAlgorithm = value;
     }
 
     /// <inheritdoc/>
-    public string Issuer
+    public virtual string Issuer
     {
         get => issuer ?? throw new InvalidOperationException("Issuer is not set.");
         set => issuer = value;
     }
 
     /// <inheritdoc/>
-    public string Audience
+    public virtual string Audience
     {
         get => audience ?? throw new InvalidOperationException("Audience is not set.");
         set => audience = value;

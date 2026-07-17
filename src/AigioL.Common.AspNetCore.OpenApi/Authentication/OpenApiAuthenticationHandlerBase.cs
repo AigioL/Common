@@ -83,9 +83,18 @@ public abstract partial class OpenApiAuthenticationHandlerBase(
         {
             // 1. 将 RequestBody 进行哈希计算，得到 HashedRequestPayload
             Request.EnableBuffering();
+            var pos = Request.Body.Position;
             await hashAlgorithmTypeName.Value.HashDataAsync(
                 Request.Body, signatureBytes, signatureChars,
                 true, Context.RequestAborted);
+            try
+            {
+                // 读取正文流后重置流位置，以便后续中间件可以再次读取正文流
+                Request.Body.Position = pos;
+            }
+            catch
+            {
+            }
 
 #if DEBUG
             var debugView_HashedRequestPayload = new string(signatureChars, 0, hashSizeInBytes * 2);

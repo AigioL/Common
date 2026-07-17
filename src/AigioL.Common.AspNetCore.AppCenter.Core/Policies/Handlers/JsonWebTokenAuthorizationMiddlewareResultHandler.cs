@@ -122,8 +122,10 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
             return;
         }
 
-        var authHeader = AuthenticationHeaderValue.Parse(authHeaderValue.ToString());
-        if (!string.Equals(MSMinimalApis.BearerScheme, authHeader.Scheme, StringComparison.InvariantCultureIgnoreCase))
+        var authHeader = authHeaderValue.First().AsSpan();
+        var index = authHeader.IndexOf(' ');
+        var scheme = authHeader[..index];
+        if (!scheme.Equals(MSMinimalApis.BearerScheme, StringComparison.InvariantCultureIgnoreCase))
         {
             await EndHandleAsync(next, context, policy, authorizeResult, hasAllowAnonymous,
                 ApiRspCode.AuthSchemeNotCorrect);

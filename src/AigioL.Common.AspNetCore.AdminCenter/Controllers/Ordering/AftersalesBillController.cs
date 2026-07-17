@@ -61,11 +61,12 @@ public static partial class AftersalesBillController
 
         routeGroup.MapPost("", async (HttpContext context,
             [FromBody] AftersalesBillAddModel m,
-            [FromQuery] decimal? refundAmount = null) =>
+            [FromQuery] string? refundAmount = null) =>
         {
+            var refundAmountD = decimal.TryParse(refundAmount, out decimal refundAmountDecimal) ? refundAmountDecimal : (decimal?)null;
             var aftersalesBillRepo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
             var rabbitmqConn = context.RequestServices.GetRequiredService<IConnection>();
-            var result = await aftersalesBillRepo.CreateAftersalesBill(m.OrderId, m.RefundReason, null, refundAmount, context.RequestAborted);
+            var result = await aftersalesBillRepo.CreateAftersalesBill(m.OrderId, m.RefundReason, null, refundAmountD, context.RequestAborted);
             if (!result.IsSuccess())
             {
                 var error = result.Message;
