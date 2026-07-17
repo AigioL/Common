@@ -12,7 +12,8 @@ public static partial class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddACUserManager(this IServiceCollection services)
     {
-        services.AddScoped<UserManager<User>, UserManager>();
+        services.AddScoped<UserManager>();
+        services.AddScoped<UserManager<User>>(s => s.GetRequiredService<UserManager>());
         return services;
     }
 }

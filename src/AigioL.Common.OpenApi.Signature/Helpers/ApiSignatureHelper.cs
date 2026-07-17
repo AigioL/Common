@@ -73,10 +73,10 @@ public static partial class ApiSignatureHelper
         if (index >= 0)
         {
             var authorizationLeft = authorization[..index].Trim();
-            index = authorizationLeft.Span.IndexOf(DefaultSignatureAlgorithmPrefix, StringComparison.InvariantCultureIgnoreCase);
-            if (index >= 0)
+            var indexHmac = authorizationLeft.Span.IndexOf(DefaultSignatureAlgorithmPrefix, StringComparison.InvariantCultureIgnoreCase);
+            if (indexHmac >= 0)
             {
-                var chars = authorizationLeft.Span[(index + DefaultSignatureAlgorithmPrefix.Length)..];
+                var chars = authorizationLeft.Span[(indexHmac + DefaultSignatureAlgorithmPrefix.Length)..];
                 chars = chars.Trim();
                 if (Enum.TryParse<HashAlgorithmTypeName>(chars, true, out var hashAlgorithmTypeName))
                 {
@@ -344,7 +344,7 @@ static partial class ApiSignatureHelper // Private
 #endif
 
             var authorization = GetAuthorization(appAccessKey, signedHeaders, signatureChars.AsSpan(0, hashSizeInBytes * 2), signatureAlgorithm);
-            request.Headers.Authorization = AuthenticationHeaderValue.Parse(authorization);
+            request.Headers.TryAddWithoutValidation("Authorization", authorization);
         }
         finally
         {

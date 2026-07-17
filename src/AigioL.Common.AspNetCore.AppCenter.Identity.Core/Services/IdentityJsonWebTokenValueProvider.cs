@@ -18,7 +18,7 @@ using System.Security.Claims;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Services;
 
-sealed partial class IdentityJsonWebTokenValueProvider<
+public sealed partial class IdentityJsonWebTokenValueProvider<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TOptions,
     TDbContext>(
     IOptions<TOptions> options,
