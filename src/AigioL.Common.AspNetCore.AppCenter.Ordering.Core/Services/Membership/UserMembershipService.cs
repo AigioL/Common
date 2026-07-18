@@ -130,6 +130,7 @@ sealed partial class UserMembershipService(
         }
     }
 
+<<<<<<< HEAD
     async Task<decimal> GetAmountReceivable(
         Guid userId,
         MembershipGoods goods,
@@ -197,6 +198,8 @@ sealed partial class UserMembershipService(
         }
     }
 
+=======
+>>>>>>> origin/main
     public async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipOrderByCDKeyAsync(
         Guid userId,
         MembershipProductKeyRecord productKeyRecord,
