@@ -42,4 +42,9 @@ public sealed partial class WeChatPayExOptions : WeChatPayOptions
         }
         set;
     }
+
+    /// <summary>
+    /// 微信商家转账回调通知
+    /// </summary>
+    public string? TransferNotifyUrl { get; set; }
 }

@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models.Abstractions;
@@ -235,6 +236,62 @@ sealed partial class WeChatPayV3Services<
             RevertAmount(res.Amount.Total));
 
         return refundResult;
+    }
+
+    public async Task<PubTransferState> Transfer(string outBillNo, decimal transferAmount, string transferRemark,
+        string userOpenId, string? userName = null, string? transferSceneId = null,
+        List<WeChatPayTransferSceneReportInfo>? transferSceneReportInfos = null)
+    {
+        var model = new WeChatPayTransferBillsBodyModel
+        {
+            AppId = PaymentOptions.AppId,
+            OutBillNo = outBillNo,
+            TransferSceneId = transferSceneId ?? "1005", // 默认：佣金报酬
+            OpenId = userOpenId,
+            UserName = userName,
+            TransferAmount = FormatAmount(transferAmount),
+            TransferRemark = transferRemark,
+            NotifyUrl = PaymentOptions.TransferNotifyUrl,
+            TransferSceneReportInfos = transferSceneReportInfos ?? new()
+            {
+                new() { InfoType = "岗位类型", InfoContent = "KOL 推广" },
+                new() { InfoType = "报酬说明", InfoContent = "推广分成提现" },
+            },
+        };
+
+        var request = new WeChatPayTransferBillsRequest();
+        request.SetBodyModel(model);
+
+        LogApiInfo(model);
+        var response = await client.ExecuteAsync(request, PaymentOptions);
+        LogApiInfo(model.OutBillNo, model, response, !response.IsError);
+
+        if (response.IsError)
+        {
+            return new()
+            {
+                IsSuccess = false,
+                Message = $"{response.Code}: {response.Message}",
+                TransferStatus = TransferStatus.Failed,
+            };
+        }
+
+        // 根据 state 判断转账结果
+        var transferStatus = response.State switch
+        {
+            "SUCCESS" => TransferStatus.Success,
+            "FAIL" or "CANCELLED" => TransferStatus.Failed,
+            _ => TransferStatus.Transferring,
+        };
+
+        return new()
+        {
+            IsSuccess = true,
+            ThirdPartyPlatformNumber = response.TransferBillNo,
+            TransferStatus = transferStatus,
+            FinishTime = transferStatus is TransferStatus.Success or TransferStatus.Failed
+                ? DateTimeOffset.Now : null,
+        };
     }
 
     //public override Task<UserAgreement> GetContractOrderPageUrl(

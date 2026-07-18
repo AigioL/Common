@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\PaymentController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\PayNotify\AliPayController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\PayNotify\WeChatPayV3Controller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\PCUserWithdrawalController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\TestController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\VipPaymentController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\EndpointRouteBuilderExtensions.cs" />
@@ -22,5 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Workers\MembershipOrderSubscribe.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workers\PaymentRefundSubscribe.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workers\TransferSubscribe.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workers\WeChatWithdrawalSubscribe.cs" />
   </ItemGroup>
 </Project>

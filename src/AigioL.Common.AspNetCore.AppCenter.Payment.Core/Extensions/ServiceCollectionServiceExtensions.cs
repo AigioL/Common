@@ -35,6 +35,8 @@ public static partial class ServiceCollectionServiceExtensions
         services.TryAddScoped<IWeChatPayServices, WeChatPayV3Services<TAppSettings>>();
 
         services.TryAddScoped<IPaymentService, PaymentService>();
+
+        services.TryAddScoped<IPCUserWithdrawalService, PCUserWithdrawalService>();
         return services;
     }
 }

@@ -1,6 +1,7 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Repositories.Abstractions;
+using AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.AdminCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
@@ -9,6 +10,7 @@ using AigioL.Common.Primitives.Models.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using AddOrEditM = AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Models.AddOrEditPCUserModel;
+using ChangeWeChatM = AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Models.ChangePCUserWeChatOpenIdModel;
 using TableItemM = AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Models.PCUserTableItem;
 
 namespace AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Controllers;
@@ -114,5 +116,16 @@ public static partial class PCUserController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("切换分页查询合作伙伴后台用户禁用状态");
+
+        routeGroup.MapPut("{userId}/config/wechat", async (HttpContext context,
+            [FromRoute] Guid userId,
+            [FromBody] ChangeWeChatM model) =>
+        {
+            var operatorUserId = context.GetBMUserId();
+            var service = context.RequestServices.GetRequiredService<IPCUserConfigService>();
+            BMApiRsp r = await service.ChangeWeChatOpenIdAsync(userId, model.OpenId, model.RealName, operatorUserId, context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Edit)
+        .WithDescription("更换 PC 用户绑定的微信 OpenId 与真实姓名");
     }
 }
