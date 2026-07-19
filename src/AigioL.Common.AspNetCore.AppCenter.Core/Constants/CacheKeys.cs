@@ -248,6 +248,21 @@ public static partial class CacheKeys
     public const string TransferRequest = "TransferRequestMessage";
 
     /// <summary>
+    /// 微信提现转账完成通知
+    /// </summary>
+    public const string TransferCompleted = "TransferCompletedMessage";
+
+    /// <summary>
+    /// PC 用户微信提现请求
+    /// </summary>
+    public const string PCUserWeChatWithdrawalRequest = "PCUserWeChatWithdrawalRequest";
+
+    /// <summary>
+    /// PC 提现状态 Redis 键前缀（完整键名：PC_Withdrawal_{WithdrawalNumber}）
+    /// </summary>
+    public const string PCWithdrawalRedisKeyPrefix = "PC_Withdrawal_";
+
+    /// <summary>
     /// Tauri 的应用程序更新静态 JSON 文件缓存键
     /// <para>https://tauri.app/plugin/updater/#static-json-file</para>
     /// </summary>

@@ -20,15 +20,18 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
 {
     readonly AppDbContext db;
     readonly IKeyValuePairRepository kvRepo;
+    readonly IPaymentMessageQueueService paymentMessageQueue;
     readonly ILogger<PCUserWithdrawalService> logger;
 
     public PCUserWithdrawalService(
         AppDbContext db,
         IKeyValuePairRepository kvRepo,
+        IPaymentMessageQueueService paymentMessageQueue,
         ILogger<PCUserWithdrawalService> logger)
     {
         this.db = db;
         this.kvRepo = kvRepo;
+        this.paymentMessageQueue = paymentMessageQueue;
         this.logger = logger;
     }
 
@@ -147,7 +150,8 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
             await db.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            // TODO: 发送微信提现消息到 RabbitMQ
+            // 发送微信提现请求到消息队列，由 WeChatWithdrawalSubscribe 异步处理
+            await paymentMessageQueue.PushPCWithdrawalRequest(withdrawalNumber);
 
             return ApiRsp.Ok(new PCUserWithdrawalResponseModel
             {
@@ -215,10 +219,10 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
     }
 
     /// <summary>
-    /// 生成提现单号
+    /// 生成提现单号（OutBillNo），以业务区分字符 "PC" 开头表示 PartnerCenter 来源
     /// </summary>
     private static string GenerateWithdrawalNumber()
     {
-        return $"PCW{DateTimeOffset.Now:yyyyMMddHHmmss}{Random.Shared.Next(10000, 99999)}";
+        return $"PC{DateTimeOffset.Now:yyyyMMddHHmmss}{Random.Shared.Next(10000, 99999)}";
     }
 }

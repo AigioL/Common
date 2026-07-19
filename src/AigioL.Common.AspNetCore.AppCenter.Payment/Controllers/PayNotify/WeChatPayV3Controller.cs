@@ -238,6 +238,7 @@ public static partial class WeChatPayV3Controller
             var clientV3 = context.RequestServices.GetRequiredService<V3.IWeChatPayNotifyClient>();
             var paymentOptions = context.RequestServices.GetRequiredService<IOptions<WeChatPayExOptions>>().Value;
             var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(WeChatPayV3Controller));
+            var paymentMessageQueue = context.RequestServices.GetRequiredService<IPaymentMessageQueueService>();
 
             var notify = await clientV3.ExecuteAsync<WeChatPayTransferBillNotify>(context.Request, paymentOptions);
 
@@ -245,10 +246,19 @@ public static partial class WeChatPayV3Controller
                 "微信商家转账回调：OutBillNo={OutBillNo}, TransferBillNo={TransferBillNo}, State={State}, Amount={Amount}",
                 notify.OutBillNo, notify.TransferBillNo, notify.State, notify.TransferAmount);
 
-            // TODO: 根据 notify.OutBillNo 更新对应的 PCUserWithdrawalRecord 状态
-            // - State == "SUCCESS" → 更新提现记录为 Success
-            // - State == "FAIL" → 更新提现记录为 Failed，退回金额到钱包可提现金额
-            // - State == "CANCELLED" → 更新提现记录为 Failed，退回金额到钱包可提现金额
+            // 将回调通知推送到消息队列，由 PCUserWithdrawalCompletedSubscribe 异步处理
+            var transferCompletedInfo = new WithdrawalTransferCompletedInfo(
+                notify.OutBillNo,
+                notify.TransferBillNo,
+                notify.State,
+                notify.TransferAmount,
+                notify.FailReason);
+
+            await paymentMessageQueue.PushTransferCompleted(transferCompletedInfo);
+
+            logger.LogInformation(
+                "微信商家转账回调已推送到消息队列：OutBillNo={OutBillNo}, State={State}",
+                notify.OutBillNo, notify.State);
 
             return WeChatPayNotifyResults.V3.Success;
         }

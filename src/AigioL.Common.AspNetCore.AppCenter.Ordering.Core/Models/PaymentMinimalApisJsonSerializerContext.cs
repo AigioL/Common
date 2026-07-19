@@ -31,6 +31,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
 [JsonSerializable(typeof(OrderRefundSuccessInfo))]
 [JsonSerializable(typeof(OrderRefundMessage))]
 [JsonSerializable(typeof(WithdrawTransferModel))]
+[JsonSerializable(typeof(WithdrawalTransferCompletedInfo))]
 [JsonSourceGenerationOptions]
 public sealed partial class PaymentMinimalApisJsonSerializerContext : JsonSerializerContext
 {

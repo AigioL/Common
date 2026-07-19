@@ -76,7 +76,7 @@ public static class PaymentController
             var appIdWeChat = settings.WeChatApiOptions.AppId;
             var appSecretWeChat = settings.WeChatApiOptions.AppSecret;
             var r = RedirectToV2(context, appIdWeChat, appSecretWeChat,
-                url, code, context.RequestAborted);
+               code, url, context.RequestAborted);
             return r;
         });
     }

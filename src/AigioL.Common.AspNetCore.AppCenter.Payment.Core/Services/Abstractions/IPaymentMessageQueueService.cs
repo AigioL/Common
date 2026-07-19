@@ -26,4 +26,14 @@ public partial interface IPaymentMessageQueueService
     /// 添加解约成功消息通知
     /// </summary>
     Task PushUnSignAgreementSuccess(string agreementNo);
+
+    /// <summary>
+    /// 添加微信提现转账完成通知
+    /// </summary>
+    Task PushTransferCompleted(WithdrawalTransferCompletedInfo info);
+
+    /// <summary>
+    /// 添加 PC 用户微信提现请求
+    /// </summary>
+    Task PushPCWithdrawalRequest(string withdrawalNumber);
 }

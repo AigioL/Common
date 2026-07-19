@@ -31,4 +31,14 @@ public sealed partial record class PubTransferState
     /// 转账完成时间
     /// </summary>
     public DateTimeOffset? FinishTime { get; set; }
+
+    /// <summary>
+    /// 微信转账原始状态（ACCEPTED/PROCESSING/WAIT_USER_CONFIRM/TRANSFERING/SUCCESS/FAIL/CANCELING/CANCELLED）
+    /// </summary>
+    public string? WeChatState { get; set; }
+
+    /// <summary>
+    /// 跳转领取页面的 package 信息（仅 WAIT_USER_CONFIRM 时返回）
+    /// </summary>
+    public string? PackageInfo { get; set; }
 }

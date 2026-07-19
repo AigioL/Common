@@ -289,6 +289,8 @@ sealed partial class WeChatPayV3Services<
             IsSuccess = true,
             ThirdPartyPlatformNumber = response.TransferBillNo,
             TransferStatus = transferStatus,
+            WeChatState = response.State,
+            PackageInfo = response.PackageInfo,
             FinishTime = transferStatus is TransferStatus.Success or TransferStatus.Failed
                 ? DateTimeOffset.Now : null,
         };

@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\LazyCreateMembershipOrderModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatApiOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\PCUserWithdrawalModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\PCWithdrawalTransferState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayExOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayTransferBillNotify.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\WeChatPayTransferBillsBodyModel.cs" />

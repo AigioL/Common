@@ -53,4 +53,19 @@ sealed partial class PaymentMessageQueueService(IConnection rabbitmqConn) : IPay
         var value = Encoding.UTF8.GetBytes(agreementNo);
         await ListRightPushAsync(CacheKeys.AgreementUnSignSuccessInfo, value);
     }
+
+    public async Task PushTransferCompleted(WithdrawalTransferCompletedInfo info)
+    {
+        using var stream = m.GetStream();
+        await JsonSerializer.SerializeAsync(stream, info,
+            PaymentMinimalApisJsonSerializerContext.Default.WithdrawalTransferCompletedInfo);
+        var value = stream.GetBuffer().AsMemory()[..unchecked((int)stream.Length)];
+        await ListRightPushAsync(CacheKeys.TransferCompleted, value);
+    }
+
+    public async Task PushPCWithdrawalRequest(string withdrawalNumber)
+    {
+        var value = Encoding.UTF8.GetBytes(withdrawalNumber);
+        await ListRightPushAsync(CacheKeys.PCUserWeChatWithdrawalRequest, value);
+    }
 }
