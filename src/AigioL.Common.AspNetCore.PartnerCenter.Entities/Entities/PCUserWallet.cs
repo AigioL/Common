@@ -73,11 +73,6 @@ public partial class PCUserWallet :
                 .WithOne()
                 .HasForeignKey<PCUserWallet>(u => u.Id)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(u => u.WalletChangeRecords)
-                .WithOne()
-                .HasForeignKey(a => a.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

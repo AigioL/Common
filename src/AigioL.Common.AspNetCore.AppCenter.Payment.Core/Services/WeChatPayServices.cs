@@ -131,6 +131,9 @@ partial class WeChatPayServices
 [JsonSerializable(typeof(WeChatPayRefundDomesticRefundsResponse))]
 [JsonSerializable(typeof(WeChatPayTransactionsOutTradeNoCloseRequest))]
 [JsonSerializable(typeof(WeChatPayTransactionsOutTradeNoCloseResponse))]
+[JsonSerializable(typeof(WeChatPayTransferBillsBodyModel))]
+[JsonSerializable(typeof(WeChatPayTransferSceneReportInfo))]
+[JsonSerializable(typeof(WeChatPayTransferBillsResponse))]
 [JsonSourceGenerationOptions]
 internal sealed partial class WeChatPayServicesJsonSerializerContext : JsonSerializerContext
 {

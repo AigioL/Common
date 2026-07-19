@@ -91,6 +91,11 @@ public partial class PCUserWalletChangeRecord :
         public void Configure(EntityTypeBuilder<PCUserWalletChangeRecord> builder)
         {
             builder.HasIndex(x => x.SourceId).IsUnique();
+
+            builder.HasOne(x => x.Wallet)
+                .WithMany(x => x.WalletChangeRecords)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

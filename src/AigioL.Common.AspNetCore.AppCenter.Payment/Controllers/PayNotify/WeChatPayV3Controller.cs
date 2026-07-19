@@ -387,13 +387,10 @@ file static class WeChatPayNotifyResults
 
         public static IResult Failure => default(FailureResult);
 
-        public static async Task ExecuteSuccessAsync(HttpContext context)
+        public static Task ExecuteSuccessAsync(HttpContext context)
         {
-            context.Response.ContentType = "application/json; charset=utf-8";
-            context.Response.StatusCode = StatusCodes.Status200OK;
-            var w = context.Response.BodyWriter;
-            w.Write("{\"code\":\"SUCCESS\",\"message\":\"SUCCESS\"}"u8);
-            await w.FlushAsync(context.RequestAborted);
+            context.Response.StatusCode = StatusCodes.Status204NoContent;
+            return Task.CompletedTask;
         }
 
         public static async Task ExecuteFailureAsync(HttpContext context)

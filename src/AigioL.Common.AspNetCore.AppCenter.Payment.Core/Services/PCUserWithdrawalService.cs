@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
@@ -21,17 +22,20 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
     readonly AppDbContext db;
     readonly IKeyValuePairRepository kvRepo;
     readonly IPaymentMessageQueueService paymentMessageQueue;
+    readonly IPCUserConfigService pcUserConfigService;
     readonly ILogger<PCUserWithdrawalService> logger;
 
     public PCUserWithdrawalService(
         AppDbContext db,
         IKeyValuePairRepository kvRepo,
         IPaymentMessageQueueService paymentMessageQueue,
+        IPCUserConfigService pcUserConfigService,
         ILogger<PCUserWithdrawalService> logger)
     {
         this.db = db;
         this.kvRepo = kvRepo;
         this.paymentMessageQueue = paymentMessageQueue;
+        this.pcUserConfigService = pcUserConfigService;
         this.logger = logger;
     }
 
@@ -104,10 +108,19 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
             return $"平台单日总提现上限为 {maxDailyTotal} 元，今日已提现 {todayTotalWithdrawn} 元";
         }
 
-        // 7. 生成提现单号
+        // 7. 获取用户绑定的微信 OpenId
+        var userConfig = await pcUserConfigService.GetConfigAsync(request.UserId, cancellationToken);
+        var userOpenId = userConfig.OpenId;
+
+        if (string.IsNullOrWhiteSpace(userOpenId))
+        {
+            return "用户未绑定微信 OpenId，无法提现";
+        }
+
+        // 8. 生成提现单号
         var withdrawalNumber = GenerateWithdrawalNumber();
 
-        // 8. 使用事务：扣减钱包 + 创建提现记录 + 创建变更记录
+        // 9. 使用事务：扣减钱包 + 创建提现记录 + 创建变更记录
         using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         try
         {
@@ -125,7 +138,7 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
                 Amount = request.Amount,
                 Status = PCUserWithdrawalStatus.Pending,
                 PaymentPlatform = PaymentType.WeChatPay,
-                UserOpenId = request.WeChatOpenId,
+                UserOpenId = userOpenId,
                 CreateTime = DateTimeOffset.Now,
                 Note = request.Note,
             };

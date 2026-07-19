@@ -101,6 +101,8 @@ public partial class WeChatWithdrawalSubscribe : WorkerBackgroundService
             // 4. 根据微信返回结果处理
             if (!result.IsSuccess)
             {
+                // 5. 缓存转账状态到 Redis
+                await CacheTransferStateAsync(redisConn, withdrawalNumber, result.WeChatState, null);
                 // API 调用失败，退回金额
                 await HandleTransferApiFailureAsync(db, record, result.Message ?? "微信转账接口调用失败", cancellationToken);
                 return true;
