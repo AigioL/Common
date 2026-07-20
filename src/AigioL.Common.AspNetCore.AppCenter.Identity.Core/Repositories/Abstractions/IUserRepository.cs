@@ -3,6 +3,7 @@ using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.Primitives.Models;
 using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.Abstractions;
+using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 
@@ -70,5 +71,5 @@ partial interface IUserRepository // 管理后台
     /// <summary>
     /// 封禁用户
     /// </summary>
-    Task<bool> SetUserLockoutStateAsync(Guid id, bool lockout);
+    Task<bool> SetUserLockoutStateAsync(IConnectionMultiplexer connection, Guid id, bool lockout);
 }

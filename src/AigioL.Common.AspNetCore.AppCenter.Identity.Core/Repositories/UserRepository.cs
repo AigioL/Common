@@ -1,3 +1,4 @@
+using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
@@ -11,6 +12,7 @@ using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
 
@@ -201,7 +203,7 @@ partial class UserRepository<TDbContext>
         return r;
     }
 
-    public async Task<bool> SetUserLockoutStateAsync(Guid id, bool lockout)
+    public async Task<bool> SetUserLockoutStateAsync(IConnectionMultiplexer connection, Guid id, bool lockout)
     {
         var user = await db.Users.SingleOrDefaultAsync(x => x.Id == id);
         if (user == null)
@@ -212,7 +214,7 @@ partial class UserRepository<TDbContext>
         if (lockout)
         {
             user.LockoutEnabled = true;
-            user.LockoutEnd = DateTimeOffset.MaxValue;
+            user.LockoutEnd = DateTimeOffset.MaxValue; // 封禁结束时间
         }
         else
         {
@@ -221,7 +223,29 @@ partial class UserRepository<TDbContext>
         }
 
         var r = await db.SaveChangesAsync(CancellationToken.None);
-        return r > 0;
+        var isOK = r > 0;
+        if (lockout && isOK)
+        {
+            // 清空登录状态，强制下线
+            var query = db.UserJsonWebTokens
+                .Include(x => x.UserDevice)
+                .Where(x => x.UserDevice.UserId == id);
+
+            var jwtIds = await query.Select(static x => x.Id).ToArrayAsync(CancellationToken.None);
+            await query.ExecuteDeleteAsync(CancellationToken.None);
+
+            if (jwtIds != null && jwtIds.Length > 0)
+            {
+                var redisdb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+                foreach (var jwtId in jwtIds)
+                {
+                    var k = CacheKeys.GetIdentityUserDeviceIsTrustWithUserIdMapHashKey(jwtId);
+                    await redisdb.KeyDeleteAsync(k);
+                }
+            }
+
+        }
+        return isOK;
     }
 
     static bool IsPhoneNumberValidFormat(string phoneNumber)

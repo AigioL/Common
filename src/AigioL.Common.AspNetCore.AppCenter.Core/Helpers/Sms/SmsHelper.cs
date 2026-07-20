@@ -150,6 +150,7 @@ public static partial class SmsHelper
             }
             user = await userManager.GetUserAsync();
             if (user == null) return ApiRspCode.Unauthorized;
+            // 封禁的用户不发送短信验证码
             var isLock = await userManager.IsLockedOutAsync(user);
             if (isLock)
             {
@@ -249,6 +250,16 @@ public static partial class SmsHelper
         if (type == SmsCodeType.BindPhoneNumber && (user == null || user.PhoneNumber != null))
         {
             return BindPhoneNumberIsNotNullError;
+        }
+
+        if (findUser != null)
+        {
+            // 封禁的用户不发送短信验证码
+            var isLock = await userManager.IsLockedOutAsync(findUser);
+            if (isLock)
+            {
+                return ApiRspCode.UserIsBanOrLock;
+            }
         }
 
         var lastSendTime = await authMessageRecordRepo.GetLastSendSmsTime(phoneNumber, phoneNumberRegionCode, type); // 上次发送短信时间

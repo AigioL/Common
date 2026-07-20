@@ -154,7 +154,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                         .SetProperty(s => s.GoodsRechargeStatus, s => GoodsRechargeStatus.RechargeReturn));
                 if (r > 0)
                 {
-                    var r2 = await db.Orders
+                    await db.Orders
                         .Where(x =>
                             x.Id == orderId)
                         .ExecuteUpdateAsync(e => e
@@ -163,7 +163,7 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                     var membershipChangeSuccess = await UserMembershipRechargeReturnAsync(business_order);
 
                     await DeleteUserFirstPriceOfGoods();
-                    if (r2 > 0 && membershipChangeSuccess)
+                    if (membershipChangeSuccess)
                     {
                         await transaction.CommitAsync();
                         return business_order.UserId;

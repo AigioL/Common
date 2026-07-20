@@ -70,6 +70,8 @@ public static partial class CacheKeys
     public const string IdentityUserDeviceIsTrustWithUserIdMapHashKey =
         "IdentityUserDeviceIsTrustWithUserIdMapHashKey";
 
+    public static string GetIdentityUserDeviceIsTrustWithUserIdMapHashKey(Guid jwtId) => $"{IdentityUserDeviceIsTrustWithUserIdMapHashKey}:{ShortGuid.Encode(jwtId)}";
+
     /// <summary>
     /// 文章浏览量 HashKey
     /// </summary>

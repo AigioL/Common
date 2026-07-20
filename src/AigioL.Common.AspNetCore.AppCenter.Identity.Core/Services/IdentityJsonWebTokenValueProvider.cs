@@ -142,7 +142,7 @@ public sealed partial class IdentityJsonWebTokenValueProvider<
                     // 删除映射，使之前的 Token 失效
                     db.UserJsonWebTokens.Remove(oldItem);
                     await db.SaveChangesAsync(cancellationToken);
-                    await redisdb.KeyDeleteAsync($"{CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey}:{ShortGuid.Encode(oldItem.Id)}");
+                    await redisdb.KeyDeleteAsync(CacheKeys.GetIdentityUserDeviceIsTrustWithUserIdMapHashKey(oldItem.Id));
                 }
             }
 
@@ -194,9 +194,8 @@ public sealed partial class IdentityJsonWebTokenValueProvider<
                      x.DeviceId == deviceId)
                    .ExecuteUpdateAsync(x =>
                    x.SetProperty(u => u.LastLoginTime, u => DateTimeOffset.Now), cancellationToken);
-            var hashField = ShortGuid.Encode(newItem.Id);
             var hashValue = MemoryPackSerializer.Serialize(new UserDeviceIsTrustWithUserId(userId, true));
-            await redisdb.StringSetAsync($"{CacheKeys.IdentityUserDeviceIsTrustWithUserIdMapHashKey}:{hashField}", hashValue, expiry: TimeSpan.FromDays(7));
+            await redisdb.StringSetAsync(CacheKeys.GetIdentityUserDeviceIsTrustWithUserIdMapHashKey(newItem.Id), hashValue, expiry: TimeSpan.FromDays(7));
             return newItem.Id;
         }
         catch (OperationCanceledException)

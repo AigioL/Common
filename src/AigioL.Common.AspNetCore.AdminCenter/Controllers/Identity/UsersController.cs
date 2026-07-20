@@ -112,7 +112,8 @@ public static partial class UsersController
             [FromQuery] bool lockout) =>
         {
             var userRepo = context.RequestServices.GetRequiredService<IUserRepository>();
-            var isOk = await userRepo.SetUserLockoutStateAsync(userId, lockout);
+            var connection = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
+            var isOk = await userRepo.SetUserLockoutStateAsync(connection, userId, lockout);
             var r = BMApiRsp.OkBoolean(isOk);
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
