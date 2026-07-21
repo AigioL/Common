@@ -26,6 +26,7 @@ public static class UserOrderController
             var userId = context.GetUserIdThrowIfNull();
             var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
             var r = await GetOrderDetail(userId, repo, id, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取用户订单信息");
         routeGroup.MapGet("", async (HttpContext context,
@@ -53,6 +54,7 @@ public static class UserOrderController
                 paymentTime, businessType, note,
                 createTime, current, pageSize,
                 context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("分页查询订单");
         routeGroup.MapGet("ExternalAccountInfo", async (HttpContext context,
@@ -65,6 +67,7 @@ public static class UserOrderController
             var r = await GetExternalAccountInfo(
                 memoryCache, userId, repo,
                 orderNumber, paymentNumber, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("通过支付记录查询用户绑定外部平台信息");
         routeGroup.MapGet("count", async (HttpContext context,
@@ -76,6 +79,7 @@ public static class UserOrderController
             var r = await GetUserOrderCount(
                 userId, repo, status,
                 businessType, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("通过条件获取用户订单数量");
     }

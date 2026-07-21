@@ -25,6 +25,7 @@ public static partial class OfficialMessageController
             [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
         {
             var r = await Get(context, clientPlatform, messageType, current, pageSize);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取官方消息");
     }

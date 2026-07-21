@@ -12,6 +12,33 @@ namespace AigioL.Common.Models;
 public static partial class ApiRspExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T SetHttpContext<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(this T value,
+        HttpContext httpContext)
+        where T : ApiRsp
+    {
+        if (string.IsNullOrWhiteSpace(value.TraceId))
+        {
+            var traceId = httpContext.GetTraceId();
+            value.TraceId = traceId;
+        }
+
+        if (string.IsNullOrWhiteSpace(value.Url))
+        {
+            value.Url = httpContext.Request.Path;
+        }
+
+        if (!value.IsSuccess())
+        {
+            if (string.IsNullOrWhiteSpace(value.Message))
+            {
+                value.Message = $"服务端错误 {value.Code}";
+            }
+        }
+
+        return value;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task WriteAsync(
         this ApiRsp value,
         SerializableImplType serializableImplType,

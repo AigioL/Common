@@ -32,6 +32,7 @@ public static partial class ArticleController
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var repo = context.RequestServices.GetRequiredService<IArticleCategoryRepository>();
             var r = await GetTypes(cache, repo, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         });
         routeGroup.MapGet("{current}/{pageSize}/{categoryId?}", async (HttpContext context,
@@ -42,6 +43,7 @@ public static partial class ArticleController
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var repo = context.RequestServices.GetRequiredService<IArticleRepository>();
             var r = await Get(cache, repo, categoryId, current, pageSize, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取文章列表");
         routeGroup.MapGet("order", async (HttpContext context,
@@ -53,6 +55,7 @@ public static partial class ArticleController
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var repo = context.RequestServices.GetRequiredService<IArticleRepository>();
             var r = await Order(cache, repo, categoryId, orderBy, current, pageSize, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取指定排序的文章列表，默认 DateTime 倒序");
         routeGroup.MapGet("order/{orderBy}/{current}/{pageSize}/{categoryId?}", async (HttpContext context,
@@ -64,6 +67,7 @@ public static partial class ArticleController
             var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
             var repo = context.RequestServices.GetRequiredService<IArticleRepository>();
             var r = await Order(cache, repo, categoryId, orderBy, current, pageSize, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取指定排序的文章列表，默认 DateTime 倒序");
         routeGroup.MapGet("{id}", async (HttpContext context,
@@ -73,6 +77,7 @@ public static partial class ArticleController
             var repo = context.RequestServices.GetRequiredService<IArticleRepository>();
             var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
             var r = await Info(cache, repo, conn, id, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取文章");
 #if DEBUG

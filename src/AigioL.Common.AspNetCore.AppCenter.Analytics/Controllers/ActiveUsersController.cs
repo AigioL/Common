@@ -29,6 +29,7 @@ public static class ActiveUsersController
             [FromBody] ActiveUserRecordModel m) =>
         {
             var r = await PostAsync(context, m);
+            r.SetHttpContext(context);
             return r;
         });
     }

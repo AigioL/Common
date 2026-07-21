@@ -18,6 +18,7 @@ public static class VipPaymentController
             [FromQuery] Guid goodId) =>
         {
             var r = await PayLink(context, goodId);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("支付页链接");
         routeGroup.MapGet("Order/{payId}", async (HttpContext context,
@@ -31,6 +32,7 @@ public static class VipPaymentController
             [FromQuery] string payId) =>
         {
             var r = await PayResult(context, payId);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取支付结果");
     }

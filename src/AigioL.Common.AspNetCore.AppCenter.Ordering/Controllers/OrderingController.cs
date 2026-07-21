@@ -20,6 +20,7 @@ public static class OrderingController
         {
             var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
             var r = await GetOrderPaymentInfo(repo, id, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取订单支付信息");
         routeGroup.MapGet("status/{id}", async (HttpContext context,
@@ -27,6 +28,7 @@ public static class OrderingController
         {
             var repo = context.RequestServices.GetRequiredService<IOrderRepository>();
             var r = await GetOrderPaymentInfo(repo, id, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取订单状态");
     }

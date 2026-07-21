@@ -29,6 +29,7 @@ public static class LogsController
             [FromBody] AnalysisLogContainerModel m) =>
         {
             var r = await PostAsync(context, m);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("Visual Studio App Center 分析日志上传");
 

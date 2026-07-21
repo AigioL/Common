@@ -29,12 +29,14 @@ public static class AgreementController
         routeGroup.MapGet("", async (HttpContext context) =>
         {
             var r = await QueryAsync(context, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("商家扣款协议列表");
         routeGroup.MapPost("{agreementNo}/unSign", async (HttpContext context,
             [FromRoute] string agreementNo) =>
         {
             var r = await AgreementUnSign(context, agreementNo, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("商家扣款协议解约");
     }

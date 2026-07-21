@@ -25,6 +25,7 @@ public static class AftersalesBillController
             var repo = context.RequestServices.GetRequiredService<IAftersalesBillRepository>();
             var rabbitmqConn = context.RequestServices.GetRequiredService<IConnection>();
             var r = await CreateAftersalesBill(userId, repo, rabbitmqConn, m, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("创建售后单");
 

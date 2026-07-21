@@ -39,6 +39,7 @@ public static class PaymentController
             var r = await GetOrderPayState(
                 paymentRepo, orderId, method,
                 context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         });
         routeGroup.MapPost("{orderId}", async (HttpContext context,
@@ -51,6 +52,7 @@ public static class PaymentController
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
             var r = await Pay<TAppSettings>(paymentRepo, conn, context, orderId,
                 method, openId, wxCode, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         });
         routeGroup.MapGet("method/{businessType}", async (HttpContext context,
@@ -58,6 +60,7 @@ public static class PaymentController
         {
             var paymentRepo = context.RequestServices.GetRequiredService<IPaymentRepository>();
             var r = await GetMethod(paymentRepo, businessType, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         })
         .WithDescription("获取支付方式设置");

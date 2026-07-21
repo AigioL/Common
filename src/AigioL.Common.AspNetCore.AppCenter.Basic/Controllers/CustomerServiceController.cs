@@ -19,6 +19,7 @@ public static partial class CustomerServiceController
         routeGroup.MapGet("", async (HttpContext context) =>
         {
             var r = await ToCustomerService(context);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取客服链接地址");
     }

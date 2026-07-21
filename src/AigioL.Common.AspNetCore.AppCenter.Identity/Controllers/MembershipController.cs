@@ -27,12 +27,14 @@ public static partial class MembershipController
         {
             // tbd 待定传参，保留值
             var r = await GetUserIsMembershipAsync(context, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取用户是否是会员（弃用，改用 MembershipHub）")
         .WithRequiredSecurityKey();
         routeGroup.MapGet("info", async (HttpContext context) =>
         {
             var r = await GetUserMembershipInfoAsync(context, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取会员信息")
         .WithRequiredSecurityKey();

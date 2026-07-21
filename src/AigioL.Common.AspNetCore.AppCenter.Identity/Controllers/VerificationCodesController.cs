@@ -27,6 +27,7 @@ public static partial class VerificationCodesController
             [FromBody] SendSmsRequest request) =>
         {
             var r = await SmsHelper.SendSms<TAppSettings, User, IUserManager2>(context, request.PhoneNumber, request.PhoneNumberRegionCode, request.Type);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("发送短信验证码")
         .WithRequiredSecurityKey();
@@ -34,6 +35,7 @@ public static partial class VerificationCodesController
             [FromBody] SendEmailCodeRequest request) =>
         {
             var r = await SendEmailOtp(context, request.Email, request.Type);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("发送邮件验证码")
         .WithRequiredSecurityKey();
@@ -41,6 +43,7 @@ public static partial class VerificationCodesController
         routeGroup.MapPost("sms-test", async (HttpContext context) =>
         {
             ApiRsp r = "测试加密接口";
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("测试加密接口")
         .WithRequiredSecurityKey();

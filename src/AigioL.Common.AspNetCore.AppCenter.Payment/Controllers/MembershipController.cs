@@ -31,47 +31,15 @@ public static class MembershipController
             var repo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
             var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
             var r = await repo.GoodsAsync(cacheLock, userId, conn, repo, context.RequestAborted);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("获取会员商品列表");
         routeGroup.MapPost("create/good/{goodId}/{channelPackageId?}", async (HttpContext context,
             [FromRoute] string goodId,
             [FromRoute] string? channelPackageId) =>
         {
-            if (!ShortGuid.TryParse(goodId, out Guid goodIdG) || goodIdG == default)
-            {
-                return ApiRspCode.BadRequest;
-            }
-            Guid? channelPackageIdGN = null;
-            if (channelPackageId != null)
-            {
-                var channelPackageService = context.RequestServices.GetService<IChannelPackageService>();
-                if (!IChannelPackageService.CheckId(
-                    channelPackageService,
-                    channelPackageId,
-                    out channelPackageIdGN,
-                    out ApiRspCode code))
-                {
-                    return code;
-                }
-                if (channelPackageIdGN.HasValue)
-                {
-                    var exists = await channelPackageService.ExistsAsync(channelPackageIdGN.Value, context.RequestAborted);
-                    if (!exists)
-                    {
-                        // 渠道包 Id 不存在
-                        return ApiRspCode.NotFound;
-                    }
-                }
-            }
-            var userId = context.GetUserIdThrowIfNull();
-            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MembershipController));
-            var repo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
-            var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
-            var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
-            var r = await CreateOrderAsync(
-                logger, conn, repo,
-                userMembershipService, userId, goodIdG,
-                channelPackageIdGN);
+            var r = await CreateOrderAsync(context, goodId, channelPackageId);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("根据会员商品创建会员订单");
         routeGroup.MapPost("create/createagreementsigndeduct", async (HttpContext context,
@@ -85,7 +53,49 @@ public static class MembershipController
 
     static readonly SemaphoreSlim cacheLock = new(1, 1);
 
-    static async Task<ApiRsp<string?>> CreateOrderAsync(
+    static async Task<ApiRsp<string?>> CreateOrderAsync(HttpContext context,
+        string goodId,
+        string? channelPackageId)
+    {
+        if (!ShortGuid.TryParse(goodId, out Guid goodIdG) || goodIdG == default)
+        {
+            return ApiRspCode.BadRequest;
+        }
+        Guid? channelPackageIdGN = null;
+        if (channelPackageId != null)
+        {
+            var channelPackageService = context.RequestServices.GetService<IChannelPackageService>();
+            if (!IChannelPackageService.CheckId(
+                channelPackageService,
+                channelPackageId,
+                out channelPackageIdGN,
+                out ApiRspCode code))
+            {
+                return code;
+            }
+            if (channelPackageIdGN.HasValue)
+            {
+                var exists = await channelPackageService.ExistsAsync(channelPackageIdGN.Value, context.RequestAborted);
+                if (!exists)
+                {
+                    // 渠道包 Id 不存在
+                    return ApiRspCode.NotFound;
+                }
+            }
+        }
+        var userId = context.GetUserIdThrowIfNull();
+        var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(nameof(MembershipController));
+        var repo = context.RequestServices.GetRequiredService<IMembershipGoodsRepository>();
+        var conn = context.RequestServices.GetRequiredService<IConnectionMultiplexer>();
+        var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
+        var r = await CreateOrderCoreAsync(
+            logger, conn, repo,
+            userMembershipService, userId, goodIdG,
+            channelPackageIdGN);
+        return r;
+    }
+
+    static async Task<ApiRsp<string?>> CreateOrderCoreAsync(
         ILogger logger,
         IConnectionMultiplexer conn,
         IMembershipGoodsRepository repo,

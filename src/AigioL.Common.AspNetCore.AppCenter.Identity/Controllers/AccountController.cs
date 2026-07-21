@@ -53,6 +53,7 @@ public static partial class AccountController
                 deviceId,
                 request.ChannelPackageId,
                 (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("登录或注册账号")
         .WithRequiredSecurityKey();
@@ -61,6 +62,7 @@ public static partial class AccountController
         {
             var deviceId = request.GetDeviceId();
             var r = await RefreshTokenAsync(context, request.RefreshToken, deviceId);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("刷新 JWT")
         .WithRequiredSecurityKey();
@@ -68,6 +70,7 @@ public static partial class AccountController
             [FromBody] ValidateRegisterEmailRequest request) =>
         {
             var r = await ValidateRegisterEmail(context, request.Email);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("验证注册邮箱账号")
         .WithRequiredSecurityKey();
@@ -81,6 +84,7 @@ public static partial class AccountController
                 smsSender, request.Type, request.PhoneNumber,
                 request.PhoneNumberRegionCode, request.Email, request.OTPCode,
                 request.Password, request.Password2);
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("重置密码")
         .WithRequiredSecurityKey();
@@ -103,6 +107,7 @@ public static partial class AccountController
                 request.Code,
                 deviceId,
                 (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("邮箱注册账号")
         .WithRequiredSecurityKey();
@@ -115,6 +120,7 @@ public static partial class AccountController
                 request.Account,
                 request.Password,
                 (userManager, user, isLoginOrRegister) => userManager.LoginSharedAsync(user, isLoginOrRegister, deviceId));
+            r.SetHttpContext(context);
             return r;
         }).WithDescription("密码登录账号")
         .WithRequiredSecurityKey();
