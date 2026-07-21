@@ -43,9 +43,9 @@
   </ItemGroup>
   <!-- 👇 JsonWebToken -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.1" />
-    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.19.1" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.19.2" />
+    <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.19.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
   </ItemGroup>
   <!-- 👇 可回收内存流 -->
   <ItemGroup>
@@ -53,13 +53,13 @@
   </ItemGroup>
   <!-- 👇 EF Core -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.9" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.10" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.6" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="10.0.9" />
-    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.9" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.10" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
     <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.6" />
     <PackageVersion Include="EFCore.BulkExtensions.PostgreSql" Version="10.0.0" />
   </ItemGroup>
@@ -71,12 +71,12 @@
   <!-- 👇 OpenApi -->
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
-    <PackageVersion Include="Microsoft.OpenApi" Version="2.10.0" />
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.11.0" />
     <PackageVersion Include="Scalar.AspNetCore" Version="2.16.16" />
   </ItemGroup>
   <!-- 👇 ExternalLogin 外部账号登录 -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.10" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.6" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.6" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.6" />
@@ -112,13 +112,13 @@
   <ItemGroup>
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.6" />
     <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.4.6" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.7.0" />
-    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.7.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.0" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.16.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.16.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.8.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.8.0" />
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="13.4.6" />
     <PackageVersion Include="Aspire.Hosting.Docker" Version="13.4.6" />
     <PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.1.0-preview.1.25616.3" />
@@ -136,7 +136,7 @@
   </ItemGroup>
   <!-- 👇 Identity -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.10" />
     <PackageVersion Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.8" />
   </ItemGroup>
   <!-- 👇 Bcl Compat -->
@@ -165,7 +165,7 @@
   </ItemGroup>
   <!-- 👇 Base58 -->
   <ItemGroup>
-    <PackageVersion Include="SimpleBase" Version="5.6.1" />
+    <PackageVersion Include="SimpleBase" Version="5.6.2" />
   </ItemGroup>
   <!-- 👇 Polly -->
   <ItemGroup>
@@ -181,7 +181,7 @@
   </ItemGroup>
   <!-- 👇 Magick 图片处理 -->
   <ItemGroup>
-    <PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="14.14.0" />
+    <PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="14.15.0" />
   </ItemGroup>
   <!-- 👇 Steam -->
   <ItemGroup>
@@ -229,10 +229,10 @@
   </ItemGroup>
   <!-- 👇 ASP.NET Core OpenId/OAuth -->
   <ItemGroup>
-    <PackageVersion Include="OpenIddict.Core" Version="$(Version_OpenIddict)" />
-    <PackageVersion Include="OpenIddict.Quartz" Version="$(Version_OpenIddict)" />
-    <PackageVersion Include="OpenIddict.AspNetCore" Version="$(Version_OpenIddict)" />
-    <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="$(Version_OpenIddict)" />
+    <PackageVersion Include="OpenIddict.Core" Version="7.6.0" />
+    <PackageVersion Include="OpenIddict.Quartz" Version="7.6.0" />
+    <PackageVersion Include="OpenIddict.AspNetCore" Version="7.6.0" />
+    <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="7.6.0" />
     <PackageVersion Include="OpenIddict.EntityFrameworkCore.Models" Version="$(Version_OpenIddict)" />
   </ItemGroup>
 </Project>
