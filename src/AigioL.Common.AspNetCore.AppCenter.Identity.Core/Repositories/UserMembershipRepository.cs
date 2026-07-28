@@ -304,7 +304,7 @@ internal static class UserMembershipRepositoryHelper
         TimeSpan? defaultExpireTime = null)
     {
         var cacheTtl = defaultExpireTime ?? TimeSpan.FromMinutes(5);
-        if (membershipInfo.ExpireDate.HasValue)
+        if (membershipInfo.ExpireDate.HasValue && membershipInfo.ExpireDate.Value > now)
         {
             var expire = membershipInfo.ExpireDate.Value - now;
             if (expire < cacheTtl)
