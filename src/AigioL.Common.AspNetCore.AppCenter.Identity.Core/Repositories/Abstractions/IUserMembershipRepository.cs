@@ -31,7 +31,8 @@ public partial interface IUserMembershipRepository : IRepository<UserMembership,
         IConnectionMultiplexer conn,
         Guid userId,
         bool isLockTake = false,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        bool? ignoreCache = false);
 
     /// <summary>
     /// 按量付费的扣费

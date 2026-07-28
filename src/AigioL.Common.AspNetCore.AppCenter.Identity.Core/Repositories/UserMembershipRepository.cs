@@ -92,20 +92,35 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         IConnectionMultiplexer conn,
         Guid userId,
         bool isLockTake = false,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        bool? ignoreCache = false)
     {
         bool? lockTake = null;
         (MembershipInfo? membershipInfo, bool? lockTake) Result(MembershipInfo? membershipInfo)
         {
             return (membershipInfo, lockTake);
         }
-
-        var database = conn.GetDatabase(CacheKeys.RedisMessagingDb);
-
-        var cacheKey = CacheKeys.GetUserMembershipCacheKey(userId);
-        ReadOnlyMemory<byte> data = await database.StringGetAsync(cacheKey);
-
         MembershipInfo? r = null;
+        var database = conn.GetDatabase(CacheKeys.RedisMessagingDb);
+        var cacheKey = CacheKeys.GetUserMembershipCacheKey(userId);
+        // 如果忽略缓存，则直接从数据库获取数据，并更新缓存
+        if (ignoreCache.HasValue && ignoreCache.Value)
+        {
+            r = await GetUserMembershipAsync(userId, cancellationToken);
+            // 用户不存在会员信息时，返回空对象
+            if (r == null)
+            {
+                return Result(new());
+            }
+            else
+            {
+                var serializeData = MemoryPackSerializer.Serialize(r);
+                var defaultExpireTime = UserMembershipRepositoryHelper.GetMembershipCacheTtl(r, DateTimeOffset.Now);
+                await database.StringSetAsync(cacheKey, serializeData, defaultExpireTime);
+                return Result(r);
+            }
+        }
+        ReadOnlyMemory<byte> data = await database.StringGetAsync(cacheKey);
         if (data.Length <= 0)
         {
             IDatabase? lockDb = null;
@@ -136,7 +151,6 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
                     else
                     {
                         var serializeData = MemoryPackSerializer.Serialize(r);
-
                         var defaultExpireTime = UserMembershipRepositoryHelper.GetMembershipCacheTtl(r, DateTimeOffset.Now);
                         await database.StringSetAsync(cacheKey, serializeData, defaultExpireTime);
                         return Result(r);
