@@ -92,14 +92,11 @@ public partial interface IRenameCommand : ICommand
             projNameLower = projNameTrimServer.ToLowerInvariant();
         }
 
-        var tempSlnPath = Path.Combine(ROOT_ProjPath, "AigioLTemplate.Server.slnx");
-        if (!File.Exists(tempSlnPath))
+        var slnxs = Directory.EnumerateFiles(ROOT_ProjPath, "*.slnx");
+        var hasAigioLTemplate = slnxs.Any(static x => Path.GetFileName(x).StartsWith("AigioLTemplate"));
+        if (!hasAigioLTemplate)
         {
-            tempSlnPath = Path.Combine(ROOT_ProjPath, "AigioLTemplate.slnx");
-            if (!File.Exists(tempSlnPath))
-            {
-                throw new FileNotFoundException("未找到模板解决方案文件！", tempSlnPath);
-            }
+            throw new FileNotFoundException("未找到模板解决方案文件！", ROOT_ProjPath);
         }
 
         Enumerate(ROOT_ProjPath);
