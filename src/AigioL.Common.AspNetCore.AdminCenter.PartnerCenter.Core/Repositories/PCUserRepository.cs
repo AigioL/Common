@@ -12,7 +12,6 @@ using AigioL.Common.Primitives.Models.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using GameTrainer.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -269,53 +268,9 @@ sealed partial class PCUserRepository<TDbContext>(
 
 partial class PCUserRepository<TDbContext>
 {
-    public async Task<PCUserOrderFilterModel> BuildOrderFilterAsync(
+    public partial Task<PCUserOrderFilterModel> BuildOrderFilterAsync(
         PCUser user,
-        CancellationToken cancellationToken = default)
-    {
-        var businessIds = user.BusinessIds
-            .Where(static x => x != default)
-            .Distinct()
-            .ToArray();
-
-        if (businessIds.Length == 0)
-        {
-            return new PCUserOrderFilterModel
-            {
-                UserType = user.UserType,
-                BusinessIds = [],
-            };
-        }
-
-        if (user.UserType == PCUserType.Channel)
-        {
-            return new PCUserOrderFilterModel
-            {
-                UserType = PCUserType.Channel,
-                BusinessIds = businessIds,
-            };
-        }
-
-        if (user.UserType == PCUserType.PromoCode)
-        {
-            return new PCUserOrderFilterModel
-            {
-                UserType = PCUserType.PromoCode,
-                BusinessIds = await db.Set<PromoCode>()
-                    .AsNoTrackingWithIdentityResolution()
-                    .Where(x => businessIds.Contains(x.Id) && x.RevenueShareRecipientKolUserId.HasValue)
-                    .Select(x => x.RevenueShareRecipientKolUserId!.Value)
-                    .Distinct()
-                    .ToArrayAsync(cancellationToken),
-            };
-        }
-
-        return new PCUserOrderFilterModel
-        {
-            UserType = user.UserType,
-            BusinessIds = businessIds,
-        };
-    }
+        CancellationToken cancellationToken = default);
 }
 
 partial class PCUserRepository<TDbContext> // Init 初始化 PC 后台的权限与菜单
