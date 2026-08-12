@@ -80,7 +80,11 @@ public sealed partial class RefundBillTableItemModel : IReadOnlyId<Guid>
     /// <summary>
     /// 用户 Id
     /// </summary>
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     #region 用户信息
 

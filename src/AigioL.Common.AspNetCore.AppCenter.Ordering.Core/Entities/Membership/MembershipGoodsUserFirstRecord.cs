@@ -14,7 +14,11 @@ public partial class MembershipGoodsUserFirstRecord
 {
     public Guid MembershipGoodsId { get; set; }
 
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     public Guid MembershipBusinessOrderId { get; set; }
 

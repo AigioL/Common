@@ -24,7 +24,11 @@ public sealed partial class AftersalesBillTableItem : IReadOnlyId<Guid>, ICreate
     /// <summary>
     /// 用户 Id
     /// </summary>
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 用户昵称

@@ -32,7 +32,11 @@ partial interface IMembershipBusinessOrderRepository // 管理后台
         DateTimeOffset?[]? rechargeCompletionTime,
         MembershipBusinessSource? businessSource,
         GoodsRechargeStatus? goodsRechargeStatus,
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? cdkey,
         string? orderBy,
         bool? desc,
@@ -69,12 +73,24 @@ partial interface IMembershipBusinessOrderRepository
     /// <summary>
     /// 订单退款成功
     /// </summary>
-    Task<ApiRsp<Guid?>> OrderRefunded(string orderId, Guid? bindPCUserId = null);
+    Task<ApiRsp<
+#if !USE_NUM_UID
+            Guid?
+#else
+            long?
+#endif
+        >> OrderRefunded(string orderId, Guid? bindPCUserId = null);
 
     /// <summary>
     /// 订单支付成功
     /// </summary>
-    Task<(bool isSuccess, Guid? userId)> OrderPaymentSuccess(string orderId);
+    Task<(bool isSuccess,
+#if !USE_NUM_UID
+        Guid?
+#else
+        long?
+#endif
+        userId)> OrderPaymentSuccess(string orderId);
 
     /// <summary>
     /// 根据扣款协议 ID 获取业务订单
@@ -95,7 +111,11 @@ partial interface IMembershipBusinessOrderRepository
        Guid businessOrderId,
        TimeSpan rechargeTimeSpan,
        TimeSpan payAsYoGo,
+#if !USE_NUM_UID
        Guid userId,
+#else
+       long userId,
+#endif
        MembershipLicenseFlags membershipLicenseFlags,
        MembershipBusinessSource membershipBusinessSource,
        DateTimeOffset? now = null,

@@ -9,13 +9,17 @@ namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 /// 用户信息模型，使用 VersionTolerant 以支持向后兼容
 /// </summary>
 [global::MemoryPack.MemoryPackable(global::MemoryPack.GenerateType.VersionTolerant, global::MemoryPack.SerializeLayout.Explicit)]
-public sealed partial class UserInfoModel : IPhoneNumber, IId<Guid>
+public sealed partial class UserInfoModel : IPhoneNumber
 {
     /// <summary>
     /// 用户 Id
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(0)]
+#if !USE_NUM_UID
     public Guid Id { get; set; }
+#else
+    public long Id { get; set; }
+#endif
 
     /// <summary>
     /// 昵称
@@ -153,6 +157,12 @@ public sealed partial class UserInfoModel : IPhoneNumber, IId<Guid>
     /// <inheritdoc/>
     public override string ToString() => $"NickName: {NickName}, Id: {Id}";
 }
+
+#if !USE_NUM_UID
+partial class UserInfoModel : IId<Guid>;
+#else
+partial class UserInfoModel : IId<long>;
+#endif
 
 partial class UserInfoModel : IReadOnlyNickNameWithExternalAccounts
 {

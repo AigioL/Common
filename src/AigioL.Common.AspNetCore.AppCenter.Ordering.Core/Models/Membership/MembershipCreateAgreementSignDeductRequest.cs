@@ -12,7 +12,11 @@ public sealed partial class MembershipCreateAgreementSignDeductRequest
     /// 用户 Id（必填）
     /// </summary>
     [global::MemoryPack.MemoryPackOrder(0)]
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 支付订单 Id（必填）

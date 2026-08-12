@@ -21,19 +21,37 @@ public partial interface IMembershipGoodsRepository : IRepository<MembershipGood
     /// <summary>
     /// 根据用户检查商品价格，检查用户是否使用过首次优惠
     /// </summary>
-    Task<MembershipGoodsModel[]> CheckPriceByUserAsync(Guid userId, MembershipGoodsModel[] goodsArray, CancellationToken cancellationToken = default);
+    Task<MembershipGoodsModel[]> CheckPriceByUserAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        MembershipGoodsModel[] goodsArray,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 检查用户是否使用过商品的首次优惠
     /// </summary>
-    Task<bool> CheckUserUseFirstPriceOfGoodsAsync(Guid userId, Guid goodsId, CancellationToken cancellationToken = default);
+    Task<bool> CheckUserUseFirstPriceOfGoodsAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        Guid goodsId,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取会员商品列表
     /// </summary>
     async Task<ApiRsp<MembershipGoodsModel[]?>> GoodsAsync(
         SemaphoreSlim cacheLock,
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         IConnectionMultiplexer conn,
         IMembershipGoodsRepository repo,
         CancellationToken cancellationToken = default)

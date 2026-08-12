@@ -119,7 +119,13 @@ sealed partial class MerchantDeductionAgreementRepository<TDbContext> :
         return r;
     }
 
-    public async Task<List<AgreementModel>> GetAgreementsByUser(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<List<AgreementModel>> GetAgreementsByUser(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default)
     {
         var query = db.MerchantDeductionAgreements
             .AsNoTrackingWithIdentityResolution()
@@ -153,7 +159,14 @@ sealed partial class MerchantDeductionAgreementRepository<TDbContext> :
         return r;
     }
 
-    public async Task<bool> CheckUserBusinessSigned(Guid userId, int businessType, CancellationToken cancellationToken = default)
+    public async Task<bool> CheckUserBusinessSigned(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        int businessType,
+        CancellationToken cancellationToken = default)
     {
         var query = db.MerchantDeductionAgreements
             .AsNoTrackingWithIdentityResolution()
@@ -186,7 +199,11 @@ partial class MerchantDeductionAgreementRepository<TDbContext>
 {
     public async Task<PagedModel<MerchantDeductionAgreementTableItemModel>> QueryAsync(
         Guid? id,
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         DateTimeOffset?[]? signingTime,
         DateTimeOffset?[]? unSigningTime,
         PaymentType? platform,

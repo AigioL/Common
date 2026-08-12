@@ -34,7 +34,11 @@ partial interface IExternalAccountRepository // 管理后台
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<PagedModel<ExternalAccountTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? externalAccountId,
         ExternalLoginChannel? type,
         string? nickName,

@@ -17,7 +17,6 @@ using StackExchange.Redis;
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
 
 sealed partial class UserRepository<TDbContext> :
-    Repository<TDbContext, User, Guid>,
     IUserRepository
     where TDbContext : DbContext, IIdentityDbContext
 {
@@ -29,7 +28,11 @@ sealed partial class UserRepository<TDbContext> :
 partial class UserRepository<TDbContext>
 {
     public async Task<PagedModel<UserTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? id,
+#else
+        long? id,
+#endif
         string? openId,
         UserType? userType,
         string? nickName,
@@ -143,7 +146,11 @@ partial class UserRepository<TDbContext>
     }
 
     public async Task<UserEdit?> GetEditByIdAsync(
+#if !USE_NUM_UID
         Guid id,
+#else
+        long id,
+#endif
         CancellationToken cancellationToken = default)
     {
         var mapper = serviceProvider.GetRequiredService<IMapper>();
@@ -162,14 +169,21 @@ partial class UserRepository<TDbContext>
         CancellationToken cancellationToken = default)
     {
         IQueryable<User> query = db.Users.AsNoTrackingWithIdentityResolution();
-        if (TryGetGuid(text, out var userIdG))
-        {
-            query = query.Where(u => u.Id == userIdG);
-        }
-        else if (IsPhoneNumberValidFormat(text))
+        if (IsPhoneNumberValidFormat(text))
         {
             query = query.Where(u => u.PhoneNumber == text);
         }
+#if !USE_NUM_UID
+        else if (TryGetGuid(text, out var userIdG))
+        {
+            query = query.Where(u => u.Id == userIdG);
+        }
+#else
+        else if (long.TryParse(text, out var userId64))
+        {
+            query = query.Where(u => u.Id == userId64);
+        }
+#endif
         else
         {
             query = query.Where(u => u.NickName!.Contains(text));
@@ -193,7 +207,11 @@ partial class UserRepository<TDbContext>
     }
 
     public async Task<UserWalletModel?> GetWalletByUserIdAsync(
+#if !USE_NUM_UID
         Guid id,
+#else
+        long id,
+#endif
         CancellationToken cancellationToken = default)
     {
         var mapper = serviceProvider.GetRequiredService<IMapper>();
@@ -203,7 +221,14 @@ partial class UserRepository<TDbContext>
         return r;
     }
 
-    public async Task<bool> SetUserLockoutStateAsync(IConnectionMultiplexer connection, Guid id, bool lockout)
+    public async Task<bool> SetUserLockoutStateAsync(
+        IConnectionMultiplexer connection,
+#if !USE_NUM_UID
+        Guid id,
+#else
+        long id,
+#endif
+        bool lockout)
     {
         var user = await db.Users.SingleOrDefaultAsync(x => x.Id == id);
         if (user == null)
@@ -278,3 +303,9 @@ partial class UserRepository<TDbContext>
         return false;
     }
 }
+
+#if !USE_NUM_UID
+partial class UserRepository<TDbContext> : Repository<TDbContext, User, Guid>;
+#else
+partial class UserRepository<TDbContext> : Repository<TDbContext, User, long>;
+#endif

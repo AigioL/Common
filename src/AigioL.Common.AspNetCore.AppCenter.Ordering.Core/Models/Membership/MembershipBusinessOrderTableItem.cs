@@ -10,7 +10,11 @@ public sealed partial class MembershipBusinessOrderTableItem : IReadOnlyId<Guid>
     /// <summary>
     /// 用户 Id
     /// </summary>
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 会员商品 Id

@@ -15,7 +15,13 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
     /// <summary>
     /// 根据用户 Id 获取当前用户类型
     /// </summary>
-    Task<UserType> GetUserTypeByIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<UserType> GetUserTypeByIdAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default);
 
     //Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
@@ -44,7 +50,11 @@ public partial interface IUserManager2 : IIdentityUserManager<User>
         string externalAccountId,
         ExternalLoginChannel channel,
         string deviceId,
+#if !USE_NUM_UID
         Guid? bindUserId = null,
+#else
+        long? bindUserId = null,
+#endif
         Guid? channelPackageId = null,
         Action<ExternalAccount>? setProperties = null);
 }

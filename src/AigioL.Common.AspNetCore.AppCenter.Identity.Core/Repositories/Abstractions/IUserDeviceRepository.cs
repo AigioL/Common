@@ -29,7 +29,11 @@ partial interface IUserDeviceRepository // 管理后台
     /// <returns></returns>
     /// <param name="pageSize"></param>
     Task<PagedModel<UserDeviceTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? nickName,
         string? deviceName,
         string? deviceId,

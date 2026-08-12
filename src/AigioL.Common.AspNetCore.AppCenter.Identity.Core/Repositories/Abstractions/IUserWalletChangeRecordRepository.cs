@@ -26,7 +26,11 @@ partial interface IUserWalletChangeRecordRepository // 管理后台
     /// <param name="cancellationToken"></param>
     /// <returns>分页模型</returns>
     Task<PagedModel<UserWalletChangeRecordModel>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         UserWalletValueEvent[]? @event,
         UserWalletValueType[]? type,
         UserWalletPaymentDirection? direction,

@@ -15,7 +15,14 @@ public partial interface IOrderRepository
     /// <param name="userId">用户 Id，限制用户只能操作自己的订单</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<OrderDetailModel?> GetOrderInfo(string orderId, Guid userId, CancellationToken cancellationToken = default);
+    Task<OrderDetailModel?> GetOrderInfo(
+        string orderId,
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取支付相关的订单信息
@@ -30,7 +37,11 @@ public partial interface IOrderRepository
     /// 获取用户的订单列表
     /// </summary>
     Task<PagedModel<OrderItemInfoModel>> QueryUserOrderListAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         long? orderNumber,
         OrderStatus[]? status,
         DateTimeOffset?[]? paymentTime,
@@ -66,7 +77,12 @@ public partial interface IOrderRepository
     /// <param name="businessType">订单业务类型</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<int> GetUserOrderCountAsync(Guid userId,
+    Task<int> GetUserOrderCountAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
         OrderStatus[]? status,
         int? businessType,
         CancellationToken cancellationToken = default);
@@ -97,7 +113,11 @@ partial interface IOrderRepository // 管理后台
         OrderType? type = null,
         DevicePlatform2? source = null,
         OrderStatus[]? status = null,
+#if !USE_NUM_UID
         Guid? userId = null,
+#else
+        long? userId = null,
+#endif
         int? businessType = null,
         string? note = null,
         DateTimeOffset?[]? paymentTime = null,

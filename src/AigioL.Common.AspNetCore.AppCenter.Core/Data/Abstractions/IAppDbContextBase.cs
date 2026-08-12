@@ -251,7 +251,13 @@ public interface IAppDbContextBase : IDbContextBase
     }
 
     public static void OnModelCreatingVersion2(IInfrastructure<IServiceProvider> accessor, ModelBuilder builder)
-        => OnModelCreatingVersion2<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>("AC", accessor, builder);
+        => OnModelCreatingVersion2<User, Role,
+#if !USE_NUM_UID
+            Guid,
+#else
+            long,
+#endif
+            UserClaim, UserRole, UserLogin, RoleClaim, UserToken>("AC", accessor, builder);
 
     /// <summary>
     /// https://github.com/dotnet/aspnetcore/blob/v9.0.8/src/Identity/EntityFrameworkCore/src/Resources.resx#L120

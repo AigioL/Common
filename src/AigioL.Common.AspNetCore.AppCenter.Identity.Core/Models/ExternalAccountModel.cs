@@ -11,7 +11,11 @@ public sealed partial record class ExternalAccountModel : IReadOnlyId<Guid>
     /// <summary>
     /// 用户 Id
     /// </summary>
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 第三方账号 Id

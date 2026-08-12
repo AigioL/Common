@@ -63,7 +63,11 @@ public partial class Order :
     /// 用户 Id
     /// </summary>
     [Comment("用户 Id")]
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 应收金额

@@ -223,7 +223,13 @@ public static partial class CacheKeys
     /// <summary>
     /// 获取用户会员信息缓存 Key
     /// </summary>
-    public static string GetUserMembershipCacheKey(Guid userId) => $"UserMembership:{userId}";
+    public static string GetUserMembershipCacheKey(
+#if !USE_NUM_UID
+        Guid userId
+#else
+        long userId
+#endif
+        ) => $"UserMembership:{userId}";
 
     /// <summary>
     /// 获取用户会员信息缓存锁 Key

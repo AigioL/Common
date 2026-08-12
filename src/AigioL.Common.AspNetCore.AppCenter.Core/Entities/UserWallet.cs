@@ -15,7 +15,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// </summary>
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class UserWallet :
-    IEntity<Guid>,
     IReadOnlyUserWalletValue,
     IUpdateTime,
     IRowVersion
@@ -26,7 +25,11 @@ public partial class UserWallet :
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Comment("用户 Id")]
+#if !USE_NUM_UID
     public Guid Id { get; set; }
+#else
+    public long Id { get; set; }
+#endif
 
     public virtual User User { get; set; } = null!;
 
@@ -164,3 +167,9 @@ public partial class UserWallet :
         FreePoints = wallet.FreePoints,
     };
 }
+
+#if !USE_NUM_UID
+partial class UserWallet : IEntity<Guid>;
+#else
+partial class UserWallet : IEntity<long>;
+#endif

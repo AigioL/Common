@@ -8,7 +8,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Membership;
 public sealed partial record class MembershipOrderRequest
 {
     [global::MemoryPack.MemoryPackOrder(0)]
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     [global::MemoryPack.MemoryPackOrder(1)]
     public Guid MembershipGoodsId { get; set; }

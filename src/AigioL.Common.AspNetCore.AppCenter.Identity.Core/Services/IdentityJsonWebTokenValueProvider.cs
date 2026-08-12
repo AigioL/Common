@@ -52,7 +52,12 @@ public sealed partial class IdentityJsonWebTokenValueProvider<
         return tokenValidationParameters;
     }
 
-    public async Task<(JsonWebTokenValue? jwtData, string? jwtId)> GenerateTokenAsync(Guid userId,
+    public async Task<(JsonWebTokenValue? jwtData, string? jwtId)> GenerateTokenAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
         DevicePlatform2 platform,
         string? deviceId,
         IEnumerable<string>? roles,
@@ -70,7 +75,13 @@ public sealed partial class IdentityJsonWebTokenValueProvider<
         var expires = now.Add(options.AccessExpiration);
 
         // https://github.com/dotnet/aspnetcore/blob/main/src/Identity/Extensions.Core/src/PasswordHasher.cs#L96
-        var refresh_token = GenerateRefreshToken(userId.ToString("N"));
+        var refresh_token = GenerateRefreshToken(
+#if !USE_NUM_UID
+            userId.ToString("N")
+#else
+            userId.ToString()
+#endif
+            );
 
         // 刷新 Token 过期时间
         var refresh_token_expires = expires.Add(options.RefreshExpiration);
@@ -118,7 +129,11 @@ public sealed partial class IdentityJsonWebTokenValueProvider<
     }
 
     async Task<Guid> AddOrUpdateTokenReturnJwtIdAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         DevicePlatform2 platform,
         string? deviceId,
         string refresh_token,

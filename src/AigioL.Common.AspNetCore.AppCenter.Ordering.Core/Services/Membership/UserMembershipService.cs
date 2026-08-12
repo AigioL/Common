@@ -29,7 +29,11 @@ sealed partial class UserMembershipService(
     IMerchantDeductionAgreementRepository agreementRepo) : IUserMembershipService
 {
     public async Task<string?> CreateMembershipOrderAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipGoods goods,
         Guid? channelPackageId,
         string? orderId = null,
@@ -64,7 +68,11 @@ sealed partial class UserMembershipService(
     }
 
     async Task<decimal> GetAmountReceivable(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipGoods goods,
         CancellationToken cancellationToken = default)
     {
@@ -80,7 +88,11 @@ sealed partial class UserMembershipService(
     }
 
     public async Task<ApiRsp<(string orderId, OrderStatus orderStatus)?>> CreateMembershipOrderByDistributionAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipGoods goods,
         decimal amountReceived,
         int? orderBusinessTypeId = null,
@@ -131,7 +143,11 @@ sealed partial class UserMembershipService(
     }
 
     public async Task<(bool isOK, UserMembershipChangeRecord? record)> CreateMembershipOrderByCDKeyAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipProductKeyRecord productKeyRecord,
         MembershipGoods goods,
         Guid? channelPackageId = null)
@@ -176,7 +192,11 @@ sealed partial class UserMembershipService(
         IDistributedCache cache,
         IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
         IMembershipGoodsRepository membershipGoodsRepo,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         Guid cdKey,
         Guid? channelPackageId,
         bool isTimeSpan = false,
@@ -278,7 +298,13 @@ sealed partial class UserMembershipService(
         return isSuccess;
     }
 
-    public async Task<ApiRsp<Guid?>> OrderPaymentRefundedHandleV2Async(string orderId, Guid? bindPCUserId = null)
+    public async Task<ApiRsp<
+#if !USE_NUM_UID
+        Guid?
+#else
+        long?
+#endif
+        >> OrderPaymentRefundedHandleV2Async(string orderId, Guid? bindPCUserId = null)
     {
         var r = await membershipBusinessOrderRepo.OrderRefunded(orderId, bindPCUserId);
 
@@ -384,7 +410,13 @@ sealed partial class UserMembershipService(
 
     #endregion
 
-    public async Task<bool> RefreshUserMembershipCacheAsync(Guid userId)
+    public async Task<bool> RefreshUserMembershipCacheAsync(
+#if !USE_NUM_UID
+        Guid userId
+#else
+        long userId
+#endif
+        )
     {
         var database = connection.GetDatabase(CacheKeys.RedisMessagingDb);
         var cacheKey = CacheKeys.GetUserMembershipCacheKey(userId);
@@ -393,7 +425,11 @@ sealed partial class UserMembershipService(
         {
             // 刷新 UserInfoModel
             var database2 = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+#if !USE_NUM_UID
             var hashKey = ShortGuid.Encode(userId);
+#else
+            var hashKey = userId.ToString();
+#endif
             await database2.KeyDeleteAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{hashKey}");
         }
 
@@ -401,7 +437,11 @@ sealed partial class UserMembershipService(
     }
 
     public async Task<bool> EditUserMembershipWithRefreshUserMembershipCacheAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         Guid? bmUserId,
         DateTimeOffset? endTime,
         TimeSpan? timeSpan,

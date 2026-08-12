@@ -11,7 +11,11 @@ public sealed partial class MerchantDeductionAgreementTableItemModel : IReadOnly
     /// <summary>
     /// UserId
     /// </summary>
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 签约时间

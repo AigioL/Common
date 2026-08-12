@@ -37,7 +37,11 @@ public sealed partial record class OrderDetailModel
     /// <summary>
     /// 用户 Id
     /// </summary>
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 应收金额

@@ -14,7 +14,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 /// </summary>
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class UserMembership :
-    IEntity<Guid>,
     IUpdateTime
 {
     /// <summary>
@@ -23,7 +22,11 @@ public partial class UserMembership :
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Comment("用户 Id")]
+#if !USE_NUM_UID
     public Guid Id { get; set; }
+#else
+    public long Id { get; set; }
+#endif
 
     public virtual User User { get; set; } = null!;
 
@@ -92,3 +95,9 @@ public partial class UserMembership :
         }
     }
 }
+
+#if !USE_NUM_UID
+partial class UserMembership : IEntity<Guid>;
+#else
+partial class UserMembership : IEntity<long>;
+#endif

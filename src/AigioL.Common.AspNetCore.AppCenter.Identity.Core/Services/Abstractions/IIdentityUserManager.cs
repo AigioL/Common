@@ -43,7 +43,16 @@ public partial interface IIdentityUserManager<TUser> : IDisposable where TUser :
     Task<bool> CheckPasswordAsync(TUser user, string password);
 
     /// <inheritdoc cref="UserManager{TUser}.FindByIdAsync(string)"/>
-    Task<TUser?> FindByIdAsync(Guid id);
+    Task<TUser?> FindByIdAsync(string id);
+
+    /// <inheritdoc cref="UserManager{TUser}.FindByIdAsync(string)"/>
+    Task<TUser?> FindByIdAsync(
+#if !USE_NUM_UID
+        Guid id
+#else
+        long id
+#endif
+        );
 
     /// <inheritdoc cref="UserManager{TUser}.GenerateChangePhoneNumberTokenAsync(TUser, string)"/>
     Task<string> GenerateChangePhoneNumberTokenAsync(TUser user, string
@@ -108,4 +117,10 @@ partial interface IIdentityUserManager<TUser> // 自定义方法
     Task RefreshUserInfoCacheAsync(UserInfoModel userInfo) => throw new NotImplementedException("当前用户架构不支持此操作");
 
     Task<int> UpdateTenantIdAsync(Guid userId, Guid tenantId) => throw new NotImplementedException("当前用户架构不支持此操作");
+}
+
+public partial interface IGuidIdentityUserManager<TUser> where TUser : class
+{
+    /// <inheritdoc cref="UserManager{TUser}.FindByIdAsync(string)"/>
+    Task<TUser?> FindByIdAsync(Guid id);
 }

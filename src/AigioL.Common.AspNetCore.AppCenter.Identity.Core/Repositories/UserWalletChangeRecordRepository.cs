@@ -25,7 +25,11 @@ public sealed partial class UserWalletChangeRecordRepository<TDbContext> :
 partial class UserWalletChangeRecordRepository<TDbContext>
 {
     public async Task<PagedModel<UserWalletChangeRecordModel>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         UserWalletValueEvent[]? @event,
         UserWalletValueType[]? type,
         UserWalletPaymentDirection? direction,

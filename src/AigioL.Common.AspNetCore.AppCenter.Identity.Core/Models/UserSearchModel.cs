@@ -9,9 +9,13 @@ public sealed partial record class UserSearchModel
     public List<UserSearchItemModel> Items { get; set; } = new();
 }
 
-public sealed partial record class UserSearchItemModel : IReadOnlyId<Guid>
+public sealed partial record class UserSearchItemModel
 {
+#if !USE_NUM_UID
     public Guid Id { get; set; }
+#else
+    public long Id { get; set; }
+#endif
 
     /// <summary>
     /// 昵称
@@ -30,3 +34,9 @@ public sealed partial record class UserSearchItemModel : IReadOnlyId<Guid>
     /// </summary>
     public string? AvatarUrl { get; set; }
 }
+
+#if !USE_NUM_UID
+partial record class UserSearchItemModel : IReadOnlyId<Guid>;
+#else
+partial record class UserSearchItemModel : IReadOnlyId<long>;
+#endif

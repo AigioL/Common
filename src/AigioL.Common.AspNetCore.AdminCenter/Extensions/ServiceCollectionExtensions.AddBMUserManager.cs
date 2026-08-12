@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
+using static AigioL.Common.AspNetCore.AppCenter.Policies.Handlers.IJsonWebTokenAuthorizationMiddlewareResultHandler;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.Extensions.DependencyInjection;
@@ -58,7 +59,8 @@ file sealed partial class BMUserManager<
     UserManager<TUser>(store, optionsAccessor, passwordHasher,
         userValidators, passwordValidators, keyNormalizer,
         errors, services, logger),
-    IIdentityUserManager<TUser>
+    IIdentityUserManager<TUser>,
+    IGuidIdentityUserManager<TUser>
     where TUser : IdentityUser<Guid>, IPhoneNumber
     where TRole : IdentityRole<Guid>
     where TUserClaim : IdentityUserClaim<Guid>
@@ -112,6 +114,12 @@ file sealed partial class BMUserManager<
     }
 
     /// <inheritdoc/>
+    Task<TUser?> IIdentityUserManager<TUser>.FindByIdAsync(long id)
+    {
+        throw new NotImplementedException("BMUserManager 不实现 FindByIdAsync(long id) 方法，因主键类型为 Guid。");
+    }
+
+    /// <inheritdoc/>
     public async new Task<IdentityResult> UpdateUserAsync(TUser user)
     {
         var r = await base.UpdateUserAsync(user);
@@ -133,13 +141,25 @@ file sealed partial class BMUserManager<
         return user;
     }
 
+    static Guid? GetUserIdGuid(HttpContext context)
+    {
+        if (context.Items.TryGetValue(KEY_USER_ID, out var userIdObj))
+        {
+            if (userIdObj is Guid userId)
+            {
+                return userId;
+            }
+        }
+        return null;
+    }
+
     /// <inheritdoc/>
     public async Task<TUser?> GetUserAsync()
     {
         var context = accessor.HttpContext;
         if (context != null)
         {
-            var userId = context.GetUserId();
+            var userId = GetUserIdGuid(context);
             if (userId.HasValue)
             {
                 var user = await FindByIdAsync(userId.Value);

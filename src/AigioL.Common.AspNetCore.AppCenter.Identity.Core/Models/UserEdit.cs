@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 
-public sealed partial record class UserEdit : IReadOnlyId<Guid>
+public sealed partial record class UserEdit
 {
-    public Guid Id { get; set; }
-
     /// <summary>
     /// 用户类型
     /// </summary>
@@ -132,3 +130,15 @@ public sealed partial record class UserEdit : IReadOnlyId<Guid>
     /// </summary>
     public UserMembershipModel? Membership { get; set; }
 }
+
+#if !USE_NUM_UID
+partial record class UserEdit : IReadOnlyId<Guid>
+{
+    public Guid Id { get; set; }
+}
+#else
+partial record class UserEdit : IReadOnlyId<long>
+{
+    public long Id { get; set; }
+}
+#endif

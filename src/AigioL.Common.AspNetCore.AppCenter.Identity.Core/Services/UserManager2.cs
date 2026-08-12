@@ -108,7 +108,13 @@ partial class UserManager2<TDbContext> : IIdentityUserManager<User>
     }
 
     /// <inheritdoc/>
-    public async Task<User?> FindByIdAsync(Guid id)
+    public async Task<User?> FindByIdAsync(
+#if !USE_NUM_UID
+        Guid id
+#else
+        long id
+#endif
+        )
     {
         var cancellationToken = CancellationToken;
         // https://github.com/dotnet/aspnetcore/blob/v5.0.3/src/Identity/EntityFrameworkCore/src/UserStore.cs#L234
@@ -122,6 +128,23 @@ partial class UserManager2<TDbContext> : IIdentityUserManager<User>
         var user = await query.FirstOrDefaultAsync(cancellationToken);
         return user;
     }
+
+    //    public async Task<User?> FindByIdAsync(
+    //#if USE_NUM_UID
+    //        Guid id
+    //#else
+    //        long id
+    //#endif
+    //        )
+    //    {
+    //        throw new NotImplementedException(
+    //#if USE_NUM_UID
+    //            "UserManager2 不实现 FindByIdAsync(Guid id) 方法，因主键类型为 long。"
+    //#else
+    //            "UserManager2 不实现 FindByIdAsync(long id) 方法，因主键类型为 GUID。"
+    //#endif
+    //            );
+    //    }
 
     /// <inheritdoc/>
     public async new Task<IdentityResult> UpdateUserAsync(User user)
@@ -167,7 +190,12 @@ partial class UserManager2<TDbContext> : IIdentityUserManager<User>
         Level = LogLevel.Error,
         Message = "移除当前 JWT 与生成一个新的 JWT 时出错！UserId: {userId}, DevicePlatform2: {platform}, DeviceId: {deviceId}")]
     private static partial void LogErrorOnRefreshTokenRemoveWithGenerateNew(ILogger logger, Exception? ex,
-        Guid userId, DevicePlatform2 platform, string? deviceId);
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        DevicePlatform2 platform, string? deviceId);
 
     /// <inheritdoc/>
     public async Task<JsonWebTokenValue?> RefreshTokenAsync(
@@ -305,7 +333,11 @@ partial class UserManager2<TDbContext> : IIdentityUserManager<User>
     public async Task RefreshUserInfoCacheAsync(UserInfoModel userInfo)
     {
         var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+#if !USE_NUM_UID
         var hashKey = ShortGuid.Encode(userInfo.Id);
+#else
+        var hashKey = userInfo.Id.ToString();
+#endif
         var hashValue = MemoryPackSerializer.Serialize(userInfo);
         await redisDb.StringSetAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{hashKey}", hashValue, expiry: TimeSpan.FromDays(7));
     }
@@ -314,7 +346,13 @@ partial class UserManager2<TDbContext> : IIdentityUserManager<User>
 partial class UserManager2<TDbContext> : IUserManager2
 {
     /// <inheritdoc/>
-    public async Task<UserType> GetUserTypeByIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task<UserType> GetUserTypeByIdAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -336,7 +374,11 @@ partial class UserManager2<TDbContext> : IUserManager2
             if (userId.HasValue)
             {
                 var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
+#if !USE_NUM_UID
                 var hashKey = ShortGuid.Encode(userId.Value);
+#else
+                var hashKey = userId.Value.ToString();
+#endif
                 var cacheData = await redisDb.StringGetAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{hashKey}");
                 if (cacheData.HasValue)
                 {
@@ -515,19 +557,31 @@ partial class UserManager2<TDbContext> : IUserManager2
         string externalAccountId,
         ExternalLoginChannel channel,
         string deviceId,
+#if !USE_NUM_UID
         Guid? bindUserId = null,
+#else
+        long? bindUserId = null,
+#endif
         Guid? channelPackageId = null,
         Action<ExternalAccount>? setProperties = null)
     {
         CancellationToken.ThrowIfCancellationRequested();
         ThrowIfDisposed();
 
+#if !USE_NUM_UID
         Guid userId;
+#else
+        long userId;
+#endif
         var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
         var userIdCache = await redisDb.HashGetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId);
         if (userIdCache.HasValue)
         {
+#if !USE_NUM_UID
             userId = new Guid((byte[])userIdCache!);
+#else
+            userId = userIdCache.TryParse(out long userIdCacheL) ? userIdCacheL : default;
+#endif
             if (userId == default)
             {
                 userId = await db.Users.Include(x => x.ExternalAccounts)
@@ -569,7 +623,12 @@ partial class UserManager2<TDbContext> : IUserManager2
                     await db.ExternalAccounts.AddAsync(externalAccount);
                 }
                 await db.SaveChangesAsync();
-                await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, bindUserId.Value.ToByteArray());
+#if !USE_NUM_UID
+                var v = bindUserId.Value.ToByteArray();
+#else
+                RedisValue v = bindUserId.Value;
+#endif
+                await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, v);
                 await RefreshUserInfoCacheAsync(bindUser);
                 return await GetBindRspV2Async(userId);
             }
@@ -579,7 +638,12 @@ partial class UserManager2<TDbContext> : IUserManager2
                 if (result.Succeeded)
                 {
                     var r = await LoginSharedAsync(user, false, deviceId);
-                    await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, user.Id.ToByteArray());
+#if !USE_NUM_UID
+                    var v = user.Id.ToByteArray();
+#else
+                    RedisValue v = user.Id;
+#endif
+                    await redisDb.HashSetAsync($"{CacheKeys.IdentityUserExternalAccountsHashKey}_C_{channel}", externalAccountId, v);
                     return r;
                 }
                 const ApiRspCode code = ApiRspCode.BadRequest;
@@ -663,7 +727,13 @@ partial class UserManager2<TDbContext> : IUserManager2
     //    return r;
     //}
 
-    async Task<LoginOrRegisterResponse> GetBindRspV2Async(Guid userId)
+    async Task<LoginOrRegisterResponse> GetBindRspV2Async(
+#if !USE_NUM_UID
+        Guid userId
+#else
+        long userId
+#endif
+        )
     {
         var user = await FindByIdAsync(userId);
         ArgumentNullException.ThrowIfNull(user);
@@ -717,7 +787,11 @@ partial class UserManager2<TDbContext> : IUserManager2
     async Task<ExternalAccount> UpdateExternalAccountAsync(
         string externalAccountId,
         ExternalLoginChannel channel,
+#if !USE_NUM_UID
         Guid userId = default,
+#else
+        long userId = default,
+#endif
         Action<ExternalAccount>? setProperties = null)
     {
         var externalAccounts = await db.ExternalAccounts

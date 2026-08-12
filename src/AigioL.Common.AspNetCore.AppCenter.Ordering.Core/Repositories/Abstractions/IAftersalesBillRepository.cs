@@ -22,7 +22,11 @@ public partial interface IAftersalesBillRepository : IRepository<AftersalesBill,
     Task<ApiRsp<(Order? order, AftersalesBillDetailModel? aftersalesBillDetailModel)>> CreateAftersalesBill(
         string orderId,
         string refundReason,
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         decimal? refundAmount = null,
         CancellationToken cancellationToken = default);
 }
@@ -33,7 +37,11 @@ partial interface IAftersalesBillRepository
         string? orderNumber,
         string? aftersalesNumber,
         int? businessType,
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         decimal? refundAmount,
         AuditStatus[]? auditStatus,
         string? refundReason,

@@ -43,7 +43,11 @@ partial interface IRefundBillRepository // 管理后台
     /// <param name="cancellationToken"></param>
     /// <returns>RefundBill分页表格查询结果数据</returns>
     Task<PagedModel<RefundBillTableItemModel>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? refundNumber,
         string? aftersalesNumber,
         string? orderNumber,

@@ -27,7 +27,11 @@ sealed partial class RefundBillRepository<TDbContext> :
 partial class RefundBillRepository<TDbContext> // 管理后台
 {
     public async Task<PagedModel<RefundBillTableItemModel>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? refundNumber,
         string? aftersalesNumber,
         string? orderNumber,

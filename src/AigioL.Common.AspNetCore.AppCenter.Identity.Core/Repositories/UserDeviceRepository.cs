@@ -25,7 +25,11 @@ sealed partial class UserDeviceRepository<TDbContext> :
 partial class UserDeviceRepository<TDbContext>
 {
     public async Task<PagedModel<UserDeviceTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? nickName,
         string? deviceName,
         string? deviceId,

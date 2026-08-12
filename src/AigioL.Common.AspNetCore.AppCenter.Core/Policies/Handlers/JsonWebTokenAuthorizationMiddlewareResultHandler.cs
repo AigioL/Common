@@ -202,12 +202,15 @@ public sealed class JsonWebTokenAuthorizationMiddlewareResultHandler<TDbContext>
     }
 }
 
-internal interface IJsonWebTokenAuthorizationMiddlewareResultHandler
+public interface IJsonWebTokenAuthorizationMiddlewareResultHandler
 {
     protected const string KEY_FAIL_CODE = "KEY_FAIL_CODE";
+
     internal const string KEY_USER_JWT_ID = "KEY_USER_JWT_ID";
-    internal const string KEY_USER_ID = "KEY_USER_ID";
+
+    public const string KEY_USER_ID = "KEY_USER_ID";
 
     protected const string UserIsBanErrorMessage = "账号已被封禁";
+
     protected const string AuthorizationFailErrorMessage_ = "服务端错误 {0} - 登录凭证失效，请重新登录";
 }

@@ -11,7 +11,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 /// 客户端 App WebApi 的数据库上下文基类
 /// </summary>
 public abstract partial class AppDbContextBase :
+#if !USE_NUM_UID
     IdentityDbContext<User, Role, Guid, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+#else
+    IdentityDbContext<User, Role, long, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+#endif
 {
     protected AppDbContextBase(DbContextOptions options) : base(options)
     {

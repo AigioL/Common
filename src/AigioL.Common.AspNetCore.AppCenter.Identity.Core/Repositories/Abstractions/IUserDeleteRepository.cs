@@ -12,7 +12,13 @@ public partial interface IUserDeleteRepository : IRepository<UserDelete, Guid>, 
     /// <summary>
     /// 删除账号（用户注销）
     /// </summary>
-    Task DeleteAccountAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task DeleteAccountAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default);
 }
 
 partial interface IUserDeleteRepository // 管理后台
@@ -35,7 +41,11 @@ partial interface IUserDeleteRepository // 管理后台
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<PagedModel<UserDeleteTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? phoneNumber,
         string? email,
         string? nickName,

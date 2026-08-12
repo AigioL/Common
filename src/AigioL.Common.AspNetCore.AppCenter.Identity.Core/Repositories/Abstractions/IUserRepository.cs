@@ -17,7 +17,11 @@ partial interface IUserRepository // 管理后台
     /// 后台表格查询
     /// </summary>
     Task<PagedModel<UserTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? id,
+#else
+        long? id,
+#endif
         string? openId,
         UserType? userType,
         string? nickName,
@@ -50,7 +54,11 @@ partial interface IUserRepository // 管理后台
     /// 根据主键获取编辑模型
     /// </summary>
     Task<UserEdit?> GetEditByIdAsync(
+#if !USE_NUM_UID
         Guid id,
+#else
+        long id,
+#endif
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -65,11 +73,22 @@ partial interface IUserRepository // 管理后台
     /// 获取用户钱包详情
     /// </summary>
     Task<UserWalletModel?> GetWalletByUserIdAsync(
+#if !USE_NUM_UID
         Guid id,
+#else
+        long id,
+#endif
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 封禁用户
     /// </summary>
-    Task<bool> SetUserLockoutStateAsync(IConnectionMultiplexer connection, Guid id, bool lockout);
+    Task<bool> SetUserLockoutStateAsync(
+        IConnectionMultiplexer connection,
+#if !USE_NUM_UID
+        Guid id,
+#else
+        long id,
+#endif
+        bool lockout);
 }

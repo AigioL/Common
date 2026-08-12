@@ -58,14 +58,27 @@ public static partial class HttpContextExtensions
     /// <param name="context"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Guid? GetUserId(this HttpContext context)
+    public static
+#if !USE_NUM_UID
+        Guid?
+#else
+        long?
+#endif
+        GetUserId(this HttpContext context)
     {
         if (context.Items.TryGetValue(KEY_USER_ID, out var userIdObj))
         {
+#if !USE_NUM_UID
             if (userIdObj is Guid userId)
             {
                 return userId;
             }
+#else
+            if (userIdObj is long userId)
+            {
+                return userId;
+            }
+#endif
         }
         return null;
     }
@@ -76,7 +89,13 @@ public static partial class HttpContextExtensions
     /// <param name="context"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Guid GetUserIdThrowIfNull(this HttpContext context)
+    public static
+#if !USE_NUM_UID
+        Guid
+#else
+        long
+#endif
+        GetUserIdThrowIfNull(this HttpContext context)
     {
         var userId = context.GetUserId();
         if (!userId.HasValue)

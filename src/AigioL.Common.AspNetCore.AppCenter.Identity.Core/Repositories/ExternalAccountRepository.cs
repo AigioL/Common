@@ -26,7 +26,11 @@ public sealed partial class ExternalAccountRepository<TDbContext> :
 partial class ExternalAccountRepository<TDbContext> // 管理后台
 {
     public async Task<PagedModel<ExternalAccountTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? externalAccountId,
         ExternalLoginChannel? type,
         string? nickName,

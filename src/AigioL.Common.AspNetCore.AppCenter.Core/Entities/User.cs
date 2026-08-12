@@ -23,8 +23,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Entities;
 [DebuggerDisplay("{DebuggerDisplay(),nq}")]
 [EntityTypeConfiguration(typeof(EntityTypeConfiguration))]
 public partial class User :
-    IdentityUser<Guid>,
-    INEWSEQUENTIALID,
     ICreateTime,
     IOperatorUserId,
     IUpdateTime,
@@ -182,6 +180,15 @@ public partial class User :
     [Comment("是否禁用")]
     public bool Disable { get; set; }
 }
+
+#if !USE_NUM_UID
+partial class User : IdentityUser<Guid>, INEWSEQUENTIALID;
+#else
+partial class User : IdentityUser<long>, IEntity<long>
+{
+    object? IReadOnlyId.Id => Id;
+}
+#endif
 
 partial class User // Relationships
 {
@@ -388,10 +395,15 @@ public static partial class UserExtensions
         {
             if (user.Id != default)
             {
-                Span<byte> guidB = stackalloc byte[16];
-                user.Id.TryWriteBytes(guidB);
+#if !USE_NUM_UID
+                Span<byte> b = stackalloc byte[16];
+                user.Id.TryWriteBytes(b);
+#else
+                Span<byte> b = stackalloc byte[sizeof(long)];
+                BitConverter.TryWriteBytes(b, user.Id);
+#endif
                 Span<byte> hash = stackalloc byte[4];
-                Crc32.Hash(guidB, hash);
+                Crc32.Hash(b, hash);
                 value = Base58.Bitcoin.Encode(hash);
             }
             else

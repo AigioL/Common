@@ -116,7 +116,15 @@ sealed partial class PCUserRepository<TDbContext>(
         CancellationToken cancellationToken = default)
     {
         var mapper = serviceProvider.GetRequiredService<IMapper>();
-        var entity = await userManager.FindByIdAsync(model.Id);
+        PCUser? entity;
+        if (userManager is IGuidIdentityUserManager<PCUser> userManagerG)
+        {
+            entity = await userManagerG.FindByIdAsync(model.Id);
+        }
+        else
+        {
+            entity = await userManager.FindByIdAsync(model.Id.ToString());
+        }
         if (entity == null)
         {
             return UserNotFoundMessage;

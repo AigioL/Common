@@ -15,7 +15,13 @@ public interface IReadOnlyNickName
     string? NickName { get; }
 }
 
-public interface IReadOnlyNickNameWithExternalAccounts : IReadOnlyNickName, IReadOnlyId<Guid>
+public partial interface IReadOnlyNickNameWithExternalAccounts : IReadOnlyNickName
 {
     IReadOnlyList<IReadOnlyNickName> ExternalAccounts { get; }
 }
+
+#if !USE_NUM_UID
+partial interface IReadOnlyNickNameWithExternalAccounts : IReadOnlyId<Guid>;
+#else
+partial interface IReadOnlyNickNameWithExternalAccounts : IReadOnlyId<long>;
+#endif

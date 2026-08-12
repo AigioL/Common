@@ -27,7 +27,11 @@ public partial class MembershipBusinessOrder :
     /// 用户 Id
     /// </summary>
     [Comment("用户 Id")]
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 会员商品充值分类 Id

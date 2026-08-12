@@ -27,7 +27,11 @@ public partial class MerchantDeductionAgreement :
     /// 用户 Id
     /// </summary>
     [Comment("用户 Id")]
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     /// <summary>
     /// 签约时间

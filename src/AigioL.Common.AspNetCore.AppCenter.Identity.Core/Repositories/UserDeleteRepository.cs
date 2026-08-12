@@ -21,7 +21,13 @@ sealed partial class UserDeleteRepository<TDbContext> :
     {
     }
 
-    public async Task DeleteAccountAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task DeleteAccountAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default)
     {
         await db.GetDatabase().CreateExecutionStrategy().ExecuteAsync(DeleteAccountCoreAsync);
 
@@ -92,7 +98,11 @@ sealed partial class UserDeleteRepository<TDbContext> :
 partial class UserDeleteRepository<TDbContext> // 管理后台
 {
     public async Task<PagedModel<UserDeleteTableItem>> QueryAsync(
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? phoneNumber,
         string? email,
         string? nickName,

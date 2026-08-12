@@ -17,7 +17,11 @@ public interface IUserMembershipService
     /// 创建会员业务订单
     /// </summary>
     Task<string?> CreateMembershipOrderAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipGoods goods,
         Guid? channelPackageId,
         string? orderId = null,
@@ -34,7 +38,11 @@ public interface IUserMembershipService
         IDistributedCache cache,
         IMembershipProductKeyRecordRepository membershipProductKeyRecordRepo,
         IMembershipGoodsRepository membershipGoodsRepo,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         Guid cdKey,
         Guid? channelPackageId,
         bool isTimeSpan = false,
@@ -44,7 +52,11 @@ public interface IUserMembershipService
     /// 创建会员业务订单（分销渠道）
     /// </summary>
     Task<ApiRsp<(string orderId, OrderStatus orderStatus)?>> CreateMembershipOrderByDistributionAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipGoods goods,
         decimal amountReceived,
         int? orderBusinessTypeId = null,
@@ -66,7 +78,13 @@ public interface IUserMembershipService
     /// <summary>
     /// 退款处理 V2，返回值信息更多
     /// </summary>
-    Task<ApiRsp<Guid?>> OrderPaymentRefundedHandleV2Async(string orderId, Guid? bindPCUserId = null);
+    Task<ApiRsp<
+#if !USE_NUM_UID
+        Guid?
+#else
+        long?
+#endif
+        >> OrderPaymentRefundedHandleV2Async(string orderId, Guid? bindPCUserId = null);
 
     /// <summary>
     /// 取消订单处理
@@ -97,13 +115,23 @@ public interface IUserMembershipService
     /// <summary>
     /// 刷新用户会员信息缓存
     /// </summary>
-    Task<bool> RefreshUserMembershipCacheAsync(Guid userId);
+    Task<bool> RefreshUserMembershipCacheAsync(
+#if !USE_NUM_UID
+        Guid userId
+#else
+        long userId
+#endif
+        );
 
     /// <summary>
     /// 编辑用户会员时长并刷新用户会员信息缓存
     /// </summary>
     Task<bool> EditUserMembershipWithRefreshUserMembershipCacheAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         Guid? bmUserId,
         DateTimeOffset? endTime,
         TimeSpan? timeSpan,

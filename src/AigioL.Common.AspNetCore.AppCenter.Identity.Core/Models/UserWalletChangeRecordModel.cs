@@ -7,7 +7,11 @@ public sealed partial record class UserWalletChangeRecordModel : IReadOnlyId<Gui
 {
     public Guid Id { get; set; }
 
+#if !USE_NUM_UID
     public Guid UserId { get; set; }
+#else
+    public long UserId { get; set; }
+#endif
 
     public UserWalletValueType Type { get; set; }
 

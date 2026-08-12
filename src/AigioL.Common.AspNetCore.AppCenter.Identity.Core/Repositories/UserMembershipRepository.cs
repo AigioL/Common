@@ -11,12 +11,21 @@ using StackExchange.Redis;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Identity.Repositories;
 
-sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, IServiceProvider serviceProvider) :
-    Repository<TDbContext, UserMembership, Guid>(dbContext, serviceProvider),
+sealed partial class UserMembershipRepository<TDbContext> :
     IUserMembershipRepository
     where TDbContext : DbContext, IIdentityDbContext
 {
-    public async Task<bool> AddUserMembershipFlagAsync(Guid userId, MembershipLicenseFlags membershipLicenseFlags)
+    public UserMembershipRepository(TDbContext dbContext, IServiceProvider serviceProvider) : base(dbContext, serviceProvider)
+    {
+    }
+
+    public async Task<bool> AddUserMembershipFlagAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        MembershipLicenseFlags membershipLicenseFlags)
     {
         var flags = Enum.GetValues<MembershipLicenseFlags>().Where(x => membershipLicenseFlags.HasFlag(x)).ToArray();
         if (flags.Length > 2)
@@ -36,7 +45,13 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         return count > 0;
     }
 
-    public async Task<bool> RemoveUserMembershipFlagAndCheckExpiredAsync(Guid userId, MembershipLicenseFlags membershipLicenseFlags)
+    public async Task<bool> RemoveUserMembershipFlagAndCheckExpiredAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        MembershipLicenseFlags membershipLicenseFlags)
     {
         var flags = Enum.GetValues<MembershipLicenseFlags>().Where(x => membershipLicenseFlags.HasFlag(x)).ToArray();
         if (flags.Length > 2)
@@ -71,7 +86,13 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         return count > 0;
     }
 
-    public Task<MembershipInfo?> GetUserMembershipAsync(Guid userId, CancellationToken cancellationToken = default)
+    public Task<MembershipInfo?> GetUserMembershipAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default)
     {
         var query = (from x in Entity.AsNoTrackingWithIdentityResolution()
                      where x.Id == userId
@@ -90,7 +111,11 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
     public async Task<(MembershipInfo? membershipInfo, bool? lockTake)> GetUserMembershipCachePriorityAsync(
         ILogger? logger,
         IConnectionMultiplexer conn,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         bool isLockTake = false,
         CancellationToken cancellationToken = default,
         bool? ignoreCache = false)
@@ -182,7 +207,11 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
     }
 
     public async Task<int?> DeductionPayAsYoGoAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         TimeSpan changeValue,
         DateTimeOffset? now = null)
     {
@@ -220,7 +249,11 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
     }
 
     public async Task<int> EditUserMembershipAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         Guid? bmUserId,
         DateTimeOffset? endTime,
         TimeSpan? timeSpan,
@@ -284,7 +317,11 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         ILogger logger, Exception ex);
 
     public async Task<Guid?> GetBindPCUserIdAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         CancellationToken cancellationToken = default)
     {
         var query = db.UserMemberships
@@ -295,6 +332,12 @@ sealed partial class UserMembershipRepository<TDbContext>(TDbContext dbContext, 
         return r;
     }
 }
+
+#if !USE_NUM_UID
+partial class UserMembershipRepository<TDbContext> : Repository<TDbContext, UserMembership, Guid>;
+#else
+partial class UserMembershipRepository<TDbContext> : Repository<TDbContext, UserMembership, long>;
+#endif
 
 internal static class UserMembershipRepositoryHelper
 {

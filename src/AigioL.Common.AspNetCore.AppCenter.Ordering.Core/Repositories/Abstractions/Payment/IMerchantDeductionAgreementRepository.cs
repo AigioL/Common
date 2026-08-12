@@ -84,7 +84,13 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     /// 获取用户的商家扣款协议
     /// </summary>
     /// <returns></returns>
-    Task<List<AgreementModel>> GetAgreementsByUser(Guid userId, CancellationToken cancellationToken = default);
+    Task<List<AgreementModel>> GetAgreementsByUser(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取协议配置
@@ -109,7 +115,14 @@ public partial interface IMerchantDeductionAgreementRepository : IRepository<Mer
     /// <param name="businessType">业务类型</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task<bool> CheckUserBusinessSigned(Guid userId, int businessType, CancellationToken cancellationToken = default);
+    Task<bool> CheckUserBusinessSigned(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        int businessType,
+        CancellationToken cancellationToken = default);
 
     ///// <summary>
     ///// 完成通知业务支付成功
@@ -185,7 +198,11 @@ partial interface IMerchantDeductionAgreementRepository // 管理后台
     /// <returns>MerchantDeductionAgreement分页表格查询结果数据</returns>
     Task<PagedModel<MerchantDeductionAgreementTableItemModel>> QueryAsync(
         Guid? id,
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         DateTimeOffset?[]? signingTime,
         DateTimeOffset?[]? unSigningTime,
         PaymentType? platform,

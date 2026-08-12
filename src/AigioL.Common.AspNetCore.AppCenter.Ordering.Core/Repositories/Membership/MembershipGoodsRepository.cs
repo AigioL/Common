@@ -38,7 +38,14 @@ sealed partial class MembershipGoodsRepository<TDbContext> :
         return r;
     }
 
-    public async Task<MembershipGoodsModel[]> CheckPriceByUserAsync(Guid userId, MembershipGoodsModel[] goodsArray, CancellationToken cancellationToken = default)
+    public async Task<MembershipGoodsModel[]> CheckPriceByUserAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        MembershipGoodsModel[] goodsArray,
+        CancellationToken cancellationToken = default)
     {
         var goodsIds = goodsArray.Select(x => x.Id).ToArray();
         var hashSets = await db.MembershipGoodsUserFirstRecords
@@ -59,7 +66,14 @@ sealed partial class MembershipGoodsRepository<TDbContext> :
         return goodsArray;
     }
 
-    public async Task<bool> CheckUserUseFirstPriceOfGoodsAsync(Guid userId, Guid goodsId, CancellationToken cancellationToken = default)
+    public async Task<bool> CheckUserUseFirstPriceOfGoodsAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        Guid goodsId,
+        CancellationToken cancellationToken = default)
     {
         var query = db.MembershipGoodsUserFirstRecords
             .AsNoTrackingWithIdentityResolution()

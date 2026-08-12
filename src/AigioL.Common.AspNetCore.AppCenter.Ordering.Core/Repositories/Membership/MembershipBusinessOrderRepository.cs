@@ -110,7 +110,13 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// 用户退款成功，充值相应撤回
     /// </summary>
-    public async Task<ApiRsp<Guid?>> OrderRefunded(string orderId, Guid? bindPCUserId = null)
+    public async Task<ApiRsp<
+#if !USE_NUM_UID
+            Guid?
+#else
+            long?
+#endif
+        >> OrderRefunded(string orderId, Guid? bindPCUserId = null)
     {
         var query = from m in db.MembershipBusinessOrders
              .AsNoTrackingWithIdentityResolution()
@@ -140,7 +146,13 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         }
         return r;
 
-        async Task<ApiRsp<Guid?>> OrderRefundedCoreAsync()
+        async Task<ApiRsp<
+#if !USE_NUM_UID
+            Guid?
+#else
+            long?
+#endif
+            >> OrderRefundedCoreAsync()
         {
             using var transaction = await db.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead);
             try
@@ -190,7 +202,13 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         }
     }
 
-    public async Task<(bool isSuccess, Guid? userId)> OrderPaymentSuccess(string orderId)
+    public async Task<(bool isSuccess,
+#if !USE_NUM_UID
+        Guid?
+#else
+        long?
+#endif
+        userId)> OrderPaymentSuccess(string orderId)
     {
         var order = await db.Orders.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(x => x.Id == orderId);
 
@@ -342,7 +360,11 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         Guid businessOrderId,
         TimeSpan rechargeTimeSpan,
         TimeSpan payAsYoGo,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipLicenseFlags membershipLicenseFlags,
         MembershipBusinessSource membershipBusinessSource,
         DateTimeOffset? now_ = null,
@@ -450,7 +472,11 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// 首次购买会员
     /// </summary>
     async Task<(bool isOk, UserMembership userMembership)> CreateNewUserMembership(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         DateTimeOffset now,
         DateTimeOffset currentRealExpireDate,
         MembershipLicenseFlags membershipLicenseFlags,
@@ -475,7 +501,13 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// 添加会员用户类型，已经是会员则忽略修改
     /// </summary>
-    async Task<bool> AddUserTypeAsync(Guid userId, UserType userTypeVal = UserType.Membership)
+    async Task<bool> AddUserTypeAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        UserType userTypeVal = UserType.Membership)
     {
         var exists = await db.Users.AnyAsync(x => x.Id == userId && x.UserType.HasFlag(userTypeVal));
         if (!exists)
@@ -517,7 +549,11 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         Guid businessOrderId,
         TimeSpan rechargeTimeSpan,
         TimeSpan payAsYoGo,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         MembershipLicenseFlags membershipLicenseFlags,
         MembershipBusinessSource membershipBusinessSource)
     {
@@ -563,7 +599,11 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
 
     async Task<bool> MembershipChangeAsync(
         Guid businessOrderId,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         DateTimeOffset currentRealExpireDate,
         UserMembership membership,
         MembershipLicenseFlags membershipLicenseType,
@@ -601,7 +641,11 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     async Task<bool> AddMembershipRecordAsync(
         TimeSpan rechargeTimeSpan,
         TimeSpan payAsYoGo,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         DateTimeOffset currentRealExpireDate,
         DateTimeOffset? now = null)
     {
@@ -624,7 +668,14 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
     /// <summary>
     /// 撤回后会员已过期则回收用户会员类型
     /// </summary>
-    async Task<bool> RemoveUserTypeAsync(Guid userId, bool membershipExpired, UserType userTypeVal = UserType.Membership)
+    async Task<bool> RemoveUserTypeAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        bool membershipExpired,
+        UserType userTypeVal = UserType.Membership)
     {
         if (membershipExpired)
         {
@@ -646,7 +697,13 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
         return true;
     }
 
-    IQueryable<User> GetUserQueryWithHasFlag(Guid userId, UserType userTypeVal = UserType.Membership)
+    IQueryable<User> GetUserQueryWithHasFlag(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        UserType userTypeVal = UserType.Membership)
     {
         var query = db.Users
             .Where(x => x.Id == userId && x.UserType.HasFlag(userTypeVal));
@@ -954,7 +1011,11 @@ partial class MembershipBusinessOrderRepository<TDbContext> // 管理后台
         DateTimeOffset?[]? rechargeCompletionTime,
         MembershipBusinessSource? businessSource,
         GoodsRechargeStatus? goodsRechargeStatus,
+#if !USE_NUM_UID
         Guid? userId,
+#else
+        long? userId,
+#endif
         string? cdkey,
         string? orderBy,
         bool? desc,

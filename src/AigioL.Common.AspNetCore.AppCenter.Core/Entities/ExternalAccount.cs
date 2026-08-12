@@ -24,7 +24,11 @@ public partial class ExternalAccount :
     /// 用户 Id
     /// </summary>
     [Comment("用户 Id")]
+#if !USE_NUM_UID
     public Guid? UserId { get; set; }
+#else
+    public long? UserId { get; set; }
+#endif
 
     /// <summary>
     /// 第三方账号 Id

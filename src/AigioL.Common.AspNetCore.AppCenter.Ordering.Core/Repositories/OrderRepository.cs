@@ -24,7 +24,14 @@ sealed partial class OrderRepository<TDbContext> :
     {
     }
 
-    public async Task<OrderDetailModel?> GetOrderInfo(string orderId, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<OrderDetailModel?> GetOrderInfo(
+        string orderId,
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(orderId))
         {
@@ -102,7 +109,11 @@ sealed partial class OrderRepository<TDbContext> :
     }
 
     public async Task<PagedModel<OrderItemInfoModel>> QueryUserOrderListAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         long? orderNumber,
         OrderStatus[]? status,
         DateTimeOffset?[]? paymentTime,
@@ -187,7 +198,11 @@ sealed partial class OrderRepository<TDbContext> :
     }
 
     public async Task<int> GetUserOrderCountAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         OrderStatus[]? status,
         int? businessType,
         CancellationToken cancellationToken = default)
@@ -234,7 +249,11 @@ partial class OrderRepository<TDbContext>
         OrderType? type = null,
         DevicePlatform2? source = null,
         OrderStatus[]? status = null,
+#if !USE_NUM_UID
         Guid? userId = null,
+#else
+        long? userId = null,
+#endif
         int? businessType = null,
         string? note = null,
         DateTimeOffset?[]? paymentTime = null,
