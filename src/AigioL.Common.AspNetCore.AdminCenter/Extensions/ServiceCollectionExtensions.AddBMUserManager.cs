@@ -113,11 +113,13 @@ file sealed partial class BMUserManager<
         return user;
     }
 
+#if USE_NUM_UID
     /// <inheritdoc/>
     Task<TUser?> IIdentityUserManager<TUser>.FindByIdAsync(long id)
     {
         throw new NotImplementedException("BMUserManager 不实现 FindByIdAsync(long id) 方法，因主键类型为 Guid。");
     }
+#endif
 
     /// <inheritdoc/>
     public async new Task<IdentityResult> UpdateUserAsync(TUser user)
