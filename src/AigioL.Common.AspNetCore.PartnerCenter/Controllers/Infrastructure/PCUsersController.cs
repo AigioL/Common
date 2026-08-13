@@ -153,7 +153,7 @@ public static partial class PCUsersController
         }
 
         var roles = await userManager.GetRolesAsync(user);
-        var hasRoles = roles != null && roles.Any();
+        var hasRoles = roles != null && roles.Count != 0;
         var hasEditRoles = model.Roles != null && model.Roles.Count != 0;
 
         if (hasRoles && hasEditRoles && roles!.SequenceEqual(model.Roles!))

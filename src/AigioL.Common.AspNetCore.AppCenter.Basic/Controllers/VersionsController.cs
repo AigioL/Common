@@ -12,6 +12,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+#if USE_TAURI
+using GameTrainer.Repositories.Abstractions;
+#endif
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Controllers;
 
