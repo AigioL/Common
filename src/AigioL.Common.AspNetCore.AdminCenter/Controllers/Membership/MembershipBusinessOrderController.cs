@@ -36,7 +36,11 @@ public static partial class MembershipBusinessOrderController
             [FromQuery] OrderStatus? paymentStatus,
             [FromQuery] MembershipBusinessSource? businessSource,
             [FromQuery] GoodsRechargeStatus? goodsRechargeStatus,
+#if USE_NUM_UID
+            [FromQuery] long? userId,
+#else
             [FromQuery] Guid? userId,
+#endif
             [FromQuery] string? cdkey,
             [FromQuery] string? orderBy,
             [FromQuery] bool? desc,

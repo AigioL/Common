@@ -95,7 +95,11 @@ partial interface IAuthMessageRecordRepository // 管理后台
     /// <param name="pageSize"></param>
     /// <param name="cancellationToken"></param>
     Task<PagedModel<AuthMessageRecordTableItem>> QueryAsync(
+#if USE_NUM_UID
+        long? userId,
+#else
         Guid? userId,
+#endif
         string? phoneNumber,
         string? phoneNumberRegionCode,
         string? nickName,

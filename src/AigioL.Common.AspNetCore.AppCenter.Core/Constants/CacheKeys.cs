@@ -50,6 +50,9 @@ public static partial class CacheKeys
     /// </summary>
     public static string GetUserRechargeOperationLockKey(Guid userId) => $"UserRechargeOperationLockHashKey:{userId:N}";
 
+    /// <inheritdoc cref="GetUserRechargeOperationLockKey(Guid)"/>
+    public static string GetUserRechargeOperationLockKey(long userId) => $"UserRechargeOperationLockHashKey:{userId}";
+
     #region HashKey
 
     /// <summary>

@@ -88,7 +88,11 @@ public static class UserOrderController
     /// 获取用户订单信息
     /// </summary>
     static async Task<ApiRsp<OrderDetailModel?>> GetOrderDetail(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         IOrderRepository repo,
         string id,
         CancellationToken cancellationToken = default)
@@ -114,7 +118,11 @@ public static class UserOrderController
     /// <param name="cancellationToken"></param>
     /// <returns>分页表格查询结果数据</returns>
     static async Task<ApiRsp<PagedModel<OrderItemInfoModel>?>> QueryAsync(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         IOrderRepository repo,
         long? orderNumber,
         OrderStatus[]? status,
@@ -146,7 +154,11 @@ public static class UserOrderController
     /// <returns></returns>
     static async Task<ApiRsp<ExternalLoginChannelWithNickName[]?>> GetExternalAccountInfo(
         IMemoryCache memoryCache,
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         IOrderRepository repo,
         string orderNumber,
         string paymentNumber,
@@ -176,7 +188,11 @@ public static class UserOrderController
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     static async Task<ApiRsp<int>> GetUserOrderCount(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         IOrderRepository repo,
         OrderStatus[]? status,
         int? businessType,
@@ -213,7 +229,14 @@ public static class UserOrderController
     /// <summary>
     /// 用户请求频率是否限制（只允许 5 分钟内调用一次）
     /// </summary>
-    static bool IsUserRateLimited(IMemoryCache memoryCache, Guid userId, long minutes = 5)
+    static bool IsUserRateLimited(
+        IMemoryCache memoryCache,
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        long minutes = 5)
     {
         var key = $"UserRateLimited_{userId}";
         if (memoryCache.Get(key) != null)

@@ -31,9 +31,19 @@ public static partial class SmsHelper
         string? phoneNumber,
         string? phoneNumberRegionCode,
         SmsCodeType type,
-        Action<AuthMessageRecord, Guid>? setUserId = null)
+#if USE_NUM_UID
+        Action<AuthMessageRecord, long>? setUserId = null
+#else
+        Action<AuthMessageRecord, Guid>? setUserId = null
+#endif
+        )
         where TAppSettings : class, IDisableSms
-        where TUser : IdentityUser<Guid>
+        where TUser :
+#if USE_NUM_UID
+        IdentityUser<long>
+#else
+        IdentityUser<Guid>
+#endif
         where TUserManager2 : IIdentityUserManager<TUser>
     {
         var ipAddress = context.Connection.RemoteIpAddress?.ToString();
@@ -68,9 +78,18 @@ public static partial class SmsHelper
         string? phoneNumber,
         string? phoneNumberRegionCode,
         SmsCodeType type,
+#if USE_NUM_UID
+        Action<AuthMessageRecord, long>? setUserId = null,
+#else
         Action<AuthMessageRecord, Guid>? setUserId = null,
+#endif
         CancellationToken cancellationToken = default)
-        where TUser : IdentityUser<Guid>
+        where TUser :
+#if USE_NUM_UID
+        IdentityUser<long>
+#else
+        IdentityUser<Guid>
+#endif
         where TUserManager2 : IIdentityUserManager<TUser>
     {
         if (disableSms)
@@ -371,7 +390,16 @@ partial class SmsHelper
         Message = "短信服务发送登录用途时找不到用户，手机号码：+{regionCode}{phoneNum}")]
     private static partial void LogWranSMSOnLoginNotFoundUser(ILogger logger, string? phoneNum, string? regionCode);
 
-    static void SetUserId(AuthMessageRecord record, Guid userId, Action<AuthMessageRecord, Guid>? setUserId = null)
+    static void SetUserId(
+        AuthMessageRecord record,
+#if USE_NUM_UID
+        long userId,
+        Action<AuthMessageRecord, long>? setUserId = null
+#else
+        Guid userId, 
+        Action<AuthMessageRecord, Guid>? setUserId = null
+#endif
+        )
     {
         if (setUserId == null)
         {

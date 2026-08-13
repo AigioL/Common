@@ -1,6 +1,6 @@
 using AigioL.Common.AspNetCore.AdminCenter.PartnerCenter.Services.Abstractions;
+#if USE_PC_USER_WITHDRAWAL
 using AigioL.Common.AspNetCore.AppCenter.Constants;
-using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models.Payment;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using AigioL.Common.AspNetCore.AppCenter.Payment.Services.Abstractions;
@@ -8,9 +8,7 @@ using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.Models;
-using GameTrainer.ApiService.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Payment.Services;
 
@@ -239,3 +237,4 @@ public sealed partial class PCUserWithdrawalService : IPCUserWithdrawalService
         return $"PC{DateTimeOffset.Now:yyyyMMddHHmmss}{Random.Shared.Next(10000, 99999)}";
     }
 }
+#endif

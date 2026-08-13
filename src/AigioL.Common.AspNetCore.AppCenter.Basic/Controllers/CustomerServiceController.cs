@@ -25,7 +25,8 @@ public static partial class CustomerServiceController
     }
 
     static readonly TimeSpan CustomerServiceUrlKeyExpiration = TimeSpan.FromMinutes(10);
-    const bool useJwtUserIdOrUserId = true;
+
+    static readonly bool useJwtUserIdOrUserId = true;
 
     /// <summary>
     /// 获取客服链接地址
@@ -37,7 +38,19 @@ public static partial class CustomerServiceController
         var cache = context.RequestServices.GetRequiredService<IDistributedCache>();
         var repo = context.RequestServices.GetRequiredService<IKeyValuePairRepository>();
 
-        var uid = useJwtUserIdOrUserId ? context.GetJwtUserIdThrowIfNull() : context.GetUserIdThrowIfNull();
+        string uid;
+        if (useJwtUserIdOrUserId)
+        {
+            uid = ShortGuid.Encode(context.GetJwtUserIdThrowIfNull());
+        }
+        else
+        {
+#if USE_NUM_UID
+            uid = context.GetUserIdThrowIfNull().ToString();
+#else
+            uid = ShortGuid.Encode(context.GetUserIdThrowIfNull());
+#endif
+        }
         var result = await cache.GetOrCreateAsync(EKVP_CustomerServiceUrlKey, async entry =>
         {
             entry.AbsoluteExpirationRelativeToNow = CustomerServiceUrlKeyExpiration;
@@ -51,7 +64,7 @@ public static partial class CustomerServiceController
         }
         ApiRsp<string?> rsp = new()
         {
-            Content = string.Format(result.Value, ShortGuid.Encode(uid)),
+            Content = string.Format(result.Value, uid),
         };
         rsp.SetIsSuccess(true);
         return rsp;

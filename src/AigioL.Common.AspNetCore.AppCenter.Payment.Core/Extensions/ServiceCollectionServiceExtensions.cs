@@ -36,7 +36,9 @@ public static partial class ServiceCollectionServiceExtensions
 
         services.TryAddScoped<IPaymentService, PaymentService>();
 
+#if USE_PC_USER_WITHDRAWAL
         services.TryAddScoped<IPCUserWithdrawalService, PCUserWithdrawalService>();
+#endif
         return services;
     }
 }

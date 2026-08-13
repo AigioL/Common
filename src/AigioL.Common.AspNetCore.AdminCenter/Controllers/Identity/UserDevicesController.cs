@@ -25,7 +25,11 @@ public static partial class UserDevicesController
             .WithDescription("客户端用户设备管理");
 
         routeGroup.MapGet("", async (HttpContext context,
+#if USE_NUM_UID
+            [FromQuery] long? userId,
+#else
             [FromQuery] Guid? userId,
+#endif
             [FromQuery] string? nickName,
             [FromQuery] string? deviceName,
             [FromQuery] string? deviceId,

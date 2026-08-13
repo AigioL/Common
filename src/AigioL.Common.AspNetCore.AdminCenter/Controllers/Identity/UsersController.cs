@@ -36,7 +36,11 @@ public static partial class UsersController
 
         routeGroup.MapGet("", async (HttpContext context,
             [FromQuery] UserType? userType,
+#if USE_NUM_UID
+            [FromQuery] long? id,
+#else
             [FromQuery] Guid? id,
+#endif
             [FromQuery] string? openId,
             [FromQuery] string? phoneNumber,
             [FromQuery] string? nickName,
@@ -62,7 +66,12 @@ public static partial class UsersController
         .WithDescription("分页查询客户端用户");
 
         routeGroup.MapGet("{userId}", async (HttpContext context,
-            [FromRoute] Guid userId) =>
+#if USE_NUM_UID
+            [FromRoute] long userId
+#else
+            [FromRoute] Guid userId
+#endif
+            ) =>
         {
             var userRepo = context.RequestServices.GetRequiredService<IUserRepository>();
             BMApiRsp<EditM?> r = await userRepo.GetEditByIdAsync(userId, context.RequestAborted);
@@ -71,7 +80,12 @@ public static partial class UsersController
         .WithDescription("获取客户端用户详情");
 
         routeGroup.MapGet("{userId}/wallet", async (HttpContext context,
-            [FromRoute] Guid userId) =>
+#if USE_NUM_UID
+            [FromRoute] long userId
+#else
+            [FromRoute] Guid userId
+#endif
+            ) =>
         {
             var userRepo = context.RequestServices.GetRequiredService<IUserRepository>();
             BMApiRsp<UserWalletModel?> r = await userRepo.GetWalletByUserIdAsync(userId, context.RequestAborted);
@@ -80,7 +94,11 @@ public static partial class UsersController
         .WithDescription("获取客户端用户钱包详情");
 
         routeGroup.MapPut("", async (HttpContext context,
+#if USE_NUM_UID
+            [FromRoute] long? id,
+#else
             [FromRoute] Guid? id,
+#endif
             [FromBody] EditM model) =>
         {
             if (id.HasValue)
@@ -101,14 +119,23 @@ public static partial class UsersController
             // 清空用户信息缓存
             var redisDb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
             await redisDb.HashDeleteAsync(CacheKeys.IdentityUserInfoDataHashV1Key,
-                ShortGuid.Encode(model.Id));
+#if USE_NUM_UID
+                model.Id.ToString()
+#else
+                ShortGuid.Encode(model.Id)
+#endif
+                );
             var r = rowCount > 0;
             return BMApiRsp.OkBoolean(r);
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("编辑客户端用户");
 
         routeGroup.MapPut("{userId}", async (HttpContext context,
+#if USE_NUM_UID
+            [FromRoute] long userId,
+#else
             [FromRoute] Guid userId,
+#endif
             [FromQuery] bool lockout) =>
         {
             var userRepo = context.RequestServices.GetRequiredService<IUserRepository>();
@@ -130,7 +157,11 @@ public static partial class UsersController
         .WithDescription("搜索客户端用户");
 
         routeGroup.MapGet("{userId}/walletchangerecords", async (HttpContext context,
+#if USE_NUM_UID
+            [FromRoute] long? userId,
+#else
             [FromRoute] Guid? userId,
+#endif
             [FromQuery] UserWalletValueEvent[]? @event,
             [FromQuery] UserWalletValueType[]? @type,
             [FromQuery] UserWalletPaymentDirection? direction,

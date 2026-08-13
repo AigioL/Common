@@ -25,7 +25,11 @@ public static partial class UserCancelsController
             .WithDescription("客户端用户注销信息管理");
 
         routeGroup.MapGet("", async (HttpContext context,
+#if USE_NUM_UID
+            [FromQuery] long? userId,
+#else
             [FromQuery] Guid? userId,
+#endif
             [FromQuery] string? phoneNumber,
             [FromQuery] string? email,
             [FromQuery] string? nickName,

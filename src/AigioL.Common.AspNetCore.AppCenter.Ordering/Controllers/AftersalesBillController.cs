@@ -35,7 +35,11 @@ public static class AftersalesBillController
     /// 创建售后单
     /// </summary>
     static async Task<ApiRsp<AftersalesBillDetailModel?>> CreateAftersalesBill(
+#if !USE_NUM_UID
         Guid userId,
+#else
+        long userId,
+#endif
         IAftersalesBillRepository repo,
         IConnection rabbitmqConn,
         AftersalesBillAddModel m,

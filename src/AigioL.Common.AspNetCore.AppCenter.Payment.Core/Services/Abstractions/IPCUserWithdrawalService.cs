@@ -1,3 +1,4 @@
+#if USE_PC_USER_WITHDRAWAL
 using AigioL.Common.AspNetCore.AppCenter.Payment.Models;
 using AigioL.Common.Models;
 
@@ -38,3 +39,4 @@ public partial interface IPCUserWithdrawalService
         string withdrawalNumber,
         CancellationToken cancellationToken = default);
 }
+#endif

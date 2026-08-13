@@ -26,7 +26,11 @@ public static partial class ExternalAccountsController
             .WithDescription("客户端用户设备管理");
 
         routeGroup.MapGet("", async (HttpContext context,
+#if USE_NUM_UID
+            [FromQuery] long? userId,
+#else
             [FromQuery] Guid? userId,
+#endif
             [FromQuery] string? externalAccountId,
             [FromQuery] ExternalLoginChannel? type,
             [FromQuery] string? nickName,

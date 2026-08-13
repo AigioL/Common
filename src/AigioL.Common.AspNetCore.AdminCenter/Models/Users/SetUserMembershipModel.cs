@@ -7,7 +7,11 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 /// </summary>
 public sealed partial class SetUserMembershipModel : INote
 {
+#if USE_NUM_UID
+    public long UserId { get; set; }
+#else
     public Guid UserId { get; set; }
+#endif
 
     /// <summary>
     /// 会员结束时间

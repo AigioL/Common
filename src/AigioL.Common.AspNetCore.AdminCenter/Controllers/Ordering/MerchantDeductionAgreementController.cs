@@ -29,7 +29,11 @@ public static partial class MerchantDeductionAgreementController
 
         routeGroup.MapGet("", async (HttpContext context,
             [FromQuery] Guid? id = null,
-            [FromQuery] Guid? userId = null,
+#if USE_NUM_UID
+            [FromQuery] long? userId = null,
+#else
+            [FromQuery] Guid? userId= null,
+#endif
             [FromQuery] DateTimeOffset?[]? signingTime = null,
             [FromQuery] DateTimeOffset?[]? unSigningTime = null,
             [FromQuery] PaymentType? platform = null,

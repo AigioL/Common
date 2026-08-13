@@ -100,7 +100,11 @@ public static class MembershipController
         IConnectionMultiplexer conn,
         IMembershipGoodsRepository repo,
         IUserMembershipService userMembershipService,
+#if USE_NUM_UID
+        long userId,
+#else
         Guid userId,
+#endif
         Guid membershipGoodsId,
         Guid? channelPackageId)
     {

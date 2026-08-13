@@ -37,7 +37,11 @@ public static partial class OrderController
             [FromQuery] OrderType? type,
             [FromQuery] DevicePlatform2? source,
             [FromQuery] OrderStatus[]? status,
+#if USE_NUM_UID
+            [FromQuery] long? userId,
+#else
             [FromQuery] Guid? userId,
+#endif
             [FromQuery] PaymentType? paymentType,
             [FromQuery] int? businessType,
             [FromQuery] string? note,

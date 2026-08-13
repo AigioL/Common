@@ -26,7 +26,11 @@ public static partial class AuthMessageRecordController
             .WithDescription("验证码记录管理");
 
         routeGroup.MapGet("", async (HttpContext context,
+#if USE_NUM_UID
+            [FromQuery] long? userId,
+#else
             [FromQuery] Guid? userId,
+#endif
             [FromQuery] string? phoneNumber,
             [FromQuery] string? phoneNumberRegionCode,
             [FromQuery] string? nickName,

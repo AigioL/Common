@@ -232,7 +232,11 @@ public static partial class ManageController
     /// 删除账号
     /// </summary>
     static async Task<ApiRsp> DeleteAccountCoreAsync(
+#if USE_NUM_UID
+        long userId,
+#else
         Guid userId,
+#endif
         Guid jwtUserId,
         IIdentityDbContext db,
         IUserDeleteRepository userDeleteRepo,
@@ -462,13 +466,21 @@ public static partial class ManageController
 
     static async Task SignOutSharedAsync(
         Guid jwtUserId,
+#if USE_NUM_UID
+        long userId,
+#else
         Guid userId,
+#endif
         IIdentityDbContext db,
         IDistributedCache cache,
         IConnectionMultiplexer connection)
     {
         var jwtUserIdS = ShortGuid.Encode(jwtUserId);
+#if USE_NUM_UID
+        var userIdS = userId.ToString();
+#else
         var userIdS = ShortGuid.Encode(userId);
+#endif
         await db.UserJsonWebTokens.Where(x => x.Id == jwtUserId).ExecuteDeleteAsync();
         var redisdb = connection.GetDatabase(CacheKeys.RedisHashDataDb);
         await redisdb.KeyDeleteAsync($"{CacheKeys.IdentityUserInfoDataHashV1Key}:{userIdS}");

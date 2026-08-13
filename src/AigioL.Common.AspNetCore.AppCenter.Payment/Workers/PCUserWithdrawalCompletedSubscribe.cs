@@ -1,3 +1,4 @@
+#if USE_PC_USER_WITHDRAWAL
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Models;
@@ -7,7 +8,6 @@ using AigioL.Common.AspNetCore.PartnerCenter.Entities;
 using AigioL.Common.AspNetCore.PartnerCenter.Models;
 using AigioL.Common.FeishuOApi.Sdk.Services.Abstractions;
 using AigioL.Common.Models;
-using GameTrainer.ApiService.Data;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -200,3 +200,4 @@ public partial class PCUserWithdrawalCompletedSubscribe : WorkerBackgroundServic
         Message = "处理微信提现完成回调异常，消息内容：{body}")]
     private static partial void LogErrorHandle(ILogger logger, Exception? ex, string? body);
 }
+#endif

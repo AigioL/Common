@@ -32,7 +32,11 @@ public static partial class AftersalesBillController
             [FromQuery] string? orderNumber = null,
             [FromQuery] string? aftersalesNumber = null,
             [FromQuery] int? businessType = null,
-            [FromQuery] Guid? userId = null,
+#if USE_NUM_UID
+            [FromQuery] long? userId = null,
+#else
+            [FromQuery] Guid? userId= null,
+#endif
             [FromQuery] decimal? refundAmount = null,
             [FromQuery] AuditStatus[]? auditStatus = null,
             [FromQuery] string? refundReason = null,

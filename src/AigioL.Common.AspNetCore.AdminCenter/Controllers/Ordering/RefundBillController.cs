@@ -32,7 +32,11 @@ public static partial class RefundBillController
             .WithDescription("退款单管理");
 
         routeGroup.MapGet("", async (HttpContext context,
-            [FromQuery] Guid? userId = null,
+#if USE_NUM_UID
+            [FromQuery] long? userId = null,
+#else
+            [FromQuery] Guid? userId= null,
+#endif
             [FromQuery] string? refundNumber = null,
             [FromQuery] string? aftersalesNumber = null,
             [FromQuery] string? orderNumber = null,

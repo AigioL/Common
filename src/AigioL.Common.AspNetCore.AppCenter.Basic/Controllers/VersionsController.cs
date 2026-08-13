@@ -6,7 +6,6 @@ using AigioL.Common.AspNetCore.AppCenter.Services.Abstractions;
 using AigioL.Common.Models;
 using AigioL.Common.Primitives.Columns;
 using AigioL.Common.Primitives.Models;
-using GameTrainer.Repositories.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Diagnostics.CodeAnalysis;
@@ -69,6 +68,7 @@ public static partial class VersionsController
         //             .Produces<AppVersionTauriModel>(StatusCodes.Status200OK)
         //             .Produces(StatusCodes.Status204NoContent);
 
+#if USE_TAURI
         routeGroup.MapGet("f3766644/{target}/{arch}/{channelPackageId?}", async (HttpContext context,
             [FromRoute] string target,
             [FromRoute] string arch,
@@ -112,6 +112,7 @@ https://tauri.app/plugin/updater/#static-json-file
 """)
             .Produces(StatusCodes.Status302Found)
             .Produces(StatusCodes.Status404NotFound);
+#endif
 
         // routeGroup.MapGet("{platform}/{osVersionMajor}/{osVersionMinor}/{osVersionBuild}/{deploymentMode=0}", async (HttpContext context,
         //     [FromRoute] ClientPlatform platform,

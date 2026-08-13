@@ -194,7 +194,11 @@ sealed partial class AuthMessageRecordRepository<TDbContext> :
 partial class AuthMessageRecordRepository<TDbContext>
 {
     public async Task<PagedModel<AuthMessageRecordTableItem>> QueryAsync(
+#if USE_NUM_UID
+        long? userId,
+#else
         Guid? userId,
+#endif
         string? phoneNumber,
         string? phoneNumberRegionCode,
         string? nickName,
