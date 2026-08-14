@@ -52,7 +52,7 @@ static partial class VerificationCodesController
         var phoneNumberRegionCode = args.Length > 1 ? rsa.BMDecrypt(args[1]) : IPhoneNumber.DefaultPhoneNumberRegionCode;
         var type = SmsCodeType.Login;
 
-        var r = await SmsHelper.SendSms<TAppSettings, PCUser, IIdentityUserManager<PCUser>>(context, phoneNumber, phoneNumberRegionCode, type, setUserId: SetUserId);
+        var r = await SmsHelper.SendSms<TAppSettings, PCUser, IIdentityUserManager<PCUser>, Guid>(context, phoneNumber, phoneNumberRegionCode, type, setUserId: SetUserId);
         return r;
     }
 

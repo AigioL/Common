@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class AuthenticationBuilderExtensions
 {
+    /// <inheritdoc cref="Add3rdOpenApi"/>
     public static AuthenticationBuilder Add3rdOpenApiBase<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] THandler>(
         this AuthenticationBuilder builder, Action<OpenApiAuthenticationSchemeOptions>? configureOptions = null)
@@ -36,6 +37,9 @@ public static partial class AuthenticationBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    /// 使用提供给第三方的 OpenAPI 单独的认证方式（与给客户端的 API 身份验证方式不同）
+    /// </summary>
     public static AuthenticationBuilder Add3rdOpenApi<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TDbContext>(
         this AuthenticationBuilder builder, Action<OpenApiAuthenticationSchemeOptions>? configureOptions = null)

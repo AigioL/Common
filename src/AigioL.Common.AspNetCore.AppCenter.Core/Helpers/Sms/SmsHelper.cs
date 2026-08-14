@@ -26,24 +26,16 @@ public static partial class SmsHelper
     public static async Task<ApiRsp> SendSms<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUser,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserManager2>(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserManager2,
+        TKey>(
         HttpContext context,
         string? phoneNumber,
         string? phoneNumberRegionCode,
         SmsCodeType type,
-#if USE_NUM_UID
-        Action<AuthMessageRecord, long>? setUserId = null
-#else
-        Action<AuthMessageRecord, Guid>? setUserId = null
-#endif
-        )
+        Action<AuthMessageRecord, TKey>? setUserId = null)
         where TAppSettings : class, IDisableSms
-        where TUser :
-#if USE_NUM_UID
-        IdentityUser<long>
-#else
-        IdentityUser<Guid>
-#endif
+        where TUser : IdentityUser<TKey>
+        where TKey : IEquatable<TKey>
         where TUserManager2 : IIdentityUserManager<TUser>
     {
         var ipAddress = context.Connection.RemoteIpAddress?.ToString();
@@ -57,7 +49,7 @@ public static partial class SmsHelper
         var userManager = context.RequestServices.GetRequiredService<TUserManager2>();
         var authMessageRecordRepo = context.RequestServices.GetRequiredService<IAuthMessageRecordRepository>();
         var smsSender = context.RequestServices.GetRequiredService<ISmsSender>();
-        var r = await SendSmsCoreAsync<TUser, TUserManager2>(
+        var r = await SendSmsCoreAsync<TUser, TUserManager2, TKey>(
             logger, ipAddress, isAuthenticated,
             userManager, authMessageRecordRepo, smsSender,
             options.Value.DisableSms, phoneNumber, phoneNumberRegionCode,
@@ -65,9 +57,45 @@ public static partial class SmsHelper
         return r;
     }
 
-    static async Task<ApiRsp> SendSmsCoreAsync<
+    /// <inheritdoc cref="SendSms{TAppSettings, TUser, TUserManager2, TKey}(HttpContext, string?, string?, SmsCodeType, Action{AuthMessageRecord, TKey}?)"/>
+    public static Task<ApiRsp> SendSms<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TAppSettings,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUser,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserManager2>(
+        HttpContext context,
+        string? phoneNumber,
+        string? phoneNumberRegionCode,
+        SmsCodeType type,
+        Action<AuthMessageRecord,
+#if USE_NUM_UID
+            long
+#else
+            Guid
+#endif
+            >? setUserId = null)
+        where TAppSettings : class, IDisableSms
+        where TUser :
+#if USE_NUM_UID
+        IdentityUser<long>
+#else
+        IdentityUser<Guid>
+#endif
+        where TUserManager2 : IIdentityUserManager<TUser>
+    {
+        var r = SendSms<TAppSettings, TUser, TUserManager2,
+#if USE_NUM_UID
+            long
+#else
+            Guid
+#endif
+            >(context, phoneNumber, phoneNumberRegionCode, type, setUserId);
+        return r;
+    }
+
+    static async Task<ApiRsp> SendSmsCoreAsync<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUser,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TUserManager2,
+        TKey>(
         ILogger logger,
         string ipAddress,
         bool? isAuthenticated,
@@ -78,19 +106,11 @@ public static partial class SmsHelper
         string? phoneNumber,
         string? phoneNumberRegionCode,
         SmsCodeType type,
-#if USE_NUM_UID
-        Action<AuthMessageRecord, long>? setUserId = null,
-#else
-        Action<AuthMessageRecord, Guid>? setUserId = null,
-#endif
+        Action<AuthMessageRecord, TKey>? setUserId = null,
         CancellationToken cancellationToken = default)
-        where TUser :
-#if USE_NUM_UID
-        IdentityUser<long>
-#else
-        IdentityUser<Guid>
-#endif
+        where TUser : IdentityUser<TKey>
         where TUserManager2 : IIdentityUserManager<TUser>
+        where TKey : IEquatable<TKey>
     {
         if (disableSms)
         {
@@ -230,8 +250,25 @@ public static partial class SmsHelper
         if (call_IsDuplicatePhoneNumber)
         {
             await FindByPhoneNumberAsync();
-            var findUserIdByPhoneNum = findUser?.Id;
-            var isDuplicatePhoneNumber = findUserIdByPhoneNum.HasValue && findUserIdByPhoneNum.Value != default;
+            bool isDuplicatePhoneNumber;
+            TKey? findUserIdByPhoneNum;
+            if (findUser == null)
+            {
+                findUserIdByPhoneNum = default;
+                isDuplicatePhoneNumber = false;
+            }
+            else
+            {
+                findUserIdByPhoneNum = findUser.Id;
+                if (EqualityComparer<TKey>.Default.Equals(findUserIdByPhoneNum, default))
+                {
+                    isDuplicatePhoneNumber = false;
+                }
+                else
+                {
+                    isDuplicatePhoneNumber = true;
+                }
+            }
             if (isDuplicatePhoneNumber)
             {
                 if (!isMustDuplicatePhoneNumber) // 不允许传入的手机号码存在
@@ -390,20 +427,24 @@ partial class SmsHelper
         Message = "短信服务发送登录用途时找不到用户，手机号码：+{regionCode}{phoneNum}")]
     private static partial void LogWranSMSOnLoginNotFoundUser(ILogger logger, string? phoneNum, string? regionCode);
 
-    static void SetUserId(
+    static void SetUserId<TKey>(
         AuthMessageRecord record,
-#if USE_NUM_UID
-        long userId,
-        Action<AuthMessageRecord, long>? setUserId = null
-#else
-        Guid userId, 
-        Action<AuthMessageRecord, Guid>? setUserId = null
-#endif
-        )
+        TKey userId,
+        Action<AuthMessageRecord, TKey>? setUserId = null)
+        where TKey : IEquatable<TKey>
     {
         if (setUserId == null)
         {
-            record.UserId = userId;
+            if (userId is
+#if USE_NUM_UID
+                long
+#else
+                Guid
+#endif
+                userId2)
+            {
+                record.UserId = userId2;
+            }
         }
         else
         {
