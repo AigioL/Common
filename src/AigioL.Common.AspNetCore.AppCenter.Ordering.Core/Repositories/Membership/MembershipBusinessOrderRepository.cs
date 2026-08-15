@@ -181,7 +181,8 @@ public partial class MembershipBusinessOrderRepository<TDbContext> :
                         return business_order.UserId;
                     }
                 }
-                throw new InvalidOperationException($"执行 SQL 操作返回的受影响行数为 0，orderId: {orderId}");
+                //throw new InvalidOperationException($"执行 SQL 操作返回的受影响行数为 0，orderId: {orderId}");
+                return business_order.UserId;
             }
             catch (Exception e)
             {
