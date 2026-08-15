@@ -1,15 +1,17 @@
 <Project>
 	<PropertyGroup>
 		<Version_OpenIddict>7.5.0</Version_OpenIddict>
+		<Version_NET>10.0.11</Version_NET>
+		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-preview.7.26381.103</Version_NET>
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.298" />
 		<PackageVersion Include="System.Management" Version="10.0.6" />
 		<PackageVersion Include="WmiLight" Version="7.2.0" />
-		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="10.0.11" />
-		<PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.11" />
-		<PackageVersion Include="System.Drawing.Common" Version="10.0.11" />
+		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(Version_NET)" />
+		<PackageVersion Include="System.Security.Cryptography.Pkcs" Version="$(Version_NET)" />
+		<PackageVersion Include="System.Drawing.Common" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 WinUI3 -->
 	<ItemGroup>
@@ -18,14 +20,14 @@
 	</ItemGroup>
 	<!-- 👇 依赖注入 -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
+		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 日志 -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="10.0.6" />
-		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="10.0.11" />
-		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.11" />
-		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(Version_NET)" />
 		<PackageVersion Include="NLog" Version="6.1.4" />
 		<PackageVersion Include="NLog.Extensions.Logging" Version="6.1.4" />
 		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.4" />
@@ -33,19 +35,19 @@
 	<!-- 👇 xunit 单元测试 -->
 	<ItemGroup>
 		<PackageVersion Include="coverlet.collector" Version="10.0.1" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
-		<PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-		<PackageVersion Include="xunit.v3" Version="3.2.2" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+		<PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
+		<PackageVersion Include="xunit.v3" Version="4.0.0" />
 	</ItemGroup>
 	<!-- 👇 哈希算法 -->
 	<ItemGroup>
-		<PackageVersion Include="System.IO.Hashing" Version="10.0.11" />
+		<PackageVersion Include="System.IO.Hashing" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 JsonWebToken -->
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.22.0" />
 		<PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
-		<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 可回收内存流 -->
 	<ItemGroup>
@@ -53,12 +55,12 @@
 	</ItemGroup>
 	<!-- 👇 EF Core -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.11" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.11" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.6" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.11" />
-		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="10.0.11" />
-		<PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.11" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(Version_NET)" />
 		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
 		<PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.6" />
 		<PackageVersion Include="EFCore.BulkExtensions.PostgreSql" Version="10.0.0" />
@@ -70,16 +72,16 @@
 	</ItemGroup>
 	<!-- 👇 OpenApi -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.OpenApi" Version="2.11.0" />
-		<PackageVersion Include="Scalar.AspNetCore" Version="2.16.18" />
+		<PackageVersion Include="Scalar.AspNetCore" Version="2.16.20" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="10.0.11" />
-		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="10.0.6" />
-		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="10.0.6" />
-		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="10.0.6" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="$(Version_NET)" />
 		<PackageVersion Include="AspNet.Security.OAuth.Apple" Version="10.0.0" />
 		<PackageVersion Include="AspNet.Security.OAuth.Weixin" Version="10.0.0" />
 		<PackageVersion Include="AspNet.Security.OAuth.QQ" Version="10.0.0" />
@@ -100,7 +102,7 @@
 	<!-- 👇 Json -->
 	<ItemGroup>
 		<PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
-		<PackageVersion Include="System.Text.Json" Version="10.0.11" />
+		<PackageVersion Include="System.Text.Json" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 Payment -->
 	<ItemGroup>
@@ -136,12 +138,12 @@
 	</ItemGroup>
 	<!-- 👇 Identity -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.11" />
-		<PackageVersion Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.8" />
+		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(Version_NET)" />
+		<PackageVersion Include="Microsoft.AspNetCore.Identity.UI" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 Bcl Compat -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Bcl.Memory" Version="10.0.9" />
+		<PackageVersion Include="Microsoft.Bcl.Memory" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 CommandLine -->
 	<ItemGroup>
@@ -211,12 +213,12 @@
 	</ItemGroup>
 	<!-- 👇 SignalR -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.11" />
+		<PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 ⬇️ -->
 	<ItemGroup>
 		<PackageVersion Include="Downloader" Version="5.9.4" />
-		<PackageVersion Include="System.Net.Http.WinHttpHandler" Version="10.0.6" />
+		<PackageVersion Include="System.Net.Http.WinHttpHandler" Version="$(Version_NET)" />
 	</ItemGroup>
 	<!-- 👇 DotNext -->
 	<ItemGroup>
