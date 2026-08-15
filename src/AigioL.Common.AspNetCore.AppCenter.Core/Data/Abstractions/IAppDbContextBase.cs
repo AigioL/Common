@@ -267,6 +267,10 @@ public interface IAppDbContextBase : IDbContextBase
 
 file sealed class PersonalDataConverter : ValueConverter<string, string>
 {
+#if NET11_0_OR_GREATER // https://github.com/dotnet/aspnetcore/blob/v11.0.0-preview.7.26381.103/src/Identity/EntityFrameworkCore/src/IdentityUserContext.cs
+    public PersonalDataConverter(IPersonalDataProtector protector) : base(s => protector.Protect(s), s => protector.Unprotect(s))
+#else
     public PersonalDataConverter(IPersonalDataProtector protector) : base(s => protector.Protect(s), s => protector.Unprotect(s), default)
+#endif
     { }
 }

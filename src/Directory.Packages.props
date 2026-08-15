@@ -3,6 +3,8 @@
 		<Version_OpenIddict>7.5.0</Version_OpenIddict>
 		<Version_NET>10.0.11</Version_NET>
 		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-preview.7.26381.103</Version_NET>
+		<Version_OpenApi>2.12.0</Version_OpenApi>
+		<Version_OpenApi Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">3.10.0</Version_OpenApi>
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
@@ -73,7 +75,7 @@
 	<!-- 👇 OpenApi -->
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Version_NET)" />
-		<PackageVersion Include="Microsoft.OpenApi" Version="2.11.0" />
+		<PackageVersion Include="Microsoft.OpenApi" Version="$(Version_OpenApi)" />
 		<PackageVersion Include="Scalar.AspNetCore" Version="2.16.20" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
