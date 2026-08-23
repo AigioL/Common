@@ -1,4 +1,4 @@
-#if DEBUG || USE_LOGGING_CONSOLE
+#if !DEL_LOGGING_CONSOLE && (DEBUG || USE_LOGGING_CONSOLE)
 using Microsoft.Extensions.Logging.Console;
 #endif
 #if WINDOWS
@@ -155,7 +155,7 @@ file static partial class _8b7542f7
         };
         filterOptionsMonitor = new(filterOptions);
         ILoggerProvider[] providers = [
-#if DEBUG || USE_LOGGING_CONSOLE
+#if !DEL_LOGGING_CONSOLE && (DEBUG || USE_LOGGING_CONSOLE)
             AddConsole(),
 #endif
 #if WINDOWS
@@ -359,7 +359,7 @@ file static partial class _8b7542f7 // 全局日志等级
     }
 }
 
-#if DEBUG || USE_LOGGING_CONSOLE
+#if !DEL_LOGGING_CONSOLE &&(DEBUG || USE_LOGGING_CONSOLE)
 file static partial class _8b7542f7 // 控制台日志
 {
     /// <summary>
