@@ -5,6 +5,10 @@
 		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-preview.7.26381.103</Version_NET>
 		<Version_OpenApi>2.12.0</Version_OpenApi>
 		<Version_OpenApi Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">3.10.0</Version_OpenApi>
+		<Version_Aspire>13.5.2</Version_Aspire>
+		<Version_EFCore_PostgreSQL>10.0.3</Version_EFCore_PostgreSQL>
+		<Version_EFCore_PostgreSQL Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-preview.6</Version_EFCore_PostgreSQL>
+		<Version_OpenTelemetry>1.18.0</Version_OpenTelemetry>
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
@@ -32,7 +36,7 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(Version_NET)" />
 		<PackageVersion Include="NLog" Version="6.2.0" />
 		<PackageVersion Include="NLog.Extensions.Logging" Version="6.2.0" />
-		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.1.4" />
+		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.0" />
 	</ItemGroup>
 	<!-- 👇 xunit 单元测试 -->
 	<ItemGroup>
@@ -63,8 +67,8 @@
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tasks" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(Version_NET)" />
-		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
-		<PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.4.6" />
+		<PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(Version_EFCore_PostgreSQL)" />
+		<PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(Version_Aspire)" />
 		<PackageVersion Include="EFCore.BulkExtensions.PostgreSql" Version="10.0.0" />
 	</ItemGroup>
 	<!-- 👇 序列化 -->
@@ -93,9 +97,9 @@
 	</ItemGroup>
 	<!-- 👇 Redis -->
 	<ItemGroup>
-		<PackageVersion Include="Aspire.Hosting.Redis" Version="13.4.6" />
+		<PackageVersion Include="Aspire.Hosting.Redis" Version="$(Version_Aspire)" />
 		<PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.0.2" />
-		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="13.4.6" />
+		<PackageVersion Include="Aspire.StackExchange.Redis.DistributedCaching" Version="$(Version_Aspire)" />
 	</ItemGroup>
 	<!-- 👇 Quartz -->
 	<ItemGroup>
@@ -108,30 +112,30 @@
 	</ItemGroup>
 	<!-- 👇 Payment -->
 	<ItemGroup>
-		<PackageVersion Include="SKIT.FlurlHttpClient.Wechat.Api" Version="3.14.0" />
+		<PackageVersion Include="SKIT.FlurlHttpClient.Wechat.Api" Version="3.15.0" />
 		<PackageVersion Include="Essensoft.Paylink.Alipay" Version="4.1.9" />
 		<PackageVersion Include="Essensoft.Paylink.WeChatPay" Version="4.1.9" />
 	</ItemGroup>
 	<!-- 👇 Aspire -->
 	<ItemGroup>
-		<PackageVersion Include="Aspire.Hosting.AppHost" Version="13.4.6" />
-		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.4.6" />
+		<PackageVersion Include="Aspire.Hosting.AppHost" Version="$(Version_Aspire)" />
+		<PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="$(Version_Aspire)" />
 		<PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.9.0" />
 		<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.9.0" />
-		<PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0" />
-		<PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.17.0" />
-		<PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.17.0" />
-		<PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.17.0" />
-		<PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.17.0" />
-		<PackageVersion Include="Aspire.Hosting.Testing" Version="13.4.6" />
-		<PackageVersion Include="Aspire.Hosting.Docker" Version="13.4.6" />
-		<PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.1.0-preview.1.25616.3" />
+		<PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(Version_OpenTelemetry)" />
+		<PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(Version_OpenTelemetry)" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(Version_OpenTelemetry)" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="$(Version_OpenTelemetry)" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="$(Version_OpenTelemetry)" />
+		<PackageVersion Include="Aspire.Hosting.Testing" Version="$(Version_Aspire)" />
+		<PackageVersion Include="Aspire.Hosting.Docker" Version="$(Version_Aspire)" />
+		<PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.5.2-preview.1.26421.6" />
 		<PackageVersion Include="CommunityToolkit.Aspire.Hosting.Meilisearch" Version="13.4.0" />
 		<PackageVersion Include="CommunityToolkit.Aspire.Meilisearch" Version="13.4.0" />
-		<PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.4.6" />
-		<PackageVersion Include="Aspire.RabbitMQ.Client" Version="13.4.6" />
-		<PackageVersion Include="Aspire.Hosting.Yarp" Version="13.4.6" />
-		<PackageVersion Include="Aspire.Hosting.JavaScript" Version="13.4.6" />
+		<PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="$(Version_Aspire)" />
+		<PackageVersion Include="Aspire.RabbitMQ.Client" Version="$(Version_Aspire)" />
+		<PackageVersion Include="Aspire.Hosting.Yarp" Version="$(Version_Aspire)" />
+		<PackageVersion Include="Aspire.Hosting.JavaScript" Version="$(Version_Aspire)" />
 		<PackageVersion Include="RabbitMQ.Client" Version="7.2.0" />
 	</ItemGroup>
 	<!-- 👇 Docker -->
