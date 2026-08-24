@@ -1,0 +1,1 @@
+A:\nuget.exe pack WireGuard.Wintun.NativeAssets.nuspec

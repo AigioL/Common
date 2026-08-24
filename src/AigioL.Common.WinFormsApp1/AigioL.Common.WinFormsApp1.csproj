@@ -29,4 +29,6 @@
 
 	<Import Project="..\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
 
+	<Import Project="..\WireGuard.Wintun\WireGuard.Wintun.projitems" Label="Shared" />
+
 </Project>

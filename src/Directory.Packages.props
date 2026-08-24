@@ -243,4 +243,8 @@
 		<PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="7.6.0" />
 		<PackageVersion Include="OpenIddict.EntityFrameworkCore.Models" Version="$(Version_OpenIddict)" />
 	</ItemGroup>
+	<!-- 👇 Wintun -->
+	<ItemGroup>
+		<PackageVersion Include="AigioL.Common.WireGuard.Wintun.NativeAssets" Version="0.14.1" />
+	</ItemGroup>
 </Project>

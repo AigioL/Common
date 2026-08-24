@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata minClientVersion="2.12">
+		<id>AigioL.Common.WireGuard.Wintun.NativeAssets</id>
+		<title>WireGuard.Wintun.NativeAssets</title>
+		<version>0.14.1</version>
+		<authors>https://github.com/AigioL</authors>
+		<copyright>Copyright © 2018-2021 WireGuard LLC. All Rights Reserved.</copyright>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<repository type="git" url="https://github.com/AigioL/Common" />
+		<tags>Wintun;WireGuard;NativeAssets</tags>
+		<description>This is a layer 3 TUN driver for Windows 7, 8, 8.1, 10, and 11. Originally created for WireGuard, it is intended to be useful to a wide variety of projects that require layer 3 tunneling devices with implementations primarily in userspace.</description>
+		<readme>README.md</readme>
+		<license type="file">LICENSE.txt</license>
+		<projectUrl>https://www.wintun.net</projectUrl>
+	</metadata>
+	<files>
+		<file src="runtimes\win-x86\native\wintun.dll" target="runtimes\win-x86\native\wintun.dll" />
+		<file src="runtimes\win-x64\native\wintun.dll" target="runtimes\win-x64\native\wintun.dll" />
+		<file src="runtimes\win-arm64\native\wintun.dll" target="runtimes\win-arm64\native\wintun.dll" />
+		<file src="runtimes\win-arm\native\wintun.dll" target="runtimes\win-arm\native\wintun.dll" />
+		<file src="_._" target="lib/net35/_._" />
+		<file src="_._" target="lib/net40/_._" />
+		<file src="_._" target="lib/netstandard1.0/_._" />
+		<file src="README.md" target="README.md" />
+		<file src="LICENSE.txt" target="LICENSE.txt" />
+	</files>
+</package>
