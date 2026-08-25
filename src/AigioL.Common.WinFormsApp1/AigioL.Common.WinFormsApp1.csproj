@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="NLog" />
 		<PackageReference Include="NLog.Extensions.Logging" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
@@ -19,6 +20,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="MemoryPack" />
+		<PackageReference Include="Yarp.ReverseProxy" />
 	</ItemGroup>
 
 	<Import Project="..\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
@@ -30,5 +32,7 @@
 	<Import Project="..\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
 
 	<Import Project="..\WireGuard.Wintun\WireGuard.Wintun.projitems" Label="Shared" />
+
+	<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
 
 </Project>
