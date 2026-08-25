@@ -9,9 +9,10 @@ namespace System.Buffers;
 public static partial class BufferWriterExtensions
 {
     /// <summary>
-    /// https://github.com/dotnet/runtime/blob/v9.0.8/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
+    /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
     /// </summary>
     public const int StackallocByteThreshold = 256;
+    public const int StackallocCharThreshold = StackallocByteThreshold / 2;
 
     public static void Write(this IBufferWriter<byte> writer, bool value, bool isLower = false)
     {
@@ -221,8 +222,8 @@ public static partial class BufferWriterExtensions
             (array = ArrayPool<byte>.Shared.Rent(expectedByteCount));
 
         char[]? chars = null;
-        Span<char> lowerChars = value.Length <= StackallocByteThreshold ?
-            stackalloc char[StackallocByteThreshold] :
+        Span<char> lowerChars = value.Length <= StackallocCharThreshold ?
+            stackalloc char[StackallocCharThreshold] :
             (chars = ArrayPool<char>.Shared.Rent(expectedByteCount));
 
         try

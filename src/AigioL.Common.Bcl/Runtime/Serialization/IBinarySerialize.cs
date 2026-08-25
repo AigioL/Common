@@ -140,8 +140,8 @@ partial interface IBinarySerialize
                 try
                 {
                     var len = Encoding.UTF8.GetMaxCharCount(value.Length);
-                    Span<char> chars = len <= StackallocByteThreshold ?
-                        stackalloc char[StackallocByteThreshold] :
+                    Span<char> chars = len <= StackallocCharThreshold ?
+                        stackalloc char[StackallocCharThreshold] :
                         (buffer = ArrayPool<char>.Shared.Rent(len)).AsSpan(0, len);
                     var charsWritten = Encoding.UTF8.GetChars(value, chars);
                     var valueString = new string(chars[..charsWritten]);
@@ -168,7 +168,7 @@ partial interface IBinarySerialize
             if (value.Length <= MaximumFormatDateTimeLengthU8)
             {
                 var len = Encoding.UTF8.GetMaxCharCount(value.Length);
-                Span<char> chars = stackalloc char[StackallocByteThreshold];
+                Span<char> chars = stackalloc char[StackallocCharThreshold];
                 if (Encoding.UTF8.TryGetChars(value, chars, out var actualLen))
                 {
                     chars = chars[..actualLen];
@@ -184,7 +184,7 @@ partial interface IBinarySerialize
             if (value.Length <= MaximumFormatDateTimeOffsetLengthU8)
             {
                 var len = Encoding.UTF8.GetMaxCharCount(value.Length);
-                Span<char> chars = stackalloc char[StackallocByteThreshold];
+                Span<char> chars = stackalloc char[StackallocCharThreshold];
                 if (Encoding.UTF8.TryGetChars(value, chars, out var actualLen))
                 {
                     chars = chars[..actualLen];
@@ -213,9 +213,10 @@ partial interface IBinarySerialize
 file static class JsonConstants
 {
     /// <summary>
-    /// https://github.com/dotnet/runtime/blob/v9.0.8/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
+    /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
     /// </summary>
     internal const int StackallocByteThreshold = 256;
+    internal const int StackallocCharThreshold = StackallocByteThreshold / 2;
 
     /// <summary>
     /// https://github.com/dotnet/runtime/blob/v10.0.0-rc.1.25451.107/src/libraries/System.Text.Json/src/System/Text/Json/JsonConstants.cs#L92

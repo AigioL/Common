@@ -152,7 +152,6 @@ public struct ShortGuid
     /// <returns>A 22 character ShortGuid URL-safe Base64 string.</returns>
     public static string Encode(Guid guid)
     {
-        var strLen = Base64Url.GetEncodedLength(ByteArrayLength);
         Span<byte> buffer = stackalloc byte[ByteArrayLength];
         guid.TryWriteBytes(buffer);
         return Base64Url.EncodeToString(buffer);

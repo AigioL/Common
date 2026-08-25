@@ -34,6 +34,7 @@
     <Project Path="src/AigioL.Common.Extensions.Http.Proxy/AigioL.Common.Extensions.Http.Proxy.shproj" Id="0a3c3013-54de-4413-b861-4d0faf6af587" />
     <Project Path="src/AigioL.Common.Extensions.Http/AigioL.Common.Extensions.Http.shproj" Id="2df64651-264a-4621-aa16-b6bac63b63db" />
     <Project Path="src/AigioL.Common.Models.ApiRsp/AigioL.Common.Models.ApiRsp.shproj" Id="d9eafcce-1041-489d-a46b-27adc768a916" />
+    <Project Path="src/AigioL.Common.Net.NameResolution/AigioL.Common.Net.NameResolution.shproj" Id="367ecf0e-37a2-4a10-a2c2-a92b95d47cca" />
     <Project Path="src/AigioL.Common.Net.ReverseProxy/AigioL.Common.Net.ReverseProxy.shproj" Id="ee2b887f-a402-47d1-8c58-716f8a8f9b28" />
     <Project Path="src/AigioL.Common.Primitives.District/AigioL.Common.Primitives.District.csproj" Id="bcc054dd-bfe4-4d0c-a7a9-08cac2705d3e" />
     <Project Path="src/AigioL.Common.Primitives/AigioL.Common.Primitives.shproj" Id="2fc56f9c-d2f9-4e05-b21b-179dc776d471" />

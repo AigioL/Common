@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
 using System.Runtime.CompilerServices;
-using static Microsoft.AspNetCore.Hosting.LoggerMessage_KestrelOptEx;
+using static Microsoft.AspNetCore.Hosting.LoggerMessages_KestrelOptEx;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.AspNetCore.Hosting;
@@ -202,7 +202,7 @@ public static partial class KestrelServerOptionsExtensions
     }
 }
 
-internal static partial class LoggerMessage_KestrelOptEx
+internal static partial class LoggerMessages_KestrelOptEx
 {
     [LoggerMessage(
         Level = LogLevel.Information,
