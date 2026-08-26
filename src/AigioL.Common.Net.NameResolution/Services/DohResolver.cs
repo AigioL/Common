@@ -191,7 +191,7 @@ public sealed class DohResolver : IDnsResolver, IAsyncDisposable, IDisposable
         {
             if (UseRfc8484)
             {
-                using var req = RFC8484.GetRequest(server, Method, hostName);
+                using var req = Rfc8484.GetRequest(server, Method, hostName);
                 SetRequest(client, req);
                 using var rsp = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
                 throw new NotImplementedException("TODO: 待实现使用 RFC 8484 规范进行 DoH 请求");
@@ -241,136 +241,127 @@ public sealed class DohResolver : IDnsResolver, IAsyncDisposable, IDisposable
         r.Version = c.DefaultRequestVersion;
         r.VersionPolicy = c.DefaultVersionPolicy;
     }
-}
 
+    internal static class Rfc8484
+    {
+        /// <summary>
+        /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
+        /// </summary>
+        const int StackallocByteThreshold = 256;
+        const int StackallocCharThreshold = StackallocByteThreshold / 2;
 
-#if !DEBUG
-file
-#else
-internal
-#endif
-    static class RFC8484
-{
+        ref struct CharReadOnlySpan2
+        {
+            public ReadOnlySpan<char> Span1;
+            public ReadOnlySpan<char> Span2;
+        }
+
+        static string GetGetUrl(ReadOnlySpan<char> server, ReadOnlySpan<char> base64UrlChars)
+        {
+            const string linkSpan = "dns=";
+            var len = server.Length + 1 + linkSpan.Length + base64UrlChars.Length;
+            var r = string.Create(len, new CharReadOnlySpan2 { Span1 = server, Span2 = base64UrlChars }, (span, args) =>
+            {
+                var server = args.Span1;
+                var base64UrlChars = args.Span2;
+
+                server.CopyTo(span);
+                span[server.Length] = server.Contains('?') ? '&' : '?';
+
+                var span2 = span[(server.Length + 1)..];
+                linkSpan.CopyTo(span2);
+                span2 = span2[linkSpan.Length..];
+                base64UrlChars.CopyTo(span2);
+            });
+            return r;
+        }
+
+        internal static HttpRequestMessage GetRequest(Uri server, HttpMethod? method, string hostName)
+        {
+            bool isPost;
+
+            if (method != HttpMethod.Get)
+            {
+                method = HttpMethod.Post;
+                isPost = true;
+            }
+            else
+            {
+                isPost = method == HttpMethod.Post;
+            }
+
+            Uri requestUrl;
+            HttpContent? content = null;
+            if (isPost)
+            {
+                requestUrl = server;
+            }
+            else
+            {
+                int expectedByteCount = Encoding.UTF8.GetMaxByteCount(hostName.Length);
+                byte[]? bytes = null;
+                char[]? chars = null;
+                Span<byte> utf8Bytes = expectedByteCount <= StackallocByteThreshold ?
+                    stackalloc byte[StackallocByteThreshold] :
+                    (bytes = ArrayPool<byte>.Shared.Rent(expectedByteCount));
+                try
+                {
+                    var actualByteCount = Encoding.UTF8.GetBytes(hostName, utf8Bytes);
+                    utf8Bytes = utf8Bytes[..actualByteCount];
+
+                    int expectedCharCount = Base64Url.GetEncodedLength(utf8Bytes.Length);
+                    Span<char> base64UrlChars = expectedCharCount <= StackallocCharThreshold ?
+                        stackalloc char[StackallocCharThreshold] :
+                        (chars = ArrayPool<char>.Shared.Rent(expectedCharCount));
+
+                    Base64Url.TryEncodeToChars(utf8Bytes, base64UrlChars, out var charsWritten);
+                    base64UrlChars = base64UrlChars[..charsWritten];
+                    requestUrl = new Uri(GetGetUrl(server.OriginalString, base64UrlChars), UriKind.Absolute);
+                }
+                finally
+                {
+                    if (bytes is not null)
+                    {
+                        ArrayPool<byte>.Shared.Return(bytes);
+                    }
+                    if (chars is not null)
+                    {
+                        ArrayPool<char>.Shared.Return(chars);
+                    }
+                }
+            }
+
+            HttpRequestMessage request = new(method, requestUrl);
+            if (content != null)
+            {
+                request.Content = content;
+            }
+            request.Headers.Accept.ParseAdd("application/dns-message");
+            return request;
+        }
+    }
+
     /// <summary>
-    /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
+    /// 用于 DNS over HTTPS (DoH) 的 JSON API
+    /// <para>https://www.alibabacloud.com/help/zh/dns/httpdns-doh-json-api</para>
+    /// <para>https://developers.google.cn/speed/public-dns/docs/doh/json?hl=zh-cn</para>
     /// </summary>
-    const int StackallocByteThreshold = 256;
-    const int StackallocCharThreshold = StackallocByteThreshold / 2;
-
-    ref struct CharReadOnlySpan2
+    internal static class DohJsonApi
     {
-        public ReadOnlySpan<char> Span1;
-        public ReadOnlySpan<char> Span2;
-    }
-
-    static string GetGetUrl(ReadOnlySpan<char> server, ReadOnlySpan<char> base64UrlChars)
-    {
-        const string linkSpan = "dns=";
-        var len = server.Length + 1 + linkSpan.Length + base64UrlChars.Length;
-        var r = string.Create(len, new CharReadOnlySpan2 { Span1 = server, Span2 = base64UrlChars }, (span, args) =>
+        internal static HttpRequestMessage GetRequest(Uri server, string hostName, AddressFamily addressFamily)
         {
-            var server = args.Span1;
-            var base64UrlChars = args.Span2;
-
-            server.CopyTo(span);
-            span[server.Length] = server.Contains('?') ? '&' : '?';
-
-            var span2 = span[(server.Length + 1)..];
-            linkSpan.CopyTo(span2);
-            span2 = span2[linkSpan.Length..];
-            base64UrlChars.CopyTo(span2);
-        });
-        return r;
-    }
-
-    internal static HttpRequestMessage GetRequest(Uri server, HttpMethod? method, string hostName)
-    {
-        bool isPost;
-
-        if (method != HttpMethod.Get)
-        {
-            method = HttpMethod.Post;
-            isPost = true;
-        }
-        else
-        {
-            isPost = method == HttpMethod.Post;
-        }
-
-        Uri requestUrl;
-        HttpContent? content = null;
-        if (isPost)
-        {
-            requestUrl = server;
-        }
-        else
-        {
-            int expectedByteCount = Encoding.UTF8.GetMaxByteCount(hostName.Length);
-            byte[]? bytes = null;
-            char[]? chars = null;
-            Span<byte> utf8Bytes = expectedByteCount <= StackallocByteThreshold ?
-                stackalloc byte[StackallocByteThreshold] :
-                (bytes = ArrayPool<byte>.Shared.Rent(expectedByteCount));
-            try
-            {
-                var actualByteCount = Encoding.UTF8.GetBytes(hostName, utf8Bytes);
-                utf8Bytes = utf8Bytes[..actualByteCount];
-
-                Span<char> base64UrlChars = Base64Url.GetEncodedLength(utf8Bytes.Length) <= StackallocCharThreshold ?
-                    stackalloc char[StackallocCharThreshold] :
-                    (chars = ArrayPool<char>.Shared.Rent(expectedByteCount));
-
-                Base64Url.TryEncodeToChars(utf8Bytes, base64UrlChars, out var charsWritten);
-                base64UrlChars = base64UrlChars[..expectedByteCount];
-                requestUrl = new Uri(GetGetUrl(server.OriginalString, base64UrlChars), UriKind.Absolute);
-            }
-            finally
-            {
-                if (bytes is not null)
-                {
-                    ArrayPool<byte>.Shared.Return(bytes);
-                }
-                if (chars is not null)
-                {
-                    ArrayPool<char>.Shared.Return(chars);
-                }
-            }
-        }
-
-        HttpRequestMessage request = new(method, requestUrl);
-        if (content != null)
-        {
-            request.Content = content;
-        }
-        request.Headers.Accept.ParseAdd("application/dns-message");
-        return request;
-    }
-}
-
-/// <summary>
-/// 用于 DNS over HTTPS (DoH) 的 JSON API
-/// <para>https://www.alibabacloud.com/help/zh/dns/httpdns-doh-json-api</para>
-/// <para>https://developers.google.cn/speed/public-dns/docs/doh/json?hl=zh-cn</para>
-/// </summary>
-#if !DEBUG
-file
-#else
-internal
-#endif
-    static class DohJsonApi
-{
-    internal static HttpRequestMessage GetRequest(Uri server, string hostName, AddressFamily addressFamily)
-    {
-        Dictionary<string, string?> queryString = new()
+            Dictionary<string, string?> queryString = new()
         {
             { "name", hostName },
             { "type", DnsResolverPal.AddressFamilyToQueryStringValue(addressFamily) },
         };
-        var requestUrl = QueryHelpers.AddQueryString(server.OriginalString, queryString);
-        HttpRequestMessage request = new(HttpMethod.Get, requestUrl);
-        request.Headers.Accept.ParseAdd("application/dns-json");
-        return request;
+            var requestUrl = QueryHelpers.AddQueryString(server.OriginalString, queryString);
+            HttpRequestMessage request = new(HttpMethod.Get, requestUrl);
+            request.Headers.Accept.ParseAdd("application/dns-json");
+            return request;
+        }
     }
+
 }
 
 file static class DnsResolverPal
@@ -383,8 +374,8 @@ file static class DnsResolverPal
     internal static string AddressFamilyToQueryStringValue(AddressFamily addressFamily) =>
           addressFamily switch
           {
-              AddressFamily.InterNetwork => "A",
-              AddressFamily.InterNetworkV6 => "AAAA",
+              AddressFamily.InterNetwork => STR_DNS_TYPE_A,
+              AddressFamily.InterNetworkV6 => STR_DNS_TYPE_AAAA,
               _ => throw new ArgumentException(net_dns_unsupported_address_family, nameof(addressFamily)),
           };
 
@@ -394,18 +385,23 @@ file static class DnsResolverPal
     internal static ushort AddressFamilyToQueryType(AddressFamily addressFamily) =>
         addressFamily switch
         {
-            AddressFamily.InterNetwork => Dnsapi.DNS_TYPE_A,
-            AddressFamily.InterNetworkV6 => Dnsapi.DNS_TYPE_AAAA,
+            AddressFamily.InterNetwork => DNS_TYPE_A,
+            AddressFamily.InterNetworkV6 => DNS_TYPE_AAAA,
             _ => throw new ArgumentException(net_dns_unsupported_address_family, nameof(addressFamily)),
         };
-}
 
-file static class Dnsapi
-{
+    #region Dnsapi
+
+    // https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/Common/src/Interop/Windows/Dnsapi/Interop.DnsApi.cs#L9
     // https://www.alibabacloud.com/help/zh/dns/httpdns-doh-json-api#p-niu-itd-5yo
 
     internal const ushort DNS_TYPE_A = 0x0001;
     internal const ushort DNS_TYPE_AAAA = 0x001c;
+
+    internal const string STR_DNS_TYPE_A = "A";
+    internal const string STR_DNS_TYPE_AAAA = "AAAA";
+
+    #endregion
 }
 
 internal static partial class LoggerMessages

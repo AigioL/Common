@@ -19,7 +19,7 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
     public DnsComposeResolver(ILoggerFactory loggerFactory)
     {
         this.loggerFactory = loggerFactory;
-        logger = loggerFactory.CreateLogger<DnsComposeResolver>();>
+        logger = loggerFactory.CreateLogger<DnsComposeResolver>();
     }
 
     /// <inheritdoc cref="DohResolver.Method"/>
