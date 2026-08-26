@@ -1,7 +1,11 @@
 using AigioL.Common.Net.ReverseProxy.Internals.FlowAnalyzer;
+using AigioL.Common.Net.ReverseProxy.Internals.Tls;
 using AigioL.Common.Net.ReverseProxy.Services.Abstractions;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.AspNetCore.Hosting;
@@ -34,5 +38,37 @@ public static partial class ListenOptionsExtensions
             }
         });
         return listen;
+    }
+
+    /// <summary>
+    /// 使用 TLS 中间件
+    /// </summary>
+    public static ListenOptions UseTls(this ListenOptions listen)
+    {
+        var certService = listen.ApplicationServices.GetRequiredService<IX509CertService>();
+        listen.Use(next => context => TlsInvadeMiddleware.InvokeAsync(next, context));
+        listen.UseHttps(new TlsHandshakeCallbackOptions()
+        {
+            OnConnection = OnConnectionAsync,
+        });
+        listen.Use(next => context => TlsRestoreMiddleware.InvokeAsync(next, context));
+        return listen;
+
+        async ValueTask<SslServerAuthenticationOptions> OnConnectionAsync(TlsHandshakeCallbackContext context)
+        {
+            X509Certificate? serverCert = null;
+            try
+            {
+                serverCert = await certService.GetServerCertificateAsync(context.ClientHelloInfo, context.CancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            SslServerAuthenticationOptions o = new()
+            {
+                ServerCertificate = serverCert,
+            };
+            return o;
+        }
     }
 }

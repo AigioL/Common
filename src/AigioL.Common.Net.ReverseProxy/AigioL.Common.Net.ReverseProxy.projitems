@@ -17,11 +17,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\FlowAnalyzeStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\FlowQueues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\ValueTaskExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\EmptyTlsConnectionFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\TlsInvadeMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\TlsRestoreMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FlowType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ReverseProxyJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalProxyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FlowStatistics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IFlowAnalyzer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IX509CertService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\FlowAnalyzer.cs" />
   </ItemGroup>
 </Project>
