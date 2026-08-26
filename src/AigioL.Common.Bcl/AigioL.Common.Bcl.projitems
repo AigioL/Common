@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)nil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeAsyncDisposable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Reactive\Disposables\CompositeDisposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Runtime\CompilerServices\RuntimeAsyncMethodGenerationAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\InteropServices\ArchitectureFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Runtime\Serialization\IBinarySerialize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Security\Cryptography\X509Certificates\X509CertificateExtensions.cs" />
