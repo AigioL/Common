@@ -9,14 +9,24 @@
     <Import_RootNamespace>AigioL.Common.Net.ReverseProxy</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\GeneralConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApplicationBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\KestrelServerOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ListenOptionsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\DomainPattern.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\DelegatingStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\DuplexPipeStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\DuplexPipeStreamAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\FlowAnalyzeStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\FlowQueues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\ValueTaskExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HostString2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HttpProxyPacMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\IHttpProxyFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\ProxyProtocol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Logging\IRequestLoggingFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Logging\RequestLoggingFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Logging\RequestLoggingMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\EmptyTlsConnectionFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\TlsInvadeMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\TlsRestoreMiddleware.cs" />
@@ -25,7 +35,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalProxyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FlowStatistics.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IFlowAnalyzer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Configuration\IReverseProxyConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IX509CertService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\FlowAnalyzer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Internals\Configuration\" />
   </ItemGroup>
 </Project>
