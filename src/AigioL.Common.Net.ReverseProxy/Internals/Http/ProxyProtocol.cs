@@ -1,4 +1,4 @@
-namespace AigioL.Common.Net.ReverseProxy.Internals.HttpProxy;
+namespace AigioL.Common.Net.ReverseProxy.Internals.Http;
 
 /// <summary>
 /// 代理协议

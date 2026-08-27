@@ -6,7 +6,7 @@ using System.IO.Pipelines;
 using System.Net;
 using static AigioL.Common.Net.ReverseProxy.Constants.GeneralConstants;
 
-namespace AigioL.Common.Net.ReverseProxy.Internals.HttpProxy;
+namespace AigioL.Common.Net.ReverseProxy.Internals.Http;
 
 /// <summary>
 /// HTTP 代理自动配置（PAC）策略中间件

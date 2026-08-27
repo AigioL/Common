@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace AigioL.Common.Net.ReverseProxy.Internals.HttpProxy;
+namespace AigioL.Common.Net.ReverseProxy.Internals.Http;
 
 /// <summary>
 /// HTTP 代理功能

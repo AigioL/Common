@@ -1,3 +1,4 @@
+using AigioL.Common.Net.ReverseProxy.Internals.Binary;
 using System.Net;
 
 namespace AigioL.Common.Net.ReverseProxy.Internals.Configuration;
@@ -7,6 +8,11 @@ namespace AigioL.Common.Net.ReverseProxy.Internals.Configuration;
 /// </summary>
 interface IReverseProxyConfig
 {
+    /// <summary>
+    /// 尝试获取脚本内容
+    /// </summary>
+    bool TryGetScriptContent(int localScriptId, out BinaryContent content);
+
     /// <summary>
     /// 获取所有域名表达式
     /// </summary>

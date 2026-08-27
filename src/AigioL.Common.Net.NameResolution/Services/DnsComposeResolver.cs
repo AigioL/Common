@@ -156,7 +156,6 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
     /// <summary>
     /// 可由派生类重写的创建 DoH 所需的 <see cref="HttpMessageHandler"/>
     /// </summary>
-    /// <returns></returns>
     protected virtual HttpMessageHandler CreateHttpHandler()
     {
         SocketsHttpHandler h = new()

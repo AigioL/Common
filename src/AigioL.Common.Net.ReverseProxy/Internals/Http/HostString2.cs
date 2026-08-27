@@ -18,13 +18,13 @@ static class HostString2
     /// https://github.com/dotnet/aspnetcore/blob/v11.0.0-preview.7.26381.103/src/Http/Http.Abstractions/src/HostString.cs#L24
     /// </summary>
     [UnsafeAccessor(UnsafeAccessorKind.StaticField, Name = "s_safeHostStringChars")]
-    extern static ref SearchValues<char> GetSafeHostStringChars(HostString _ = default);
+    internal extern static ref SearchValues<char> GetSafeHostStringChars(HostString _ = default);
 
     /// <summary>
     /// https://github.com/dotnet/aspnetcore/blob/v11.0.0-preview.7.26381.103/src/Http/Http.Abstractions/src/HostString.cs#L27
     /// </summary>
     [UnsafeAccessor(UnsafeAccessorKind.StaticField, Name = "s_idnMapping")]
-    extern static ref IdnMapping GetIdnMapping(HostString _ = default);
+    internal extern static ref IdnMapping GetIdnMapping(HostString _ = default);
 
     /// <summary>
     /// Parses the current value. IPv6 addresses will have brackets added if they are missing.

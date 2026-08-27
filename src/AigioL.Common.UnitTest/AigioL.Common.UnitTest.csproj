@@ -37,6 +37,8 @@
 
 	<Import Project="..\AigioL.Common.Net.NameResolution\AigioL.Common.Net.NameResolution.projitems" Label="Shared" />
 
+	<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
+
 	<!--<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />-->
 
 </Project>

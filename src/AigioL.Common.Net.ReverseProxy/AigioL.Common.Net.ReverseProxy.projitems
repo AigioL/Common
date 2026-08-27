@@ -13,6 +13,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApplicationBuilderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\KestrelServerOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ListenOptionsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\BinaryContent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\BinaryContentExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\BinaryContentType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Configuration\IDomainConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\CookieHttpClientFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\DomainPattern.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\DelegatingStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\DuplexPipeStream.cs" />
@@ -21,7 +26,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\FlowQueues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\FlowAnalyzer\ValueTaskExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HostString2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HttpLocalRequestMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HttpProxyPacMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HttpReverseProxyMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\IHttpProxyFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\ProxyProtocol.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Logging\IRequestLoggingFeature.cs" />
@@ -34,12 +41,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\ReverseProxyJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalProxyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FlowStatistics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\ICookieHttpClientFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IFlowAnalyzer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Configuration\IReverseProxyConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IX509CertService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\FlowAnalyzer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Internals\Configuration\" />
   </ItemGroup>
 </Project>

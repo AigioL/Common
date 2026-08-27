@@ -15,4 +15,17 @@ public static class GeneralConstants
     /// </summary>
     public const int StackallocByteThreshold = 256;
     public const int StackallocCharThreshold = StackallocByteThreshold / 2;
+
+    /// <summary>
+    /// 同源脚本注入路径前缀，避免使用外域 Script Src 造成页面脚本 Public Path 污染
+    /// </summary>
+    public const string InjectScriptPathPrefix = "/AigioL.Common.Net.ReverseProxy_Inject/";
+
+    public const string HttpHeaderCookie = "cookie";
+
+    public const string HttpHeaderReferer = "referer";
+
+    public const string HttpHeader_SteamTool = "-steamtool";
+
+    public const string LocalDomain = "local.rmbgame.net";
 }

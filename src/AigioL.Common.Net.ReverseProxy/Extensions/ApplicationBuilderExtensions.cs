@@ -1,4 +1,4 @@
-using AigioL.Common.Net.ReverseProxy.Internals.HttpProxy;
+using AigioL.Common.Net.ReverseProxy.Internals.Http;
 using AigioL.Common.Net.ReverseProxy.Internals.Logging;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
@@ -15,14 +15,14 @@ static partial class ApplicationBuilderExtensions
         return app.Use(next => context => middleware.InvokeAsync(context, next));
     }
 
-    ///// <summary>
-    ///// 使用本地 HTTP 请求中间件
-    ///// </summary>
-    //public static IApplicationBuilder UseHttpLocalRequest(this IApplicationBuilder app)
-    //{
-    //    var middleware = app.ApplicationServices.GetRequiredService<HttpLocalRequestMiddleware>();
-    //    return app.Use(next => context => middleware.InvokeAsync(context, next));
-    //}
+    /// <summary>
+    /// 使用本地 HTTP 代理策略中间件
+    /// </summary>
+    public static IApplicationBuilder UseHttpLocalRequest(this IApplicationBuilder app)
+    {
+        var middleware = app.ApplicationServices.GetRequiredService<HttpLocalRequestMiddleware>();
+        return app.Use(next => context => middleware.InvokeAsync(context, next));
+    }
 
     /// <summary>
     /// 使用请求日志中间件
@@ -43,12 +43,12 @@ static partial class ApplicationBuilderExtensions
         return next(context);
     });
 
-    ///// <summary>
-    ///// 使用反向代理中间件
-    ///// </summary>
-    //public static IApplicationBuilder UseHttpReverseProxy(this IApplicationBuilder app)
-    //{
-    //    var middleware = app.ApplicationServices.GetRequiredService<HttpReverseProxyMiddleware>();
-    //    return app.Use(next => context => middleware.InvokeAsync(context, next));
-    //}
+    /// <summary>
+    /// 使用反向代理中间件
+    /// </summary>
+    public static IApplicationBuilder UseHttpReverseProxy(this IApplicationBuilder app)
+    {
+        var middleware = app.ApplicationServices.GetRequiredService<HttpReverseProxyMiddleware>();
+        return app.Use(next => context => middleware.InvokeAsync(context, next));
+    }
 }
