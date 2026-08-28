@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using Yarp.ReverseProxy.Forwarder;
 
 namespace AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
 
@@ -39,7 +41,11 @@ public sealed partial record class DomainConfig : IDomainConfig
     public IReadOnlyDictionary<DomainPattern, IDomainConfig>? Items { get; set; }
 
     /// <inheritdoc/>
-    public bool IsServerSideProxy { get; }
+    public bool IsServerSideProxy(HttpRequest req, [NotNullWhen(true)] out ForwarderRequestConfig? forwarderRequestConfig)
+    {
+        forwarderRequestConfig = null;
+        return false;
+    }
 
     public static readonly DomainConfig Default = new()
     {

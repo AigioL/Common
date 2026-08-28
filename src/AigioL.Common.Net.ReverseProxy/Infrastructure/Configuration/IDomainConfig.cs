@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using Yarp.ReverseProxy.Forwarder;
 using TlsSniPatternStruct = System.Net.TlsSniPattern;
 
 namespace AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
@@ -62,9 +64,9 @@ public interface IDomainConfig
     IReadOnlyDictionary<DomainPattern, IDomainConfig>? Items { get; }
 
     /// <summary>
-    /// 是否为服务器加速
+    /// 是否进行服务器加速
     /// </summary>
-    bool IsServerSideProxy { get; }
+    bool IsServerSideProxy(HttpRequest req, [NotNullWhen(true)] out ForwarderRequestConfig? forwarderRequestConfig);
 
     /// <summary>
     /// 获取 SNI 自定义值表达式

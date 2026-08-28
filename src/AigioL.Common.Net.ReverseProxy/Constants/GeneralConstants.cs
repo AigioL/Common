@@ -32,7 +32,15 @@ public static class GeneralConstants
     public static readonly string HttpHeaderServer = "AigioL.Common.Net.ReverseProxy";
 
     /// <summary>
-    /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/Common/src/System/Net/IPAddressParserStatics.cs
+    /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/Common/src/System/Net/IPAddressParserStatics.cs#L9
     /// </summary>
     public const int IPv6AddressBytes = 16;
+
+    public const string KeyGlobalProxy = "GlobalProxy";
+
+    public const char TemplateStringVarPrefix = '@';
+
+    public const string TemplateStringVarDomain = "@domain";
+
+    public const string TemplateStringVarUri = "@uri";
 }

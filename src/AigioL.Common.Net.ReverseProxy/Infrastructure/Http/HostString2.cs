@@ -78,7 +78,7 @@ static class HostString2
     /// <summary>
     /// 将 <see cref="HostString"/> 写入 <see cref="PipeWriter"/>
     /// </summary>
-    public static void Write(this IBufferWriter<byte> writer, HostString value)
+    public static void WriteHostString(this IBufferWriter<byte> writer, HostString value)
     {
 #if NETFRAMEWORK
         writer.Write(Encoding.UTF8.GetBytes(value.ToString()));

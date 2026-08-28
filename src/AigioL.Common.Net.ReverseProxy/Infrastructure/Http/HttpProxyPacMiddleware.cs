@@ -50,7 +50,7 @@ sealed class HttpProxyPacMiddleware(IReverseProxyConfig reverseProxyConfig)
         writer.Write("function FindProxyForURL(url, host){"u8);
         writer.Write(newLine);
         writer.Write("    var pac = 'PROXY "u8);
-        writer.Write(proxyHost);
+        writer.WriteHostString(proxyHost);
         writer.Write("';"u8);
         writer.Write(newLine);
         foreach (var domains in domainPatterns)

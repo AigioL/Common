@@ -51,4 +51,13 @@ public sealed class NameResolutionTest
         var req = DohResolver.Rfc8484.GetRequest(new Uri(server, UriKind.Absolute), HttpMethod.Get, hostName);
         Assert.True(req.RequestUri!.OriginalString == url);
     }
+
+    [Fact]
+    public void OtherTest()
+    {
+        var uri1 = new UriBuilder("https://www.baidu.com"[(5 + 3)..]).Uri;
+        var host1 = uri1.Host;
+
+        Console.WriteLine(host1);
+    }
 }

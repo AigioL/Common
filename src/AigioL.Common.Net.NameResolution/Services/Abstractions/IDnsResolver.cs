@@ -19,5 +19,5 @@ public interface IDnsResolver : IAsyncDisposable, IDisposable
     /// <exception cref="ArgumentNullException"><paramref name="hostName"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException"><paramref name="hostName"/> is empty.</exception>
     /// <exception cref="ObjectDisposedException">The resolver has been disposed.</exception>
-    Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily, CancellationToken cancellationToken = default);
+    Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default);
 }

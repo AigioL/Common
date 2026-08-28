@@ -21,6 +21,7 @@
 		</PackageReference>
 		<PackageReference Include="Yarp.ReverseProxy" />
 		<PackageReference Include="Utf8StringInterpolation" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
 	</ItemGroup>
 
 	<ItemGroup>

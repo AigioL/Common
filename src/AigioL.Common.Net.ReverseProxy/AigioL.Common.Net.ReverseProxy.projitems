@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants\GeneralConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApplicationBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\KestrelServerOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ListenOptionsExtensions.cs" />
@@ -21,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Binary\Utf8StringComparerOrdinalIgnoreCase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Configuration\DomainConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Configuration\IDomainConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Configuration\IScriptConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Http\CookieHttpClientFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Http\DomainPattern.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\FlowAnalyzer\DelegatingStream.cs" />

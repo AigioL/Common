@@ -22,6 +22,7 @@
 		<PackageReference Include="MemoryPack" />
 		<PackageReference Include="Yarp.ReverseProxy" />
 		<PackageReference Include="Utf8StringInterpolation" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
 	</ItemGroup>
 
 	<Import Project="..\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
