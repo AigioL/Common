@@ -28,7 +28,7 @@ interface IReverseProxyConfig
     /// <summary>
     /// 尝试获取域名配置
     /// </summary>
-    bool TryGetDomainConfig(string url, [MaybeNullWhen(false)] out IDomainConfig value);
+    bool TryGetDomainConfig(HttpRequest req, [MaybeNullWhen(false)] out IDomainConfig value);
 
     /// <summary>
     /// 尝试获取脚本配置

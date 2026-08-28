@@ -149,7 +149,7 @@ public sealed class DohResolver : IDnsResolver, IAsyncDisposable, IDisposable
     public bool UseRfc8484 { get; set; }
 
     /// <inheritdoc/>
-    public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily, CancellationToken cancellationToken = default)
+    public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(client == null, this);
         ObjectDisposedException.ThrowIf(servers == null, this);
@@ -165,9 +165,11 @@ public sealed class DohResolver : IDnsResolver, IAsyncDisposable, IDisposable
         var ts = servers.Select(server => ResolveAddressesCoreAsync(client, server, hostName, addressFamily, cts.Token)).ToList();
         var r = await ts.ParallelWhenAnyAsync(DnsResultExtensions.HasValue, cts);
         return r;
+
+        // TODO: 使用 System.Runtime.Caching.MemoryCache 将 DNS 结果进行缓存！
     }
 
-    async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesCoreAsync(HttpClient client, Uri server, string hostName, AddressFamily addressFamily, CancellationToken cancellationToken = default)
+    async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesCoreAsync(HttpClient client, Uri server, string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
         if (addressFamily == AddressFamily.Unspecified)
         {
@@ -184,7 +186,7 @@ public sealed class DohResolver : IDnsResolver, IAsyncDisposable, IDisposable
         return await DoResolve(client, server, hostName, addressFamily, cancellationToken).ConfigureAwait(false);
     }
 
-    async Task<DnsResultWrapper<AddressRecord>> DoResolve(HttpClient client, Uri server, string hostName, AddressFamily addressFamily, CancellationToken cancellationToken)
+    async Task<DnsResultWrapper<AddressRecord>> DoResolve(HttpClient client, Uri server, string hostName, AddressFamily addressFamily, CancellationToken cancellationToken = default)
     {
         var timestamp = Stopwatch.GetTimestamp();
         try

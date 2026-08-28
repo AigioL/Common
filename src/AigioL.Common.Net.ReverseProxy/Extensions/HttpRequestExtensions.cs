@@ -6,10 +6,14 @@ using System.Runtime.CompilerServices;
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.AspNetCore.Http;
 
+/// <summary>
+/// <see cref="HttpRequest"/> 的扩展方法
+/// </summary>
 public static partial class HttpRequestExtensions
 {
     /// <summary>
     /// 将请求的 <see cref="UriHelper.GetDisplayUrl(HttpRequest)"/> 字符串以 UTF-8 编码写入响应流中
+    /// <para>避免分配新的字符串实例</para>
     /// </summary>
     public static void WriteDisplayUrl(this HttpRequest request)
     {
@@ -24,6 +28,9 @@ public static partial class HttpRequestExtensions
         response.BodyWriter.Write(request.QueryString.Value);
     }
 
+    /// <summary>
+    /// 获取请求的 <see cref="UriHelper.GetDisplayUrl(HttpRequest)"/> 的字符串长度
+    /// </summary>
     public static int GetDisplayUrlLength(this HttpRequest request) => request.Scheme.Length
         + 3
         + (string.IsNullOrEmpty(request.Host.Value) ? 0 : request.Host.Value.Length)
@@ -31,6 +38,10 @@ public static partial class HttpRequestExtensions
         + (string.IsNullOrEmpty(request.Path.Value) ? 0 : request.Path.Value.Length)
         + (string.IsNullOrEmpty(request.QueryString.Value) ? 0 : request.QueryString.Value.Length);
 
+    /// <summary>
+    /// 将请求的 <see cref="UriHelper.GetDisplayUrl(HttpRequest)"/> 字符串以 UTF-8 编码写入 <see cref="Span{T}"/> 中
+    /// <para>避免分配新的字符串实例</para>
+    /// </summary>
     public static void WriteDisplayUrl(this HttpRequest request, Span<char> buffers)
     {
         var written = 0;
@@ -62,20 +73,38 @@ public static partial class HttpRequestExtensions
         if (!string.IsNullOrEmpty(request.QueryString.Value))
         {
             request.QueryString.Value.AsSpan().CopyTo(buffers[written..]);
-            written += request.QueryString.Value.Length;
+            //written += request.QueryString.Value.Length;
         }
     }
 
+    /// <summary>
+    /// 获取请求的 <see cref="UriHelper.GetDisplayUrl(HttpRequest)"/> 的 HTTPS 协议的字符串，通常用于 HTTP 重定向到 HTTPS
+    /// </summary>
     public static string GetDisplayUrlHttps(this HttpRequest request)
     {
         return string.Concat([Uri.UriSchemeHttps, "://", request.Host.Value, request.PathBase.Value, request.Path.Value, request.QueryString.Value]);
     }
 
+    /// <summary>
+    /// 获取请求的原始 URL 的字符串长度
+    /// <para>
+    /// 原始 URL 定义为域信息后面的 URL 的一部分，在 URL 字符串 http://www.contoso.com/articles/recent.aspx 中，原始 URL 为 /articles/recent.aspx，原始 URL 包括查询字符串（如果存在）
+    /// </para>
+    /// <para>https://learn.microsoft.com/zh-cn/dotnet/api/system.web.httprequest.rawurl</para>
+    /// </summary>
     public static int GetRawUrlLength(this HttpRequest request) =>
         (string.IsNullOrEmpty(request.PathBase.Value) ? 0 : request.PathBase.Value.Length)
         + (string.IsNullOrEmpty(request.Path.Value) ? 0 : request.Path.Value.Length)
         + (string.IsNullOrEmpty(request.QueryString.Value) ? 0 : request.QueryString.Value.Length);
 
+    /// <summary>
+    /// 将请求的原始 URL 的字符串写入 <see cref="Span{T}"/> 中
+    /// <para>
+    /// 原始 URL 定义为域信息后面的 URL 的一部分，在 URL 字符串 http://www.contoso.com/articles/recent.aspx 中，原始 URL 为 /articles/recent.aspx，原始 URL 包括查询字符串（如果存在）
+    /// </para>
+    /// <para>https://learn.microsoft.com/zh-cn/dotnet/api/system.web.httprequest.rawurl</para>
+    /// <para>避免分配新的字符串实例</para>
+    /// </summary>
     public static void WriteRawUrl(this HttpRequest request, Span<char> buffers)
     {
         var written = 0;
@@ -105,6 +134,9 @@ Version doesn't map to a known HTTP protocol. (Parameter '{paramName}')
 Actual value was {actualValue}.
 """);
 
+    /// <summary>
+    /// 获取请求的 HTTP 协议版本
+    /// </summary>
     public static Version GetHttpVersion(this HttpRequest request) => GetHttpVersion(request.Protocol);
 
     static Version GetHttpVersion(string requestProtocol)

@@ -6,6 +6,9 @@ namespace Microsoft.AspNetCore.Http;
 
 static partial class BinaryContentExtensions
 {
+    /// <summary>
+    /// 将二进制内容写入响应流
+    /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task WriteAsync(
         this HttpResponse rsp,

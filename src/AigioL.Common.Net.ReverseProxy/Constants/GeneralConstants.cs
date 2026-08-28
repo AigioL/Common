@@ -19,7 +19,7 @@ public static class GeneralConstants
     /// <summary>
     /// 同源脚本注入路径前缀，避免使用外域 Script Src 造成页面脚本 Public Path 污染
     /// </summary>
-    public const string InjectScriptPathPrefix = "/AigioL.Common.Net.ReverseProxy_Inject/";
+    public static ReadOnlySpan<byte> InjectScriptPathPrefix() => "/AigioL.Common.Net.ReverseProxy_Inject/"u8;
 
     public const string HttpHeaderCookie = "cookie";
 
@@ -43,4 +43,6 @@ public static class GeneralConstants
     public const string TemplateStringVarDomain = "@domain";
 
     public const string TemplateStringVarUri = "@uri";
+
+    public const string TemplateStringVarOrigin = "${origin}";
 }

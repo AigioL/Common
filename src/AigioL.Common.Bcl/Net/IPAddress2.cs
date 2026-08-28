@@ -19,15 +19,31 @@ public static partial class IPAddress2
     /// <summary>
     /// 尝试将 <see cref="string"/> 转换为 <see cref="IPAddress"/>，当返回值为 <see langword="true"/> 时，传入与传出的参数不为 <see langword="null"/>。
     /// </summary>
-    /// <param name="ipString"></param>
-    /// <param name="address"></param>
-    /// <returns></returns>
     public static bool TryParse(
         [NotNullWhen(true)] string? ipString,
         [NotNullWhen(true)] out IPAddress? address)
     {
         if (ipString == _127_0_0_1 ||
             string.Equals(ipString, localhost, StringComparison.OrdinalIgnoreCase))
+        {
+            address = IPAddress.Loopback;
+            return true;
+        }
+        else
+        {
+            return IPAddress.TryParse(ipString, out address);
+        }
+    }
+
+    /// <summary>
+    /// 尝试将 <see cref="ReadOnlySpan{T}"/> 转换为 <see cref="IPAddress"/>，当返回值为 <see langword="true"/> 时，传入与传出的参数不为 <see langword="null"/>。
+    /// </summary>
+    public static bool TryParse(
+        ReadOnlySpan<char> ipString,
+        [NotNullWhen(true)] out IPAddress? address)
+    {
+        if (ipString == _127_0_0_1 ||
+            localhost.Equals(ipString, StringComparison.OrdinalIgnoreCase))
         {
             address = IPAddress.Loopback;
             return true;

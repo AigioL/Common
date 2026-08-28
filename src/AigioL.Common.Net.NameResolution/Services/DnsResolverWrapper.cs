@@ -16,15 +16,18 @@ public sealed class DnsResolverWrapper : IDnsResolver, IAsyncDisposable, IDispos
     DnsResolver? resolver;
     IList<IPEndPoint>? servers;
     readonly ILogger logger;
+    readonly string? traceId;
 
     /// <summary>
     /// 使用指定的 <see cref="DnsResolverOptions"/> 初始化 <see cref="DnsResolverWrapper"/> 实例
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="options">要使用的 <see cref="DnsResolverOptions"/> 实例</param>
-    public DnsResolverWrapper(ILogger<DnsResolverWrapper> logger, DnsResolverOptions? options = null)
+    /// <param name="traceId"></param>
+    public DnsResolverWrapper(ILogger<DnsResolverWrapper> logger, DnsResolverOptions? options = null, string? traceId = null)
     {
         this.logger = logger;
+        this.traceId = traceId;
         servers = options?.Servers;
         if (options != null)
         {
@@ -37,10 +40,11 @@ public sealed class DnsResolverWrapper : IDnsResolver, IAsyncDisposable, IDispos
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="servers">要使用的 DNS 服务器集</param>
-    public DnsResolverWrapper(ILogger<DnsResolverWrapper> logger, IList<IPEndPoint>? servers) : this(logger, servers == null ? null : new DnsResolverOptions
+    /// <param name="traceId"></param>
+    public DnsResolverWrapper(ILogger<DnsResolverWrapper> logger, IList<IPEndPoint>? servers, string? traceId = null) : this(logger, servers == null ? null : new DnsResolverOptions
     {
         Servers = servers,
-    })
+    }, traceId)
     {
     }
 
@@ -118,7 +122,7 @@ public sealed class DnsResolverWrapper : IDnsResolver, IAsyncDisposable, IDispos
     }
 
     /// <inheritdoc/>
-    public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily, CancellationToken cancellationToken = default)
+    public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -134,7 +138,7 @@ public sealed class DnsResolverWrapper : IDnsResolver, IAsyncDisposable, IDispos
             {
                 var timestamp = Stopwatch.GetTimestamp();
                 var r = await resolver.ResolveAddressesAsync(hostName, addressFamily, cancellationToken);
-                return r.ToWrapper(DnsResultSourceType.DnsServers, elapsedTime: Stopwatch.GetElapsedTime(timestamp));
+                return r.ToWrapper(DnsResultSourceType.DnsServers, traceId, Stopwatch.GetElapsedTime(timestamp));
             }
 #else
         throw new NotImplementedException();

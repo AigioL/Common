@@ -227,7 +227,7 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily, CancellationToken cancellationToken = default)
+    public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
         try
         {

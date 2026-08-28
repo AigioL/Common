@@ -1,5 +1,6 @@
 using AigioL.Common.Net.NameResolution.Abstractions;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
@@ -7,10 +8,14 @@ using Microsoft.IO;
 using Microsoft.Net.Http.Headers;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Compression;
 using System.Net;
+using System.Net.Mime;
 using System.Text;
 using Yarp.ReverseProxy.Forwarder;
 using static AigioL.Common.Net.ReverseProxy.Constants.GeneralConstants;
+using static AigioL.Common.Net.ReverseProxy.Infrastructure.Binary.ScriptInjectHelper;
+using static AigioL.Common.Net.ReverseProxy.Infrastructure.Http.LoggerMessages;
 
 namespace AigioL.Common.Net.ReverseProxy.Infrastructure.Http;
 
@@ -23,6 +28,7 @@ sealed partial class HttpReverseProxyMiddleware
     readonly IReverseProxyHttpMessageInvokerFactory factory;
     readonly IReverseProxyConfig reverseProxyConfig;
     readonly IDnsResolver dnsResolver;
+    readonly FixedServersDnsResolver fixedServersDnsResolver;
     readonly ILogger logger;
 
 #pragma warning disable IDE0290 // 使用主构造函数
@@ -32,12 +38,14 @@ sealed partial class HttpReverseProxyMiddleware
         IReverseProxyHttpMessageInvokerFactory factory,
         IReverseProxyConfig reverseProxyConfig,
         IDnsResolver dnsResolver,
+        FixedServersDnsResolver fixedServersDnsResolver,
         ILogger<HttpReverseProxyMiddleware> logger)
     {
         this.forwarder = forwarder;
         this.factory = factory;
         this.reverseProxyConfig = reverseProxyConfig;
         this.dnsResolver = dnsResolver;
+        this.fixedServersDnsResolver = fixedServersDnsResolver;
         this.logger = logger;
     }
 
@@ -88,7 +96,8 @@ sealed partial class HttpReverseProxyMiddleware
             IPAddress? hostIp = null;
             if (context.Request.Host.HasValue)
             {
-                var ipResult = await dnsResolver.ResolveAddressesAsync(context.Request.Host.Value, cancellationToken: context.RequestAborted);
+                // 大多默认配置为系统 DNS，这里用预设的固定值 DNS 服务器 fixedServersDnsResolver 再尝试一次
+                var ipResult = await fixedServersDnsResolver.ResolveAddressesAsync(context.Request.Host.Value, cancellationToken: context.RequestAborted);
                 if (ipResult.Result.Records.Count != 0)
                 {
                     hostIp = ipResult.Result.Records[0].Address;
@@ -143,7 +152,7 @@ sealed partial class HttpReverseProxyMiddleware
                 try
                 {
                     var destinationBuilder = new StringBuilder(destination.AbsoluteUri);
-                    destinationBuilder.Replace(TemplateStringVarDomain, context.Request.Host.Host);
+                    destinationBuilder.Replace(TemplateStringVarDomain, context.Request.Host.GetHost());
 
                     if (rawUrlLength != 0)
                     {
@@ -166,7 +175,7 @@ sealed partial class HttpReverseProxyMiddleware
             var h = factory.CreateHttpMessageHandler(context.Request.Host.Host, domainConfig);
             if (!string.IsNullOrEmpty(domainConfig.UserAgent))
             {
-                var newUA = domainConfig.UserAgent.Replace("${origin}", context.Request.Headers.UserAgent, StringComparison.InvariantCultureIgnoreCase);
+                var newUA = domainConfig.UserAgent.Replace(TemplateStringVarOrigin, context.Request.Headers.UserAgent, StringComparison.InvariantCultureIgnoreCase);
                 context.Request.Headers.UserAgent = newUA;
             }
 
@@ -192,7 +201,7 @@ sealed partial class HttpReverseProxyMiddleware
             }
             else if (isScriptInject)
             {
-                await HandleScriptInject(context, scriptConfigs, rspBodyRaw);
+                await HandleScriptInjectAsync(context, scriptConfigs, rspBodyRaw);
                 return;
             }
         }
@@ -251,8 +260,27 @@ sealed partial class HttpReverseProxyMiddleware
     /// </summary>
     bool TryGetDomainConfig(HttpRequest req, [MaybeNullWhen(false)] out IDomainConfig value)
     {
-        throw new NotImplementedException();
+        value = null;
+
+        if (!reverseProxyConfig.OnlyEnableProxyScript && reverseProxyConfig.TryGetDomainConfig(req, out value))
+        {
+            return true;
+        }
+
+        // 未配置的域名，但仍然被解析到本机 IP 的域名
+        if (IsDomain(req.Host.GetHost()))
+        {
+            LogWarnDNS(logger, req.Host);
+            value = DomainConfig.Default;
+            return true;
+        }
+        return false;
     }
+
+    /// <summary>
+    /// 是否为域名
+    /// </summary>
+    static bool IsDomain(ReadOnlySpan<char> host) => !IPAddress2.TryParse(host, out _) && host.Contains('.');
 
     /// <summary>
     /// 获取 YARP 代理请求的 URI 前缀
@@ -310,7 +338,7 @@ sealed partial class HttpReverseProxyMiddleware
     /// <summary>
     /// 处理脚本注入内容
     /// </summary>
-    async Task HandleScriptInject(HttpContext context, IReadOnlyCollection<IScriptConfig>? scripts, Stream rspBodyRaw)
+    async Task HandleScriptInjectAsync(HttpContext context, IReadOnlyCollection<IScriptConfig>? scripts, Stream rspBodyRaw)
     {
         async Task ResetBody()
         {
@@ -320,12 +348,36 @@ sealed partial class HttpReverseProxyMiddleware
             context.Response.Body = rspBodyRaw;
         }
 
+        //async Task SetBodyAsync(Stream stream, bool leaveOpen = false)
+        //{
+        //    Stream? rspBodyTemp = null;
+        //    try
+        //    {
+        //        context.Response.ContentLength = stream.Length;
+        //        stream.Seek(0, SeekOrigin.Begin);
+        //        await stream.CopyToAsync(rspBodyRaw, context.RequestAborted);
+        //        rspBodyTemp = context.Response.Body;
+        //        context.Response.Body = rspBodyRaw;
+        //    }
+        //    finally
+        //    {
+        //        if (!leaveOpen)
+        //        {
+        //            if (rspBodyTemp != null)
+        //            {
+        //                await rspBodyTemp.DisposeAsync();
+        //            }
+        //        }
+        //    }
+        //}
+
         if (!(scripts != null && scripts.Count != 0) ||
             context.Request.Method != HttpMethods.Get ||
             context.Response.StatusCode != StatusCodes.Status200OK ||
             context.Response.ContentType == null ||
-            !context.Response.ContentType.Contains("text/html", StringComparison.InvariantCultureIgnoreCase))
+            !context.Response.ContentType.Contains(MediaTypeNames.Text.Html, StringComparison.InvariantCultureIgnoreCase))
         {
+            // 只针对 HTML 页面启用脚本时，通过 Content-Type 判断是否为 HTML 页面，如果不是，则不注入脚本
             await ResetBody();
             return;
         }
@@ -333,15 +385,103 @@ sealed partial class HttpReverseProxyMiddleware
         if (reverseProxyConfig.IsOnlyWorkSteamBrowser &&
             context.Request.Headers.UserAgent.Contains("Valve Steam", StringComparer.InvariantCulture) == false)
         {
+            // 只针对 Steam 内置浏览器启用脚本时，通过 User-Agent 判断是否为 Steam 内置浏览器，如果不是，则不注入脚本
             await ResetBody();
             return;
         }
 
         if (!StringValues.IsNullOrEmpty(context.Response.Headers.ContentSecurityPolicy))
         {
+            // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Guides/CSP
             context.Response.Headers.Remove(HeaderNames.ContentSecurityPolicy);
         }
 
-        // TODO: xxx
+        try
+        {
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
+
+            // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/Content-Encoding
+            var contentEncoding = context.Response.Headers.GetContentEncoding().FirstOrDefault(); // 响应头通常只有一个值
+            using var bodyDecompress = contentEncoding.GetCompressionStream(context.Response.Body, CompressionMode.Decompress, true); // 根据响应头的 Content-Encoding 解压响应体
+
+            RecyclableMemoryStream? bodyDecompressMemory = null;
+            var usingBodyDecompressMemory = false;
+            try
+            {
+                if (bodyDecompress != null)
+                {
+                    // 创建临时内存流，将 CompressionStream 中数据拷贝过去，实现解压数据
+                    bodyDecompressMemory = m.GetStream();
+                    usingBodyDecompressMemory = true;
+                    await bodyDecompress.CopyToAsync(bodyDecompressMemory, context.RequestAborted);
+                }
+                else if (context.Response.Body is RecyclableMemoryStream bodyRecyclableMemoryStream)
+                {
+                    // CompressionStream 为 null，表示没有压缩，直接使用原流，避免复制
+                    bodyDecompressMemory = bodyRecyclableMemoryStream;
+                }
+                else
+                {
+                    // CompressionStream 为 null，但是原流类型不确定，创建临时内存流，拷贝一份，以便写入和重置位置
+                    bodyDecompressMemory = m.GetStream();
+                    usingBodyDecompressMemory = true;
+                    await context.Response.Body.CopyToAsync(bodyDecompressMemory, context.RequestAborted);
+                }
+                bodyDecompressMemory.Position = 0;
+
+                var encoding = context.Response.GetEncoding();
+
+                var isGithubHost = IsGitHubHost(context.Request.Host);
+                var isFindPos = isGithubHost
+                    ? FindScriptInjectInsertPositionForGitHub(bodyDecompressMemory, encoding, out var position)
+                    : FindScriptInjectInsertPosition(bodyDecompressMemory, encoding, out position);
+
+                if (isFindPos)
+                {
+                    // 与旧版本的变更：HTML 内容不再根据原始响应头中的 ContentEncoding 进行压缩，直接返回未压缩的内容，避免再进行压缩导致的不必要的内存分配
+                    await WriteUtf8HtmlAsync(rspBodyRaw, position, bodyDecompressMemory.GetReadOnlySequence(), scripts, context.RequestAborted);
+                    if (context.Response.Body != rspBodyRaw)
+                    {
+                        await context.Response.Body.DisposeAsync();
+                        context.Response.Body = rspBodyRaw;
+                    }
+                    context.Response.Headers.Remove(HeaderNames.ContentType); // 内容未压缩
+                }
+            }
+            finally
+            {
+                if (usingBodyDecompressMemory && bodyDecompressMemory != null)
+                {
+                    await bodyDecompressMemory.DisposeAsync();
+                }
+            }
+
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            LogErrorHandleScriptInject(logger, ex,
+                context.Request.Scheme,
+                context.Request.Host,
+                context.Request.PathBase,
+                context.Request.Path,
+                context.Request.QueryString);
+            await ResetBody();
+        }
     }
+}
+
+internal static partial class LoggerMessages
+{
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "域名 {host} 可能已经被 DNS 污染，如果域名为本机域名，请解析为非回环 IP")]
+    internal static partial void LogWarnDNS(ILogger logger, HostString host);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "处理脚本注入内容失败，url: {scheme}://{host}{pathBase}{path}{queryString}")]
+    internal static partial void LogErrorHandleScriptInject(ILogger logger, Exception? exception, string? scheme, HostString host, PathString pathBase, PathString path, QueryString queryString);
 }

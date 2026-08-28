@@ -138,7 +138,7 @@ sealed class ReverseProxyHttpDelegatingHandler : DelegatingHandler
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 innerExceptions.Add(new TimeoutException(
-                    $"与 {ipEndPoint.IPEndPoint} 的 HTTP 连接已超时，来源：{ipEndPoint.SourceType}，跟踪键：{ipEndPoint.TraceId}，耗时：{ipEndPoint.ElapsedTime}"));
+                    $"与 {ipEndPoint.IPEndPoint} 的 HTTP 连接已超时，来源：{ipEndPoint.SourceType}，追溯键：{ipEndPoint.TraceId}，耗时：{ipEndPoint.ElapsedTime}"));
             }
             catch (Exception ex)
             {
@@ -298,7 +298,7 @@ sealed class ReverseProxyHttpDelegatingHandler : DelegatingHandler
             const int bufferSize = 2;
             Span<byte> buffer = stackalloc byte[bufferSize];
             var len = stream.Read(buffer);
-            if (len != bufferSize || buffer.Length < 2 || buffer[1] != 0x5A)
+            if (len != bufferSize || buffer[1] != 0x5A)
             {
                 throw new HttpIOException(HttpRequestError.ProxyTunnelError,
                     $"SOCKS4 代理连接失败：{buffer[1]:X}");
@@ -396,7 +396,7 @@ sealed class ReverseProxyHttpDelegatingHandler : DelegatingHandler
         stream.Write(dnsPort);
         {
             const int bufferSize = 2;
-            Span<byte> buffer = addressBytes.Length >= sizeof(ushort) ? addressBytes[..bufferSize] : stackalloc byte[bufferSize];
+            Span<byte> buffer = addressBytes.Length >= sizeof(ushort) ? addressBytes[..bufferSize] : stackalloc byte[bufferSize]; // 复用上一个 stackalloc 缓冲区
             var len = stream.Read(buffer);
             if (len != bufferSize || buffer.Length < 2 || buffer[1] != 0x00)
             {

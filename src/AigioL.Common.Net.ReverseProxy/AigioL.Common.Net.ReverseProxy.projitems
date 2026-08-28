@@ -11,14 +11,17 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants\GeneralConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApplicationBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpHeaderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestOptionsExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpResponseExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\KestrelServerOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ListenOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Binary\BinaryContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Binary\BinaryContentExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Binary\BinaryContentType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Binary\BinaryWriteExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Binary\ScriptInjectHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Binary\Utf8StringComparerOrdinalIgnoreCase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Configuration\DomainConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Configuration\IDomainConfig.cs" />
@@ -32,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\FlowAnalyzer\FlowQueues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\FlowAnalyzer\ValueTaskExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Http\HostString2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Http\HttpContentEncodingSingle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Http\HttpLocalRequestMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Http\HttpProxyPacMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Http\HttpReverseProxyMiddleware.cs" />
@@ -48,6 +52,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Logging\IRequestLoggingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Logging\RequestLoggingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Logging\RequestLoggingMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NameResolution\FixedServersDnsResolver.CreateOptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NameResolution\FixedServersDnsResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Tls\EmptyTlsConnectionFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Tls\TlsInvadeMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Tls\TlsRestoreMiddleware.cs" />

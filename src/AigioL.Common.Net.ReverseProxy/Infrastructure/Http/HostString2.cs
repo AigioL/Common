@@ -145,4 +145,15 @@ static class HostString2
         }
 #endif
     }
+
+    /// <summary>
+    /// 获取 <see cref="HostString"/> 的 <see cref="HostString.Host"/> 部分
+    /// <para>避免分配新的字符串实例</para>
+    /// </summary>
+    public static StringSegment GetHost(this HostString hostString)
+    {
+        // https://github.com/dotnet/aspnetcore/blob/v11.0.0-preview.7.26381.103/src/Http/Http.Abstractions/src/HostString.cs#L91-L99
+        GetParts(hostString.Value, out var host, out _);
+        return host;
+    }
 }
