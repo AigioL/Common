@@ -245,7 +245,7 @@ sealed class HttpLocalRequestMiddleware(
                 else if (header.Key.StartsWith(HttpHeaderReferer, StringComparison.InvariantCultureIgnoreCase))
                 {
                     // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Reference/Headers/Referer
-                    if (Uri.TryCreate(header.Value, UriKind.Absolute, out var refererUri))
+                    if (Uri.TryCreate(header.Value, UriKind.RelativeOrAbsolute, out var refererUri))
                     {
                         req.Headers.Referrer = refererUri;
                     }
