@@ -20,7 +20,7 @@ sealed class BinaryContent
     public BinaryContent(IFileInfo fileInfo)
     {
         this.fileInfo = fileInfo;
-        contentType = ContentType.File;
+        contentType = BinaryContentType.File;
     }
 
     public BinaryContent(ReadOnlyMemory<byte> utf8Bytes)

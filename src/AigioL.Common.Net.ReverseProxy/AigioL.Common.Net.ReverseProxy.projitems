@@ -11,11 +11,14 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants\GeneralConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ApplicationBuilderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\KestrelServerOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ListenOptionsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\BinaryContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\BinaryContentExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\BinaryContentType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\BinaryWriteExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Binary\Utf8StringComparerOrdinalIgnoreCase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Configuration\IDomainConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\CookieHttpClientFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\DomainPattern.cs" />
@@ -30,13 +33,22 @@
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HttpProxyPacMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\HttpReverseProxyMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\IHttpProxyFeature.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\IReverseProxyHttpMessageInvokerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\LifetimeHttpHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\LifetimeHttpHandlerCleaner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\LifeTimeKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\ProxyProtocol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\ReverseProxyHttpDelegatingHandler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\ReverseProxyHttpMessageInvoker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\ReverseProxyHttpMessageInvokerFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Http\TrackingEntry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Logging\IRequestLoggingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Logging\RequestLoggingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Logging\RequestLoggingMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\EmptyTlsConnectionFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\TlsInvadeMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\TlsRestoreMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\Tls\TlsSniPattern.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FlowType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ReverseProxyJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalProxyType.cs" />

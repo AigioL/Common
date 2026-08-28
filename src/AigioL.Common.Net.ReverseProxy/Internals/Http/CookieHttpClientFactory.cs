@@ -21,7 +21,7 @@ sealed class CookieHttpClientFactory : ICookieHttpClientFactory, IDisposable
         return cookieContainer;
     }
 
-    public HttpClient CreateClient()
+    public HttpClient CreateClient(string name)
     {
         ObjectDisposedException.ThrowIf(disposedValue || httpClient == null, this);
         return httpClient;

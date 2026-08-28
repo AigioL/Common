@@ -32,11 +32,23 @@ public sealed class HttpNoProxy : IWebProxy
     /// <summary>
     /// 检查当前 Web 代理对象是否为无代理
     /// </summary>
-    /// <param name="proxy"></param>
-    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNoProxy([NotNullWhen(false)] IWebProxy? proxy)
-        => proxy == null || proxy.GetType().Name == nameof(HttpNoProxy);
+    {
+        if (proxy == null)
+        {
+            return true;
+        }
+        else if (proxy is IIsNoProxy isNoProxy)
+        {
+            return isNoProxy.IsNoProxy();
+        }
+        else if (proxy.GetType().Name == nameof(HttpNoProxy))
+        {
+            return true;
+        }
+        return false;
+    }
 
     static IWebProxy GetInstance()
     {

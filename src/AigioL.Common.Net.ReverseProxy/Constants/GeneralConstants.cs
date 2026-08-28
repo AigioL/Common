@@ -28,4 +28,11 @@ public static class GeneralConstants
     public const string HttpHeader_SteamTool = "-steamtool";
 
     public const string LocalDomain = "local.rmbgame.net";
+
+    public static readonly string HttpHeaderServer = "AigioL.Common.Net.ReverseProxy";
+
+    /// <summary>
+    /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/Common/src/System/Net/IPAddressParserStatics.cs
+    /// </summary>
+    public const int IPv6AddressBytes = 16;
 }

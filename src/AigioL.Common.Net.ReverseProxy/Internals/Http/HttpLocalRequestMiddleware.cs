@@ -214,7 +214,7 @@ sealed class HttpLocalRequestMiddleware(
 
     async Task SendAsync(HttpContext context, HttpMethod method, Uri requestUri)
     {
-        var c = cookieHttpClientFactory.CreateClient();
+        var c = cookieHttpClientFactory.CreateClient(requestUri.Host);
 
         using var req = new HttpRequestMessage
         {
