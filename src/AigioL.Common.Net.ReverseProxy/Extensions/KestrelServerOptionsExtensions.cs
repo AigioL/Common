@@ -1,3 +1,5 @@
+using AigioL.Common.Net.ReverseProxy.Infrastructure.Http;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -60,18 +62,22 @@ public static partial class KestrelServerOptionsExtensions
         Exception? lastException = null;
         try
         {
-            // TODO: xxx
+            //if (!IReverseProxyConfig.IsAvailableTcp(httpProxyPort))
+            //{
+            //    throw new ApplicationException(
+            //        $"TCP port {httpProxyPort} is already occupied by other processes.");
+            //}
 
             options.ListenByIpAutoDetection(ip, port, listen =>
             {
                 listen.Protocols = protocols;
-                //var proxyMiddleware = options.ApplicationServices.GetRequiredService<HttpProxyMiddleware>();
-                //var tunnelMiddleware = options.ApplicationServices.GetRequiredService<TunnelMiddleware>();
+                var proxyMiddleware = options.ApplicationServices.GetRequiredService<HttpProxyMiddleware>();
+                var tunnelMiddleware = options.ApplicationServices.GetRequiredService<TunnelMiddleware>();
 
-                //listen.UseFlowAnalyze();
-                //listen.Use(next => context => proxyMiddleware.InvokeAsync(next, context));
-                //listen.UseTls();
-                //listen.Use(next => context => tunnelMiddleware.InvokeAsync(next, context));
+                listen.UseFlowAnalyze();
+                listen.Use(next => context => proxyMiddleware.InvokeAsync(next, context));
+                listen.UseTls();
+                listen.Use(next => context => tunnelMiddleware.InvokeAsync(next, context));
             });
         }
         catch (Exception ex)
@@ -102,14 +108,11 @@ public static partial class KestrelServerOptionsExtensions
         Exception? lastException = null;
         try
         {
-            // TODO: xxx
-
             options.ListenByIpAutoDetection(ip, port, listen =>
             {
-                //listen.UseFlowAnalyze();
-                //listen.UseConnectionHandler<GithubSshReverseProxyHandler>();
+                listen.UseFlowAnalyze();
+                listen.UseConnectionHandler<GitHubSshReverseProxyHandler>();
             });
-
         }
         catch (Exception ex)
         {
@@ -137,14 +140,11 @@ public static partial class KestrelServerOptionsExtensions
         Exception? lastException = null;
         try
         {
-            // TODO: xxx
-
             options.ListenByIpAutoDetection(ip, port, listen =>
             {
-                //listen.UseFlowAnalyze();
-                //listen.UseConnectionHandler<GithubGitReverseProxyHandler>();
+                listen.UseFlowAnalyze();
+                listen.UseConnectionHandler<GitHubGitReverseProxyHandler>();
             });
-
         }
         catch (Exception ex)
         {
@@ -172,8 +172,7 @@ public static partial class KestrelServerOptionsExtensions
         Exception? lastException = null;
         try
         {
-            // TODO: xxx
-
+            options.Listen(ip, port);
         }
         catch (Exception ex)
         {
@@ -188,6 +187,45 @@ public static partial class KestrelServerOptionsExtensions
             else
             {
                 LogErrorListenedHttpReverseProxy(logger, lastException, ip, port);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 配置 KestrelServer 监听 HTTPS 反向代理
+    /// </summary>
+    public static void ListenHttpsReverseProxy(this KestrelServerOptions options, IPAddress ip, int port, HttpProtocols protocols = DefHttpProtocols)
+    {
+        var logger = options.GetLogger();
+        Exception? lastException = null;
+        try
+        {
+            //var certService = options.ApplicationServices.GetRequiredService<CertService>();
+            ////var reverseProxyConfig = options.ApplicationServices.GetRequiredService<IReverseProxyConfig>();
+
+            //var domainResolver = options.ApplicationServices.GetRequiredService<IDomainResolver>();
+            //domainResolver.CheckIpv6SupportAsync();
+
+            options.Listen(ip, port, listen =>
+            {
+                listen.Protocols = protocols;
+                listen.UseFlowAnalyze();
+                listen.UseTls();
+            });
+        }
+        catch (Exception ex)
+        {
+            lastException = ex;
+        }
+        finally
+        {
+            if (lastException == null)
+            {
+                LogInfoListenedHttpsReverseProxy(logger, ip, port);
+            }
+            else
+            {
+                LogErrorListenedHttpsReverseProxy(logger, lastException, ip, port);
             }
         }
     }

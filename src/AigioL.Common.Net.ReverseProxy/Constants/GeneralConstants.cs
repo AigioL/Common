@@ -16,6 +16,12 @@ public static class GeneralConstants
     public const int StackallocByteThreshold = 256;
     public const int StackallocCharThreshold = StackallocByteThreshold / 2;
 
+    public const int HTTPS_PORT = 443;
+
+    public const int GitHubDesktopPort = 9418;
+
+    public const int SshPort = 22;
+
     /// <summary>
     /// 同源脚本注入路径前缀，避免使用外域 Script Src 造成页面脚本 Public Path 污染
     /// </summary>

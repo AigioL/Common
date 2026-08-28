@@ -21,6 +21,11 @@ interface IReverseProxyConfig
     IWebProxy SecondLevelWebProxy { get; set; }
 
     /// <summary>
+    /// 是否匹配指定的域名
+    /// </summary>
+    bool IsMatch(HostString host);
+
+    /// <summary>
     /// 尝试获取脚本内容
     /// </summary>
     bool TryGetScriptContent(int localScriptId, out BinaryContent content);
