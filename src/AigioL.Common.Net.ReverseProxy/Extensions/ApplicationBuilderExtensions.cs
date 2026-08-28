@@ -1,5 +1,5 @@
-using AigioL.Common.Net.ReverseProxy.Internals.Http;
-using AigioL.Common.Net.ReverseProxy.Internals.Logging;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.Http;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.Logging;
 
 #pragma warning disable IDE0130 // 命名空间与文件夹结构不匹配
 namespace Microsoft.AspNetCore.Builder;

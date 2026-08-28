@@ -1,5 +1,5 @@
-using AigioL.Common.Net.ReverseProxy.Internals.FlowAnalyzer;
-using AigioL.Common.Net.ReverseProxy.Internals.Tls;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.FlowAnalyzer;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.Tls;
 using AigioL.Common.Net.ReverseProxy.Services.Abstractions;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;

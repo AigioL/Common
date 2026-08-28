@@ -1,4 +1,4 @@
-using AigioL.Common.Net.ReverseProxy.Internals.FlowAnalyzer;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.FlowAnalyzer;
 using AigioL.Common.Net.ReverseProxy.Models;
 using AigioL.Common.Net.ReverseProxy.Services.Abstractions;
 
