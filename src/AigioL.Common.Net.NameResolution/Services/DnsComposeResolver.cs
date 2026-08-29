@@ -233,8 +233,6 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
     /// <inheritdoc/>
     public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
-        // TODO: 使用 System.Runtime.Caching.MemoryCache 将 DNS 结果进行缓存！
-
         try
         {
             if (UseDohOnly)

@@ -34,4 +34,9 @@ interface IDomainResolver : IAsyncDisposable, IDisposable
     /// 是否支持 IPv6
     /// </summary>
     ValueTask<bool> SupportsIPv6Async(bool fromCache = true, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 清理 DNS 解析缓存
+    /// </summary>
+    void ClearCache();
 }

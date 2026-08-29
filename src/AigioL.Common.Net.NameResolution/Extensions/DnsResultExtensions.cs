@@ -90,4 +90,39 @@ public static partial class DnsResultExtensions
         }
         return false;
     }
+
+    /// <summary>
+    /// 获取该结果的绝对过期时间（相对于当前时间的时间间隔），如果是负缓存结果，则返回负缓存 TTL
+    /// </summary>
+    public static TimeSpan GetAbsoluteExpirationRelativeToNow(this DnsResult<AddressRecord> r)
+    {
+        if (r.ResponseCode == DnsResponseCode.NoError)
+        {
+            if (r.Records != null && r.Records.Any(x => x.Address != null))
+            {
+                return r.Records.Min(static x => x.Ttl);
+            }
+        }
+        else
+        {
+            if (r.NegativeCacheTtl > TimeSpan.Zero && r.NegativeCacheTtl <= TimeSpan.FromMinutes(5))
+            {
+                // RFC 2308 https://datatracker.ietf.org/doc/html/rfc2308
+                // 7.1 服务器故障（可选）
+                // 7.2 失效/无法访问服务器（可选）
+                // 在任何一种情况下，解析程序都可能缓存服务器故障响应。如果这样做，则缓存时间不得超过五（5）分钟
+                return r.NegativeCacheTtl;
+            }
+        }
+        return default;
+    }
+
+    /// <summary>
+    /// 多个 DNS 实现返回的结果可能包含重复的 IP 地址，将 IP 地址去重后返回
+    /// </summary>
+    public static DnsResultWrapper<IPAddress> Distinct(this DnsResultWrapper<AddressRecord> r)
+    {
+        var addresses = r.Result.Records.Select(static x => x.Address).Distinct().ToArray();
+        return new DnsResultWrapper<IPAddress>(r.SourceType, new Dns2Result<IPAddress>(r.Result.ResponseCode, addresses, r.Result.NegativeCacheTtl), r.TraceId, r.ElapsedTime);
+    }
 }

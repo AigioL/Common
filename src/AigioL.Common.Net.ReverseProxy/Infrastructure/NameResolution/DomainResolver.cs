@@ -3,9 +3,10 @@ using AigioL.Common.Net.NameResolution.Models;
 using AigioL.Common.Net.NameResolution.Services;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
 using AigioL.Common.Net.ReverseProxy.Models;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Sockets;
-using static AigioL.Common.Net.NameResolution.Constants.DnsConstants;
 using static AigioL.Common.Net.ReverseProxy.Constants.GeneralConstants;
 
 namespace AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
@@ -17,6 +18,10 @@ sealed class DomainResolver : IDomainResolver
     DnsComposeResolver? dnsResolver;
     readonly IReverseProxyConfig reverseProxyConfig;
     readonly FixedServersDnsResolver fixedServersDnsResolver;
+    IMemoryCache memoryCache;
+    readonly IServiceProvider serviceProvider;
+    readonly ILoggerFactory loggerFactory;
+    readonly Lock lockClearCache = new();
 
     public DnsComposeResolver DnsCompose
     {
@@ -27,19 +32,40 @@ sealed class DomainResolver : IDomainResolver
         }
     }
 
-    public DomainResolver(ILoggerFactory loggerFactory, IReverseProxyConfig reverseProxyConfig, FixedServersDnsResolver fixedServersDnsResolver)
+    public DomainResolver(ILoggerFactory loggerFactory, IReverseProxyConfig reverseProxyConfig, FixedServersDnsResolver fixedServersDnsResolver, IServiceProvider serviceProvider)
     {
+        this.loggerFactory = loggerFactory;
+        this.serviceProvider = serviceProvider;
         this.reverseProxyConfig = reverseProxyConfig;
         this.fixedServersDnsResolver = fixedServersDnsResolver;
-        resolver6 = new(new DnsResolverOptions
-        {
-            Servers =
-            [
-                new(IPAddress.Parse(DnspodIPv6), DefaultDnsPort),
-                new(IPAddress.Parse(BaiduIPv6), DefaultDnsPort),
-            ],
-        });
+        resolver6 = new(FixedServersDnsResolver.CreateOptionsIPv6());
         dnsResolver = new(loggerFactory);
+        memoryCache = CreateMemoryCache();
+    }
+
+    MemoryCache CreateMemoryCache()
+    {
+        var memoryCacheOptions = serviceProvider.GetService<IOptions<MemoryCacheOptions>>()?.Value ?? Options.Create(new MemoryCacheOptions());
+        var memoryCache = new MemoryCache(memoryCacheOptions, loggerFactory);
+        return memoryCache;
+    }
+
+    /// <inheritdoc/>
+    public void ClearCache()
+    {
+        lock (lockClearCache)
+        {
+            var memoryCacheOld = this.memoryCache;
+            var memoryCache = CreateMemoryCache();
+            try
+            {
+                this.memoryCache = memoryCache;
+            }
+            finally
+            {
+                memoryCacheOld.Dispose();
+            }
+        }
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
@@ -125,14 +151,32 @@ sealed class DomainResolver : IDomainResolver
         return false;
     }
 
+    /// <summary>
+    /// 获取用于缓存的字符串键
+    /// </summary>
+    static object GetCacheKey(string hostName, AddressFamily addressFamily) => new CacheKey(hostName, addressFamily);
+
+    sealed record CacheKey(string HostName, AddressFamily AddressFamily);
+
     /// <inheritdoc/>
     public async Task<DnsResultWrapper<IPAddress>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
-        var r = await ResolveAddressesCoreAsync(hostName, addressFamily, cancellationToken).ConfigureAwait(false);
+        var cacheKey = GetCacheKey(hostName, addressFamily);
+        if (memoryCache.TryGetValue<DnsResultWrapper<IPAddress>>(cacheKey, out var result))
+        {
+            // 从缓存中获取结果
+            return result;
+        }
 
-        // 多个 DNS 实现返回的结果可能包含重复的 IP 地址，这里去重
-        var addresses = r.Result.Records.Select(static x => x.Address).Distinct().ToArray();
-        return new DnsResultWrapper<IPAddress>(r.SourceType, new Dns2Result<IPAddress>(r.Result.ResponseCode, addresses, r.Result.NegativeCacheTtl), r.TraceId, r.ElapsedTime);
+        var r = await ResolveAddressesCoreAsync(hostName, addressFamily, cancellationToken).ConfigureAwait(false);
+        var absoluteExpirationRelativeToNow = r.Result.GetAbsoluteExpirationRelativeToNow();
+
+        result = r.Distinct();
+        if (absoluteExpirationRelativeToNow > TimeSpan.Zero)
+        {
+            memoryCache.Set(cacheKey, result, absoluteExpirationRelativeToNow);
+        }
+        return result;
     }
 
     async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesCoreAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)

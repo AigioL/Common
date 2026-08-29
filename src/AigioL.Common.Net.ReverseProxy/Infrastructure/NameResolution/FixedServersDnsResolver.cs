@@ -23,7 +23,7 @@ sealed partial class FixedServersDnsResolver : IAsyncDisposable, IDisposable
 
     public FixedServersDnsResolver(ILoggerFactory loggerFactory, DnsResolverOptions? options)
     {
-        resolver = new(loggerFactory.CreateLogger<DnsResolverWrapper>(), options ?? CreateOptions(), traceId);
+        resolver = new(loggerFactory.CreateLogger<DnsResolverWrapper>(), options ?? CreateOptionsIPv4(), traceId);
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
