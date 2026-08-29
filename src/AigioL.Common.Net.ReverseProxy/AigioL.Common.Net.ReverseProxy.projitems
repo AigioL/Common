@@ -58,6 +58,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Logging\IRequestLoggingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Logging\RequestLoggingFeature.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Logging\RequestLoggingMiddleware.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NameResolution\DomainResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NameResolution\FixedServersDnsResolver.CreateOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NameResolution\FixedServersDnsResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\NameResolution\IDomainResolver.cs" />

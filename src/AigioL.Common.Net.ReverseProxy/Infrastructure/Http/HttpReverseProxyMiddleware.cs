@@ -1,4 +1,3 @@
-using AigioL.Common.Net.NameResolution.Abstractions;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +26,6 @@ sealed partial class HttpReverseProxyMiddleware
     readonly IHttpForwarder forwarder;
     readonly IReverseProxyHttpMessageInvokerFactory factory;
     readonly IReverseProxyConfig reverseProxyConfig;
-    readonly IDnsResolver dnsResolver;
     readonly FixedServersDnsResolver fixedServersDnsResolver;
     readonly ILogger logger;
 
@@ -37,14 +35,12 @@ sealed partial class HttpReverseProxyMiddleware
         IHttpForwarder forwarder,
         IReverseProxyHttpMessageInvokerFactory factory,
         IReverseProxyConfig reverseProxyConfig,
-        IDnsResolver dnsResolver,
         FixedServersDnsResolver fixedServersDnsResolver,
         ILogger<HttpReverseProxyMiddleware> logger)
     {
         this.forwarder = forwarder;
         this.factory = factory;
         this.reverseProxyConfig = reverseProxyConfig;
-        this.dnsResolver = dnsResolver;
         this.fixedServersDnsResolver = fixedServersDnsResolver;
         this.logger = logger;
     }

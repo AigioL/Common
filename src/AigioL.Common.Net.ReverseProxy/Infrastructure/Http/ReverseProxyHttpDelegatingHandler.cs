@@ -1,6 +1,6 @@
-using AigioL.Common.Net.NameResolution.Abstractions;
 using AigioL.Common.Net.NameResolution.Models;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
 using AigioL.Common.Net.ReverseProxy.Models;
 using System.Buffers;
 using System.Net;
@@ -19,20 +19,20 @@ sealed class ReverseProxyHttpDelegatingHandler : DelegatingHandler
     const int DefaultConnectTimeoutFromSeconds = 10;
 
     readonly IDomainConfig domainConfig;
-    readonly IDnsResolver dnsResolver;
+    readonly IDomainResolver domainResolver;
     readonly IReverseProxyConfig reverseProxyConfig;
     readonly TimeSpan connectTimeout;
 
 #pragma warning disable IDE0290 // 使用主构造函数
     public ReverseProxyHttpDelegatingHandler(
         IDomainConfig domainConfig,
-        IDnsResolver dnsResolver,
+        IDomainResolver domainResolver,
         IReverseProxyConfig reverseProxyConfig,
         TimeSpan? connectTimeout = null)
 #pragma warning restore IDE0290 // 使用主构造函数
     {
         this.domainConfig = domainConfig;
-        this.dnsResolver = dnsResolver;
+        this.domainResolver = domainResolver;
         this.reverseProxyConfig = reverseProxyConfig;
         this.connectTimeout = connectTimeout ?? TimeSpan.FromSeconds(DefaultConnectTimeoutFromSeconds);
     }
@@ -428,10 +428,10 @@ sealed class ReverseProxyHttpDelegatingHandler : DelegatingHandler
                 };
             }
 
-            DnsResultWrapper<AddressRecord> result;
+            DnsResultWrapper<IPAddress> result;
             if (domainConfig.ForwardDestination != null)
             {
-                result = await dnsResolver.ResolveAddressesAsync(domainConfig.ForwardDestination, AddressFamily.Unspecified, cancellationToken);
+                result = await domainResolver.ResolveAddressesAsync(domainConfig.ForwardDestination, AddressFamily.Unspecified, cancellationToken);
                 if (result.Result.Records.Count != 0)
                 {
                     foreach (var it in result.Result.Records)
@@ -441,7 +441,7 @@ sealed class ReverseProxyHttpDelegatingHandler : DelegatingHandler
                 }
             }
 
-            result = await dnsResolver.ResolveAddressesAsync(dnsEndPoint.Host, AddressFamily.Unspecified, cancellationToken);
+            result = await domainResolver.ResolveAddressesAsync(dnsEndPoint.Host, AddressFamily.Unspecified, cancellationToken);
             if (result.Result.Records.Count != 0)
             {
                 foreach (var it in result.Result.Records)
@@ -540,9 +540,9 @@ readonly struct IPEndPointWrapper
         IPEndPoint = iPEndPoint;
     }
 
-    public IPEndPointWrapper(AddressRecord record, DnsResultWrapper<AddressRecord> result, int port, string? addTraceId = null)
+    public IPEndPointWrapper(IPAddress record, DnsResultWrapper<IPAddress> result, int port, string? addTraceId = null)
     {
-        IPEndPoint = new IPEndPoint(record.Address, port);
+        IPEndPoint = new IPEndPoint(record, port);
         TraceId = string.IsNullOrEmpty(addTraceId) ? result.TraceId : addTraceId + result.TraceId;
         ElapsedTime = result.ElapsedTime;
         SourceType = result.SourceType;

@@ -1,4 +1,5 @@
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Http;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
@@ -200,12 +201,6 @@ public static partial class KestrelServerOptionsExtensions
         Exception? lastException = null;
         try
         {
-            //var certService = options.ApplicationServices.GetRequiredService<CertService>();
-            ////var reverseProxyConfig = options.ApplicationServices.GetRequiredService<IReverseProxyConfig>();
-
-            //var domainResolver = options.ApplicationServices.GetRequiredService<IDomainResolver>();
-            //domainResolver.CheckIpv6SupportAsync();
-
             options.Listen(ip, port, listen =>
             {
                 listen.Protocols = protocols;

@@ -1,5 +1,5 @@
-using AigioL.Common.Net.NameResolution.Abstractions;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
 using Timer = System.Threading.Timer;
 
 namespace AigioL.Common.Net.ReverseProxy.Infrastructure.Http;
@@ -14,14 +14,14 @@ sealed class LifetimeHttpHandler : DelegatingHandler
     public LifeTimeKey LifeTimeKey { get; }
 
     public LifetimeHttpHandler(
-        IDnsResolver dnsResolver,
+        IDomainResolver domainResolver,
         IReverseProxyConfig reverseProxyConfig,
         LifeTimeKey lifeTimeKey,
         TimeSpan lifeTime,
         Action<LifetimeHttpHandler> deactivateAction)
     {
         LifeTimeKey = lifeTimeKey;
-        InnerHandler = new ReverseProxyHttpDelegatingHandler(lifeTimeKey.DomainConfig, dnsResolver, reverseProxyConfig);
+        InnerHandler = new ReverseProxyHttpDelegatingHandler(lifeTimeKey.DomainConfig, domainResolver, reverseProxyConfig);
         timer = new Timer(OnTimerCallback, deactivateAction, lifeTime, Timeout.InfiniteTimeSpan);
     }
 

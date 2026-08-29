@@ -1,4 +1,5 @@
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Binary;
+using AigioL.Common.Net.ReverseProxy.Models;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -19,6 +20,11 @@ interface IReverseProxyConfig
     /// 获取或设置二级 Web 代理
     /// </summary>
     IWebProxy SecondLevelWebProxy { get; set; }
+
+    /// <summary>
+    /// 网络加速模式
+    /// </summary>
+    ReverseProxyMode ProxyMode { get; set; }
 
     /// <summary>
     /// 是否匹配指定的域名

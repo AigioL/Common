@@ -1,5 +1,5 @@
-using AigioL.Common.Net.NameResolution.Abstractions;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.AspNetCore.Http;
@@ -19,15 +19,15 @@ namespace AigioL.Common.Net.ReverseProxy.Infrastructure.Http;
 sealed class TunnelMiddleware
 {
     readonly IReverseProxyConfig reverseProxyConfig;
-    readonly IDnsResolver dnsResolver;
+    readonly IDomainResolver domainResolver;
     readonly TimeSpan connectTimeout = TimeSpan.FromSeconds(10d);
 
     public TunnelMiddleware(
         IReverseProxyConfig reverseProxyConfig,
-        IDnsResolver dnsResolver)
+        IDomainResolver domainResolver)
     {
         this.reverseProxyConfig = reverseProxyConfig;
-        this.dnsResolver = dnsResolver;
+        this.domainResolver = domainResolver;
     }
 
     /// <summary>
@@ -107,12 +107,12 @@ sealed class TunnelMiddleware
         else
         {
             // 当 HOST 在反向代理配置中时，使用 DNS 解析器解析 HOST 的 IP 地址
-            var result = await dnsResolver.ResolveAddressesAsync(host.Host, cancellationToken: cancellationToken);
+            var result = await domainResolver.ResolveAddressesAsync(host.Host, cancellationToken: cancellationToken);
             if (result.Result.Records.Count != 0)
             {
                 foreach (var it in result.Result.Records)
                 {
-                    yield return new IPEndPoint(it.Address, port);
+                    yield return new IPEndPoint(it, port);
                 }
             }
         }

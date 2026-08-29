@@ -22,10 +22,14 @@ public static class GeneralConstants
 
     public const int SshPort = 22;
 
+    public const string IPV6_TESTDOMAIN = "ipv6.rmbgame.net";
+
     /// <summary>
     /// 同源脚本注入路径前缀，避免使用外域 Script Src 造成页面脚本 Public Path 污染
     /// </summary>
-    public static ReadOnlySpan<byte> InjectScriptPathPrefix() => "/AigioL.Common.Net.ReverseProxy_Inject/"u8;
+    public const string InjectScriptPathPrefix = "/aigiolcommonnetreverseproxy_inject/";
+
+    public static ReadOnlySpan<byte> InjectScriptPathPrefixU8() => "/aigiolcommonnetreverseproxy_inject/"u8;
 
     public const string HttpHeaderCookie = "cookie";
 

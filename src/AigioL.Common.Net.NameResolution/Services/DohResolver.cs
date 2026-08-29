@@ -148,6 +148,8 @@ public sealed class DohResolver : IDnsResolver, IAsyncDisposable, IDisposable
     /// </summary>
     public bool UseRfc8484 { get; set; }
 
+    public bool HasServers => servers != null && servers.Count > 0;
+
     /// <inheritdoc/>
     public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
@@ -165,8 +167,6 @@ public sealed class DohResolver : IDnsResolver, IAsyncDisposable, IDisposable
         var ts = servers.Select(server => ResolveAddressesCoreAsync(client, server, hostName, addressFamily, cts.Token)).ToList();
         var r = await ts.ParallelWhenAnyAsync(DnsResultExtensions.HasValue, cts);
         return r;
-
-        // TODO: 使用 System.Runtime.Caching.MemoryCache 将 DNS 结果进行缓存！
     }
 
     async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesCoreAsync(HttpClient client, Uri server, string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)

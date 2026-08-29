@@ -121,6 +121,8 @@ public sealed class DnsResolverWrapper : IDnsResolver, IAsyncDisposable, IDispos
         return EqualsServers(servers);
     }
 
+    public bool HasServers => servers != null && servers.Count > 0;
+
     /// <inheritdoc/>
     public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
@@ -130,9 +132,8 @@ public sealed class DnsResolverWrapper : IDnsResolver, IAsyncDisposable, IDispos
             ObjectDisposedException.ThrowIf(disposedValue, this);
             if (resolver == null)
             {
-                // 使用系统默认 DNS 解析
-                var r = await Dns2.ResolveAddressesAsync(hostName, addressFamily, cancellationToken);
-                return r;
+                // 没有配置任何 DoH 服务器
+                return DnsResponseCode.NotImplemented;
             }
             else
             {

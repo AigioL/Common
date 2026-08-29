@@ -148,6 +148,7 @@ static class ScriptInjectHelper
         foreach (var script in scripts)
         {
             s.Write(script_xml_start);
+            s.Write(InjectScriptPathPrefixU8());
             WriteInt32(s, script.LocalId);
             s.Write(script_xml_end);
         }

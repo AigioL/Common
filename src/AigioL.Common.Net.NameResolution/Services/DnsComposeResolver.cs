@@ -22,6 +22,10 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
         logger = loggerFactory.CreateLogger<DnsComposeResolver>();
     }
 
+    public bool HasDnsResolver => dnsResolver != null && dnsResolver.HasServers;
+
+    public bool HasDohResolver => dohResolver != null && dohResolver.HasServers;
+
     /// <inheritdoc cref="DohResolver.Method"/>
     public HttpMethod? Method
     {
@@ -229,6 +233,8 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
     /// <inheritdoc/>
     public async Task<DnsResultWrapper<AddressRecord>> ResolveAddressesAsync(string hostName, AddressFamily addressFamily = AddressFamily.Unspecified, CancellationToken cancellationToken = default)
     {
+        // TODO: 使用 System.Runtime.Caching.MemoryCache 将 DNS 结果进行缓存！
+
         try
         {
             if (UseDohOnly)
@@ -250,15 +256,15 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
                 List<Task<DnsResultWrapper<AddressRecord>>> ts = new(3);
                 if (dohResolver != null)
                 {
-                    ts.Add(dohResolver.ResolveAddressesAsync(hostName, addressFamily, cancellationToken));
+                    ts.Add(dohResolver.ResolveAddressesAsync(hostName, addressFamily, cancellationToken)); // DoH 优先
                 }
                 if (dnsResolver != null)
                 {
-                    ts.Add(dnsResolver.ResolveAddressesAsync(hostName, addressFamily, cancellationToken));
+                    ts.Add(dnsResolver.ResolveAddressesAsync(hostName, addressFamily, cancellationToken)); // 配置的 DNS 服务器靠后
                 }
                 if (UseSystemDefaultDns || ts.Count == 0)
                 {
-                    ts.Add(Dns2.ResolveAddressesAsync(hostName, addressFamily, cancellationToken));
+                    ts.Add(Dns2.ResolveAddressesAsync(hostName, addressFamily, cancellationToken)); // 系统默认 DNS 最后
                 }
                 var r = await ts.ParallelWhenAnyAsync(DnsResultExtensions.HasValue, cts);
                 return r;

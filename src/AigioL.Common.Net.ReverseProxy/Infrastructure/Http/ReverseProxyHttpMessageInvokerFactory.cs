@@ -1,12 +1,13 @@
 using AigioL.Common.Net.NameResolution.Abstractions;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
+using AigioL.Common.Net.ReverseProxy.Infrastructure.NameResolution;
 using System.Collections.Concurrent;
 
 namespace AigioL.Common.Net.ReverseProxy.Infrastructure.Http;
 
 sealed class ReverseProxyHttpMessageInvokerFactory : IReverseProxyHttpMessageInvokerFactory
 {
-    readonly IDnsResolver dnsResolver;
+    readonly IDomainResolver domainResolver;
 
     readonly IReverseProxyConfig reverseProxyConfig;
 
@@ -25,10 +26,10 @@ sealed class ReverseProxyHttpMessageInvokerFactory : IReverseProxyHttpMessageInv
     readonly ConcurrentDictionary<LifeTimeKey, Lazy<LifetimeHttpHandler>> cache = new();
 
 #pragma warning disable IDE0290 // 使用主构造函数
-    public ReverseProxyHttpMessageInvokerFactory(IDnsResolver dnsResolver, IReverseProxyConfig reverseProxyConfig)
+    public ReverseProxyHttpMessageInvokerFactory(IDomainResolver domainResolver, IReverseProxyConfig reverseProxyConfig)
 #pragma warning restore IDE0290 // 使用主构造函数
     {
-        this.dnsResolver = dnsResolver;
+        this.domainResolver = domainResolver;
         this.reverseProxyConfig = reverseProxyConfig;
     }
 
@@ -50,7 +51,7 @@ sealed class ReverseProxyHttpMessageInvokerFactory : IReverseProxyHttpMessageInv
 
     LifetimeHttpHandler CreateLifetimeHttpHandler(LifeTimeKey lifeTimeKey, TimeSpan lifeTime)
     {
-        LifetimeHttpHandler h = new(dnsResolver, reverseProxyConfig, lifeTimeKey, lifeTime, OnLifetimeHttpHandlerDeactivate);
+        LifetimeHttpHandler h = new(domainResolver, reverseProxyConfig, lifeTimeKey, lifeTime, OnLifetimeHttpHandlerDeactivate);
         return h;
     }
 
