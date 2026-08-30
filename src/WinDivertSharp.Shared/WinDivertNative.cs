@@ -310,11 +310,24 @@ internal static unsafe partial class WinDivertNative
     [LibraryImport(WinDivert, EntryPoint = "WinDivertHelperCheckFilter", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static partial bool WinDivertHelperCheckFilter([MarshalAs(UnmanagedType.LPStr)] string filter, WinDivertLayer layer, char** errorStr, ref uint errorPos);
+    public static partial bool WinDivertHelperCheckFilter([MarshalAs(UnmanagedType.LPStr)] string filter, WinDivertLayer layer, out sbyte* errorStr, out uint errorPos);
 #else
+    public static bool WinDivertHelperCheckFilter(string filter, WinDivertLayer layer, out sbyte* errorStr, out uint errorPos)
+    {
+        errorStr = default;
+        errorPos = default;
+        bool __retVal_native = default;
+        fixed (uint* __errorPos_native = &errorPos)
+        fixed (sbyte** __errorStr_native = &errorStr)
+        {
+            __retVal_native = WinDivertHelperCheckFilter(filter, layer, __errorStr_native, __errorPos_native);
+        }
+        return __retVal_native;
+    }
+
     [DllImport(WinDivert, EntryPoint = "WinDivertHelperCheckFilter", CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool WinDivertHelperCheckFilter([In][MarshalAs(UnmanagedType.LPStr)] string filter, WinDivertLayer layer, char** errorStr, ref uint errorPos);
+    public static extern bool WinDivertHelperCheckFilter([In][MarshalAs(UnmanagedType.LPStr)] string filter, WinDivertLayer layer, sbyte** errorStr, uint* errorPos);
 #endif
 
     /// <summary>

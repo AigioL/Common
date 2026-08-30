@@ -607,19 +607,16 @@ public static unsafe class WinDivert
     /// <returns>
     /// TRUE if the packet filter string is valid, FALSE otherwise.
     /// </returns>
-    public static bool WinDivertHelperCheckFilter(string filter, WinDivertLayer layer, out string? errorMessage, ref uint errorPosition)
+    public static unsafe bool WinDivertHelperCheckFilter(string filter, WinDivertLayer layer, out string? errorMessage, ref uint errorPosition)
     {
         errorMessage = null;
         errorPosition = 0;
 
-        char* pErrorString = null;
+        var retVal = WinDivertNative.WinDivertHelperCheckFilter(filter, layer, out var errorStr, out errorPosition);
 
-        uint errPosTmp = 0;
-        var retVal = WinDivertNative.WinDivertHelperCheckFilter(filter, layer, &pErrorString, ref errorPosition);
-        if (pErrorString != null)
+        if (errorStr != null)
         {
-            errorMessage = Marshal.PtrToStringAnsi((IntPtr)pErrorString);
-            errorPosition = errPosTmp;
+            errorMessage = Marshal.PtrToStringAnsi((nint)errorStr);
         }
 
         return retVal;
