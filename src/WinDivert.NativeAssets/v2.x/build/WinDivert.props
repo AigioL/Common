@@ -1,0 +1,7 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Condition="$(PublishAot) == true And $(PublishWinDivertStaticallyLinked) == true">
+    <!-- https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/interop -->
+    <DirectPInvoke Include="WinDivert" />
+    <NativeLibrary Include="$(MSBuildThisFileDirectory)..\lib\native\$(RuntimeIdentifier)\WinDivert.lib" Condition="$(RuntimeIdentifier.StartsWith('win'))" />
+  </ItemGroup>
+</Project>
