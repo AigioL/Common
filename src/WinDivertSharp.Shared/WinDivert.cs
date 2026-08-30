@@ -220,7 +220,7 @@ public static unsafe class WinDivert
                 fixed (uint* pReadLen = &readLen)
                 {
                     // Presently, flags is simply "reserved"
-                    var result = WinDivertNative.WinDivertRecvEx(handle, packet.BufferPointer, (uint)packet.Length, 0, ref address, ref readLen, ref lpOverlapped);
+                    var result = WinDivertNative.WinDivertRecvEx(handle, packet.BufferPointer, (uint)packet.Length, 0, ref address, ref readLen, pOverlapped);
 
                     return result;
                 }
@@ -258,12 +258,15 @@ public static unsafe class WinDivert
     {
         fixed (WinDivertAddress* pAddress = &address)
         {
-            uint readLen = 0;
+            fixed (NativeOverlapped* pOverlapped = &lpOverlapped)
+            {
+                uint readLen = 0;
 
-            // Presently, flags is simply "reserved"
-            var result = WinDivertNative.WinDivertRecvEx(handle, packet.BufferPointer, (uint)packet.Length, 0, ref address, ref readLen, ref lpOverlapped);
+                // Presently, flags is simply "reserved"
+                var result = WinDivertNative.WinDivertRecvEx(handle, packet.BufferPointer, (uint)packet.Length, 0, ref address, ref readLen, pOverlapped);
 
-            return result;
+                return result;
+            }
         }
     }
 
@@ -376,9 +379,11 @@ public static unsafe class WinDivert
         {
             fixed (uint* pWriteLen = &sendLen)
             {
-                var result = WinDivertNative.WinDivertSendEx(handle, packet.BufferPointer, (uint)packetLength, flags, ref address, ref sendLen, ref lpOverlapped);
-
-                return result;
+                fixed (NativeOverlapped* pOverlapped = &lpOverlapped)
+                {
+                    var result = WinDivertNative.WinDivertSendEx(handle, packet.BufferPointer, (uint)packetLength, flags, ref address, ref sendLen, pOverlapped);
+                    return result;
+                }
             }
         }
     }
@@ -602,7 +607,7 @@ public static unsafe class WinDivert
     /// <returns>
     /// TRUE if the packet filter string is valid, FALSE otherwise.
     /// </returns>
-    public static bool WinDivertHelperCheckFilter(string filter, WinDivertLayer layer, out string errorMessage, ref uint errorPosition)
+    public static bool WinDivertHelperCheckFilter(string filter, WinDivertLayer layer, out string? errorMessage, ref uint errorPosition)
     {
         errorMessage = null;
         errorPosition = 0;

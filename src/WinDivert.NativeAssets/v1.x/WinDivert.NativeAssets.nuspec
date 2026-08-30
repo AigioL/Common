@@ -3,7 +3,7 @@
 	<metadata minClientVersion="2.12">
 		<id>Aigio.WinDivertSharp.NativeAssets.Win32</id>
 		<title>Aigio.WinDivertSharp.NativeAssets.Win32</title>
-		<!-- major.minor.build-preview.{Driver Signature Variants}.yyMM0.1dd -->
+		<!-- major.minor.build-preview.{Driver Signature Variants}.yyMM0.{num}dd -->
 		<version>1.4.3-preview.A.26080.130</version>
 		<authors>https://github.com/AigioL</authors>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>

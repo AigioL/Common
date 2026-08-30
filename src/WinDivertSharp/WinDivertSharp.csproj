@@ -4,8 +4,8 @@
 		<TargetFrameworks>netstandard2.1;netstandard2.0;net35;net40;net45;net462;netcoreapp3.0;net10.0;net11.0</TargetFrameworks>
 		<AssemblyName>WinDivertSharp</AssemblyName>
 		<PackageId>Aigio.WinDivertSharp</PackageId>
-		<!-- major.minor.build-preview.revision.yyMM0.1dd -->
-		<Version>1.4.3-preview.3.26080.130</Version>
+		<!-- major.minor.build-preview.revision.yyMM0.{num}dd -->
+		<Version>1.4.3-preview.3.26080.230</Version>
 		<Authors>https://github.com/AigioL</Authors>
 		<GeneratePackageOnBuild Condition="'$(Configuration)' == 'Release'">true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
