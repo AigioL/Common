@@ -66,11 +66,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Tls\TlsInvadeMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Tls\TlsRestoreMiddleware.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Tls\TlsSniPattern.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IReverseProxyWebApp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FlowType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ReverseProxyMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ReverseProxyJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\ExternalProxyType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FlowStatistics.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ReverseProxyWebAppStartErrCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReverseProxyWebApp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReverseProxyWebApp.Windows.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\ICookieHttpClientFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Abstractions\IFlowAnalyzer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Infrastructure\Configuration\IReverseProxyConfig.cs" />

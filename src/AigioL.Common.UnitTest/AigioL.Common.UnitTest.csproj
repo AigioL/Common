@@ -4,6 +4,7 @@
 		<TargetFramework>net$(DotNet_Version)</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<DefineConstants>$(DefineConstants);USE_IO_HASHING</DefineConstants>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([System.OperatingSystem]::IsWindows())">

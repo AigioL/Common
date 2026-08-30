@@ -1,0 +1,1 @@
+A:\nuget.exe pack WinDivert.NativeAssets.nuspec

@@ -251,4 +251,8 @@
 	<ItemGroup>
 		<PackageVersion Include="Utf8StringInterpolation" Version="1.3.2" />
 	</ItemGroup>
+	<!-- 👇 Compat -->
+	<ItemGroup>
+		<PackageVersion Include="System.Memory" Version="4.6.3" />
+	</ItemGroup>
 </Project>

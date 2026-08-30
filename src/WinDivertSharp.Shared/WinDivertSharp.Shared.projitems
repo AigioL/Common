@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>480e25ab-20b9-4e61-965f-db0bd885f1df</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>WinDivertSharp</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\IntegralTypeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IcmpV4Header.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IcmpV6Header.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IPv4Header.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IPv6Header.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KnownProtocols.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TcpHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UdpHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertAddress.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertHelperParam.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertNative.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertOpenFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertParam.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WinDivertParseResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.WINDIVERT" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
+</Project>
