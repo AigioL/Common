@@ -61,7 +61,7 @@ public sealed class Domain : IComparable<Domain>
             }
 
             byte length = lengthOrPointer;
-            byte[] label = new byte[length];
+            byte[] label = GC.AllocateUninitializedArray<byte>(length);
             message.Slice(offset, length).CopyTo(label);
 
             labels.Add(label);
@@ -189,7 +189,7 @@ public sealed class Domain : IComparable<Domain>
 
     public byte[] ToArray()
     {
-        byte[] result = new byte[Size];
+        byte[] result = GC.AllocateUninitializedArray<byte>(Size);
         int offset = 0;
 
         foreach (byte[] label in labels)

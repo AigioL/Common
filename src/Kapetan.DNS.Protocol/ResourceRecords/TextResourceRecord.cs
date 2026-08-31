@@ -29,13 +29,23 @@ public sealed partial class TextResourceRecord : BaseResourceRecord
 
     static IResourceRecord Create(Domain domain, IList<CharacterString> characterStrings, TimeSpan ttl)
     {
-        byte[] data = new byte[characterStrings.Sum(c => c.Size)];
+        int[] sizes = new int[characterStrings.Count];
+        int totalSize = 0;
+        for (int i = 0; i < characterStrings.Count; i++)
+        {
+            int size = characterStrings[i].Size;
+            sizes[i] = size;
+            totalSize += size;
+        }
+
+        byte[] data = GC.AllocateUninitializedArray<byte>(totalSize);
         int offset = 0;
 
-        foreach (CharacterString characterString in characterStrings)
+        for (int i = 0; i < characterStrings.Count; i++)
         {
+            CharacterString characterString = characterStrings[i];
             characterString.Write(data.AsSpan(offset));
-            offset += characterString.Size;
+            offset += sizes[i];
         }
 
         return new ResourceRecord(domain, data, RecordType.TXT, RecordClass.IN, ttl);

@@ -40,7 +40,7 @@ public sealed class ResourceRecord : IResourceRecord
         Domain domain = Domain.FromArray(message, offset, out offset);
         Tail tail = StructHelper.GetStruct<Tail>(message.Slice(offset, Tail.SIZE));
 
-        byte[] data = new byte[tail.DataLength];
+        byte[] data = GC.AllocateUninitializedArray<byte>(tail.DataLength);
 
         offset += Tail.SIZE;
         message.Slice(offset, data.Length).CopyTo(data);

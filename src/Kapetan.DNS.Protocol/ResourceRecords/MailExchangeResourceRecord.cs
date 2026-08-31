@@ -8,7 +8,7 @@ public sealed class MailExchangeResourceRecord : BaseResourceRecord
     {
         Span<byte> pref = stackalloc byte[sizeof(ushort)];
         BitConverter.TryWriteBytes(pref, (ushort)preference);
-        byte[] data = new byte[pref.Length + exchange.Size];
+        byte[] data = GC.AllocateUninitializedArray<byte>(pref.Length + exchange.Size);
 
         if (BitConverter.IsLittleEndian)
         {

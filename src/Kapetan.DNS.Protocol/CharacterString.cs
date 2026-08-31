@@ -46,7 +46,7 @@ public sealed class CharacterString
         }
 
         byte len = message[offset++];
-        byte[] data = new byte[len];
+        byte[] data = GC.AllocateUninitializedArray<byte>(len);
         Buffer.BlockCopy(message, offset, data, 0, len);
         endOffset = offset + len;
         return new CharacterString(data);
@@ -66,7 +66,7 @@ public sealed class CharacterString
         for (int i = 0; i < bytes.Length; i += MAX_SIZE)
         {
             int len = Math.Min(bytes.Length - i, MAX_SIZE);
-            byte[] chunk = new byte[len];
+            byte[] chunk = GC.AllocateUninitializedArray<byte>(len);
             Buffer.BlockCopy(bytes, i, chunk, 0, len);
             characterStrings.Add(new CharacterString(chunk));
         }
@@ -92,7 +92,7 @@ public sealed class CharacterString
     [Obsolete("use Write(Span<byte>) instead", true)]
     public byte[] ToArray()
     {
-        byte[] result = new byte[Size];
+        byte[] result = GC.AllocateUninitializedArray<byte>(Size);
         result[0] = (byte)data.Length;
         data.CopyTo(result, 1);
         return result;

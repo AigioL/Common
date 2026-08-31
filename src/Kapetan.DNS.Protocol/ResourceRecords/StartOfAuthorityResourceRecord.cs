@@ -8,7 +8,9 @@ public sealed class StartOfAuthorityResourceRecord : BaseResourceRecord
     static IResourceRecord Create(Domain domain, Domain master, Domain responsible, long serial,
         TimeSpan refresh, TimeSpan retry, TimeSpan expire, TimeSpan minTtl, TimeSpan ttl)
     {
-        byte[] data = GC.AllocateUninitializedArray<byte>(Options.SIZE + master.Size + responsible.Size);
+        int masterSize = master.Size;
+        int responsibleSize = responsible.Size;
+        byte[] data = GC.AllocateUninitializedArray<byte>(Options.SIZE + masterSize + responsibleSize);
         Options tail = new Options()
         {
             SerialNumber = serial,
@@ -20,9 +22,9 @@ public sealed class StartOfAuthorityResourceRecord : BaseResourceRecord
 
         Span<byte> temp = data;
         master.Write(temp);
-        temp = temp[master.Size..];
+        temp = temp[masterSize..];
         responsible.Write(temp);
-        temp = temp[responsible.Size..];
+        temp = temp[responsibleSize..];
         StructHelper.Write(tail, temp);
 
         return new ResourceRecord(domain, data, RecordType.SOA, RecordClass.IN, ttl);
