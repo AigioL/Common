@@ -53,11 +53,11 @@ unsafe partial class PInvoke
         int __lastError;
         nint __retVal;
         {
-            global::System.Runtime.InteropServices.Marshal.SetLastSystemError(0);
+            Marshal.SetLastSystemError(0);
             __retVal = func(idHook, (nint)lpfn, hmod.Value, dwThreadId);
-            __lastError = global::System.Runtime.InteropServices.Marshal.GetLastSystemError();
+            __lastError = Marshal.GetLastSystemError();
         }
-        global::System.Runtime.InteropServices.Marshal.SetLastPInvokeError(__lastError);
+        Marshal.SetLastPInvokeError(__lastError);
         return __retVal;
     }
 
@@ -130,11 +130,11 @@ unsafe partial class PInvoke
         int __lastError;
         winmdroot.Foundation.BOOL __retVal;
         {
-            global::System.Runtime.InteropServices.Marshal.SetLastSystemError(0);
+            Marshal.SetLastSystemError(0);
             __retVal = func(hhk);
-            __lastError = global::System.Runtime.InteropServices.Marshal.GetLastSystemError();
+            __lastError = Marshal.GetLastSystemError();
         }
-        global::System.Runtime.InteropServices.Marshal.SetLastPInvokeError(__lastError);
+        Marshal.SetLastPInvokeError(__lastError);
         return __retVal;
     }
 

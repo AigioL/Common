@@ -28,6 +28,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AigioL.Common.TencentCloud.Sdk.IM\AigioL.Common.TencentCloud.Sdk.IM.csproj" />
 		<ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
+		<ProjectReference Include="..\WinDivertSharp\WinDivertSharp.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -42,6 +43,8 @@
 	<Import Project="..\AigioL.Common.Net.NameResolution\AigioL.Common.Net.NameResolution.projitems" Label="Shared" />
 
 	<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
+
+	<Import Project="..\Kapetan.DNS.Protocol\Kapetan.DNS.Protocol.projitems" Label="Shared" />
 
 	<!--<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />-->
 

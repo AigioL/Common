@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace AigioL.Common.Net.NameResolution;
 
@@ -52,5 +53,30 @@ public static partial class Dns2
             return r.ToWrapper(DnsResultSourceType.SystemDefault, elapsedTime: Stopwatch.GetElapsedTime(timestamp));
         }
         return DnsResponseCode.ServerFailure;
+    }
+
+    [DllImport("dnsapi.dll", EntryPoint = "DnsFlushResolverCache", SetLastError = true)]
+    [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+#pragma warning disable SYSLIB1054 // 使用 “LibraryImportAttribute” 而不是 “DllImportAttribute” 在编译时生成 P/Invoke 封送代码
+    static extern void DnsFlushResolverCache();
+#pragma warning restore SYSLIB1054 // 使用 “LibraryImportAttribute” 而不是 “DllImportAttribute” 在编译时生成 P/Invoke 封送代码
+
+    /// <summary>
+    /// 刷新 DNS 缓存
+    /// </summary>
+    public static void FlushResolverCache()
+    {
+#if !WINDOWS
+        if (OperatingSystem.IsWindows())
+#endif
+        {
+            try
+            {
+                DnsFlushResolverCache();
+            }
+            catch
+            {
+            }
+        }
     }
 }

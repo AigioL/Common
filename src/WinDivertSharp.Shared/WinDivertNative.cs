@@ -54,7 +54,7 @@ internal static unsafe partial class WinDivertNative
     /// <param name="layer">Packet processing layer.</param>
     /// <param name="priority">Handle priority.</param>
     /// <param name="flags">Open flags.</param>
-    /// <returns>Handle to the WinDivert instance, or <see cref="IntPtr.Zero"/> on failure.</returns>
+    /// <returns>Handle to the WinDivert instance, or <see cref="WinDivert.INVALID_HANDLE_VALUE"/> on failure.</returns>
 #if NET7_0_OR_GREATER
     [LibraryImport(WinDivert, EntryPoint = "WinDivertOpen", SetLastError = true)]
     [UnmanagedCallConv(CallConvs = new[] { typeof(CallConvCdecl) })]

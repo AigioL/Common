@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>1147a4e6-0f77-4a3b-b449-76033a1b9c05</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Kapetan.DNS.Protocol</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CharacterString.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Domain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Header.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IMessageEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Marshalling\Endianness.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Marshalling\IEndian.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Marshalling\Struct.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OperationCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Question.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RecordClass.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RecordType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Request.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\BaseResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\CanonicalNameResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\IPAddressResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\IResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\MailExchangeResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\NameServerResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\PointerResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\ResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\ResourceRecordFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\ServiceResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\StartOfAuthorityResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\TextResourceRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Response.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\ByteExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\ByteStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\ObjectStringifier.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
+</Project>

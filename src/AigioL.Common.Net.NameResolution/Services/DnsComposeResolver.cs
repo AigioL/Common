@@ -280,7 +280,7 @@ public class DnsComposeResolver : IDnsResolver, IAsyncDisposable, IDisposable
     }
 }
 
-internal static partial class LoggerMessages
+static partial class LoggerMessages
 {
     [LoggerMessage(
         Level = LogLevel.Error,

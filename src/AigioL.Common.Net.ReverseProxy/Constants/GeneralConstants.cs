@@ -16,6 +16,8 @@ public static class GeneralConstants
     public const int StackallocByteThreshold = 256;
     public const int StackallocCharThreshold = StackallocByteThreshold / 2;
 
+    public const int HTTP_PORT = 80;
+
     public const int HTTPS_PORT = 443;
 
     public const int GitHubDesktopPort = 9418;
@@ -55,4 +57,9 @@ public static class GeneralConstants
     public const string TemplateStringVarUri = "@uri";
 
     public const string TemplateStringVarOrigin = "${origin}";
+
+    /// <summary>
+    /// 995 (0x3E3) 由于发生线程退出或应用程序请求，I/O 操作已中止
+    /// </summary>
+    internal const int ERROR_OPERATION_ABORTED = 995;
 }

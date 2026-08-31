@@ -157,7 +157,7 @@ public sealed class DnsResolverWrapper : IDnsResolver, IAsyncDisposable, IDispos
     }
 }
 
-internal static partial class LoggerMessages
+static partial class LoggerMessages
 {
     [LoggerMessage(
         Level = LogLevel.Error,

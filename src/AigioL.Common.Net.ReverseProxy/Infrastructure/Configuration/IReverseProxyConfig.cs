@@ -31,6 +31,8 @@ interface IReverseProxyConfig
     /// </summary>
     bool IsMatch(HostString host);
 
+    bool IsMatch(string host);
+
     /// <summary>
     /// 尝试获取脚本内容
     /// </summary>

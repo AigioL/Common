@@ -46,12 +46,12 @@ namespace WinDivertSharp;
 /// classes constructed in the use of this library will be created with unsafe pointer-based
 /// references that all require their source (the buffer) to be pinned in memory.
 /// </remarks>
-public class WinDivertBuffer : IDisposable
+public sealed class WinDivertBuffer : IDisposable
 {
     /// <summary>
     /// The internal buffer object.
     /// </summary>
-    private byte[] _buffer;
+    byte[] _buffer;
 
     /// <summary>
     /// The pinned pointer to the buffer.
@@ -61,12 +61,14 @@ public class WinDivertBuffer : IDisposable
     /// <summary>
     /// The GCHandle that provides our <see cref="BufferPointer"/> member.
     /// </summary>
-    private GCHandle _bufferHandle;
+    GCHandle _bufferHandle;
+
+    public const int DefaultMaxPacketSize = 65536;
 
     /// <summary>
     /// Constructs a new buffer with the default max-packet size.
     /// </summary>
-    public WinDivertBuffer() : this(65536)
+    public WinDivertBuffer() : this(DefaultMaxPacketSize)
     {
     }
 
@@ -151,7 +153,7 @@ public class WinDivertBuffer : IDisposable
 
     #region IDisposable Support
 
-    private bool disposedValue = false; // To detect redundant calls
+    bool disposedValue; // To detect redundant calls
 
     /// <summary>
     /// Disposes of the buffer.
@@ -159,42 +161,37 @@ public class WinDivertBuffer : IDisposable
     /// <param name="disposing">
     /// Whether or not we're disposing.
     /// </param>
-    protected virtual void Dispose(bool disposing)
+    void Dispose(bool disposing)
     {
         if (!disposedValue)
         {
             if (disposing)
             {
+                // 释放托管状态(托管对象)
                 if (_buffer != null)
                 {
                     _bufferHandle.Free();
                     BufferPointer = IntPtr.Zero;
                     Array.Clear(_buffer, 0, _buffer.Length);
-                    _buffer = null!;
                 }
             }
 
-            // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-            // TODO: set large fields to null.
+            // 释放未托管的资源(未托管的对象)并重写终结器
+            // 将大型字段设置为 null
+            _buffer = null!;
 
             disposedValue = true;
         }
     }
-
-    // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~WinDivertBuffer() { // Do not change this code. Put cleanup code in Dispose(bool
-    // disposing) above. Dispose(false); }
-
-    // This code added to correctly implement the disposable pattern.
 
     /// <summary>
     /// Disposes the buffer.
     /// </summary>
     public void Dispose()
     {
-        // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        Dispose(true);
-        // TODO: uncomment the following line if the finalizer is overridden above. GC.SuppressFinalize(this);
+        // 不要更改此代码。请将清理代码放入“Dispose(bool disposing)”方法中
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     #endregion IDisposable Support

@@ -75,7 +75,7 @@ file static class E31c63fd
 
     internal static string Decrypt(ReadOnlySpan<byte> ciphertextU8)
     {
-        var a = E31c63fd.A;
+        var a = A;
 
         // 传入的 UTF8 字节转换为 UTF16 字符组
         Span<char> chars = stackalloc char[256];
@@ -104,7 +104,7 @@ file static class E31c63fd
     {
         var plaintextU8 = Encoding.UTF8.GetBytes(plaintext);
 
-        var a = E31c63fd.A;
+        var a = A;
         var ciphertext = a.EncryptCbc(plaintextU8, a.Key, PaddingMode.PKCS7);
 
         var ciphertextHex = Convert.ToHexString(ciphertext);

@@ -235,7 +235,7 @@ public static partial class KestrelServerOptionsExtensions
     }
 }
 
-internal static partial class LoggerMessages_KestrelOptEx
+static partial class LoggerMessages_KestrelOptEx
 {
     [LoggerMessage(
         Level = LogLevel.Information,

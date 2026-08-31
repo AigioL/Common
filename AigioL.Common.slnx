@@ -46,7 +46,6 @@
     <Project Path="src/AigioL.Common.System.Security.Cryptography.Aes/AigioL.Common.System.Security.Cryptography.Aes.shproj" Id="bafc6195-e7f9-4e81-b1ec-0d1de60d5fdc" />
     <Project Path="src/AigioL.Common.System.Security.Cryptography.HashAlgorithms/AigioL.Common.System.Security.Cryptography.HashAlgorithms.shproj" Id="49917bf7-8b4f-4bbb-a3f4-df5715759605" />
     <Project Path="src/AigioL.Common.System.Security.Cryptography.RSA/AigioL.Common.System.Security.Cryptography.RSA.shproj" Id="dc3e79b1-9785-421d-b9aa-62d2f77f124d" />
-    <Project Path="src/AigioL.Common.Web/AigioL.Common.Web.csproj" Id="2ea9df75-10a4-4a71-8b85-1569c34f244c" />
     <Project Path="src/AigioL.Common.Windows.Management.Deployment/AigioL.Common.Windows.Management.Deployment.shproj" Id="6665560f-5c89-4d1a-a2bd-7a7a9b449604" />
     <Project Path="src/AigioL.Common.Windows.Win32.NativeLibraryE/AigioL.Common.Windows.Win32.NativeLibraryE.shproj" Id="b1933abe-1634-4cbf-86e3-8f2a53ae1252" />
     <Project Path="src/AigioL.Common.Windows.Win32.RegisterHotKey/AigioL.Common.Windows.Win32.RegisterHotKey.shproj" Id="c3c8526d-e029-4c04-ba12-bed1d4a2b8a9" />
@@ -54,6 +53,7 @@
     <Project Path="src/AigioL.Common.Windows.Win32.System.ClrHosting/AigioL.Common.Windows.Win32.System.ClrHosting.shproj" Id="6e3d2f18-85d8-48b4-b636-6a5ffcfc503f" />
     <Project Path="src/AigioL.Common.Windows.Win32.System.Threading.MessageLoop/AigioL.Common.Windows.Win32.System.Threading.MessageLoop.shproj" Id="5ba03b40-b43e-4df5-ae77-a65dfc7d79c7" />
     <Project Path="src/AigioL.Common/AigioL.Common.csproj" Id="5da9ad41-8c76-4563-be32-3e26ddae44c2" />
+    <Project Path="src/Kapetan.DNS.Protocol/Kapetan.DNS.Protocol.shproj" Id="1147a4e6-0f77-4a3b-b449-76033a1b9c05" />
     <Project Path="src/WinDivertSharp.Shared/WinDivertSharp.Shared.shproj" Id="480e25ab-20b9-4e61-965f-db0bd885f1df" />
     <Project Path="src/WinDivertSharp/WinDivertSharp.csproj" Id="f2a6f37b-7a31-49ea-bfa9-d348861292f6" />
     <Project Path="src/WireGuard.Wintun/WireGuard.Wintun.shproj" Id="a3f0ef8f-2586-44cd-96b2-47f5693b0f97" />

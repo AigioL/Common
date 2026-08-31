@@ -12,6 +12,12 @@ sealed partial class ReverseProxyWebApp : IReverseProxyWebApp, IAsyncDisposable
     WebApplication? app;
 
     readonly string[] allowedHosts = ["*",];
+    readonly IReverseProxyWebAppLifecycle lifecycle;
+
+    public ReverseProxyWebApp()
+    {
+        lifecycle = new ReverseProxyWebAppLifecycle(this);
+    }
 
     /// <inheritdoc/>
     public async Task<ReverseProxyWebAppStartErrCode> StartAsync()
@@ -31,6 +37,7 @@ sealed partial class ReverseProxyWebApp : IReverseProxyWebApp, IAsyncDisposable
 
             //builder.Logging.AddProvider(AccConsoleLogProvider.Instance);
 
+            builder.Services.AddSingleton(lifecycle);
             builder.Services.Configure<HostFilteringOptions>(o =>
             {
                 o.AllowEmptyHosts = true;
@@ -117,4 +124,12 @@ sealed partial class ReverseProxyWebApp : IReverseProxyWebApp, IAsyncDisposable
     {
 
     }
+}
+
+file sealed class ReverseProxyWebAppLifecycle(ReverseProxyWebApp app) : IReverseProxyWebAppLifecycle
+{
+    void IReverseProxyWebAppLifecycle.Stop() => Task.Factory.StartNew(async () =>
+    {
+        await app.StopAsync();
+    });
 }

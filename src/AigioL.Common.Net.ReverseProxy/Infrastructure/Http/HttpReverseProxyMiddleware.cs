@@ -469,7 +469,7 @@ sealed partial class HttpReverseProxyMiddleware
     }
 }
 
-internal static partial class LoggerMessages
+static partial class LoggerMessages
 {
     [LoggerMessage(
         Level = LogLevel.Warning,

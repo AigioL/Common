@@ -406,7 +406,7 @@ file static class DnsResolverPal
     #endregion
 }
 
-internal static partial class LoggerMessages
+static partial class LoggerMessages
 {
     [LoggerMessage(
         Level = LogLevel.Error,

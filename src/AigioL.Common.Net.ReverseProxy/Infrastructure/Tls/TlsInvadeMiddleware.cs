@@ -67,7 +67,7 @@ static class TlsInvadeMiddleware
     }
 }
 
-internal static partial class LoggerMessages
+static partial class LoggerMessages
 {
     [LoggerMessage(
         Level = LogLevel.Error,

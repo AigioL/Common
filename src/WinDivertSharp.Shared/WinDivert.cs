@@ -43,6 +43,8 @@ namespace WinDivertSharp;
 /// </summary>
 public static unsafe class WinDivert
 {
+    public const nint INVALID_HANDLE_VALUE = -1;
+
     /// <summary>
     /// Opens a WinDivert handle for the given filter. Unless otherwise specified by flags, any
     /// packet that matches the filter will be diverted to the handle. Diverted packets can be
@@ -61,7 +63,7 @@ public static unsafe class WinDivert
     /// Additional flags.
     /// </param>
     /// <returns>
-    /// A valid WinDivert handle on success, or IntPtr.Zero if an error occurred. Use
+    /// A valid WinDivert handle on success, or <see cref="INVALID_HANDLE_VALUE"/> if an error occurred. Use
     /// <see cref="Marshal.GetLastWin32Error" /> to get the reason for the error.
     /// </returns>
     /// <remarks>
@@ -662,4 +664,41 @@ public static unsafe class WinDivert
             return retVal;
         }
     }
+}
+
+public enum WinDivertOpenWin32ErrorCode
+{
+    /// <summary>
+    /// 驱动程序文件 WinDivert32.sys 和 WinDivert64.sys 未被找到
+    /// </summary>
+    ERROR_FILE_NOT_FOUND = 2,
+
+    /// <summary>
+    /// 调用应用程序没有管理员权限
+    /// </summary>
+    ERROR_ACCESS_DENIED = 5,
+
+    /// <summary>
+    /// 这表示包过滤字符串、层、优先级或标志无效
+    /// </summary>
+    ERROR_INVALID_PARAMETER = 87,
+
+    /// <summary>
+    /// WinDivert32.sys 或 WinDivert64.sys 驱动程序没有有效的数字签名
+    /// </summary>
+    ERROR_INVALID_IMAGE_HASH = 577,
+
+    /// <summary>
+    /// 此错误发生原因多种多样，包括：
+    /// <list type="number">
+    /// <item>WinDivert 驱动被安全软件阻挡</item>
+    /// <item>你正在使用一个不支持驱动程序的虚拟化环境</item>
+    /// </list>
+    /// </summary>
+    ERROR_DRIVER_BLOCKED = 1275,
+
+    /// <summary>
+    /// 当基础筛选引擎服务被禁用时，会出现此错误
+    /// </summary>
+    EPT_S_NOT_REGISTERED = 1753,
 }
