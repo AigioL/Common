@@ -129,12 +129,6 @@ public struct Header : IEndian
         get { return SIZE; }
     }
 
-    [Obsolete("use Write(Span<byte>) instead", true)]
-    public byte[] ToArray()
-    {
-        return StructHelper.GetBytes(this);
-    }
-
     public void Write(Span<byte> result)
     {
         StructHelper.Write(this, result);

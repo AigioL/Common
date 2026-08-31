@@ -27,36 +27,9 @@ public sealed class Response : IResponse
         return response;
     }
 
-    [Obsolete("use FromArray(ReadOnlySpan<byte>) instead", true)]
-    public static Response FromArray(byte[] message)
+    public static Response FromArray(ReadOnlyMemory<byte> message)
     {
-        Header header = Header.FromArray(message);
-        int offset = header.Size;
-
-        if (!header.Response)
-        {
-            throw new ArgumentException("Invalid response message");
-        }
-
-        if (header.Truncated)
-        {
-            return new Response(header,
-                Question.GetAllFromArray(message, offset, header.QuestionCount),
-                new List<IResourceRecord>(),
-                new List<IResourceRecord>(),
-                new List<IResourceRecord>());
-        }
-
-        return new Response(header,
-            Question.GetAllFromArray(message, offset, header.QuestionCount, out offset),
-            ResourceRecordFactory.GetAllFromArray(message, offset, header.AnswerRecordCount, out offset),
-            ResourceRecordFactory.GetAllFromArray(message, offset, header.AuthorityRecordCount, out offset),
-            ResourceRecordFactory.GetAllFromArray(message, offset, header.AdditionalRecordCount, out offset));
-    }
-
-    public static Response FromArray(ReadOnlySpan<byte> message)
-    {
-        Header header = Header.FromArray(message);
+        var header = Header.FromArray(message.Span);
         int offset = header.Size;
 
         if (!header.Response)
@@ -198,22 +171,6 @@ public sealed class Response : IResponse
         }
     }
 
-    [Obsolete("use Write(Span<byte>) instead", true)]
-    public byte[] ToArray()
-    {
-        UpdateHeader();
-        ByteStream result = new ByteStream(Size);
-
-        result
-            .Append(header.ToArray())
-            .Append(questions.Select(q => q.ToArray()))
-            .Append(answers.Select(a => a.ToArray()))
-            .Append(authority.Select(a => a.ToArray()))
-            .Append(additional.Select(a => a.ToArray()));
-
-        return result.ToArray();
-    }
-
     public void Write(Span<byte> result)
     {
         if (result.Length < Size)
@@ -255,7 +212,7 @@ public sealed class Response : IResponse
             .ToString();
     }
 
-    private void UpdateHeader()
+    void UpdateHeader()
     {
         header.QuestionCount = questions.Count;
         header.AnswerRecordCount = answers.Count;

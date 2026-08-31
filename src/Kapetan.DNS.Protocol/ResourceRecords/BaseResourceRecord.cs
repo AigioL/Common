@@ -37,7 +37,7 @@ public abstract class BaseResourceRecord : IResourceRecord
         get { return record.DataLength; }
     }
 
-    public byte[] Data
+    public ReadOnlyMemory<byte> Data
     {
         get { return record.Data; }
     }
@@ -45,12 +45,6 @@ public abstract class BaseResourceRecord : IResourceRecord
     public int Size
     {
         get { return record.Size; }
-    }
-
-    [Obsolete("use Write(Span<byte>) instead", true)]
-    public byte[] ToArray()
-    {
-        return record.ToArray();
     }
 
     public void Write(Span<byte> result)

@@ -22,9 +22,10 @@ public sealed class ServiceResourceRecord : BaseResourceRecord
         return new ResourceRecord(domain, data, RecordType.SRV, RecordClass.IN, ttl);
     }
 
-    public ServiceResourceRecord(IResourceRecord record, ReadOnlySpan<byte> message, int dataOffset) : base(record)
+    public ServiceResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset) : base(record)
     {
-        Head head = StructHelper.GetStruct<Head>(message.Slice(dataOffset, Head.SIZE));
+        Span<byte> head_buffer = stackalloc byte[Head.SIZE];
+        ref var head = ref StructHelper.GetRefStruct<Head>(message.Span.Slice(dataOffset, Head.SIZE), head_buffer);
 
         Priority = head.Priority;
         Weight = head.Weight;

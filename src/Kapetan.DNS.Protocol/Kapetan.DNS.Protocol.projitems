@@ -38,7 +38,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ResourceRecords\TextResourceRecord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Response.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\ByteExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\ByteStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\ObjectStringifier.cs" />
   </ItemGroup>
   <ItemGroup>

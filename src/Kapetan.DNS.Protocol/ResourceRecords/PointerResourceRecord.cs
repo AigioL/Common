@@ -4,7 +4,7 @@ namespace DNS.Protocol.ResourceRecords;
 
 public sealed class PointerResourceRecord : BaseResourceRecord
 {
-    public PointerResourceRecord(IResourceRecord record, ReadOnlySpan<byte> message, int dataOffset)
+    public PointerResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset)
         : base(record)
     {
         PointerDomainName = Domain.FromArray(message, dataOffset);

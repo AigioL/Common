@@ -10,14 +10,14 @@ public sealed class ResourceRecord : IResourceRecord
     RecordType type;
     RecordClass klass;
     TimeSpan ttl;
-    byte[] data;
+    ReadOnlyMemory<byte> data;
 
-    public static IList<ResourceRecord> GetAllFromArray(ReadOnlySpan<byte> message, int offset, int count)
+    public static IList<ResourceRecord> GetAllFromArray(ReadOnlyMemory<byte> message, int offset, int count)
     {
         return GetAllFromArray(message, offset, count, out _);
     }
 
-    public static IList<ResourceRecord> GetAllFromArray(ReadOnlySpan<byte> message, int offset, int count, out int endOffset)
+    public static IList<ResourceRecord> GetAllFromArray(ReadOnlyMemory<byte> message, int offset, int count, out int endOffset)
     {
         var records = new List<ResourceRecord>(count);
 
@@ -30,32 +30,31 @@ public sealed class ResourceRecord : IResourceRecord
         return records;
     }
 
-    public static ResourceRecord FromArray(ReadOnlySpan<byte> message, int offset)
+    public static ResourceRecord FromArray(ReadOnlyMemory<byte> message, int offset)
     {
         return FromArray(message, offset, out _);
     }
 
-    public static ResourceRecord FromArray(ReadOnlySpan<byte> message, int offset, out int endOffset)
+    public static ResourceRecord FromArray(ReadOnlyMemory<byte> message, int offset, out int endOffset)
     {
-        Domain domain = Domain.FromArray(message, offset, out offset);
-        Tail tail = StructHelper.GetStruct<Tail>(message.Slice(offset, Tail.SIZE));
-
-        byte[] data = GC.AllocateUninitializedArray<byte>(tail.DataLength);
+        var domain = Domain.FromArray(message, offset, out offset);
+        Span<byte> tailSpan = stackalloc byte[Tail.SIZE];
+        ref var tail = ref StructHelper.GetRefStruct<Tail>(message.Span.Slice(offset, tailSpan.Length), tailSpan);
 
         offset += Tail.SIZE;
-        message.Slice(offset, data.Length).CopyTo(data);
+        var data = message.Slice(offset, tail.DataLength);
 
         endOffset = offset + data.Length;
 
         return new ResourceRecord(domain, data, tail.Type, tail.Class, tail.TimeToLive);
     }
 
-    public static ResourceRecord FromQuestion(Question question, byte[] data, TimeSpan ttl = default)
+    public static ResourceRecord FromQuestion(Question question, ReadOnlyMemory<byte> data, TimeSpan ttl = default)
     {
         return new ResourceRecord(question.Name, data, question.Type, question.Class, ttl);
     }
 
-    public ResourceRecord(Domain domain, byte[] data, RecordType type,
+    public ResourceRecord(Domain domain, ReadOnlyMemory<byte> data, RecordType type,
             RecordClass klass = RecordClass.IN, TimeSpan ttl = default)
     {
         this.domain = domain;
@@ -90,7 +89,7 @@ public sealed class ResourceRecord : IResourceRecord
         get { return data.Length; }
     }
 
-    public byte[] Data
+    public ReadOnlyMemory<byte> Data
     {
         get { return data; }
     }
@@ -98,25 +97,6 @@ public sealed class ResourceRecord : IResourceRecord
     public int Size
     {
         get { return domain.Size + Tail.SIZE + data.Length; }
-    }
-
-    [Obsolete("use Write(Span<byte>) instead", true)]
-    public byte[] ToArray()
-    {
-        ByteStream result = new ByteStream(Size);
-
-        result
-            .Append(domain.ToArray())
-            .Append(StructHelper.GetBytes(new Tail()
-            {
-                Type = Type,
-                Class = Class,
-                TimeToLive = ttl,
-                DataLength = data.Length,
-            }))
-            .Append(data);
-
-        return result.ToArray();
     }
 
     public void Write(Span<byte> result)
@@ -136,7 +116,7 @@ public sealed class ResourceRecord : IResourceRecord
             DataLength = data.Length,
         }, result);
         result = result[Tail.SIZE..];
-        data.CopyTo(result);
+        data.Span.CopyTo(result);
     }
 
     public override string ToString()
@@ -153,10 +133,10 @@ public sealed class ResourceRecord : IResourceRecord
 
         public const int SIZE = 10;
 
-        private ushort type;
-        private ushort klass;
-        private uint ttl;
-        private ushort dataLength;
+        ushort type;
+        ushort klass;
+        uint ttl;
+        ushort dataLength;
 
         public RecordType Type
         {

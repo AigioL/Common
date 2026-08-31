@@ -12,27 +12,9 @@ public sealed class Request : IRequest
     Header header;
     IList<IResourceRecord> additional;
 
-    [Obsolete("use FromArray(ReadOnlySpan<byte>) instead", true)]
-    public static Request FromArray(byte[] message)
+    public static Request FromArray(ReadOnlyMemory<byte> message)
     {
-        Header header = Header.FromArray(message);
-        int offset = header.Size;
-
-        if (header.Response || header.QuestionCount == 0 ||
-                header.AnswerRecordCount + header.AuthorityRecordCount > 0 ||
-                header.ResponseCode != DnsResponseCode.NoError)
-        {
-            throw new ArgumentException("Invalid request message");
-        }
-
-        return new Request(header,
-            Question.GetAllFromArray(message, offset, header.QuestionCount, out offset),
-            ResourceRecordFactory.GetAllFromArray(message, offset, header.AdditionalRecordCount, out _));
-    }
-
-    public static Request FromArray(ReadOnlySpan<byte> message)
-    {
-        Header header = Header.FromArray(message);
+        var header = Header.FromArray(message.Span);
         int offset = header.Size;
 
         if (header.Response || header.QuestionCount == 0 ||
@@ -116,20 +98,6 @@ public sealed class Request : IRequest
         set { header.RecursionDesired = value; }
     }
 
-    [Obsolete("use Write(Span<byte>) instead", true)]
-    public byte[] ToArray()
-    {
-        UpdateHeader();
-        ByteStream result = new ByteStream(Size);
-
-        result
-            .Append(header.ToArray())
-            .Append(questions.Select(q => q.ToArray()))
-            .Append(additional.Select(a => a.ToArray()));
-
-        return result.ToArray();
-    }
-
     public void Write(Span<byte> result)
     {
         if (result.Length < Size)
@@ -161,13 +129,13 @@ public sealed class Request : IRequest
             .ToString();
     }
 
-    private void UpdateHeader()
+    void UpdateHeader()
     {
         header.QuestionCount = questions.Count;
         header.AdditionalRecordCount = additional.Count;
     }
 
-    private ushort NextRandomId()
+    ushort NextRandomId()
     {
         Span<byte> buffer = stackalloc byte[sizeof(ushort)];
         RANDOM.GetBytes(buffer);

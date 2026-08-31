@@ -2,7 +2,7 @@ namespace DNS.Protocol.ResourceRecords;
 
 public sealed class NameServerResourceRecord : BaseResourceRecord
 {
-    public NameServerResourceRecord(IResourceRecord record, ReadOnlySpan<byte> message, int dataOffset)
+    public NameServerResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset)
         : base(record)
     {
         NSDomainName = Domain.FromArray(message, dataOffset);

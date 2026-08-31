@@ -30,13 +30,14 @@ public sealed class StartOfAuthorityResourceRecord : BaseResourceRecord
         return new ResourceRecord(domain, data, RecordType.SOA, RecordClass.IN, ttl);
     }
 
-    public StartOfAuthorityResourceRecord(IResourceRecord record, ReadOnlySpan<byte> message, int dataOffset)
+    public StartOfAuthorityResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset)
         : base(record)
     {
         MasterDomainName = Domain.FromArray(message, dataOffset, out dataOffset);
         ResponsibleDomainName = Domain.FromArray(message, dataOffset, out dataOffset);
 
-        Options tail = StructHelper.GetStruct<Options>(message.Slice(dataOffset, Options.SIZE));
+        Span<byte> tail_buffer = stackalloc byte[Options.SIZE];
+        ref var tail = ref StructHelper.GetRefStruct<Options>(message.Span.Slice(dataOffset, Options.SIZE), tail_buffer);
 
         SerialNumber = tail.SerialNumber;
         RefreshInterval = tail.RefreshInterval;

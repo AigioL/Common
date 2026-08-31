@@ -6,12 +6,12 @@ namespace DNS.Protocol;
 
 public sealed class Question : IMessageEntry
 {
-    public static IList<Question> GetAllFromArray(ReadOnlySpan<byte> message, int offset, int questionCount)
+    public static IList<Question> GetAllFromArray(ReadOnlyMemory<byte> message, int offset, int questionCount)
     {
         return GetAllFromArray(message, offset, questionCount, out _);
     }
 
-    public static IList<Question> GetAllFromArray(ReadOnlySpan<byte> message, int offset, int questionCount, out int endOffset)
+    public static IList<Question> GetAllFromArray(ReadOnlyMemory<byte> message, int offset, int questionCount, out int endOffset)
     {
         var questions = new List<Question>(questionCount);
 
@@ -24,15 +24,16 @@ public sealed class Question : IMessageEntry
         return questions;
     }
 
-    public static Question FromArray(ReadOnlySpan<byte> message, int offset)
+    public static Question FromArray(ReadOnlyMemory<byte> message, int offset)
     {
         return FromArray(message, offset, out _);
     }
 
-    public static Question FromArray(ReadOnlySpan<byte> message, int offset, out int endOffset)
+    public static Question FromArray(ReadOnlyMemory<byte> message, int offset, out int endOffset)
     {
         Domain domain = Domain.FromArray(message, offset, out offset);
-        Tail tail = StructHelper.GetStruct<Tail>(message.Slice(offset, Tail.SIZE));
+        Span<byte> tailSpan = stackalloc byte[Tail.SIZE];
+        ref var tail = ref StructHelper.GetRefStruct<Tail>(message.Span.Slice(offset, tailSpan.Length), tailSpan);
 
         endOffset = offset + Tail.SIZE;
 
@@ -68,18 +69,6 @@ public sealed class Question : IMessageEntry
     public int Size
     {
         get { return domain.Size + Tail.SIZE; }
-    }
-
-    [Obsolete("use Write(Span<byte>) instead", true)]
-    public byte[] ToArray()
-    {
-        ByteStream result = new ByteStream(Size);
-
-        result
-            .Append(domain.ToArray())
-            .Append(StructHelper.GetBytes(new Tail { Type = Type, Class = Class }));
-
-        return result.ToArray();
     }
 
     public void Write(Span<byte> result)

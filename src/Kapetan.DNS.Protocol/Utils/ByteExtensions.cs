@@ -7,10 +7,10 @@ public static class ByteExtensions
         return (byte)((b >> offset) & ~(0xff << length));
     }
 
-    public static byte GetBitValueAt(this byte b, byte offset)
-    {
-        return b.GetBitValueAt(offset, 1);
-    }
+    //public static byte GetBitValueAt(this byte b, byte offset)
+    //{
+    //    return b.GetBitValueAt(offset, 1);
+    //}
 
     public static byte SetBitValueAt(this byte b, byte offset, byte length, byte value)
     {
@@ -20,8 +20,8 @@ public static class ByteExtensions
         return (byte)((value << offset) | (b & ~(mask << offset)));
     }
 
-    public static byte SetBitValueAt(this byte b, byte offset, byte value)
-    {
-        return b.SetBitValueAt(offset, 1, value);
-    }
+    //public static byte SetBitValueAt(this byte b, byte offset, byte value)
+    //{
+    //    return b.SetBitValueAt(offset, 1, value);
+    //}
 }

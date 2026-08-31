@@ -1,6 +1,6 @@
 namespace DNS.Protocol.Marshalling;
 
-public enum Endianness
+public enum Endianness : byte
 {
     Big,
 

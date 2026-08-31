@@ -13,14 +13,14 @@ public sealed class CharacterString
 {
     const int MAX_SIZE = byte.MaxValue;
 
-    byte[] data;
+    ReadOnlyMemory<byte> data;
 
-    public static IList<CharacterString> GetAllFromArray(byte[] message, int offset)
+    public static IList<CharacterString> GetAllFromArray(ReadOnlyMemory<byte> message, int offset)
     {
         return GetAllFromArray(message, offset, out _);
     }
 
-    public static IList<CharacterString> GetAllFromArray(byte[] message, int offset, out int endOffset)
+    public static IList<CharacterString> GetAllFromArray(ReadOnlyMemory<byte> message, int offset, out int endOffset)
     {
         var characterStrings = new List<CharacterString>();
 
@@ -33,21 +33,21 @@ public sealed class CharacterString
         return characterStrings;
     }
 
-    public static CharacterString FromArray(byte[] message, int offset)
+    public static CharacterString FromArray(ReadOnlyMemory<byte> message, int offset)
     {
         return FromArray(message, offset, out _);
     }
 
-    public static CharacterString FromArray(byte[] message, int offset, out int endOffset)
+    public static CharacterString FromArray(ReadOnlyMemory<byte> message, int offset, out int endOffset)
     {
         if (message.Length < 1)
         {
             throw new ArgumentException("Empty message");
         }
 
-        byte len = message[offset++];
+        byte len = message.Span[offset++];
         byte[] data = GC.AllocateUninitializedArray<byte>(len);
-        Buffer.BlockCopy(message, offset, data, 0, len);
+        message.Span.Slice(offset, len).CopyTo(data);
         endOffset = offset + len;
         return new CharacterString(data);
     }
@@ -74,9 +74,12 @@ public sealed class CharacterString
         return characterStrings;
     }
 
-    public CharacterString(byte[] data)
+    public CharacterString(ReadOnlyMemory<byte> data)
     {
-        if (data.Length > MAX_SIZE) Array.Resize(ref data, MAX_SIZE);
+        if (data.Length > MAX_SIZE)
+        {
+            data = data[..MAX_SIZE];
+        }
         this.data = data;
     }
 
@@ -89,15 +92,6 @@ public sealed class CharacterString
         get { return data.Length + 1; }
     }
 
-    [Obsolete("use Write(Span<byte>) instead", true)]
-    public byte[] ToArray()
-    {
-        byte[] result = GC.AllocateUninitializedArray<byte>(Size);
-        result[0] = (byte)data.Length;
-        data.CopyTo(result, 1);
-        return result;
-    }
-
     public void Write(Span<byte> result)
     {
         if (result.Length < Size)
@@ -105,12 +99,12 @@ public sealed class CharacterString
             throw new ArgumentException("Result span is too small");
         }
         result[0] = (byte)data.Length;
-        data.AsSpan().CopyTo(result[1..]);
+        data.Span.CopyTo(result[1..]);
     }
 
     public string ToString(Encoding encoding)
     {
-        return encoding.GetString(data);
+        return encoding.GetString(data.Span);
     }
 
     public override string ToString()

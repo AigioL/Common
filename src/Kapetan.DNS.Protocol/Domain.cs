@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DNS.Protocol;
 
-public sealed class Domain : IComparable<Domain>
+public sealed partial class Domain : IComparable<Domain>
 {
     const byte ASCII_UPPERCASE_FIRST = 65;
     const byte ASCII_UPPERCASE_LAST = 90;
@@ -13,7 +13,8 @@ public sealed class Domain : IComparable<Domain>
     const byte ASCII_LOWERCASE_LAST = 122;
     const byte ASCII_UPPERCASE_MASK = 223;
 
-    readonly byte[][] labels;
+    readonly ReadOnlyMemory<byte>[] labels;
+    readonly ReadOnlyMemory<byte> data;
 
     public static Domain FromString(string domain)
     {
@@ -25,20 +26,20 @@ public sealed class Domain : IComparable<Domain>
         return new Domain(domain);
     }
 
-    public static Domain FromArray(ReadOnlySpan<byte> message, int offset)
+    public static Domain FromArray(ReadOnlyMemory<byte> message, int offset)
     {
         return FromArray(message, offset, out _);
     }
 
-    public static Domain FromArray(ReadOnlySpan<byte> message, int offset, out int endOffset)
+    public static Domain FromArray(ReadOnlyMemory<byte> message, int offset, out int endOffset)
     {
-        var labels = new List<byte[]>();
+        var labels = new List<ReadOnlyMemory<byte>>();
         bool endOffsetAssigned = false;
         endOffset = 0;
         byte lengthOrPointer;
-        HashSet<int> visitedOffsetPointers = new HashSet<int>();
+        HashSet<int> visitedOffsetPointers = new();
 
-        while ((lengthOrPointer = message[offset++]) > 0)
+        while ((lengthOrPointer = message.Span[offset++]) > 0)
         {
             // Two highest bits are set (pointer)
             if (lengthOrPointer.GetBitValueAt(6, 2) == 3)
@@ -50,7 +51,7 @@ public sealed class Domain : IComparable<Domain>
                 }
 
                 ushort pointer = lengthOrPointer.GetBitValueAt(0, 6);
-                offset = (pointer << 8) | message[offset];
+                offset = (pointer << 8) | message.Span[offset];
 
                 if (visitedOffsetPointers.Contains(offset))
                 {
@@ -67,8 +68,7 @@ public sealed class Domain : IComparable<Domain>
             }
 
             byte length = lengthOrPointer;
-            byte[] label = GC.AllocateUninitializedArray<byte>(length);
-            message.Slice(offset, length).CopyTo(label);
+            var label = message.Slice(offset, length);
 
             labels.Add(label);
 
@@ -176,14 +176,31 @@ public sealed class Domain : IComparable<Domain>
         return a.Length - b.Length;
     }
 
-    public Domain(byte[][] labels)
+    static int CompareTo(ReadOnlySpan<byte> a, ReadOnlySpan<byte> b)
+    {
+        int length = Math.Min(a.Length, b.Length);
+
+        for (int i = 0; i < length; i++)
+        {
+            int v = CompareTo(a[i], b[i]);
+            if (v != 0) return v;
+        }
+
+        return a.Length - b.Length;
+    }
+
+    public Domain(ReadOnlyMemory<byte>[] labels)
     {
         this.labels = labels;
+        Size = GetSize(this.labels);
+        data = ToArray(this.labels, Size);
     }
 
     public Domain(IEnumerable<string> labels, Encoding encoding)
     {
         this.labels = [.. labels.Select(encoding.GetBytes)];
+        Size = GetSize(this.labels);
+        data = ToArray(this.labels, Size);
     }
 
     public Domain(string domain) : this(domain.AsMemory()) { }
@@ -198,24 +215,25 @@ public sealed class Domain : IComparable<Domain>
             labels.Add(it);
         }
         this.labels = [.. labels];
+        Size = GetSize(this.labels);
+        data = ToArray(this.labels, Size);
     }
 
     public Domain(string[] labels) : this(labels, Encoding.ASCII) { }
 
-    public int Size
-    {
-        get { return labels.Sum(l => l.Length) + labels.Length + 1; }
-    }
+    public int Size { get; }
 
-    public byte[] ToArray()
+    static int GetSize(ReadOnlyMemory<byte>[] labels) => labels.Sum(l => l.Length) + labels.Length + 1;
+
+    static byte[] ToArray(ReadOnlyMemory<byte>[] labels, int size)
     {
-        byte[] result = GC.AllocateUninitializedArray<byte>(Size);
+        byte[] result = GC.AllocateUninitializedArray<byte>(size);
         int offset = 0;
 
-        foreach (byte[] label in labels)
+        foreach (var label in labels)
         {
             result[offset++] = (byte)label.Length;
-            label.CopyTo(result, offset);
+            label.Span.CopyTo(result.AsSpan(offset));
             offset += label.Length;
         }
 
@@ -223,27 +241,20 @@ public sealed class Domain : IComparable<Domain>
         return result;
     }
 
+    public ReadOnlyMemory<byte> ToArray() => data;
+
     public void Write(Span<byte> result)
     {
         if (result.Length < Size)
         {
             throw new ArgumentException("Result span is too small");
         }
-        int offset = 0;
-
-        foreach (byte[] label in labels)
-        {
-            result[offset++] = (byte)label.Length;
-            label.CopyTo(result[offset..]);
-            offset += label.Length;
-        }
-
-        result[offset] = 0;
+        data.Span.CopyTo(result);
     }
 
     public string ToString(Encoding encoding)
     {
-        return string.Join('.', labels.Select(label => encoding.GetString(label)));
+        return string.Join('.', labels.Select(label => encoding.GetString(label.Span)));
     }
 
     public override string ToString()
@@ -257,7 +268,7 @@ public sealed class Domain : IComparable<Domain>
 
         for (int i = 0; i < length; i++)
         {
-            int v = CompareTo(labels[i], other?.labels[i] ?? []);
+            int v = CompareTo(labels[i].Span, (other == null ? [] : other.labels[i].Span));
             if (v != 0) return v;
         }
 
@@ -284,9 +295,9 @@ public sealed class Domain : IComparable<Domain>
         {
             int hash = 17;
 
-            foreach (byte[] label in labels)
+            foreach (var label in labels)
             {
-                foreach (byte b in label)
+                foreach (byte b in label.Span)
                 {
                     hash = hash * 31 + (IsASCIIAlphabet(b) ? b & ASCII_UPPERCASE_MASK : b);
                 }

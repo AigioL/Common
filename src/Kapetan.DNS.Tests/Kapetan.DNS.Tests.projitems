@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b8b8e118-8e92-44a4-8ee3-820a985aec97</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>DNS.Tests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\CharacterString\empty-string" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\CharacterString\www-string" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\CharacterString\www.google.com-string" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\empty-header_www.google.com-label" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\empty-header_www.google.com-pointer" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\empty-label" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\empty-pointer" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\pointer-loop" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\www-label" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\www-pointer" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\www.google.com-label" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Domain\www.google.com-pointer" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\aa" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\ad" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\all" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\ancount" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\arcount" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\cd" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\empty" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\id" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\nscount" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\opcode" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\qdcount" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\qr" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\ra" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\rcode" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\rd" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Header\tc" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Question\empty-domain_any" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Question\empty-domain_basic" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Question\empty-domain_cname" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Question\multiple" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Question\www.google.com_all" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Question\www.google.com_basic" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Request\edns-test" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Request\empty-header_basic-question" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Request\id-rd_www.google.com-cname" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Request\multiple-questions" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\empty-domain_any" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\empty-domain_basic" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\empty-domain_cname" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\empty-domain_data" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\empty-domain_srv" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\empty-domain_ttl" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\multiple" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\www.google.com_all" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\ResourceRecord\www.google.com_basic" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Response\empty-header_basic" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Response\id-ra_all" />
+    <None Include="$(MSBuildThisFileDirectory)Fixtures\Response\no-question" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Domain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\CompareDomainTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ParseCharacterStringTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ParseDomainTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ParseHeaderTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ParseQuestionTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ParseRequestTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ParseResponseTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ResourceRecords\ParseResourceRecordTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ResourceRecords\SerializeResourceRecordTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ResourceRecords\TextResourceRecordTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\ReverseDomainTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\SerializeCharacterStringTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\SerializeDomainTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\SerializeHeaderTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\SerializeQuestionTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\SerializeRequestTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Protocol\SerializeResponseTest.cs" />
+  </ItemGroup>
+</Project>

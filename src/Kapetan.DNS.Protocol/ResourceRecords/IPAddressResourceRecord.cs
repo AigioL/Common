@@ -4,7 +4,7 @@ namespace DNS.Protocol.ResourceRecords;
 
 public sealed class IPAddressResourceRecord : BaseResourceRecord
 {
-    private static IResourceRecord Create(Domain domain, IPAddress ip, TimeSpan ttl)
+    static IResourceRecord Create(Domain domain, IPAddress ip, TimeSpan ttl)
     {
         byte[] data = ip.GetAddressBytes();
         RecordType type = data.Length == 4 ? RecordType.A : RecordType.AAAA;
@@ -14,7 +14,7 @@ public sealed class IPAddressResourceRecord : BaseResourceRecord
 
     public IPAddressResourceRecord(IResourceRecord record) : base(record)
     {
-        IPAddress = new IPAddress(Data);
+        IPAddress = new IPAddress(Data.Span);
     }
 
     public IPAddressResourceRecord(Domain domain, IPAddress ip, TimeSpan ttl = default) :

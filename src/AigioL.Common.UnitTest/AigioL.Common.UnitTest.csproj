@@ -46,6 +46,8 @@
 
 	<Import Project="..\Kapetan.DNS.Protocol\Kapetan.DNS.Protocol.projitems" Label="Shared" />
 
+	<Import Project="..\Kapetan.DNS.Tests\Kapetan.DNS.Tests.projitems" Label="Shared" />
+
 	<!--<Import Project="$(MSBuildThisFileDirectory)..\Reference.All.props" />-->
 
 </Project>

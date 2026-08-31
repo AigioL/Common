@@ -1,19 +1,16 @@
+using System.Buffers.Binary;
+
 namespace DNS.Protocol.ResourceRecords;
 
 public sealed class MailExchangeResourceRecord : BaseResourceRecord
 {
-    const int PREFERENCE_SIZE = 2;
+    const int PREFERENCE_SIZE = sizeof(ushort);
 
     static IResourceRecord Create(Domain domain, int preference, Domain exchange, TimeSpan ttl)
     {
-        Span<byte> pref = stackalloc byte[sizeof(ushort)];
-        BitConverter.TryWriteBytes(pref, (ushort)preference);
+        Span<byte> pref = stackalloc byte[PREFERENCE_SIZE];
+        BinaryPrimitives.WriteUInt16BigEndian(pref, (ushort)preference);
         byte[] data = GC.AllocateUninitializedArray<byte>(pref.Length + exchange.Size);
-
-        if (BitConverter.IsLittleEndian)
-        {
-            pref.Reverse();
-        }
 
         pref.CopyTo(data);
         exchange.Write(data.AsSpan(pref.Length));
@@ -21,20 +18,15 @@ public sealed class MailExchangeResourceRecord : BaseResourceRecord
         return new ResourceRecord(domain, data, RecordType.MX, RecordClass.IN, ttl);
     }
 
-    public MailExchangeResourceRecord(IResourceRecord record, ReadOnlySpan<byte> message, int dataOffset)
+    public MailExchangeResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset)
         : base(record)
     {
         Span<byte> preference = stackalloc byte[PREFERENCE_SIZE];
-        message.Slice(dataOffset, PREFERENCE_SIZE).CopyTo(preference);
-
-        if (BitConverter.IsLittleEndian)
-        {
-            preference.Reverse();
-        }
+        message.Span.Slice(dataOffset, PREFERENCE_SIZE).CopyTo(preference);
 
         dataOffset += PREFERENCE_SIZE;
 
-        Preference = BitConverter.ToUInt16(preference);
+        Preference = BinaryPrimitives.ReadUInt16BigEndian(preference);
         ExchangeDomainName = Domain.FromArray(message, dataOffset);
     }
 

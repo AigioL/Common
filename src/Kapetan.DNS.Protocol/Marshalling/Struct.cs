@@ -12,32 +12,7 @@ public static class StructHelper
         DynamicallyAccessedMemberTypes.NonPublicConstructors |
         DynamicallyAccessedMemberTypes.AllFields;
 
-    static byte[] ConvertEndian<[DynamicallyAccessedMembers(memberTypes)] T>(
-        byte[] data)
-        where T : struct, IEndian
-    {
-        Type type = typeof(T);
-        FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-        var endianness = T.GetEndianness();
-        foreach (FieldInfo field in fields)
-        {
-            int offset = Marshal.OffsetOf<T>(field.Name).ToInt32();
-#pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-            int length = Marshal.SizeOf(field.FieldType);
-#pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-
-            if (endianness == Endianness.Big && BitConverter.IsLittleEndian ||
-                   endianness == Endianness.Little && !BitConverter.IsLittleEndian)
-            {
-                Array.Reverse(data, offset, length);
-            }
-        }
-
-        return data;
-    }
-
-    static void ConvertEndian2<[DynamicallyAccessedMembers(memberTypes)] T>(
+    static void ConvertEndian<[DynamicallyAccessedMembers(memberTypes)] T>(
         Span<byte> data)
         where T : struct, IEndian
     {
@@ -60,60 +35,45 @@ public static class StructHelper
         }
     }
 
-    public static T GetStruct<[DynamicallyAccessedMembers(memberTypes)] T>(byte[] data)
-        where T : struct, IEndian
-    {
-        return GetStruct<T>(data, 0, data.Length);
-    }
-
-    public static T GetStruct<[DynamicallyAccessedMembers(memberTypes)] T>(byte[] data, int offset, int length)
-        where T : struct, IEndian
-    {
-        return GetStruct<T>(data.AsSpan(offset, length));
-    }
+    /// <summary>
+    /// https://github.com/dotnet/runtime/blob/v11.0.0-preview.7.26381.103/src/libraries/System.Text.Json/Common/JsonConstants.cs#L12
+    /// </summary>
+    public const int StackallocByteThreshold = 256;
 
     public static T GetStruct<[DynamicallyAccessedMembers(memberTypes)] T>(ReadOnlySpan<byte> data)
         where T : struct, IEndian
     {
-        var buffer = ArrayPool<byte>.Shared.Rent(data.Length);
+        T result;
+        byte[]? array = null;
+        Span<byte> buffer = data.Length <= StackallocByteThreshold ?
+            stackalloc byte[StackallocByteThreshold] :
+            (array = ArrayPool<byte>.Shared.Rent(data.Length)).AsSpan(0, data.Length);
+
         try
         {
-            data.CopyTo(buffer);
-            ConvertEndian2<T>(buffer.AsSpan(0, data.Length));
-            GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-
-            try
-            {
-                return Marshal.PtrToStructure<T>(handle.AddrOfPinnedObject());
-            }
-            finally
-            {
-                handle.Free();
-            }
+            data.CopyTo(buffer); // 复制到缓冲区
+            ConvertEndian<T>(buffer); // 大小端调整
+            result = MemoryMarshal.AsRef<T>(buffer); // 零拷贝
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(buffer);
+            if (array != null)
+            {
+                ArrayPool<byte>.Shared.Return(array);
+            }
         }
+        return result;
     }
 
-    [Obsolete("use Write<T>(T, Span<byte>) instead", true)]
-    public static byte[] GetBytes<[DynamicallyAccessedMembers(memberTypes)] T>(T obj)
+    public static ref T GetRefStruct<[DynamicallyAccessedMembers(memberTypes)] T>(ReadOnlySpan<byte> data, Span<byte> buffer)
         where T : struct, IEndian
     {
-        var size = Marshal.SizeOf(obj);
-        var data = GC.AllocateUninitializedArray<byte>(size);
+        buffer = buffer[..data.Length]; // byte 缓冲区
 
-        GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-        try
-        {
-            Marshal.StructureToPtr(obj, handle.AddrOfPinnedObject(), false);
-            return ConvertEndian<T>(data);
-        }
-        finally
-        {
-            handle.Free();
-        }
+        data.CopyTo(buffer); // 写入数据
+        ConvertEndian<T>(buffer); // 大小端调整
+
+        return ref MemoryMarshal.AsRef<T>(buffer); // 零拷贝内存直接将字节范围重新解释结构体
     }
 
     public static unsafe void Write<[DynamicallyAccessedMembers(memberTypes)] T>(T obj, Span<byte> result)
@@ -129,7 +89,7 @@ public static class StructHelper
 #pragma warning disable CS8500 // 这会获取托管类型的地址、获取其大小或声明指向它的指针
         ReadOnlySpan<byte> objPtr = new(&obj, size);
         objPtr.CopyTo(data);
-        ConvertEndian2<T>(data);
+        ConvertEndian<T>(data);
 #pragma warning restore CS8500 // 这会获取托管类型的地址、获取其大小或声明指向它的指针
     }
 }

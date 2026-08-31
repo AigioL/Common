@@ -2,7 +2,7 @@ namespace DNS.Protocol.ResourceRecords;
 
 public sealed class CanonicalNameResourceRecord : BaseResourceRecord
 {
-    public CanonicalNameResourceRecord(IResourceRecord record, ReadOnlySpan<byte> message, int dataOffset)
+    public CanonicalNameResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset)
         : base(record)
     {
         CanonicalDomainName = Domain.FromArray(message, dataOffset);

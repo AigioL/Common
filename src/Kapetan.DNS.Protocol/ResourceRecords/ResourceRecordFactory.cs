@@ -2,12 +2,12 @@ namespace DNS.Protocol.ResourceRecords;
 
 public static class ResourceRecordFactory
 {
-    public static IList<IResourceRecord> GetAllFromArray(ReadOnlySpan<byte> message, int offset, int count)
+    public static IList<IResourceRecord> GetAllFromArray(ReadOnlyMemory<byte> message, int offset, int count)
     {
         return GetAllFromArray(message, offset, count, out _);
     }
 
-    public static IList<IResourceRecord> GetAllFromArray(ReadOnlySpan<byte> message, int offset, int count, out int endOffset)
+    public static IList<IResourceRecord> GetAllFromArray(ReadOnlyMemory<byte> message, int offset, int count, out int endOffset)
     {
         var result = new List<IResourceRecord>(count);
 
@@ -20,12 +20,12 @@ public static class ResourceRecordFactory
         return result;
     }
 
-    public static IResourceRecord FromArray(ReadOnlySpan<byte> message, int offset)
+    public static IResourceRecord FromArray(ReadOnlyMemory<byte> message, int offset)
     {
         return FromArray(message, offset, out _);
     }
 
-    public static IResourceRecord FromArray(ReadOnlySpan<byte> message, int offset, out int endOffest)
+    public static IResourceRecord FromArray(ReadOnlyMemory<byte> message, int offset, out int endOffest)
     {
         ResourceRecord record = ResourceRecord.FromArray(message, offset, out endOffest);
         int dataOffset = endOffest - record.DataLength;

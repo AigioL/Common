@@ -2,6 +2,7 @@ using AigioL.Common.Net.NameResolution;
 using AigioL.Common.Net.ReverseProxy.Infrastructure.Configuration;
 using DNS.Protocol;
 using DNS.Protocol.ResourceRecords;
+using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -90,6 +91,20 @@ sealed partial class DnsInterceptor : IDnsInterceptor, IDisposable
             "DNS 请求长度超出 DefaultMaxPacketSize，可能会导致内存访问越界！");
         var requestPayload = new Span<byte>(packet.PacketPayload, unchecked((int)packet.PacketPayloadLength));
 
+        byte[] requestPayloadArray = ArrayPool<byte>.Shared.Rent(requestPayload.Length);
+        try
+        {
+            requestPayload.CopyTo(requestPayloadArray);
+            ModifyDnsPacket(winDivertBuffer, ref winDivertAddress, ref packetLength, packet, requestPayloadArray.AsMemory(0, requestPayload.Length));
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(requestPayloadArray);
+        }
+    }
+
+    unsafe void ModifyDnsPacket(WinDivertBuffer winDivertBuffer, ref WinDivertAddress winDivertAddress, ref uint packetLength, WinDivertParseResult packet, ReadOnlyMemory<byte> requestPayload)
+    {
         if (!TryParseRequest(requestPayload, out var request) ||
             request.OperationCode != OperationCode.Query ||
             request.Questions.Count == 0)
@@ -154,7 +169,7 @@ sealed partial class DnsInterceptor : IDnsInterceptor, IDisposable
         LogInfoDomainToLoopback(logger, domain, question.Type); // 记录日志，域名已解析到本地 localhost
     }
 
-    static bool TryParseRequest(ReadOnlySpan<byte> payload, [NotNullWhen(true)] out Request? request)
+    static bool TryParseRequest(ReadOnlyMemory<byte> payload, [NotNullWhen(true)] out Request? request)
     {
         try
         {

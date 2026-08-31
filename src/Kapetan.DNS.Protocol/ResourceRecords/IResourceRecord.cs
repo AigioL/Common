@@ -6,5 +6,5 @@ public interface IResourceRecord : IMessageEntry
 
     int DataLength { get; }
 
-    byte[] Data { get; }
+    ReadOnlyMemory<byte> Data { get; }
 }

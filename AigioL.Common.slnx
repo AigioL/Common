@@ -54,6 +54,7 @@
     <Project Path="src/AigioL.Common.Windows.Win32.System.Threading.MessageLoop/AigioL.Common.Windows.Win32.System.Threading.MessageLoop.shproj" Id="5ba03b40-b43e-4df5-ae77-a65dfc7d79c7" />
     <Project Path="src/AigioL.Common/AigioL.Common.csproj" Id="5da9ad41-8c76-4563-be32-3e26ddae44c2" />
     <Project Path="src/Kapetan.DNS.Protocol/Kapetan.DNS.Protocol.shproj" Id="1147a4e6-0f77-4a3b-b449-76033a1b9c05" />
+    <Project Path="src/Kapetan.DNS.Tests/Kapetan.DNS.Tests.shproj" Id="b8b8e118-8e92-44a4-8ee3-820a985aec97" />
     <Project Path="src/WinDivertSharp.Shared/WinDivertSharp.Shared.shproj" Id="480e25ab-20b9-4e61-965f-db0bd885f1df" />
     <Project Path="src/WinDivertSharp/WinDivertSharp.csproj" Id="f2a6f37b-7a31-49ea-bfa9-d348861292f6" />
     <Project Path="src/WireGuard.Wintun/WireGuard.Wintun.shproj" Id="a3f0ef8f-2586-44cd-96b2-47f5693b0f97" />
