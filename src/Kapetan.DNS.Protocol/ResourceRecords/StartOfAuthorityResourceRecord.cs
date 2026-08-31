@@ -5,8 +5,8 @@ namespace DNS.Protocol.ResourceRecords;
 
 public sealed class StartOfAuthorityResourceRecord : BaseResourceRecord
 {
-    static IResourceRecord Create(Domain domain, Domain master, Domain responsible, long serial,
-        TimeSpan refresh, TimeSpan retry, TimeSpan expire, TimeSpan minTtl, TimeSpan ttl)
+    static byte[] CreateData(Domain master, Domain responsible, long serial,
+        TimeSpan refresh, TimeSpan retry, TimeSpan expire, TimeSpan minTtl)
     {
         int masterSize = master.Size;
         int responsibleSize = responsible.Size;
@@ -26,24 +26,49 @@ public sealed class StartOfAuthorityResourceRecord : BaseResourceRecord
         responsible.Write(temp);
         temp = temp[responsibleSize..];
         StructHelper.Write(tail, temp);
+        return data;
+    }
 
+    static IResourceRecord Create(Domain domain, Domain master, Domain responsible, long serial,
+        TimeSpan refresh, TimeSpan retry, TimeSpan expire, TimeSpan minTtl, TimeSpan ttl)
+    {
+        byte[] data = CreateData(master, responsible, serial, refresh, retry, expire, minTtl);
         return new ResourceRecord(domain, data, RecordType.SOA, RecordClass.IN, ttl);
     }
 
     public StartOfAuthorityResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset)
-        : base(record)
+        : base()
     {
-        MasterDomainName = Domain.FromArray(message, dataOffset, out dataOffset);
-        ResponsibleDomainName = Domain.FromArray(message, dataOffset, out dataOffset);
+        MasterDomainName = Domain.FromArray(message, dataOffset, out var masterEndOffset);
+        ResponsibleDomainName = Domain.FromArray(message, masterEndOffset, out var responsibleEndOffset);
 
         Span<byte> tail_buffer = stackalloc byte[Options.SIZE];
-        ref var tail = ref StructHelper.GetRefStruct<Options>(message.Span.Slice(dataOffset, Options.SIZE), tail_buffer);
+        ref var tail = ref StructHelper.GetRefStruct<Options>(message.Span.Slice(responsibleEndOffset, Options.SIZE), tail_buffer);
 
         SerialNumber = tail.SerialNumber;
         RefreshInterval = tail.RefreshInterval;
         RetryInterval = tail.RetryInterval;
         ExpireInterval = tail.ExpireInterval;
         MinimumTimeToLive = tail.MinimumTimeToLive;
+
+        // SOA has two domain names in RDATA (MNAME/RNAME). If consumed bytes differ from expanded sizes,
+        // at least one name was pointer-compressed. Rebuild RDATA to avoid stale offsets (issue #73).
+        // https://github.com/kapetan/dns/issues/73
+        bool masterCompressed = (masterEndOffset - dataOffset) != MasterDomainName.Size;
+        bool responsibleCompressed = (responsibleEndOffset - masterEndOffset) != ResponsibleDomainName.Size;
+
+        if (masterCompressed || responsibleCompressed)
+        {
+            this.record = new ResourceRecord(record.Name,
+                CreateData(MasterDomainName, ResponsibleDomainName, SerialNumber, RefreshInterval, RetryInterval, ExpireInterval, MinimumTimeToLive),
+                RecordType.SOA,
+                record.Class,
+                record.TimeToLive);
+        }
+        else
+        {
+            this.record = record;
+        }
     }
 
     public StartOfAuthorityResourceRecord(Domain domain, Domain master, Domain responsible, long serial,

@@ -5,7 +5,11 @@ namespace DNS.Protocol.ResourceRecords;
 
 public abstract class BaseResourceRecord : IResourceRecord
 {
-    private IResourceRecord record;
+    protected IResourceRecord record = null!;
+
+    protected BaseResourceRecord()
+    {
+    }
 
     public BaseResourceRecord(IResourceRecord record)
     {
@@ -32,22 +36,22 @@ public abstract class BaseResourceRecord : IResourceRecord
         get { return record.TimeToLive; }
     }
 
-    public int DataLength
+    public virtual int DataLength
     {
         get { return record.DataLength; }
     }
 
-    public ReadOnlyMemory<byte> Data
+    public virtual ReadOnlyMemory<byte> Data
     {
         get { return record.Data; }
     }
 
-    public int Size
+    public virtual int Size
     {
         get { return record.Size; }
     }
 
-    public void Write(Span<byte> result)
+    public virtual void Write(Span<byte> result)
     {
         record.Write(result);
     }

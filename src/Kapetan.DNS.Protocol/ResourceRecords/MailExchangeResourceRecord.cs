@@ -6,7 +6,7 @@ public sealed class MailExchangeResourceRecord : BaseResourceRecord
 {
     const int PREFERENCE_SIZE = sizeof(ushort);
 
-    static IResourceRecord Create(Domain domain, int preference, Domain exchange, TimeSpan ttl)
+    static byte[] CreateData(int preference, Domain exchange)
     {
         Span<byte> pref = stackalloc byte[PREFERENCE_SIZE];
         BinaryPrimitives.WriteUInt16BigEndian(pref, (ushort)preference);
@@ -14,20 +14,34 @@ public sealed class MailExchangeResourceRecord : BaseResourceRecord
 
         pref.CopyTo(data);
         exchange.Write(data.AsSpan(pref.Length));
+        return data;
+    }
 
+    static IResourceRecord Create(Domain domain, int preference, Domain exchange, TimeSpan ttl)
+    {
+        byte[] data = CreateData(preference, exchange);
         return new ResourceRecord(domain, data, RecordType.MX, RecordClass.IN, ttl);
     }
 
     public MailExchangeResourceRecord(IResourceRecord record, ReadOnlyMemory<byte> message, int dataOffset)
-        : base(record)
+        : base()
     {
-        Span<byte> preference = stackalloc byte[PREFERENCE_SIZE];
-        message.Span.Slice(dataOffset, PREFERENCE_SIZE).CopyTo(preference);
-
+        Preference = BinaryPrimitives.ReadUInt16BigEndian(message.Span.Slice(dataOffset, PREFERENCE_SIZE));
         dataOffset += PREFERENCE_SIZE;
 
-        Preference = BinaryPrimitives.ReadUInt16BigEndian(preference);
-        ExchangeDomainName = Domain.FromArray(message, dataOffset);
+        ExchangeDomainName = Domain.FromArray(message, dataOffset, out var endOffset);
+
+        // MX RDATA = preference(2) + exchange domain. If consumed bytes differ from expanded domain size,
+        // exchange name was pointer-compressed. Rebuild RDATA to avoid stale offsets (issue #73).
+        // https://github.com/kapetan/dns/issues/73
+        if (endOffset - dataOffset != ExchangeDomainName.Size)
+        {
+            this.record = new ResourceRecord(record.Name, CreateData(Preference, ExchangeDomainName), RecordType.MX, record.Class, record.TimeToLive);
+        }
+        else
+        {
+            this.record = record;
+        }
     }
 
     public MailExchangeResourceRecord(Domain domain, int preference, Domain exchange, TimeSpan ttl = default) :

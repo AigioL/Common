@@ -58,7 +58,8 @@ public sealed class ParseResponseTest
 
         Assert.Equal(1, response.Id);
         Assert.True(response.RecursionAvailable);
-        Assert.Equal(101, response.Size);
+        // Additional CNAME RDATA is normalized from compressed pointer form to expanded labels.
+        Assert.Equal(115, response.Size);
         Assert.Equal(1, response.Questions.Count);
         Assert.Equal(1, response.AnswerRecords.Count);
         Assert.Equal(1, response.AuthorityRecords.Count);
@@ -89,10 +90,30 @@ public sealed class ParseResponseTest
         record = response.AdditionalRecords[0];
 
         Assert.Equal("www", record.Name.ToString());
-        Assert.Equal(Helper.GetArray<byte>(192, 12), record.Data);
+        Assert.Equal(Helper.GetArray<byte>(3, 119, 119, 119, 6, 103, 111, 111, 103, 108, 101, 3, 99, 111, 109, 0), record.Data);
         Assert.Equal(RecordType.CNAME, record.Type);
         Assert.Equal(RecordClass.ANY, record.Class);
         Assert.Equal(TimeSpan.FromSeconds(1), record.TimeToLive);
+    }
+
+    [Fact]
+    public void ResponseWithCompressedCNameRDataRoundTrip()
+    {
+        // Regression test for compressed CNAME pointer offsets during re-serialization:
+        // https://github.com/kapetan/dns/issues/73
+        byte[] content = Helper.ReadFixture("Response", "id-ra_all");
+        Response response = Response.FromArray(content);
+
+        var additional = Assert.IsType<CanonicalNameResourceRecord>(response.AdditionalRecords[0]);
+        Assert.Equal("www.google.com", additional.CanonicalDomainName.ToString());
+        Assert.Equal(Domain.FromString("www.google.com").ToArray(), additional.Data.ToArray());
+
+        byte[] generated = response.ToArray();
+        Response reparsed = Response.FromArray(generated);
+
+        var reparsedAdditional = Assert.IsType<CanonicalNameResourceRecord>(reparsed.AdditionalRecords[0]);
+        Assert.Equal("www.google.com", reparsedAdditional.CanonicalDomainName.ToString());
+        Assert.Equal(Domain.FromString("www.google.com").ToArray(), reparsedAdditional.Data.ToArray());
     }
 
     [Fact]

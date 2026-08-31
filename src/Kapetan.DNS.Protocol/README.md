@@ -59,6 +59,11 @@ Available through NuGet.
    - `TextResourceRecord` 中的 TXT 记录解析正则改为源生成方式，避免每次运行时动态解析/编译正则。
    - 带来更低的启动开销与更稳定的匹配性能，同时减少临时分配。
 
+8. 修复压缩域名指针在重序列化时的偏移失效问题。
+   - 在 `CNAME/NS/PTR/MX/SRV/SOA` 解析构造中检测 RDATA 是否使用压缩指针：若使用则重建为展开后的 RDATA；未使用则保留原数据。
+   - 避免将原始报文中的旧指针偏移直接写回新报文导致无效数据。
+   - 问题参考：`https://github.com/kapetan/dns/issues/73`
+
 ### Tests 层主要变更
 
 1. 测试工程从 `Tests.csproj` 迁移为共享工程：`Kapetan.DNS.Tests.shproj` + `Kapetan.DNS.Tests.projitems`。
