@@ -121,7 +121,7 @@ public struct Header : IEndian
     public DnsResponseCode ResponseCode
     {
         get { return (DnsResponseCode)RCode; }
-        set { RCode = (byte)value; }
+        set { RCode = unchecked((byte)value); }
     }
 
     public int Size

@@ -39,14 +39,41 @@ public sealed class ObjectStringifier<[DynamicallyAccessedMembers(DynamicallyAcc
 
     static string StringifyList(IEnumerable enumerable)
     {
-        return "[" + string.Join(", ", enumerable.Cast<object>().Select(o => StringifyObject(o)).ToArray()) + "]";
+        const string separator = ", ";
+        StringBuilder result = null!;
+
+        var e = enumerable.GetEnumerator();
+        bool isFirst = true;
+        while (e.MoveNext())
+        {
+            if (isFirst)
+            {
+                result = new("[");
+            }
+            else
+            {
+                result.Append(separator);
+            }
+            result.Append(StringifyObject(e.Current));
+            isFirst = false;
+        }
+
+        if (isFirst)
+        {
+            return "[]";
+        }
+        result.Append(']');
+        return result.ToString();
     }
 
     static string StringifyDictionary(IDictionary dict)
     {
-        StringBuilder result = new StringBuilder();
+        if (dict.Count == 0)
+        {
+            return "{}";
+        }
 
-        result.Append('{');
+        StringBuilder result = new("{");
 
         foreach (DictionaryEntry pair in dict)
         {
@@ -71,7 +98,7 @@ public sealed class ObjectStringifier<[DynamicallyAccessedMembers(DynamicallyAcc
     public ObjectStringifier(object obj)
     {
         this.obj = obj;
-        this.pairs = new Dictionary<string, string?>();
+        pairs = new Dictionary<string, string?>();
     }
 
     public ObjectStringifier<T> Remove(params string[] names)

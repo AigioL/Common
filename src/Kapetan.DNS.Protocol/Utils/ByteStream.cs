@@ -33,7 +33,7 @@ public sealed class ByteStream : Stream
 
     public void Reset()
     {
-        this.offset = 0;
+        offset = 0;
     }
 
     public override bool CanRead

@@ -1,4 +1,5 @@
 using DNS.Protocol.Utils;
+using System.Buffers;
 using System.Net;
 using System.Text;
 
@@ -15,6 +16,11 @@ public sealed class Domain : IComparable<Domain>
     readonly byte[][] labels;
 
     public static Domain FromString(string domain)
+    {
+        return new Domain(domain);
+    }
+
+    public static Domain FromString(ReadOnlyMemory<char> domain)
     {
         return new Domain(domain);
     }
@@ -102,7 +108,8 @@ public sealed class Domain : IComparable<Domain>
         StringBuilder builder;
         if (address.Length == 4)
         {
-            builder = new();
+            const string suffix_ipv4 = ".in-addr.arpa";
+            builder = new(suffix_ipv4.Length + (4 * 3) + 3);
             for (int i = address.Length - 1; i >= 0; i--)
             {
                 builder.Append(address[i]);
@@ -111,7 +118,7 @@ public sealed class Domain : IComparable<Domain>
                     builder.Append('.');
                 }
             }
-            builder.Append(".in-addr.arpa");
+            builder.Append(suffix_ipv4);
             return builder.ToString();
         }
 
@@ -125,7 +132,8 @@ public sealed class Domain : IComparable<Domain>
             nibbles[j + 1] = b.GetBitValueAt(0, 4);
         }
 
-        builder = new();
+        const string suffix_ipv6 = ".ip6.arpa";
+        builder = new(suffix_ipv6.Length + (nibbles.Length * 2) + (nibbles.Length - 1));
         for (int i = nibbles.Length - 1; i >= 0; i--)
         {
             builder.Append(nibbles[i].ToString("x"));
@@ -134,7 +142,7 @@ public sealed class Domain : IComparable<Domain>
                 builder.Append('.');
             }
         }
-        builder.Append(".ip6.arpa");
+        builder.Append(suffix_ipv6);
         return builder.ToString();
     }
 
@@ -173,12 +181,24 @@ public sealed class Domain : IComparable<Domain>
         this.labels = labels;
     }
 
-    public Domain(string[] labels, Encoding encoding)
+    public Domain(IEnumerable<string> labels, Encoding encoding)
     {
-        this.labels = [.. labels.Select(label => encoding.GetBytes(label))];
+        this.labels = [.. labels.Select(encoding.GetBytes)];
     }
 
-    public Domain(string domain) : this(domain.Split('.')) { }
+    public Domain(string domain) : this(domain.AsMemory()) { }
+
+    public Domain(ReadOnlyMemory<char> domain)
+    {
+        List<byte[]> labels = new();
+        var split = domain.Span.Split('.');
+        while (split.MoveNext())
+        {
+            var it = Encoding.UTF8.GetBytes(new ReadOnlySequence<char>(domain[split.Current]));
+            labels.Add(it);
+        }
+        this.labels = [.. labels];
+    }
 
     public Domain(string[] labels) : this(labels, Encoding.ASCII) { }
 
