@@ -104,7 +104,12 @@ static partial class _b7722e25
 
     internal static ILoggerFactory GetLoggerFactory()
     {
+#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(loggerFactory);
+#else
+        if (loggerFactory == null)
+            throw new ArgumentNullException(nameof(loggerFactory));
+#endif
         return loggerFactory;
     }
 
@@ -112,7 +117,12 @@ static partial class _b7722e25
     {
         // 参考 https://github.com/CommunityToolkit/dotnet/blob/main/src/CommunityToolkit.Mvvm/DependencyInjection/Ioc.cs#L135
 
+#if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(loggerFactory);
+#else
+        if (loggerFactory == null)
+            throw new ArgumentNullException(nameof(loggerFactory));
+#endif
 
         ILoggerFactory? oldServices = Interlocked.CompareExchange(ref _b7722e25.loggerFactory, loggerFactory, null);
 
@@ -125,7 +135,9 @@ static partial class _b7722e25
     /// <summary>
     /// Throws an <see cref="InvalidOperationException"/> when a configuration is attempted more than once.
     /// </summary>
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
     [DoesNotReturn]
+#endif
     static void ThrowInvalidOperationExceptionForRepeatedConfiguration()
     {
         throw new InvalidOperationException("The default logger factory has already been configured.");
