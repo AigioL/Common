@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1;net$(DotNet_Version_LTS);net$(DotNet_Version_STS)</TargetFrameworks>
 		<RootNamespace>AigioL.Common.Primitives</RootNamespace>
 	</PropertyGroup>
 

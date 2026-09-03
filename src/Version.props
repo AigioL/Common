@@ -16,6 +16,8 @@
 			<PropertyGroup>
 				<!--👇 首选 .NET 版本号 -->
 				<DotNet_Version>11.0</DotNet_Version>
+				<DotNet_Version_LTS>10.0</DotNet_Version_LTS>
+				<DotNet_Version_STS>11.0</DotNet_Version_STS>
 			</PropertyGroup>
 		</Otherwise>
 	</Choose>

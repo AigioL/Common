@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net$(DotNet_Version_LTS);net$(DotNet_Version_STS)</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
