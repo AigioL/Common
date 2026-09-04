@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\SAM.API.Shared\LICENSE.txt" />
+		<None Include="..\SAM.API.Shared\README.md" />
+	</ItemGroup>
+
+	<Import Project="..\SAM.API.Shared\SAM.API.Shared.projitems" Label="Shared" />
+
+</Project>

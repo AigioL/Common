@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SAM.Game (AppId 730 / CS2)": {
+      "commandName": "Project",
+      "commandLineArgs": "730"
+    }
+  }
+}

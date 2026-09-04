@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFrameworks>net$(DotNet_Version)-windows</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<AssemblyTitle>Steam Achievement Manager</AssemblyTitle>
+		<Company>Gibbed</Company>
+		<Authors>Gibbed</Authors>
+		<Description>A manager for game achievements in Steam.</Description>
+		<Copyright>Copyright © Gibbed 2019</Copyright>
+		<Version>7.0.0</Version>
+		<AssemblyVersion>7.0.0.0</AssemblyVersion>
+		<FileVersion>7.0.0.0</FileVersion>
+		<ApplicationIcon>Blank.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<RepositoryUrl>https://github.com/gibbed/SteamAchievementManager/</RepositoryUrl>
+		<RepositoryType>Git</RepositoryType>
+		<CustomResourceTypesSupport>true</CustomResourceTypesSupport>
+		<IsTrimmable>false</IsTrimmable>
+		<IsAotCompatible>false</IsAotCompatible>
+		<PublishAot>false</PublishAot>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Update="DoubleBufferedListView.cs">
+			<SubType>Component</SubType>
+		</Compile>
+		<Compile Update="Manager.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Resources.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<EmbeddedResource Update="Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\SAM.API.Shared\LICENSE.txt" />
+		<None Include="..\SAM.API.Shared\README.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SAM.API\SAM.API.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -27,6 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\SAM.API\SAM.API.csproj" />
 	  <ProjectReference Include="..\WinDivertSharp\WinDivertSharp.csproj" />
 	</ItemGroup>
 

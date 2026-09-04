@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>9001ddd9-aa79-4c52-8487-8433283d42cd</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SAM.API</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Callback.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Callbacks\AppDataChanged.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Callbacks\UserStatsReceived.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CallHandle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Client.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientInitializeException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ClientInitializeFailure.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICallback.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)INativeWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamApps001.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamApps008.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamClient018.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamInventory002.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamRemoteStorage014.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamUGC015.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamUser012.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamUser019.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamUserStats007.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamUserStats013.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamUtils005.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISteamUtils009.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NativeClass.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NativeStrings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NativeWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Steam.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\AccountType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\AppDataChanged.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\CallbackMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\ItemRequestResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\RemoteStorageCommon.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\SteamInventoryResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\UserItemsReceived.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\UserStatsReceived.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\UserStatsStored.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Types\UserStatType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamApps001.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamApps008.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamClient018.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamInventory002.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamRemoteStorage014.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamUGC015.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamUser012.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamUser019.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamUserStats007.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamUserStats013.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamUtils005.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrappers\SteamUtils009.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
+  </ItemGroup>
+</Project>

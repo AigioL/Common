@@ -28,6 +28,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AigioL.Common.TencentCloud.Sdk.IM\AigioL.Common.TencentCloud.Sdk.IM.csproj" />
 		<ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
+		<ProjectReference Include="..\SAM.API\SAM.API.csproj" />
 		<ProjectReference Include="..\WinDivertSharp\WinDivertSharp.csproj" />
 	</ItemGroup>
 
