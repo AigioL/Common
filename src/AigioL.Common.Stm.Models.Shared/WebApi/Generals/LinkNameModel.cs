@@ -1,4 +1,4 @@
-namespace AigioL.Common.Stm.Models.WebApi.General;
+namespace AigioL.Common.Stm.Models.WebApi.Generals;
 
 /// <summary>
 /// 通用模型

@@ -1,7 +1,7 @@
 using AigioL.Common.Stm.Models.Converters;
 using System.Text.Json.Serialization;
 
-namespace AigioL.Common.Stm.Models.WebApi.Econ;
+namespace AigioL.Common.Stm.Models.WebApi.Econs;
 
 public partial record class TradeHistoryResponseBodyTrade
 {

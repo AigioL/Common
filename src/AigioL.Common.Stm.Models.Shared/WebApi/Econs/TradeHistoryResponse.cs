@@ -1,4 +1,4 @@
-namespace AigioL.Common.Stm.Models.WebApi.Econ;
+namespace AigioL.Common.Stm.Models.WebApi.Econs;
 
 /// <summary>
 /// Steam 市场交易历史响应模型
