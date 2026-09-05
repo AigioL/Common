@@ -1,0 +1,22 @@
+<Project>
+
+	<PropertyGroup>
+		<__A53796FE__LinkBase__>Protobuf\AigioL.Common.Stm.Models</__A53796FE__LinkBase__>
+		<__A53796FE__LinkBase__ Condition="$(MSBuildProjectName) == 'AigioL.Common.Stm.Models'">Protobuf</__A53796FE__LinkBase__>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="protobuf-net" />
+		<!-- 👇 由位于 protobuf-net 包的源生成器 ProtoBuf.BuildTools.Generators.ProtoFileGenerator 将 AdditionalFiles 追加的 .proto 文件生成 C# 模型类 -->
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\Protos\**\*.proto">
+			<LinkBase>$(__A53796FE__LinkBase__)\Protos</LinkBase>
+		</AdditionalFiles>
+		<None Include="$(MSBuildThisFileDirectory)\README.md">
+			<LinkBase>$(__A53796FE__LinkBase__)</LinkBase>
+		</None>
+		<None Include="$(MSBuildThisFileDirectory)\AdditionalFiles.props">
+			<LinkBase>$(__A53796FE__LinkBase__)</LinkBase>
+		</None>
+	</ItemGroup>
+
+</Project>

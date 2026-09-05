@@ -27,24 +27,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\SAM.API\SAM.API.csproj" />
-	  <ProjectReference Include="..\WinDivertSharp\WinDivertSharp.csproj" />
+	  <ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
 	</ItemGroup>
-
-	<Import Project="..\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
-
+	
 	<Import Project="..\AigioL.Common.Bcl.LogInit\AigioL.Common.Bcl.LogInit.projitems" Label="Shared" />
-
-	<Import Project="..\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
-
-	<Import Project="..\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
-
-	<Import Project="..\WireGuard.Wintun\WireGuard.Wintun.projitems" Label="Shared" />
-
-	<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
-
-	<Import Project="..\AigioL.Common.Net.NameResolution\AigioL.Common.Net.NameResolution.projitems" Label="Shared" />
-
-	<Import Project="..\Kapetan.DNS.Protocol\Kapetan.DNS.Protocol.projitems" Label="Shared" />
 
 </Project>

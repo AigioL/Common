@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="NLog" />
 		<PackageReference Include="NLog.Extensions.Logging" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
@@ -23,34 +24,35 @@
 		<PackageReference Include="System.Security.Cryptography.ProtectedData" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="System.IO.Hashing" />
+		<PackageReference Include="Utf8StringInterpolation" />
+		<PackageReference Include="Yarp.ReverseProxy" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\AigioL.Common.Primitives.District\AigioL.Common.Primitives.District.csproj" />
+		<ProjectReference Include="..\SAM.API\SAM.API.csproj" />
+		<ProjectReference Include="..\WinDivertSharp\WinDivertSharp.csproj" />
+		<ProjectReference Include="..\AigioL.Common.TencentCloud.Sdk.IM\AigioL.Common.TencentCloud.Sdk.IM.csproj" />
 	</ItemGroup>
 
 	<Import Project="..\AigioL.Common.Bcl\AigioL.Common.Bcl.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.Bcl.Base58Guid\AigioL.Common.Bcl.Base58Guid.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.Essentials\AigioL.Common.Essentials.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.Extensions.Http\AigioL.Common.Extensions.Http.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.Models.ApiRsp\AigioL.Common.Models.ApiRsp.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.Primitives\AigioL.Common.Primitives.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.System.Management.NetworkInformation\AigioL.Common.System.Management.NetworkInformation.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.System.Security.Cryptography.Aes\AigioL.Common.System.Security.Cryptography.Aes.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.System.Security.Cryptography.HashAlgorithms\AigioL.Common.System.Security.Cryptography.HashAlgorithms.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.System.Security.Cryptography.RSA\AigioL.Common.System.Security.Cryptography.RSA.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login.projitems" Label="Shared" />
-
 	<Import Project="..\AigioL.Common.OpenApi.Signature\AigioL.Common.OpenApi.Signature.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
+	<Import Project="..\WireGuard.Wintun\WireGuard.Wintun.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.Net.NameResolution\AigioL.Common.Net.NameResolution.projitems" Label="Shared" />
+	<Import Project="..\Kapetan.DNS.Protocol\Kapetan.DNS.Protocol.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.System.IOPath.FileSystem\AigioL.Common.System.IOPath.FileSystem.projitems" Label="Shared" />
 
 </Project>

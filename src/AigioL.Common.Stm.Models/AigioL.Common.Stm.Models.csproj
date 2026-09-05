@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net$(DotNet_Version_LTS);net$(DotNet_Version_STS)</TargetFrameworks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SteamKit2" />
+	</ItemGroup>
+	
+	<Import Project="$(MSBuildThisFileDirectory)..\AigioL.Common.Stm.Models.Shared\Protobuf\AdditionalFiles.props" />
+
+</Project>

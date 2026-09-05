@@ -121,7 +121,11 @@
   <Folder Name="/2.Libraries/OpenAPI.Sdk/TencentCloud/">
     <Project Path="src/AigioL.Common.TencentCloud.Sdk.IM/AigioL.Common.TencentCloud.Sdk.IM.csproj" Id="8376fc65-e1c4-4cd3-8c9c-05cda1cc7c9b" />
   </Folder>
-  <Folder Name="/2.Libraries/SteamAchievementManager/">
+  <Folder Name="/2.Libraries/Steam/">
+    <Project Path="src/AigioL.Common.Stm.Models.Shared/AigioL.Common.Stm.Models.Shared.shproj" Id="3cee6093-370f-4095-b42c-c8000b91ac9b" />
+    <Project Path="src/AigioL.Common.Stm.Models/AigioL.Common.Stm.Models.csproj" Id="c49b4852-ea10-418a-b704-543b7449a825" />
+  </Folder>
+  <Folder Name="/2.Libraries/Steam/SteamAchievementManager/">
     <Project Path="src/SAM.API.Shared/SAM.API.Shared.shproj" Id="9001ddd9-aa79-4c52-8487-8433283d42cd" />
     <Project Path="src/SAM.API/SAM.API.csproj" Id="43a0ede3-9176-40cf-9927-f4fd8913eb05" />
     <Project Path="src/SAM.Game/SAM.Game.csproj" Id="66c28099-1e67-4ac6-99be-f95363df23c5" />

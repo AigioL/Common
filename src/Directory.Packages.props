@@ -193,7 +193,7 @@
 	</ItemGroup>
 	<!-- 👇 Steam -->
 	<ItemGroup>
-		<PackageVersion Include="SteamKit2" Version="3.3.1" />
+		<PackageVersion Include="SteamKit2" Version="3.4.0" />
 	</ItemGroup>
 	<!-- 👇 Protobuf -->
 	<ItemGroup>
@@ -254,5 +254,9 @@
 	<!-- 👇 Compat -->
 	<ItemGroup>
 		<PackageVersion Include="System.Memory" Version="4.6.3" />
+	</ItemGroup>
+	<!-- 👇 Protocol Buffers -->
+	<ItemGroup>
+		<PackageVersion Include="protobuf-net" Version="3.4.21" />
 	</ItemGroup>
 </Project>
