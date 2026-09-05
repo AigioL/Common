@@ -24,10 +24,10 @@ public sealed class CompareDomainTest
     [Fact]
     public void SameDomainsWithSingleLabelNonAlphabeticCodes()
     {
-        Domain a = new Domain(Helper.GetArray<byte[]>(
+        Domain a = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(119, 0, 119)
         ));
-        Domain b = new Domain(Helper.GetArray<byte[]>(
+        Domain b = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(119, 0, 119)
         ));
 
@@ -38,12 +38,12 @@ public sealed class CompareDomainTest
     [Fact]
     public void SameDomainsWithMultipleLabels()
     {
-        Domain a = new Domain(Helper.GetArray<byte[]>(
+        Domain a = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(119, 119, 119),
             Helper.GetArray<byte>(103, 111, 111, 103, 108, 101),
             Helper.GetArray<byte>(99, 0, 109)
         ));
-        Domain b = new Domain(Helper.GetArray<byte[]>(
+        Domain b = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(87, 87, 87),
             Helper.GetArray<byte>(103, 79, 79, 103, 108, 101),
             Helper.GetArray<byte>(99, 0, 77)
@@ -78,10 +78,10 @@ public sealed class CompareDomainTest
     [Fact]
     public void DifferentDomainsWithSingleLabelNonAlphabeticCodes()
     {
-        Domain a = new Domain(Helper.GetArray<byte[]>(
+        Domain a = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(119, 0, 119)
         ));
-        Domain b = new Domain(Helper.GetArray<byte[]>(
+        Domain b = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(119, 119, 119)
         ));
 

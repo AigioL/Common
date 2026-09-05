@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net$(DotNet_Version)</TargetFramework>
+		<TargetFrameworks>net$(DotNet_Version_LTS);net$(DotNet_Version_STS)</TargetFrameworks>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DefineConstants>$(DefineConstants);USE_IO_HASHING</DefineConstants>
 	</PropertyGroup>
@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\AigioL.Common.Primitives.District\AigioL.Common.Primitives.District.csproj" />
+		<ProjectReference Include="..\AigioL.Common.Primitives.District\AigioL.Common.Primitives.District.csproj" />
 		<ProjectReference Include="..\SAM.API\SAM.API.csproj" />
 		<ProjectReference Include="..\WinDivertSharp\WinDivertSharp.csproj" />
 		<ProjectReference Include="..\AigioL.Common.TencentCloud.Sdk.IM\AigioL.Common.TencentCloud.Sdk.IM.csproj" />
@@ -49,10 +49,12 @@
 	<Import Project="..\AigioL.Common.OpenApi.Signature\AigioL.Common.OpenApi.Signature.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
-	<Import Project="..\WireGuard.Wintun\WireGuard.Wintun.projitems" Label="Shared" />
-	<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
-	<Import Project="..\AigioL.Common.Net.NameResolution\AigioL.Common.Net.NameResolution.projitems" Label="Shared" />
-	<Import Project="..\Kapetan.DNS.Protocol\Kapetan.DNS.Protocol.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.System.IOPath.FileSystem\AigioL.Common.System.IOPath.FileSystem.projitems" Label="Shared" />
+	<Import Project="..\WireGuard.Wintun\WireGuard.Wintun.projitems" Label="Shared" />
+	<ImportGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+		<Import Project="..\AigioL.Common.Net.NameResolution\AigioL.Common.Net.NameResolution.projitems" Label="Shared" />
+		<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
+		<Import Project="..\Kapetan.DNS.Protocol\Kapetan.DNS.Protocol.projitems" Label="Shared" />
+	</ImportGroup>
 
 </Project>

@@ -22,6 +22,11 @@ public static class Helper
         return parameters;
     }
 
+    public static ReadOnlyMemory<T>[] GetArray2<T>(params T[][] parameters)
+    {
+        return parameters.Select(static x => new ReadOnlyMemory<T>(x)).ToArray();
+    }
+
     public static IList<T> GetList<T>(params T[] parameters)
     {
         return new List<T>(parameters);
@@ -54,7 +59,4 @@ public static class Helper
         i.Write(a);
         return a;
     }
-
-    public static ReadOnlyMemory<byte>[] AsReadOnlyMemory(this byte[][] b)
-        => [.. b.Select(static x => new ReadOnlyMemory<byte>(x))];
 }

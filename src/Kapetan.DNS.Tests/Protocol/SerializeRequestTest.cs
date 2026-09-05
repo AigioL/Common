@@ -67,7 +67,7 @@ public sealed class SerializeRequestTest
         Header header = new Header();
 
         Domain domain1 = new Domain(Helper.GetArray("google", "com"));
-        Domain domain2 = new Domain(Helper.GetArray<byte[]>());
+        Domain domain2 = new Domain(Helper.GetArray2<byte>());
         Question question = new Question(domain1, RecordType.A, RecordClass.IN);
         ResourceRecord record = new ResourceRecord(domain2, Helper.GetArray<byte>(),
             RecordType.OPT, (RecordClass)4096, TimeSpan.FromSeconds(0));

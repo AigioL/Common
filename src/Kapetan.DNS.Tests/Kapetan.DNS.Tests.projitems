@@ -61,7 +61,6 @@
     <None Include="$(MSBuildThisFileDirectory)Fixtures\Response\no-question" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Domain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Protocol\CompareDomainTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Protocol\ParseCharacterStringTest.cs" />

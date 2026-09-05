@@ -33,12 +33,16 @@ internal static partial class Helpers
 
     private static Encoding GetAnsi_()
     {
+#if !WINDOWS
         if (OperatingSystem.IsWindows())
+#endif
         {
             int codePage = GetACP();
             var encoding = CodePagesEncodingProvider.Instance.GetEncoding(codePage);
             return encoding ?? Encoding.UTF8;
         }
+#if !WINDOWS
         return Encoding.UTF8;
+#endif
     }
 }

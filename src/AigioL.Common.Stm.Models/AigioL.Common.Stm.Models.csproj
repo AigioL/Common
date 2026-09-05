@@ -7,7 +7,13 @@
 	<ItemGroup>
 		<PackageReference Include="SteamKit2" />
 	</ItemGroup>
-	
+
+	<ItemGroup>
+	  <ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
+	</ItemGroup>
+
+	<Import Project="..\AigioL.Common.Stm.Models.Shared\AigioL.Common.Stm.Models.Shared.projitems" Label="Shared" />
+
 	<Import Project="$(MSBuildThisFileDirectory)..\AigioL.Common.Stm.Models.Shared\Protobuf\AdditionalFiles.props" />
 
 </Project>

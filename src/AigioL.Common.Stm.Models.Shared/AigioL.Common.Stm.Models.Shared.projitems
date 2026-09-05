@@ -12,9 +12,23 @@
     <None Include="$(MSBuildThisFileDirectory)Protobuf\Protos\**\*.proto" />
     <None Include="$(MSBuildThisFileDirectory)Protobuf\AdditionalFiles.props" />
     <None Include="$(MSBuildThisFileDirectory)Protobuf\README.md" />
+    <None Include="$(MSBuildThisFileDirectory)WebApi\Econ\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\UrlConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\LenientNumberBooleanJsonConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\NullableUInt64ToStringJsonConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\UInt64ToStringJsonConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\UnixTimeToDateTimeOffsetConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PInvoke\Class1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SteamJsonSerializerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)WebApi\Class1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\Econ\TradeHistoryResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\Econ\TradeHistoryResponseBody.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\Econ\TradeHistoryResponseBodyDescription.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\Econ\TradeHistoryResponseBodyTrade.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\Econ\TradeHistoryResponseBodyTradeAssetsReceived.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\General\LinkNameModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WebApi\General\TypeValueModel.cs" />
   </ItemGroup>
 </Project>

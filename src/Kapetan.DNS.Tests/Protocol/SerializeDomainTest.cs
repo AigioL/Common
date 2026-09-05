@@ -37,7 +37,7 @@ public class SerializeDomainTest
     [Fact]
     public void DomainWithSingleBinaryLabel()
     {
-        Domain domain = new Domain(Helper.GetArray<byte[]>(
+        Domain domain = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(119, 119, 119)
         ));
         byte[] content = Helper.ReadFixture("Domain", "www-label");
@@ -49,7 +49,7 @@ public class SerializeDomainTest
     [Fact]
     public void DomainWithMultipleBinaryLabels()
     {
-        Domain domain = new Domain(Helper.GetArray<byte[]>(
+        Domain domain = new Domain(Helper.GetArray2<byte>(
             Helper.GetArray<byte>(119, 119, 119),
             Helper.GetArray<byte>(103, 111, 111, 103, 108, 101),
             Helper.GetArray<byte>(99, 111, 109)
