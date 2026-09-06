@@ -72,7 +72,6 @@
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Essentials\AigioL.Common.Essentials.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login\AigioL.Common.AspNetCore.AdminCenter.Helpers.Login.projitems" Label="Shared" />
 	<!--<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Extensions.Http\AigioL.Common.Extensions.Http.projitems" Label="Shared" />
-	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.Extensions.Http.Proxy\AigioL.Common.Extensions.Http.Proxy.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.Helpers.ProgramMain\AigioL.Common.AspNetCore.Helpers.ProgramMain.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AppCenter.Core\AigioL.Common.AspNetCore.AppCenter.Core.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory).\AigioL.Common.AspNetCore.AppCenter.Core.ClientSide\AigioL.Common.AspNetCore.AppCenter.Core.ClientSide.projitems" Label="Shared" />

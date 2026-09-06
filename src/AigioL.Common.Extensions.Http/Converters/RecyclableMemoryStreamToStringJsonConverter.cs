@@ -9,6 +9,7 @@ public sealed partial class RecyclableMemoryStreamToStringJsonConverter : JsonCo
 {
     static readonly RecyclableMemoryStreamManager m = new();
 
+    /// <inheritdoc/>
     public sealed override RecyclableMemoryStream? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         switch (reader.TokenType)
@@ -49,6 +50,7 @@ public sealed partial class RecyclableMemoryStreamToStringJsonConverter : JsonCo
         }
     }
 
+    /// <inheritdoc/>
     public sealed override void Write(Utf8JsonWriter writer, RecyclableMemoryStream? value, JsonSerializerOptions options)
     {
         if (value == null)

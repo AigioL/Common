@@ -6,6 +6,7 @@ namespace AigioL.Common.Extensions.Http.Converters;
 
 public sealed partial class MediaTypeHeaderValueToStringJsonConverter : JsonConverter<MediaTypeHeaderValue?>
 {
+    /// <inheritdoc/>
     public sealed override MediaTypeHeaderValue? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         switch (reader.TokenType)
@@ -26,6 +27,7 @@ public sealed partial class MediaTypeHeaderValueToStringJsonConverter : JsonConv
         }
     }
 
+    /// <inheritdoc/>
     public sealed override void Write(Utf8JsonWriter writer, MediaTypeHeaderValue? value, JsonSerializerOptions options)
     {
         if (value == null)

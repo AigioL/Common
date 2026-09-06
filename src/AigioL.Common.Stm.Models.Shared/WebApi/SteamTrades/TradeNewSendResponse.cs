@@ -47,7 +47,7 @@ partial record class TradeNewSendResponse // 当成功时，返回的字段
     /// <summary>
     /// <see cref="TradeNewSendResponse"/> 的 JSON 示例值，当返回成功时的示例值
     /// </summary>
-    public static ReadOnlySpan<byte> ValueOk01 =>
+    public static ReadOnlySpan<byte> OkExampleValue01 =>
 """
 {
   "tradeofferid": "1234567890",

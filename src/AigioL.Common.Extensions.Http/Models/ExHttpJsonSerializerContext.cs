@@ -4,8 +4,12 @@ using System.Text.Json.Serialization;
 
 namespace AigioL.Common.Extensions.Http.Models;
 
+/// <summary>
+/// 命名空间 AigioL.Common.Extensions.Http.Models 下的类型的 <see cref="JsonSerializerContext"/> 上下文
+/// </summary>
 [JsonSerializable(typeof(HttpRequestMessageRecord))]
 [JsonSerializable(typeof(HttpResponseMessageRecord))]
+[JsonSerializable(typeof(WebProxyModel))]
 public sealed partial class ExHttpJsonSerializerContext : JsonSerializerContext
 {
     static ExHttpJsonSerializerContext()

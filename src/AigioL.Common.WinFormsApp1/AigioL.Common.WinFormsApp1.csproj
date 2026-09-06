@@ -31,5 +31,6 @@
 	</ItemGroup>
 	
 	<Import Project="..\AigioL.Common.Bcl.LogInit\AigioL.Common.Bcl.LogInit.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.Windows.Win32.SetWindowsHookEx\AigioL.Common.Windows.Win32.SetWindowsHookEx.projitems" Label="Shared" />
 
 </Project>

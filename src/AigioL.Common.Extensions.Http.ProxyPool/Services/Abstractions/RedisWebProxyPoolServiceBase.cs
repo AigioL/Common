@@ -1,20 +1,18 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities;
-using AigioL.Common.Extensions.Http.Proxy.Models;
-using AigioL.Common.Extensions.Http.Proxy.Services.Abstractions;
+using AigioL.Common.Extensions.Http.Models;
 using AigioL.Common.Models;
 using MemoryPack;
 using StackExchange.Redis;
 using System.Diagnostics;
 using System.Net;
-using static AigioL.Common.Extensions.Http.Proxy.Services.Abstractions.IWebProxyPoolService;
+using static AigioL.Common.Extensions.Http.ProxyPool.Services.Abstractions.IWebProxyPoolService;
 
-namespace AigioL.Common.Extensions.Http.Proxy.Services;
+namespace AigioL.Common.Extensions.Http.ProxyPool.Services.Abstractions;
 
 /// <summary>
 /// 由 Redis 实现的高性能 Web 代理池服务
 /// </summary>
-/// <param name="connection"></param>
-public abstract partial class WebProxyPoolServiceBase(
+public abstract partial class RedisWebProxyPoolServiceBase(
     IConnectionMultiplexer connection) :
     IWebProxyPoolService
 {

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b4f46538-2bbc-4bc3-92a7-74ad87706516</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>AigioL.Common.Stm</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\SteamApiUrls.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants\SteamCookieConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\HttpRequestMessageExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\SteamCookieHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Communities\DevHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Communities\DevHelper.GetSteamApiKeyAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\EconHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\EconHelper.GetTradeHistoryAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\EconHelper.GetTradeOfferAccessUrlAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\EconHelper.GetTradeOfferAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\EconHelper.GetTradeOffersAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\Markets\EconMarketHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\SteamEconomies\SteamEconomyHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Inventories\InventoryHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\SteamTrades\SteamTradeHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\SteamUsers\SteamUserHelper.cs" />
+  </ItemGroup>
+</Project>

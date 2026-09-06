@@ -15,7 +15,6 @@
     <None Include="$(MSBuildThisFileDirectory)README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Constants\UrlConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\LenientNumberBooleanJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\NullableLenientNumberBooleanJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\NullableUInt64ToStringJsonConverter.cs" />

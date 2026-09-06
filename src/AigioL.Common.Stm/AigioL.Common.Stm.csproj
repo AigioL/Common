@@ -6,14 +6,19 @@
 
 	<ItemGroup>
 		<PackageReference Include="SteamKit2" />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\AigioL.Common\AigioL.Common.csproj" />
 	</ItemGroup>
 
-	<Import Project="..\AigioL.Common.Stm.Models.Shared\AigioL.Common.Stm.Models.Shared.projitems" Label="Shared" />
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)..\AigioL.Common.Stm.Models.Shared\README.md" />
+	</ItemGroup>
 
+	<Import Project="..\AigioL.Common.Stm.Models.Shared\AigioL.Common.Stm.Models.Shared.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.Stm.Shared\AigioL.Common.Stm.Shared.projitems" Label="Shared" />
 	<Import Project="$(MSBuildThisFileDirectory)..\AigioL.Common.Stm.Models.Shared\Protobuf\AdditionalFiles.props" />
 
 </Project>

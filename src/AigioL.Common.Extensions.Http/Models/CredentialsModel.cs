@@ -1,9 +1,8 @@
-using System.Formats.Asn1;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AigioL.Common.Extensions.Http.Proxy.Models;
+namespace AigioL.Common.Extensions.Http.Models;
 
 /// <summary>
 /// <see cref="ICredentials"/> 的可序列化模型基类
@@ -22,7 +21,7 @@ public abstract partial record class CredentialsModel
         // 已使用源生成器生成的上下文进行序列化
 #pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
 #pragma warning disable IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
-        var str = JsonSerializer.Serialize(this, ExHttpProxyJsonSerializerContext.Default.Options);
+        var str = JsonSerializer.Serialize(this, ExHttpJsonSerializerContext.Default.Options);
 #pragma warning restore IL3050 // Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.
 #pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
         return str;

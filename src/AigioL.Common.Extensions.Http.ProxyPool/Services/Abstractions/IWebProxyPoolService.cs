@@ -1,8 +1,6 @@
-using AigioL.Common.Extensions.Http.Proxy.Models;
-using AigioL.Common.Models;
-using System.Net;
+using AigioL.Common.Extensions.Http.Models;
 
-namespace AigioL.Common.Extensions.Http.Proxy.Services.Abstractions;
+namespace AigioL.Common.Extensions.Http.ProxyPool.Services.Abstractions;
 
 /// <summary>
 /// Web 代理池服务接口

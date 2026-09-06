@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
 
-namespace AigioL.Common.Extensions.Http.Proxy.Models;
+namespace AigioL.Common.Extensions.Http.Models;
 
 /// <summary>
 /// 包含 <see cref="HttpClient"/> 类的 HTTP 代理设置的可序列化模型类
@@ -38,7 +38,7 @@ public partial record class WebProxyModel
 
     public override string ToString()
     {
-        var str = JsonSerializer.Serialize(this, ExHttpProxyJsonSerializerContext.Default.WebProxyModel);
+        var str = JsonSerializer.Serialize(this, ExHttpJsonSerializerContext.Default.WebProxyModel);
         return str;
     }
 
