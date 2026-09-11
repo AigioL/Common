@@ -1,5 +1,5 @@
 using AigioL.Common.AspNetCore.AppCenter.Entities.Net;
-using AigioL.Common.Extensions.Http.Proxy.Models;
+using AigioL.Common.Extensions.Http.Models;
 using AigioL.Common.Repositories.Abstractions;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 

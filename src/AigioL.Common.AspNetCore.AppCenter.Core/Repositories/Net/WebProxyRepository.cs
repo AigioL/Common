@@ -2,7 +2,7 @@ using AigioL.Common.AspNetCore.AppCenter.Data.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Entities.Net;
 using AigioL.Common.AspNetCore.AppCenter.Models.Net;
 using AigioL.Common.AspNetCore.AppCenter.Repositories.Net.Abstractions;
-using AigioL.Common.Extensions.Http.Proxy.Models;
+using AigioL.Common.Extensions.Http.Models;
 using AigioL.Common.Repositories.EntityFrameworkCore.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
