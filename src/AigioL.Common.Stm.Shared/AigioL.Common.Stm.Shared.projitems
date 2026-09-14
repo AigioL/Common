@@ -21,8 +21,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\EconHelper.GetTradeOfferAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\EconHelper.GetTradeOffersAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\Markets\EconMarketHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\Markets\EconMarketHelper.GetMarketEligibilityByLoginCookieAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\Markets\EconMarketHelper.GetMarketEligibilityByPartnerApiKeyAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Econs\SteamEconomies\SteamEconomyHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Inventories\InventoryHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Inventories\InventoryHelper.GetAllInventoryAsync.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Inventories\InventoryHelper.GetAllInventoryAsyncEnumerable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\Inventories\InventoryHelper.GetInventoryAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\SteamTrades\SteamTradeHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\WebApi\SteamUsers\SteamUserHelper.cs" />
   </ItemGroup>
