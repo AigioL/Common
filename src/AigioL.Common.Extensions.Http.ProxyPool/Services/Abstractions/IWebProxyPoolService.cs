@@ -1,4 +1,6 @@
 using AigioL.Common.Extensions.Http.Models;
+using AigioL.Common.Models;
+using System.Net;
 
 namespace AigioL.Common.Extensions.Http.ProxyPool.Services.Abstractions;
 

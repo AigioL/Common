@@ -1,4 +1,4 @@
-using AigioL.Common.Extensions.Http.Proxy.Services.Abstractions;
+using AigioL.Common.Extensions.Http.ProxyPool.Services.Abstractions;
 
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Jobs;
 
