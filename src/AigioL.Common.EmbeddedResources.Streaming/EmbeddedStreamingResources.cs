@@ -14,9 +14,9 @@ public static partial class EmbeddedStreamingResources
     /// <summary>
     /// 解压资源流，返回解压后的范围数组和偏移量
     /// </summary>
-    public static ((uint Start, uint End)[] Ranges, long Offset) Decompress(Stream resStream, RecyclableMemoryStream bufferStream)
+    public static ((uint Start, uint End)[] Ranges, long Offset) Decompress(Stream resStream, RecyclableMemoryStream bufferStream, bool leaveOpen = false)
     {
-        using var decompressStream = new ZstandardStream(resStream, CompressionMode.Decompress);
+        using var decompressStream = new ZstandardStream(resStream, CompressionMode.Decompress, leaveOpen: leaveOpen);
         decompressStream.CopyTo(bufferStream);
         bufferStream.Position = 0;
 
@@ -35,16 +35,16 @@ public static partial class EmbeddedStreamingResources
     /// <summary>
     /// 压缩多个资源流，返回压缩后的流（数据总长度不得超过 <see cref="uint.MaxValue"/>，数量不得超过 <see cref="ushort.MaxValue"/>）
     /// </summary>
-    public static void Compression(Stream[] streams, RecyclableMemoryStream bufferStream, CompressionLevel compressionLevel = CompressionLevel.SmallestSize)
+    public static void Compression(IReadOnlyList<Stream> streams, RecyclableMemoryStream bufferStream, CompressionLevel compressionLevel = CompressionLevel.SmallestSize)
     {
         bufferStream.Position = 0;
         try
         {
-            using var compressionStream = new ZstandardStream(bufferStream, compressionLevel);
-            WriteUShort(compressionStream, unchecked((ushort)streams.Length));
+            using var compressionStream = new ZstandardStream(bufferStream, compressionLevel, leaveOpen: true);
+            WriteUShort(compressionStream, unchecked((ushort)streams.Count));
 
             uint calcPosition = 0;
-            for (int i = 0; i < streams.Length; i++)
+            for (int i = 0; i < streams.Count; i++)
             {
                 var stream = streams[i];
                 var start = calcPosition;
@@ -54,7 +54,7 @@ public static partial class EmbeddedStreamingResources
                 WriteUInt(compressionStream, end);
             }
 
-            for (int i = 0; i < streams.Length; i++)
+            for (int i = 0; i < streams.Count; i++)
             {
                 var stream = streams[i];
                 stream.Position = 0;
