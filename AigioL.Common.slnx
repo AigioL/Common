@@ -94,6 +94,9 @@
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment.JobScheduler/AigioL.Common.AspNetCore.AppCenter.Payment.JobScheduler.shproj" Id="d51747da-fec9-4a8b-b018-5b0e2e355a94" />
     <Project Path="src/AigioL.Common.AspNetCore.AppCenter.Payment/AigioL.Common.AspNetCore.AppCenter.Payment.shproj" Id="e4766a40-d4ce-49f0-967f-bfcb02a6eef4" />
   </Folder>
+  <Folder Name="/2.Libraries/EmbeddedResources/">
+    <Project Path="src/AigioL.Common.EmbeddedResources.Streaming/AigioL.Common.EmbeddedResources.Streaming.shproj" Id="41aeef76-98ec-4888-bddf-cf8233bbaaa0" />
+  </Folder>
   <Folder Name="/2.Libraries/JsonWebTokens/">
     <Project Path="src/AigioL.Common.JsonWebTokens.Entities/AigioL.Common.JsonWebTokens.Entities.shproj" Id="26839620-b9b9-4fbe-b03b-a92d5a034e8e" />
     <Project Path="src/AigioL.Common.JsonWebTokens.Models.Dtos/AigioL.Common.JsonWebTokens.Models.Dtos.shproj" Id="7ad8e0e7-211c-485b-a83f-bf5d35d67681" />
@@ -123,8 +126,8 @@
   </Folder>
   <Folder Name="/2.Libraries/Steam/">
     <Project Path="src/AigioL.Common.Stm.Models.Shared/AigioL.Common.Stm.Models.Shared.shproj" Id="3cee6093-370f-4095-b42c-c8000b91ac9b" />
-    <Project Path="src/AigioL.Common.Stm/AigioL.Common.Stm.csproj" Id="c49b4852-ea10-418a-b704-543b7449a825" />
     <Project Path="src/AigioL.Common.Stm.Shared/AigioL.Common.Stm.Shared.shproj" Id="b4f46538-2bbc-4bc3-92a7-74ad87706516" />
+    <Project Path="src/AigioL.Common.Stm/AigioL.Common.Stm.csproj" Id="c49b4852-ea10-418a-b704-543b7449a825" />
   </Folder>
   <Folder Name="/2.Libraries/Steam/SteamAchievementManager/">
     <Project Path="src/SAM.API.Shared/SAM.API.Shared.shproj" Id="9001ddd9-aa79-4c52-8487-8433283d42cd" />

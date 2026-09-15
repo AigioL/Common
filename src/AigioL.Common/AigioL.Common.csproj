@@ -51,6 +51,7 @@
 	<Import Project="..\AigioL.Common.Windows.Win32.NativeLibraryE\AigioL.Common.Windows.Win32.NativeLibraryE.projitems" Label="Shared" />
 	<Import Project="..\AigioL.Common.System.IOPath.FileSystem\AigioL.Common.System.IOPath.FileSystem.projitems" Label="Shared" />
 	<Import Project="..\WireGuard.Wintun\WireGuard.Wintun.projitems" Label="Shared" />
+	<Import Project="..\AigioL.Common.EmbeddedResources.Streaming\AigioL.Common.EmbeddedResources.Streaming.projitems" Label="Shared" />
 	<ImportGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
 		<Import Project="..\AigioL.Common.Net.NameResolution\AigioL.Common.Net.NameResolution.projitems" Label="Shared" />
 		<Import Project="..\AigioL.Common.Net.ReverseProxy\AigioL.Common.Net.ReverseProxy.projitems" Label="Shared" />
