@@ -1,9 +1,14 @@
+using AigioL.Common.Models;
 using AigioL.Common.Storage.Models.Abstractions;
 using AigioL.Common.Storage.Models.Channels.TencentCloud;
 using COSXML;
 using COSXML.Auth;
+using COSXML.Model.Object;
+using ImageMagick;
 using Microsoft.Extensions.Options;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -21,13 +26,13 @@ sealed partial class TencentCloudStorageService<
     readonly TSettings options;
     readonly Lazy<CosXml> lazyCosXml;
 
-    public TencentCloudStorageService(IOptions<TSettings> options)
+    public TencentCloudStorageService(IOptions<TSettings> options, IHttpClientFactory httpClientFactory)
     {
         this.options = options.Value;
         lazyCosXml = new(() =>
         {
             ArgumentNullException.ThrowIfNull(this.options.ObjectStorageOptions.TencentCloud);
-            return InitCosXml(this.options.ObjectStorageOptions.TencentCloud);
+            return InitCosXml(this.options.ObjectStorageOptions.TencentCloud, httpClientFactory);
         }, true);
     }
 
@@ -35,23 +40,108 @@ sealed partial class TencentCloudStorageService<
     CosXml cosXml => lazyCosXml.Value;
 #pragma warning restore IDE1006 // 命名样式
 
-    static CosXmlServer InitCosXml(TencentCloudOptions tencentCloudOptions)
+    public override async Task<ApiRsp<PutObjectResult?>> PutAsync(
+        string bucket,
+        string keyPrefix,
+        Stream stream,
+        string? fileEx = null,
+        bool useOriginal = false,
+        MagickFormat setImageFormat = IObjectStorageService.DefaultSetImageFormat,
+        uint quality = IObjectStorageService.DefaultSetImageQuality,
+        bool leaveOpen = false,
+        CancellationToken cancellationToken = default)
     {
-        // https://cloud.tencent.com/document/product/436/47238#0a5a6b09-0777-4d51-a090-95565985fe2c
-        var region = tencentCloudOptions.Region;
-        ArgumentNullException.ThrowIfNull(region);
-        var secretId = tencentCloudOptions.SecretId;
-        ArgumentNullException.ThrowIfNull(secretId);
-        var secretKey = tencentCloudOptions.SecretKey;
-        ArgumentNullException.ThrowIfNull(secretKey);
+        Stream? resultStream = null;
+        try
+        {
+            // 传入的原始流读取+图片处理
+            (resultStream, var imageFormat) = await IObjectStorageService.ReadToStreamAsync(stream,
+                useOriginal: useOriginal,
+                quality: quality,
+                setImageFormat: setImageFormat,
+                cancellationToken: cancellationToken);
+            if (imageFormat.HasValue)
+            {
+                // 当上传的数据为图片时，使用指定的图片格式作为文件扩展名
+                fileEx = (useOriginal ? imageFormat.Value : setImageFormat).ToString().ToLowerInvariant();
+            }
+            else if (fileEx != null)
+            {
+                fileEx = fileEx.Trim('.').ToLowerInvariant();
+            }
+            else
+            {
+                fileEx = "nil"; // 未知的文件扩展名
+            }
 
-        CosXmlConfig config = new CosXmlConfig.Builder()
-            .SetRegion(region) // 设置默认的地域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
-            .Build();
-        var durationSecond = tencentCloudOptions.GetDurationSecond(); // 每次请求签名有效时长，单位为秒
-        QCloudCredentialProvider qCloudCredentialProvider = new DefaultQCloudCredentialProvider(secretId, secretKey, durationSecond);
-        var cosXml = new CosXmlServer(config, qCloudCredentialProvider);
-        return cosXml;
+            // 计算文件的哈希值
+            var hashHexStringLength = SHA384.HashSizeInBytes * 2;
+            char[] hashHexString = ArrayPool<char>.Shared.Rent(hashHexStringLength);
+            try
+            {
+                {
+                    byte[] hash = ArrayPool<byte>.Shared.Rent(SHA384.HashSizeInBytes);
+                    try
+                    {
+                        await SHA384.HashDataAsync(resultStream, hash, cancellationToken);
+                        Convert.TryToHexStringLower(hash, hashHexString, out _);
+                    }
+                    finally
+                    {
+                        ArrayPool<byte>.Shared.Return(hash);
+                    }
+                }
+
+                var keyPrefixSpan = keyPrefix.AsSpan();
+                keyPrefixSpan = keyPrefixSpan.TrimStart('/').TrimEnd('/');
+                var now = DateTimeOffset.UtcNow;
+                var key = $"/{keyPrefixSpan}/{fileEx}/{now.ToUnixTimeMilliseconds()}/{hashHexString.AsSpan(0, hashHexStringLength)}";
+
+                // 上传到腾讯云 https://cloud.tencent.com/document/product/436/47231#b69fe484-5591-43fb-97cd-94a181981a08
+                PutObjectRequest request = new(bucket, key, resultStream);
+                var result = cosXml.PutObject(request);
+                var isSuccess = result.IsSuccessful();
+
+                var r = new ApiRsp<PutObjectResult?>
+                {
+                    Content = result,
+                };
+                r.SetIsSuccess(isSuccess);
+                return r;
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(hashHexString);
+            }
+        }
+        catch (Exception ex)
+        {
+            return ex;
+        }
+        finally
+        {
+            if (!leaveOpen)
+            {
+                try
+                {
+                    await stream.DisposeAsync();
+                }
+                catch
+                {
+                }
+            }
+
+            if (resultStream != null && resultStream != stream)
+            {
+                try
+                {
+                    await resultStream.DisposeAsync();
+                }
+                catch
+                {
+                }
+            }
+        }
     }
 }
 
@@ -95,7 +185,7 @@ partial class TencentCloudStorageService<TSettings>
     //}
 }
 
-public partial class TencentCloudStorageService
+public abstract partial class TencentCloudStorageService
 {
     public static string GetCdnTempDownloadUrl(
         string resourceAccessPath,
@@ -188,4 +278,43 @@ public partial class TencentCloudStorageService
             chars[i] = temp;
         }
     }
+
+    internal static CosXmlServer InitCosXml(TencentCloudOptions tencentCloudOptions, IHttpClientFactory httpClientFactory)
+    {
+        // https://cloud.tencent.com/document/product/436/47238#0a5a6b09-0777-4d51-a090-95565985fe2c
+        var region = tencentCloudOptions.Region;
+        ArgumentNullException.ThrowIfNull(region);
+        var secretId = tencentCloudOptions.SecretId;
+        ArgumentNullException.ThrowIfNull(secretId);
+        var secretKey = tencentCloudOptions.SecretKey;
+        ArgumentNullException.ThrowIfNull(secretKey);
+
+        CosXmlConfig config = new CosXmlConfig.Builder()
+            .SetRegion(region) // 设置默认的地域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
+            .Build();
+        var durationSecond = tencentCloudOptions.GetDurationSecond(); // 每次请求签名有效时长，单位为秒
+        QCloudCredentialProvider qCloudCredentialProvider = new DefaultQCloudCredentialProvider(secretId, secretKey, durationSecond);
+        var cosXml = new CosXmlServer(config, qCloudCredentialProvider);
+
+        ref var httpClientRef = ref GetHttpClientInstance();
+        HttpClient? httpClient = httpClientRef;
+        httpClient?.Dispose();
+        httpClientRef = httpClientFactory.CreateClient(IObjectStorageService.HttpClientName);
+
+        return cosXml;
+    }
+
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "instance")]
+    internal static extern ref HttpClient? GetHttpClientInstance(global::COSXML.Network.HttpClient? c = null);
+
+    public abstract Task<ApiRsp<PutObjectResult?>> PutAsync(
+        string bucket,
+        string keyPrefix,
+        Stream stream,
+        string? fileEx = null,
+        bool useOriginal = false,
+        MagickFormat setImageFormat = IObjectStorageService.DefaultSetImageFormat,
+        uint quality = IObjectStorageService.DefaultSetImageQuality,
+        bool leaveOpen = false,
+        CancellationToken cancellationToken = default);
 }
