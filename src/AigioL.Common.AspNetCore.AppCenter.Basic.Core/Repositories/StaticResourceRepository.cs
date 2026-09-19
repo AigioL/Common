@@ -20,6 +20,19 @@ sealed partial class StaticResourceRepository<TDbContext> :
     {
     }
 
+    public async Task<string?> GetUrlByHashWithSizeAsync(
+        string hash,
+        long size,
+        CancellationToken cancellationToken = default)
+    {
+        var query = EntityNoTracking
+           .Where(x => x.SHA384 == hash && x.FileSize == size)
+           .OrderByDescending(static x => x.CreateTime)
+           .Select(static x => x.Url);
+        var r = await query.FirstOrDefaultAsync(cancellationToken);
+        return r;
+    }
+
     public async Task<(string? filePath, CloudFileType fileType)> GetFilePathBySha384WithFileExtAsync(
         string sha384,
         string fileExt,

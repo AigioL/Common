@@ -35,6 +35,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMUserController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\BMUsersController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\InfoController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controllers\Infrastructure\UploadsController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Komaasharu\KomaasharuController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Komaasharu\KomaasharuPersonalizedsController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controllers\Membership\MembershipBusinessOrderController.cs" />

@@ -45,6 +45,7 @@ namespace AigioL.Common.AspNetCore.AppCenter.Models;
 [JsonSerializable(typeof(ApiRsp<string[]>))]
 [JsonSerializable(typeof(ApiRsp<nil>))]
 [JsonSerializable(typeof(ApiRsp<nil?>))]
+[JsonSerializable(typeof(ApiRsp<Uri?>))]
 [JsonSerializable(typeof(ApiRsp<JsonWebTokenValue>))]
 [JsonSourceGenerationOptions]
 public sealed partial class MSMinimalApisJsonSerializerContext : JsonSerializerContext

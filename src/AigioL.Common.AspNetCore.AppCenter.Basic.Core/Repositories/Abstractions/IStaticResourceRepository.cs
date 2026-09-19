@@ -10,6 +10,11 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 
 public partial interface IStaticResourceRepository : IRepository<StaticResource, Guid>, IEFRepository
 {
+    Task<string?> GetUrlByHashWithSizeAsync(
+        string hash,
+        long size,
+        CancellationToken cancellationToken = default);
+
     Task<(string? filePath, CloudFileType fileType)> GetFilePathBySha384WithFileExtAsync(
         string sha384,
         string fileExt,

@@ -4,11 +4,8 @@ using AigioL.Common.Storage.Models.Channels.TencentCloud;
 using COSXML;
 using COSXML.Auth;
 using COSXML.Model.Object;
-using ImageMagick;
 using Microsoft.Extensions.Options;
-using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -17,17 +14,19 @@ namespace AigioL.Common.Storage.Services.Implementation.TencentCloud;
 /// <summary>
 /// 由腾讯云提供的对象存储服务实现
 /// </summary>
-sealed partial class TencentCloudStorageService<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TSettings> :
+public sealed partial class TencentCloudStorageService<
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TSettings> :
     TencentCloudStorageService,
     IObjectStorageService
     where TSettings : class, IObjectStorageSettings
 {
+    readonly ILogger logger;
     readonly TSettings options;
     readonly Lazy<CosXml> lazyCosXml;
 
-    public TencentCloudStorageService(IOptions<TSettings> options, IHttpClientFactory httpClientFactory)
+    public TencentCloudStorageService(ILogger<TencentCloudStorageService> logger, IOptions<TSettings> options, IHttpClientFactory httpClientFactory)
     {
+        this.logger = logger;
         this.options = options.Value;
         lazyCosXml = new(() =>
         {
@@ -40,79 +39,97 @@ sealed partial class TencentCloudStorageService<
     CosXml cosXml => lazyCosXml.Value;
 #pragma warning restore IDE1006 // 命名样式
 
-    public override async Task<ApiRsp<PutObjectResult?>> PutAsync(
-        string bucket,
+    ApiRsp<T?> GetResult<T>(PutObjectResult result, Func<T> getContent)
+    {
+        var r = new ApiRsp<T?>
+        {
+            Code = unchecked((uint)result.httpCode),
+            Content = getContent(),
+        };
+        if (!r.IsSuccess())
+        {
+            var resultInfo = result.GetResultInfo();
+            LogErrorUploadToTencentCloud(logger, result.httpCode, resultInfo);
+        }
+        return r;
+    }
+
+    public Task<ApiRsp<Uri?>> UploadAsync(
+        string? bucket,
         string keyPrefix,
         Stream stream,
-        string? fileEx = null,
-        bool useOriginal = false,
-        MagickFormat setImageFormat = IObjectStorageService.DefaultSetImageFormat,
-        uint quality = IObjectStorageService.DefaultSetImageQuality,
+        string hashHex,
+        string fileEx,
+        IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
         bool leaveOpen = false,
         CancellationToken cancellationToken = default)
     {
-        Stream? resultStream = null;
+        return PutAsync((info, result) =>
+        {
+            return GetResult(result, () => info);
+        }, bucket, keyPrefix, stream, hashHex, fileEx, getKeyFunc, leaveOpen, cancellationToken);
+    }
+
+    public sealed override Task<ApiRsp<(Uri url, PutObjectResult result)>> PutAsync(
+        string? bucket,
+        string keyPrefix,
+        Stream stream,
+        string hashHex,
+        string fileEx,
+        IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
+        bool leaveOpen = false,
+        CancellationToken cancellationToken = default)
+    {
+        return PutAsync((info, result) =>
+        {
+            return GetResult(result, () => (info, result));
+        }, bucket, keyPrefix, stream, hashHex, fileEx, getKeyFunc, leaveOpen, cancellationToken);
+    }
+
+    async Task<ApiRsp<T?>> PutAsync<T>(
+        Func<Uri, PutObjectResult, ApiRsp<T?>> getResult,
+        string? bucket,
+        string keyPrefix,
+        Stream stream,
+        string hashHex,
+        string fileEx,
+        IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
+        bool leaveOpen = false,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(bucket))
+        {
+            bucket = options.ObjectStorageOptions.TencentCloud?.DefaultBucket;
+        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(bucket);
+
         try
         {
-            // 传入的原始流读取+图片处理
-            (resultStream, var imageFormat) = await IObjectStorageService.ReadToStreamAsync(stream,
-                useOriginal: useOriginal,
-                quality: quality,
-                setImageFormat: setImageFormat,
-                cancellationToken: cancellationToken);
-            if (imageFormat.HasValue)
+            var keyPrefixSpan = keyPrefix.AsSpan();
+            keyPrefixSpan = keyPrefixSpan.TrimStart('/').TrimEnd('/');
+
+            string key;
+            if (getKeyFunc == null)
             {
-                // 当上传的数据为图片时，使用指定的图片格式作为文件扩展名
-                fileEx = (useOriginal ? imageFormat.Value : setImageFormat).ToString().ToLowerInvariant();
-            }
-            else if (fileEx != null)
-            {
-                fileEx = fileEx.Trim('.').ToLowerInvariant();
+                var now = DateTimeOffset.UtcNow;
+                key = $"/{keyPrefixSpan}/{fileEx}/{now.ToUnixTimeMilliseconds()}/{hashHex}";
             }
             else
             {
-                fileEx = "nil"; // 未知的文件扩展名
+                key = getKeyFunc(keyPrefixSpan, fileEx.AsSpan(), hashHex);
             }
 
-            // 计算文件的哈希值
-            var hashHexStringLength = SHA384.HashSizeInBytes * 2;
-            char[] hashHexString = ArrayPool<char>.Shared.Rent(hashHexStringLength);
-            try
-            {
-                {
-                    byte[] hash = ArrayPool<byte>.Shared.Rent(SHA384.HashSizeInBytes);
-                    try
-                    {
-                        await SHA384.HashDataAsync(resultStream, hash, cancellationToken);
-                        Convert.TryToHexStringLower(hash, hashHexString, out _);
-                    }
-                    finally
-                    {
-                        ArrayPool<byte>.Shared.Return(hash);
-                    }
-                }
+            // 上传到腾讯云 https://cloud.tencent.com/document/product/436/47231#b69fe484-5591-43fb-97cd-94a181981a08
+            PutObjectRequest request = new(bucket, key, stream);
+            var result = cosXml.PutObject(request);
 
-                var keyPrefixSpan = keyPrefix.AsSpan();
-                keyPrefixSpan = keyPrefixSpan.TrimStart('/').TrimEnd('/');
-                var now = DateTimeOffset.UtcNow;
-                var key = $"/{keyPrefixSpan}/{fileEx}/{now.ToUnixTimeMilliseconds()}/{hashHexString.AsSpan(0, hashHexStringLength)}";
+#if DEBUG
+            var resultInfo = result.GetResultInfo();
+#endif
 
-                // 上传到腾讯云 https://cloud.tencent.com/document/product/436/47231#b69fe484-5591-43fb-97cd-94a181981a08
-                PutObjectRequest request = new(bucket, key, resultStream);
-                var result = cosXml.PutObject(request);
-                var isSuccess = result.IsSuccessful();
-
-                var r = new ApiRsp<PutObjectResult?>
-                {
-                    Content = result,
-                };
-                r.SetIsSuccess(isSuccess);
-                return r;
-            }
-            finally
-            {
-                ArrayPool<char>.Shared.Return(hashHexString);
-            }
+            var url = new Uri(result.Key, UriKind.Relative);
+            var r = getResult(url, result);
+            return r;
         }
         catch (Exception ex)
         {
@@ -125,17 +142,6 @@ sealed partial class TencentCloudStorageService<
                 try
                 {
                     await stream.DisposeAsync();
-                }
-                catch
-                {
-                }
-            }
-
-            if (resultStream != null && resultStream != stream)
-            {
-                try
-                {
-                    await resultStream.DisposeAsync();
                 }
                 catch
                 {
@@ -283,11 +289,11 @@ public abstract partial class TencentCloudStorageService
     {
         // https://cloud.tencent.com/document/product/436/47238#0a5a6b09-0777-4d51-a090-95565985fe2c
         var region = tencentCloudOptions.Region;
-        ArgumentNullException.ThrowIfNull(region);
+        ArgumentException.ThrowIfNullOrWhiteSpace(region);
         var secretId = tencentCloudOptions.SecretId;
-        ArgumentNullException.ThrowIfNull(secretId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(secretId);
         var secretKey = tencentCloudOptions.SecretKey;
-        ArgumentNullException.ThrowIfNull(secretKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(secretKey);
 
         CosXmlConfig config = new CosXmlConfig.Builder()
             .SetRegion(region) // 设置默认的地域, COS 地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
@@ -296,25 +302,26 @@ public abstract partial class TencentCloudStorageService
         QCloudCredentialProvider qCloudCredentialProvider = new DefaultQCloudCredentialProvider(secretId, secretKey, durationSecond);
         var cosXml = new CosXmlServer(config, qCloudCredentialProvider);
 
-        ref var httpClientRef = ref GetHttpClientInstance();
-        HttpClient? httpClient = httpClientRef;
-        httpClient?.Dispose();
-        httpClientRef = httpClientFactory.CreateClient(IObjectStorageService.HttpClientName);
+        //ref var httpClientRef = ref GetHttpClientInstance();
+        //HttpClient? httpClient = httpClientRef;
+        //httpClient?.Dispose();
+        //httpClientRef = httpClientFactory.CreateClient(IObjectStorageService.HttpClientName);
 
         return cosXml;
     }
 
-    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "instance")]
-    internal static extern ref HttpClient? GetHttpClientInstance(global::COSXML.Network.HttpClient? c = null);
-
-    public abstract Task<ApiRsp<PutObjectResult?>> PutAsync(
-        string bucket,
+    public abstract Task<ApiRsp<(Uri url, PutObjectResult result)>> PutAsync(
+        string? bucket,
         string keyPrefix,
         Stream stream,
-        string? fileEx = null,
-        bool useOriginal = false,
-        MagickFormat setImageFormat = IObjectStorageService.DefaultSetImageFormat,
-        uint quality = IObjectStorageService.DefaultSetImageQuality,
+        string hashHex,
+        string fileEx,
+        IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
         bool leaveOpen = false,
         CancellationToken cancellationToken = default);
+
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "上传到腾讯云对象存储失败，HttpStatusCode: {httpStatusCode}，resultInfo: {resultInfo}")]
+    protected static partial void LogErrorUploadToTencentCloud(ILogger logger, int httpStatusCode, string? resultInfo);
 }

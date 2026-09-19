@@ -67,6 +67,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ValidationServiceCollectionExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Sms\SmsHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\SnowFlake\IdGeneratorHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Uploads\UploadFileInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Uploads\UploadHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\AppSettingsBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\IDisableSms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Abstractions\INotUseForwardedHeaders.cs" />

@@ -157,6 +157,11 @@ public static partial class ControllerConstants // 管理后台（通用）
     /// 合作伙伴后台用户管理
     /// </summary>
     public const string PCUsers = "KolUser";
+
+    /// <summary>
+    /// 上传文件
+    /// </summary>
+    public const string Uploads = "Uploads";
 }
 
 partial class ControllerConstants // PartnerCenter 👇 合作伙伴后台（通用）

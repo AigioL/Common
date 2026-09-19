@@ -7,6 +7,7 @@ using AigioL.Common.AspNetCore.AppCenter.Basic.Models.AppVersions;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Articles;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Notice;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Storage;
+using AigioL.Common.AspNetCore.AppCenter.Helpers.Uploads;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus;
 using AigioL.Common.AspNetCore.AppCenter.Models.Komaasharus.Summaries;
@@ -59,6 +60,7 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 [JsonSerializable(typeof(BMApiRsp<string[]>))]
 [JsonSerializable(typeof(BMApiRsp<nil>))]
 [JsonSerializable(typeof(BMApiRsp<nil?>))]
+[JsonSerializable(typeof(BMApiRsp<Uri?>))]
 [JsonSerializable(typeof(BMInitSystemRequest))]
 [JsonSerializable(typeof(BMApiRsp<JsonWebTokenValue>))]
 #region StatisticsController
@@ -162,6 +164,9 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 [JsonSerializable(typeof(BMApiRsp<PagedModel<BMUserTableItem>>))]
 [JsonSerializable(typeof(AddBMUserModel))]
 [JsonSerializable(typeof(EditBMUserModel))]
+#endregion
+#region UploadsController
+[JsonSerializable(typeof(BMApiRsp<UploadFileInfo?>))]
 #endregion
 #region KomaasharuController
 [JsonSerializable(typeof(BMApiRsp<PagedModel<KomaasharuTableItem>?>))]
