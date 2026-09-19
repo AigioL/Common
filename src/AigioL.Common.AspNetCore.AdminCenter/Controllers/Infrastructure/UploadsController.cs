@@ -104,39 +104,56 @@ public static partial class UploadsController
         var fileNameWithoutEx = Path.GetFileNameWithoutExtension(file.FileName);
 
         var (resultStream, _, info) = await UploadHelper.GetUploadFileInfoAsync(stream, fileNameWithoutEx, fileEx, useOriginal: useOriginal, resizeWidth: resizeWidth, resizeHeight: resizeHeight, resizeFilter: resizeFilter, setImageFormat: setImageFormat, quality: quality, leaveOpen: true, cancellationToken: context.RequestAborted);
-
-        ArgumentException.ThrowIfNullOrWhiteSpace(info.SHA384);
-        // 比较数据库中是否存在相同的文件，如果存在则直接返回数据库中的信息，而不再上传文件到对象存储
-        var urlByFind = await staticResourceRepo.GetUrlByHashWithSizeAsync(info.SHA384, info.FileSize, context.RequestAborted);
-        if (Uri.TryCreate(urlByFind, UriKind.RelativeOrAbsolute, out var urlByFind2))
+        try
         {
-            info.Url = urlByFind2;
-            return info;
-        }
 
-        var result = await oss.UploadAsync(bucket, keyPrefix, resultStream, fileNameWithoutEx, fileEx: fileEx, cancellationToken: context.RequestAborted);
-        if (result.IsSuccess() && result.Content != null)
-        {
-            info.Url = result.Content;
-            ReadOnlySpan<char> fileExSpan = info.FileEx;
-            StaticResource entity = new()
+            ArgumentException.ThrowIfNullOrWhiteSpace(info.SHA384);
+            // 比较数据库中是否存在相同的文件，如果存在则直接返回数据库中的信息，而不再上传文件到对象存储
+            var urlByFind = await staticResourceRepo.GetUrlByHashWithSizeAsync(info.SHA384, info.FileSize, context.RequestAborted);
+            if (Uri.TryCreate(urlByFind, UriKind.RelativeOrAbsolute, out var urlByFind2))
             {
-                FileName = info.FileName,
-                SHA384 = info.SHA384,
-                FileExtension = info.FileEx,
-                FileSize = info.FileSize,
-                FileType = fileExSpan.GetFileFormat() ?? default,
-                Url = info.Url.ToString(),
-                CreateUserId = context.GetBMUserId(),
-            };
+                info.Url = urlByFind2;
+                return info;
+            }
 
-            // 上传成功，写入数据库
-            await staticResourceRepo.InsertAsync(entity, CancellationToken.None);
-            return info;
+            var result = await oss.UploadAsync(bucket, keyPrefix, resultStream, info.SHA384, fileEx: fileEx, fileNameWithoutEx: fileNameWithoutEx, cancellationToken: context.RequestAborted);
+            if (result.IsSuccess() && result.Content != null)
+            {
+                info.Url = result.Content;
+                ReadOnlySpan<char> fileExSpan = info.FileEx;
+                StaticResource entity = new()
+                {
+                    FileName = info.FileName,
+                    SHA384 = info.SHA384,
+                    FileExtension = info.FileEx,
+                    FileSize = info.FileSize,
+                    FileType = fileExSpan.GetFileFormat() ?? default,
+                    Url = info.Url.ToString(),
+                };
+                try
+                {
+                    var bmUserId = context.GetBMUserId();
+                    entity.CreateUserId = bmUserId;
+                }
+                catch
+                {
+#if !DEBUG
+                    throw;
+#endif
+                }
+
+                // 上传成功，写入数据库
+                await staticResourceRepo.InsertAsync(entity, CancellationToken.None);
+                return info;
+            }
+            else
+            {
+                return result.CreateNew<UploadFileInfo?>(info);
+            }
         }
-        else
+        finally
         {
-            return result.CreateNew<UploadFileInfo?>(info);
+            await resultStream.DisposeAsync();
         }
     }
 }

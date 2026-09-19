@@ -166,7 +166,7 @@ public static partial class UploadHelper
                 try
                 {
                     await SHA384.HashDataAsync(resultStream, hash, cancellationToken);
-                    hashHex = Convert.ToHexStringLower(hash);
+                    hashHex = Convert.ToHexStringLower(hash.AsSpan(0, SHA384.HashSizeInBytes));
                 }
                 finally
                 {
@@ -190,18 +190,10 @@ public static partial class UploadHelper
             {
                 try
                 {
-                    await stream.DisposeAsync();
-                }
-                catch
-                {
-                }
-            }
-
-            if (resultStream != null && resultStream != stream)
-            {
-                try
-                {
-                    await resultStream.DisposeAsync();
+                    if (stream != resultStream)
+                    {
+                        await stream.DisposeAsync();
+                    }
                 }
                 catch
                 {

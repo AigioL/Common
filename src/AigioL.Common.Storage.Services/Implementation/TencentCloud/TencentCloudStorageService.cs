@@ -5,7 +5,10 @@ using COSXML;
 using COSXML.Auth;
 using COSXML.Model.Object;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using System.Diagnostics.CodeAnalysis;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -60,6 +63,7 @@ public sealed partial class TencentCloudStorageService<
         Stream stream,
         string hashHex,
         string fileEx,
+        string fileNameWithoutEx,
         IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
         bool leaveOpen = false,
         CancellationToken cancellationToken = default)
@@ -67,7 +71,7 @@ public sealed partial class TencentCloudStorageService<
         return PutAsync((info, result) =>
         {
             return GetResult(result, () => info);
-        }, bucket, keyPrefix, stream, hashHex, fileEx, getKeyFunc, leaveOpen, cancellationToken);
+        }, bucket, keyPrefix, stream, hashHex, fileEx, fileNameWithoutEx, getKeyFunc, leaveOpen, cancellationToken);
     }
 
     public sealed override Task<ApiRsp<(Uri url, PutObjectResult result)>> PutAsync(
@@ -76,6 +80,7 @@ public sealed partial class TencentCloudStorageService<
         Stream stream,
         string hashHex,
         string fileEx,
+        string fileNameWithoutEx,
         IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
         bool leaveOpen = false,
         CancellationToken cancellationToken = default)
@@ -83,7 +88,7 @@ public sealed partial class TencentCloudStorageService<
         return PutAsync((info, result) =>
         {
             return GetResult(result, () => (info, result));
-        }, bucket, keyPrefix, stream, hashHex, fileEx, getKeyFunc, leaveOpen, cancellationToken);
+        }, bucket, keyPrefix, stream, hashHex, fileEx, fileNameWithoutEx, getKeyFunc, leaveOpen, cancellationToken);
     }
 
     async Task<ApiRsp<T?>> PutAsync<T>(
@@ -93,6 +98,7 @@ public sealed partial class TencentCloudStorageService<
         Stream stream,
         string hashHex,
         string fileEx,
+        string fileNameWithoutEx,
         IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
         bool leaveOpen = false,
         CancellationToken cancellationToken = default)
@@ -108,19 +114,27 @@ public sealed partial class TencentCloudStorageService<
             var keyPrefixSpan = keyPrefix.AsSpan();
             keyPrefixSpan = keyPrefixSpan.TrimStart('/').TrimEnd('/');
 
+            var fileExNoCharDot = fileEx.AsSpan();
+            fileExNoCharDot = fileExNoCharDot.TrimStart('.');
+
             string key;
             if (getKeyFunc == null)
             {
-                var now = DateTimeOffset.UtcNow;
-                key = $"/{keyPrefixSpan}/{fileEx}/{now.ToUnixTimeMilliseconds()}/{hashHex}";
+                var now = DateTimeOffset.Now;
+                key = $"/{keyPrefixSpan}/{fileExNoCharDot}/{now:yyyyMMdd}/{hashHex}";
             }
             else
             {
-                key = getKeyFunc(keyPrefixSpan, fileEx.AsSpan(), hashHex);
+                key = getKeyFunc(keyPrefixSpan, fileExNoCharDot, hashHex);
             }
 
             // 上传到腾讯云 https://cloud.tencent.com/document/product/436/47231#b69fe484-5591-43fb-97cd-94a181981a08
             PutObjectRequest request = new(bucket, key, stream);
+            if (IObjectStorageService.TryGetContentType(fileEx, out var contentType))
+            {
+                request.SetRequestHeader(HeaderNames.ContentType, contentType);
+            }
+            request.SetRequestHeader(HeaderNames.ContentDisposition, $"attachment; filename=\"{Uri.EscapeDataString($"{fileNameWithoutEx}.{fileEx}")}\"");
             var result = cosXml.PutObject(request);
 
 #if DEBUG
@@ -316,6 +330,7 @@ public abstract partial class TencentCloudStorageService
         Stream stream,
         string hashHex,
         string fileEx,
+        string fileNameWithoutEx,
         IObjectStorageService.GetKeyFuncDelegate? getKeyFunc = null,
         bool leaveOpen = false,
         CancellationToken cancellationToken = default);
