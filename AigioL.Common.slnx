@@ -137,6 +137,7 @@
   </Folder>
   <Folder Name="/3.EntryPoint/">
     <Project Path="src/AigioL.Common.WinFormsApp1/AigioL.Common.WinFormsApp1.csproj" />
+    <Project Path="src/CertTestConsoleApp/CertTestConsoleApp.csproj" Id="3b166c42-f3e1-4bb7-8285-a7e5415b3669" />
   </Folder>
   <Folder Name="/3.EntryPoint/Aspire/" />
   <Folder Name="/4.Tools/">
