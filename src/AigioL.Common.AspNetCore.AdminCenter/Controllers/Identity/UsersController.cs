@@ -4,6 +4,7 @@ using AigioL.Common.AspNetCore.AdminCenter.Models.Users;
 using AigioL.Common.AspNetCore.AdminCenter.Policies.Requirements;
 using AigioL.Common.AspNetCore.AppCenter.Constants;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Models;
+using AigioL.Common.AspNetCore.AppCenter.Identity.Models.Membership;
 using AigioL.Common.AspNetCore.AppCenter.Identity.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Ordering.Services.Abstractions.Membership;
@@ -183,6 +184,30 @@ public static partial class UsersController
         }).PermissionFilter(ControllerName, BMButtonType.Query)
         .WithDescription("查询用户钱包变更记录");
 
+        routeGroup.MapGet("{userId}/membershipchangerecords", async (HttpContext context,
+#if USE_NUM_UID
+            [FromRoute] long? userId,
+#else
+            [FromRoute] Guid? userId,
+#endif
+            [FromQuery] MembershipChangeDirection? membershipChangeDirection,
+            [FromQuery] MembershipLicenseFlags? memberLicenseType,
+            [FromQuery] bool? isPayAsYoGo,
+            [FromQuery] string? note,
+            [FromQuery] DateTimeOffset?[]? createTime = null,
+            [FromQuery] int current = IPagedModel.DefaultCurrent,
+            [FromQuery] int pageSize = IPagedModel.DefaultPageSize) =>
+        {
+            var userMembershipChangeRecordRepo = context.RequestServices.GetRequiredService<IUserMembershipChangeRecordRepository>();
+            BMApiRsp<PagedModel<UserMembershipChangeRecordModel>?> r = await userMembershipChangeRecordRepo.QueryAsync(
+                userId, membershipChangeDirection, memberLicenseType,
+                isPayAsYoGo, note, createTime,
+                current, pageSize,
+                context.RequestAborted);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Query)
+        .WithDescription("查询用户会员变动记录");
+
         routeGroup.MapPut("membership", async (HttpContext context,
             [FromBody] SetUserMembershipModel model) =>
         {
@@ -203,5 +228,34 @@ public static partial class UsersController
             return r;
         }).PermissionFilter(ControllerName, BMButtonType.Edit)
         .WithDescription("编辑用户会员时长");
+
+        routeGroup.MapPut("payasyogo", async (HttpContext context,
+            [FromBody] SetUserPayAsYoGoModel model) =>
+        {
+            if (!model.PayAsYoGo.HasValue && !model.TimeSpan.HasValue)
+            {
+                return "按量付费时长的目标值与增量值必须填写一个";
+            }
+            else if (model.PayAsYoGo.HasValue && model.TimeSpan.HasValue)
+            {
+                return "按量付费时长的目标值与增量值只能填写一个";
+            }
+            if (string.IsNullOrWhiteSpace(model.Note))
+            {
+                return "备注不能为空";
+            }
+            else if (model.Note.Length > MaxLengths.Text)
+            {
+                return $"备注长度不能超过 {MaxLengths.Text}";
+            }
+            var bmUserId = context.GetBMUserId();
+            var userMembershipService = context.RequestServices.GetRequiredService<IUserMembershipService>();
+            var isOk = await userMembershipService.EditUserPayAsYoGoWithRefreshUserMembershipCacheAsync(
+                model.UserId, bmUserId, model.PayAsYoGo,
+                model.TimeSpan, model.Note);
+            var r = BMApiRsp.OkBoolean(isOk);
+            return r;
+        }).PermissionFilter(ControllerName, BMButtonType.Edit)
+        .WithDescription("编辑用户按量付费时长");
     }
 }

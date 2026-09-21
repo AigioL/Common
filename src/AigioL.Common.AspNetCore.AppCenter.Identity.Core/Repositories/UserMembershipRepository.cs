@@ -310,6 +310,67 @@ sealed partial class UserMembershipRepository<TDbContext> :
         return rowCount;
     }
 
+    public async Task<int> EditUserPayAsYoGoAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        Guid? bmUserId,
+        TimeSpan? payAsYoGo,
+        TimeSpan? timeSpan,
+        string? note)
+    {
+        if (!payAsYoGo.HasValue && !timeSpan.HasValue)
+        {
+            return 0;
+        }
+
+        var now = DateTimeOffset.UtcNow;
+        var query = db.UserMemberships.Where(x => x.Id == userId);
+
+        var userMembership = await query
+            .Select(x => new { x.PayAsYoGo, x.ExpireDate })
+            .FirstOrDefaultAsync();
+        if (userMembership == null)
+        {
+            return 0;
+        }
+
+        var changeValue = payAsYoGo.HasValue
+            ? payAsYoGo.Value - userMembership.PayAsYoGo
+            : timeSpan!.Value;
+        var newPayAsYoGo = userMembership.PayAsYoGo + changeValue;
+        if (newPayAsYoGo < TimeSpan.Zero)
+        {
+            // 按量付费时长不允许为负数
+            return 0;
+        }
+
+        var rowCount = await query.ExecuteUpdateAsync(p => p
+            .SetProperty(x => x.UpdateTime, now)
+            .SetProperty(x => x.PayAsYoGo, newPayAsYoGo));
+
+        if (rowCount > 0)
+        {
+            UserMembershipChangeRecord record = new()
+            {
+                UserId = userId,
+                MembershipChangeDirection = changeValue < TimeSpan.Zero ? MembershipChangeDirection.Out : MembershipChangeDirection.In,
+                PayAsYoGo = changeValue,
+                IsPayAsYoGo = true,
+                Note = note,
+                CurrentRealExpireDate = userMembership.ExpireDate,
+                CreateTime = now,
+                CreateUserId = bmUserId,
+            };
+            await db.UserMembershipChangeRecords.AddAsync(record);
+            rowCount += await db.SaveChangesAsync();
+        }
+
+        return rowCount;
+    }
+
     [LoggerMessage(
         Level = LogLevel.Error,
         Message = "GetUserMembership fail")]

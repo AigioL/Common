@@ -136,6 +136,8 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Models;
 [JsonSerializable(typeof(BMApiRsp<UserWalletModel?>))]
 [JsonSerializable(typeof(BMApiRsp<UserSearchModel?>))]
 [JsonSerializable(typeof(BMApiRsp<PagedModel<UserWalletChangeRecordModel>?>))]
+[JsonSerializable(typeof(BMApiRsp<PagedModel<UserMembershipChangeRecordModel>?>))]
+[JsonSerializable(typeof(SetUserPayAsYoGoModel))]
 #endregion
 #region BMMenusController
 [JsonSerializable(typeof(BMApiRsp<List<BMMenuTreeItem>?>))]

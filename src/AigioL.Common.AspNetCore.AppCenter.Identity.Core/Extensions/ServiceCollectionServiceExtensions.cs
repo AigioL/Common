@@ -40,6 +40,7 @@ public static partial class ServiceCollectionServiceExtensions
         services.TryAddScoped<IExternalAccountRepository, ExternalAccountRepository<TDbContext>>();
         services.TryAddScoped<IUserDeleteRepository, UserDeleteRepository<TDbContext>>();
         services.TryAddScoped<IUserDeviceRepository, UserDeviceRepository<TDbContext>>();
+        services.TryAddScoped<IUserMembershipChangeRecordRepository, UserMembershipChangeRecordRepository<TDbContext>>();
         services.TryAddScoped<IUserMembershipRepository, UserMembershipRepository<TDbContext>>();
         services.TryAddScoped<IUserRepository, UserRepository<TDbContext>>();
         services.TryAddScoped<IUserWalletChangeRecordRepository, UserWalletChangeRecordRepository<TDbContext>>();

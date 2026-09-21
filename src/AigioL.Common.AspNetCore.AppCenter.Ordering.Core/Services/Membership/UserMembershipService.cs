@@ -461,4 +461,30 @@ sealed partial class UserMembershipService(
         }
         return false;
     }
+
+    public async Task<bool> EditUserPayAsYoGoWithRefreshUserMembershipCacheAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        Guid? bmUserId,
+        TimeSpan? payAsYoGo,
+        TimeSpan? timeSpan,
+        string? note)
+    {
+        if (!payAsYoGo.HasValue && !timeSpan.HasValue)
+        {
+            return false;
+        }
+
+        var rowCount = await userMembershipRepo.EditUserPayAsYoGoAsync(userId, bmUserId, payAsYoGo, timeSpan, note);
+        var isOK = rowCount > 0;
+        if (isOK)
+        {
+            isOK = await RefreshUserMembershipCacheAsync(userId); // 后台编辑用户按量付费时长时刷新用户会员信息缓存
+            return isOK;
+        }
+        return false;
+    }
 }

@@ -82,6 +82,26 @@ public partial interface IUserMembershipRepository : IEFRepository
         TimeSpan? timeSpan,
         string? note);
 
+    /// <summary>
+    /// 编辑用户按量付费时长
+    /// </summary>
+    /// <param name="userId">用户 Id</param>
+    /// <param name="bmUserId">操作的后台用户 Id</param>
+    /// <param name="payAsYoGo">按量付费时长的目标值，与 <paramref name="timeSpan"/> 二选一</param>
+    /// <param name="timeSpan">按量付费时长的增量值（正数增加、负数减少），与 <paramref name="payAsYoGo"/> 二选一</param>
+    /// <param name="note">变更原因</param>
+    /// <returns>受影响行数</returns>
+    Task<int> EditUserPayAsYoGoAsync(
+#if !USE_NUM_UID
+        Guid userId,
+#else
+        long userId,
+#endif
+        Guid? bmUserId,
+        TimeSpan? payAsYoGo,
+        TimeSpan? timeSpan,
+        string? note);
+
     Task<Guid?> GetBindPCUserIdAsync(
 #if !USE_NUM_UID
         Guid userId,

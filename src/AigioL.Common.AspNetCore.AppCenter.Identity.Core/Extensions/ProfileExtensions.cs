@@ -44,6 +44,9 @@ public static partial class ProfileExtensions
         p.CreateMap<UserWallet, UserWalletModel>();
 
         p.CreateMap<UserWalletChangeRecord, UserWalletChangeRecordModel>();
+
+        p.CreateMap<UserMembershipChangeRecord, UserMembershipChangeRecordModel>()
+            .ForMember(d => d.CreateUser, opt => opt.MapFrom(s => s.CreateUser == null ? default : s.CreateUser.NickName));
     }
 
     //internal static readonly Expression<Func<User, UserInfoModel>> MapToUserInfoModel = user => new()
