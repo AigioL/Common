@@ -1,3 +1,5 @@
+using AigioL.Common.AspNetCore.AppCenter.Helpers.Uploads;
+
 namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.Storage;
 
 /// <summary>
@@ -6,11 +8,6 @@ namespace AigioL.Common.AspNetCore.AppCenter.Basic.Models.Storage;
 public partial class StaticResourceUploadResult<TCode>
     where TCode : struct
 {
-    /// <summary>
-    /// 静态资源 Id
-    /// </summary>
-    public Guid StaticResourceId { get; set; }
-
     /// <summary>
     /// 文件名 前端匹配上传对应的 Item
     /// </summary>
@@ -35,4 +32,14 @@ public partial class StaticResourceUploadResult<TCode>
 /// <inheritdoc cref="StaticResourceUploadResult{TCode}"/>
 public sealed partial class StaticResourceUploadResult : StaticResourceUploadResult<UploadFileCode>
 {
+    public static implicit operator StaticResourceUploadResult(UploadFileInfo info)
+    {
+        return new StaticResourceUploadResult
+        {
+            FileName = info.FileName ?? string.Empty,
+            Url = info.Url?.ToString(),
+            SHA384 = info.SHA384,
+            Code = UploadFileCode.Ok
+        };
+    }
 }

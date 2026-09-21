@@ -36,5 +36,10 @@ public enum UploadFileCode : byte
     /// 文件超出大小限制
     /// </summary>
     FileSizeError = 7,
+
+    /// <summary>
+    /// 文件OSS云存储保存失败
+    /// </summary>
+    SaveOSSFileFailure = 8,
 }
 

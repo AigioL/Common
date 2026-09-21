@@ -1,7 +1,9 @@
 using AigioL.Common.AspNetCore.AdminCenter.Constants;
+using AigioL.Common.AspNetCore.AdminCenter.Controllers.Basics;
 using AigioL.Common.AspNetCore.AdminCenter.Models;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Entities.FileSystem;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Models.FileSystem;
+using AigioL.Common.AspNetCore.AppCenter.Basic.Models.Storage;
 using AigioL.Common.AspNetCore.AppCenter.Basic.Repositories.Abstractions;
 using AigioL.Common.AspNetCore.AppCenter.Helpers.Uploads;
 using AigioL.Common.Models;
@@ -17,8 +19,14 @@ namespace AigioL.Common.AspNetCore.AdminCenter.Controllers.Infrastructure;
 
 public static partial class UploadsController
 {
-    const string ControllerName = ControllerConstants.Uploads;
-    const string DefaultKeyPrefix = "baseDebug/File";
+    //和静态资源使用同一个权限。
+    const string ControllerName = ControllerConstants.StaticResource;
+    const string DefaultKeyPrefix =
+#if DEBUG
+        "debug/file";
+#else
+        "file";
+#endif
 
     public static void MapUploads(this IEndpointRouteBuilder b, [StringSyntax("Route")] string pattern = "bm/uploads")
     {
@@ -56,7 +64,7 @@ public static partial class UploadsController
 #endif
     }
 
-    public static async Task<BMApiRsp<UploadFileInfo?>> UploadAsync(
+    public static async Task<BMApiRsp<List<StaticResourceUploadResult>?>> UploadAsync(
         HttpContext context,
         string? bucket = null,
         string? keyPrefix = null,
@@ -68,92 +76,124 @@ public static partial class UploadsController
         uint quality = UploadHelper.DefaultSetImageQuality)
     {
         // 目前仅支持单个文件上传
-        IFormFile file;
-        try
+        //IFormFile file;
+        //try
+        //{
+        //    var files = context.Request.Form.Files;
+        //    if (files.Count != 1)
+        //    {
+        //        return HttpStatusCode.BadRequest;
+        //    }
+        //    file = context.Request.Form.Files[0];
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        return HttpStatusCode.BadRequest;
+        //    }
+        //    if (string.IsNullOrWhiteSpace(file.FileName))
+        //    {
+        //        return HttpStatusCode.BadRequest;
+        //    }
+        //}
+        //catch (InvalidOperationException)
+        //{
+        //    return HttpStatusCode.BadRequest;
+        //}
+        var staticResourceRepo = context.RequestServices.GetRequiredService<IStaticResourceRepository>();
+        var oss = context.RequestServices.GetRequiredService<IObjectStorageService>(); // 当前仅支持腾讯云对象存储
+
+        if (context.Request.Form.Files.Count == 0)
         {
-            var files = context.Request.Form.Files;
-            if (files.Count != 1)
-            {
-                return HttpStatusCode.BadRequest;
-            }
-            file = context.Request.Form.Files[0];
-            if (file == null || file.Length == 0)
-            {
-                return HttpStatusCode.BadRequest;
-            }
-            if (string.IsNullOrWhiteSpace(file.FileName))
-            {
-                return HttpStatusCode.BadRequest;
-            }
-        }
-        catch (InvalidOperationException)
-        {
-            return HttpStatusCode.BadRequest;
+            return "文件上传失败，缺少需要上传的有效文件";
         }
 
         if (string.IsNullOrWhiteSpace(keyPrefix))
         {
             keyPrefix = DefaultKeyPrefix;
         }
-
-        var staticResourceRepo = context.RequestServices.GetRequiredService<IStaticResourceRepository>();
-        var oss = context.RequestServices.GetRequiredService<IObjectStorageService>(); // 当前仅支持腾讯云对象存储
-
-        using var stream = file.OpenReadStream();
-        var fileEx = Path.GetExtension(file.FileName);
-        var fileNameWithoutEx = Path.GetFileNameWithoutExtension(file.FileName);
-
-        var (resultStream, _, info) = await UploadHelper.GetUploadFileInfoAsync(stream, fileNameWithoutEx, fileEx, useOriginal: useOriginal, resizeWidth: resizeWidth, resizeHeight: resizeHeight, resizeFilter: resizeFilter, setImageFormat: setImageFormat, quality: quality, leaveOpen: true, cancellationToken: context.RequestAborted);
-        try
+        var results = new List<StaticResourceUploadResult>(context.Request.Form.Files.Count);
+        foreach (var file in context.Request.Form.Files)
         {
+            using var stream = file.OpenReadStream();
+            var fileEx = Path.GetExtension(file.FileName);
+            var fileNameWithoutEx = Path.GetFileNameWithoutExtension(file.FileName);
 
-            ArgumentException.ThrowIfNullOrWhiteSpace(info.SHA384);
-            // 比较数据库中是否存在相同的文件，如果存在则直接返回数据库中的信息，而不再上传文件到对象存储
-            var urlByFind = await staticResourceRepo.GetUrlByHashWithSizeAsync(info.SHA384, info.FileSize, context.RequestAborted);
-            if (Uri.TryCreate(urlByFind, UriKind.RelativeOrAbsolute, out var urlByFind2))
+            var (resultStream, _, info) = await UploadHelper.GetUploadFileInfoAsync(stream, fileNameWithoutEx, fileEx, useOriginal: useOriginal, resizeWidth: resizeWidth, resizeHeight: resizeHeight, resizeFilter: resizeFilter, setImageFormat: setImageFormat, quality: quality, leaveOpen: true, cancellationToken: context.RequestAborted);
+            try
             {
-                info.Url = urlByFind2;
-                return info;
-            }
-
-            var result = await oss.UploadAsync(bucket, keyPrefix, resultStream, info.SHA384, fileEx: fileEx, fileNameWithoutEx: fileNameWithoutEx, cancellationToken: context.RequestAborted);
-            if (result.IsSuccess() && result.Content != null)
-            {
-                info.Url = result.Content;
-                ReadOnlySpan<char> fileExSpan = info.FileEx;
-                StaticResource entity = new()
+                ArgumentException.ThrowIfNullOrWhiteSpace(info.SHA384);
+                // 比较数据库中是否存在相同的文件，如果存在则直接返回数据库中的信息，而不再上传文件到对象存储
+                var urlByFind = await staticResourceRepo.GetUrlByHashWithSizeAsync(info.SHA384, info.FileSize, context.RequestAborted);
+                if (Uri.TryCreate(urlByFind, UriKind.RelativeOrAbsolute, out var urlByFind2))
                 {
-                    FileName = info.FileName,
-                    SHA384 = info.SHA384,
-                    FileExtension = info.FileEx,
-                    FileSize = info.FileSize,
-                    FileType = fileExSpan.GetFileFormat() ?? default,
-                    Url = info.Url.ToString(),
-                };
-                try
-                {
-                    var bmUserId = context.GetBMUserId();
-                    entity.CreateUserId = bmUserId;
+                    info.Url = urlByFind2;
+                    results.Add(info);
+                    continue;
                 }
-                catch
+
+                var result = await oss.UploadAsync(bucket, keyPrefix, resultStream, info.SHA384, fileEx: info.FileEx ?? fileEx, fileNameWithoutEx: fileNameWithoutEx, cancellationToken: context.RequestAborted);
+                if (result.IsSuccess() && result.Content != null)
                 {
+                    info.Url = result.Content;
+                    ReadOnlySpan<char> fileExSpan = info.FileEx;
+                    StaticResource entity = new()
+                    {
+                        FileName = info.FileName,
+                        SHA384 = info.SHA384,
+                        FileExtension = info.FileEx,
+                        FileSize = info.FileSize,
+                        FileType = fileExSpan.GetFileFormat() ?? default,
+                        Url = info.Url.ToString(),
+                    };
+                    try
+                    {
+                        var bmUserId = context.GetBMUserId();
+                        entity.CreateUserId = bmUserId;
+                    }
+                    catch
+                    {
 #if !DEBUG
                     throw;
 #endif
-                }
+                    }
 
-                // 上传成功，写入数据库
-                await staticResourceRepo.InsertAsync(entity, CancellationToken.None);
-                return info;
+                    // 上传成功，写入数据库
+                    var r = await staticResourceRepo.InsertAsync(entity, CancellationToken.None);
+                    //return r > 0 ? info : null;
+                    if (r > 0)
+                    {
+                        results.Add(info);
+                    }
+                    else
+                    {
+                        results.Add(new StaticResourceUploadResult
+                        {
+                            FileName = info.FileName ?? file.FileName,
+                            Code = UploadFileCode.InsertDataBaseFailure
+                        });
+                    }
+                }
+                else
+                {
+                    results.Add(new StaticResourceUploadResult
+                    {
+                        FileName = info.FileName ?? file.FileName,
+                        Code = UploadFileCode.SaveOSSFileFailure
+                    });
+                }
             }
-            else
+            catch
             {
-                return result.CreateNew<UploadFileInfo?>(info);
+                results.Add(new StaticResourceUploadResult
+                {
+                    FileName = info.FileName ?? file.FileName,
+                    Code = UploadFileCode.SaveFileFailure
+                });
+            }
+            finally
+            {
+                await resultStream.DisposeAsync();
             }
         }
-        finally
-        {
-            await resultStream.DisposeAsync();
-        }
+        return results;
     }
 }
