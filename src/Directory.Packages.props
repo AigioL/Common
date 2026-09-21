@@ -25,12 +25,36 @@
 		<PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
 		<PackageVersion Include="Microsoft.WindowsAppSDK" Version="1.7.250606001" />
 	</ItemGroup>
+	<!-- 👇 Reactive -->
+	<ItemGroup>
+		<PackageVersion Include="System.Reactive" Version="7.0.0" />
+		<PackageVersion Include="DynamicData" Version="9.4.33" />
+		<PackageVersion Include="R3" Version="1.3.1" />
+	</ItemGroup>
+	<!-- 👇 CommunityToolkit -->
+	<ItemGroup>
+		<PackageVersion Include="CommunityToolkit.HighPerformance" Version="8.4.2" />
+	</ItemGroup>
+	<!-- 👇 BenchmarkDotNet -->
+	<ItemGroup>
+		<PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
+	</ItemGroup>
+	<!-- 👇 源生成器 -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
+		<PackageVersion Include="System.CodeDom" Version="$(Version_NET)" />
+	</ItemGroup>
 	<!-- 👇 依赖注入 -->
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="$(Version_NET)" />
 	</ItemGroup>
+	<!-- 👇 Hosting -->
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.Extensions.Hosting" Version="$(Version_NET)" />
+	</ItemGroup>
 	<!-- 👇 日志 -->
 	<ItemGroup>
+		<PackageVersion Include="Microsoft.Extensions.Logging" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(Version_NET)" />
@@ -45,6 +69,7 @@
 		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.0" />
 		<PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
 		<PackageVersion Include="xunit.v3" Version="4.0.1" />
+		<PackageVersion Include="Moq" Version="4.20.72" />
 	</ItemGroup>
 	<!-- 👇 哈希算法 -->
 	<ItemGroup>
