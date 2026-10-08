@@ -9,6 +9,7 @@ using AigioL.Common.AspNetCore.AppCenter.Helpers.Uploads;
 using AigioL.Common.Models;
 using AigioL.Common.Storage.Services;
 using ImageMagick;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -46,7 +47,9 @@ public static partial class UploadsController
         {
             var r = await UploadAsync(context, bucket, keyPrefix, useOriginal, resizeWidth, resizeHeight, resizeFilter, setImageFormat, quality);
             return r;
-        }).PermissionFilter(ControllerName, BMButtonType.Add)
+        })
+        .PermissionFilter(ControllerName, BMButtonType.Add)
+        .WithMetadata(new RequestSizeLimitAttribute(104_857_600))
         .WithDescription("上传本地文件");
 
 #if DEBUG

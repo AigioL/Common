@@ -492,6 +492,7 @@ public partial interface IServerPublishCommand : ICommand
                           await RunDockerCommandAsync($"tag {dockerfileTag} {targetTag}:{tag_ver}", cancellationToken);
                           await RunDockerCommandAsync($"push {targetTag}:{tag_ver}", cancellationToken);
 
+                          Console.WriteLine($"docker push end({tag_ver})：{proj.ProjectName}");
                           // 如果不是 latest，额外推送 latest
                           if (tag_ver != "latest")
                           {
