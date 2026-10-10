@@ -286,5 +286,6 @@
 	<!-- 👇 Protocol Buffers -->
 	<ItemGroup>
 		<PackageVersion Include="protobuf-net" Version="3.4.21" />
+		<PackageVersion Include="Grpc.AspNetCore.Server" Version="2.84.0" />
 	</ItemGroup>
 </Project>
