@@ -14,6 +14,7 @@ public static partial class EmbeddedStreamingResources
     /// <summary>
     /// 解压资源流，返回解压后的范围数组和偏移量
     /// </summary>
+    [Obsolete("use Decompress2")]
     public static ((uint Start, uint End)[] Ranges, long Offset) Decompress(Stream resStream, RecyclableMemoryStream bufferStream, bool leaveOpen = false)
     {
         using var decompressStream = new ZstandardStream(resStream, CompressionMode.Decompress, leaveOpen: leaveOpen);
@@ -30,6 +31,36 @@ public static partial class EmbeddedStreamingResources
         var offset = bufferStream.Position;
 
         return (ranges, offset);
+    }
+
+    /// <summary>
+    /// 解压资源流，返回解压后的范围数组和偏移量
+    /// </summary>
+    public static IEnumerable<(uint Start, uint End, long Offset)> Decompress2(Stream resStream, RecyclableMemoryStream bufferStream, bool leaveOpen = false)
+    {
+        using var decompressStream = new ZstandardStream(resStream, CompressionMode.Decompress, leaveOpen: leaveOpen);
+        decompressStream.CopyTo(bufferStream);
+        bufferStream.Position = 0;
+
+        var len = ReadUShort(bufferStream);
+        var offset = sizeof(ushort) + (long)len * 2 * sizeof(uint);
+        for (int i = 0; i < len; i++)
+        {
+            bufferStream.Position = sizeof(uint) * 2 * i + sizeof(ushort); // 修正当前读取的流位置，因 yield return 会导致外部调用者在迭代时改变流位置
+            yield return (ReadUInt(bufferStream), ReadUInt(bufferStream), offset);
+        }
+    }
+
+    public static Stream Slice(Stream source, (uint Start, uint End, long Offset) it, bool leaveOpen = false)
+    {
+        var start = it.Start + it.Offset;
+        var end = it.End + it.Offset;
+        return new SliceStream(source, start, end - start, leaveOpen);
+    }
+
+    public static Stream Slice(Stream source, long offset, long length, bool leaveOpen = false)
+    {
+        return new SliceStream(source, offset, length, leaveOpen);
     }
 
     /// <summary>
@@ -93,5 +124,117 @@ public static partial class EmbeddedStreamingResources
         Span<byte> buffer = stackalloc byte[sizeof(uint)];
         BitConverter.TryWriteBytes(buffer, value);
         stream.Write(buffer);
+    }
+}
+
+file sealed partial class SliceStream : Stream
+{
+    readonly Stream source;
+
+    readonly long start;
+
+    readonly long length;
+
+    readonly bool leaveOpen;
+
+    long position;
+
+    public SliceStream(Stream source, long offset, long length, bool leaveOpen = false)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        if (!source.CanRead || !source.CanSeek)
+            throw new ArgumentException("源流必须支持读取和定位。", nameof(source));
+
+        if (offset < 0 || length < 0 || offset > source.Length - length)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        this.source = source;
+        start = offset;
+        this.length = length;
+        this.leaveOpen = leaveOpen;
+    }
+
+    public override bool CanRead => source.CanRead;
+
+    public override bool CanSeek => source.CanSeek;
+
+    public override bool CanWrite => false;
+
+    public override long Length => length;
+
+    public override long Position
+    {
+        get => position;
+        set
+        {
+            if (value < 0 || value > length)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            position = value;
+        }
+    }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        return Read(buffer.AsSpan(offset, count));
+    }
+
+    public override int Read(Span<byte> buffer)
+    {
+        int readLength = (int)Math.Min(buffer.Length, length - position);
+        if (readLength == 0)
+            return 0;
+
+        source.Position = start + position;
+        int read = source.Read(buffer[..readLength]);
+        position += read;
+
+        return read;
+    }
+
+    public override async ValueTask<int> ReadAsync(
+        Memory<byte> buffer,
+        CancellationToken cancellationToken = default)
+    {
+        int readLength = (int)Math.Min(buffer.Length, length - position);
+        if (readLength == 0)
+            return 0;
+
+        source.Position = start + position;
+        int read = await source.ReadAsync(
+            buffer[..readLength],
+            cancellationToken);
+
+        position += read;
+        return read;
+    }
+
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        long newPosition = origin switch
+        {
+            SeekOrigin.Begin => offset,
+            SeekOrigin.Current => position + offset,
+            SeekOrigin.End => length + offset,
+            _ => throw new ArgumentOutOfRangeException(nameof(origin))
+        };
+
+        Position = newPosition;
+        return position;
+    }
+
+    public override void Flush() { }
+
+    public override void SetLength(long value) => throw new NotSupportedException();
+
+    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && !leaveOpen)
+            source.Dispose();
+
+        base.Dispose(disposing);
     }
 }
