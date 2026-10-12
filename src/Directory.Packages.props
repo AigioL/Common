@@ -13,7 +13,7 @@
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.330" />
+		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.360" />
 		<PackageVersion Include="System.Management" Version="10.0.6" />
 		<PackageVersion Include="WmiLight" Version="7.3.0" />
 		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(Version_NET)" />
@@ -60,16 +60,16 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.EventLog" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(Version_NET)" />
-		<PackageVersion Include="NLog" Version="6.2.0" />
-		<PackageVersion Include="NLog.Extensions.Logging" Version="6.2.0" />
-		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.0" />
+		<PackageVersion Include="NLog" Version="6.2.1" />
+		<PackageVersion Include="NLog.Extensions.Logging" Version="6.2.1" />
+		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.1" />
 	</ItemGroup>
 	<!-- 👇 xunit 单元测试 -->
 	<ItemGroup>
-		<PackageVersion Include="coverlet.collector" Version="10.0.1" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.0" />
-		<PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
-		<PackageVersion Include="xunit.v3" Version="4.0.1" />
+		<PackageVersion Include="coverlet.collector" Version="10.1.0" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+		<PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+		<PackageVersion Include="xunit.v3" Version="4.0.2" />
 		<PackageVersion Include="Moq" Version="4.20.72" />
 	</ItemGroup>
 	<!-- 👇 哈希算法 -->
@@ -107,7 +107,7 @@
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.OpenApi" Version="$(Version_OpenApi)" />
-		<PackageVersion Include="Scalar.AspNetCore" Version="2.17.3" />
+		<PackageVersion Include="Scalar.AspNetCore" Version="2.17.14" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
 	<ItemGroup>
@@ -256,7 +256,7 @@
 	</ItemGroup>
 	<!-- 👇 DotNext -->
 	<ItemGroup>
-		<PackageVersion Include="DotNext.Threading" Version="6.7.0" />
+		<PackageVersion Include="DotNext.Threading" Version="6.9.0" />
 	</ItemGroup>
 	<!-- 👇 Aprillz.MewUI -->
 	<ItemGroup>
