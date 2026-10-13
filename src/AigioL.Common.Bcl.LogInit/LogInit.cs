@@ -400,18 +400,18 @@ file static partial class _8b7542f7 // Windows 事件日志
         }
     }
 
-    static string? TryGetProcessFileNameWithoutExtension()
-    {
-        try
-        {
-            var result = Path.GetFileNameWithoutExtension(Environment.ProcessPath);
-            return result;
-        }
-        catch
-        {
-            return null;
-        }
-    }
+    //static string? TryGetProcessFileNameWithoutExtension()
+    //{
+    //    try
+    //    {
+    //        var result = Path.GetFileNameWithoutExtension(Environment.ProcessPath);
+    //        return result;
+    //    }
+    //    catch
+    //    {
+    //        return null;
+    //    }
+    //}
 
     static bool FilterEventLog(string name, LogLevel level)
     {
@@ -450,11 +450,24 @@ file static partial class _8b7542f7 // Windows 事件日志
     /// </summary>
     internal static ILoggerProvider AddEventLog(string? sourceName = null)
     {
-        sourceName ??= TryGetProcessFileNameWithoutExtension();
+        // !!! 不要指定 SourceName 或 LogName
+        // System.AggregateException: An error occurred while writing to logger(s). (Cannot open log for source '{sourceName}'. You may not have write access.)
+        // ---> System.InvalidOperationException: Cannot open log for source '{sourceName}'. You may not have write access.
+        // ---> System.ComponentModel.Win32Exception (1722): RPC 服务器不可用。
+        // --- End of inner exception stack trace ---
+        // at System.Diagnostics.EventLogInternal.OpenForWrite(String)
+        // at System.Diagnostics.EventLogInternal.InternalWriteEvent(UInt32, UInt16, EventLogEntryType, String[], Byte[], String)
+        // ...
+        // --- End of inner exception stack trace ---
+        // at Microsoft.Extensions.Logging.Logger.ThrowLoggingError(List`1)
+        // at Microsoft.Extensions.Logging.Logger.Log[TState](LogLevel, EventId, TState, Exception, Func`3)
+        // at Microsoft.Extensions.Logging.Logger`1.Microsoft.Extensions.Logging.ILogger.Log[TState](LogLevel, EventId, TState, Exception, Func`3)
+
+        //sourceName ??= TryGetProcessFileNameWithoutExtension();
         EventLogSettings settings = new()
         {
-            SourceName = sourceName, // 必须设置值，否则 null 值会使用默认值为 ".NET Runtime"
-            LogName = null, // null 值会使用默认值为 "Application"
+            //SourceName = sourceName, // 必须设置值，否则 null 值会使用默认值为 ".NET Runtime"
+            //LogName = null, // null 值会使用默认值为 "Application"
             Filter = FilterEventLog,
         };
         EventLogLoggerProvider provider = new(settings);
