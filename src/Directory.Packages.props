@@ -1,13 +1,13 @@
 <Project>
 	<PropertyGroup>
 		<Version_OpenIddict>7.5.0</Version_OpenIddict>
-		<Version_NET>10.0.12</Version_NET>
-		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-rc.1.26425.128</Version_NET>
+		<Version_NET>10.0.13</Version_NET>
+		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-rc.2.26504.105</Version_NET>
 		<Version_OpenApi>2.12.0</Version_OpenApi>
 		<Version_OpenApi Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">3.10.0</Version_OpenApi>
 		<Version_Aspire>13.5.3</Version_Aspire>
 		<Version_EFCore_PostgreSQL>10.0.3</Version_EFCore_PostgreSQL>
-		<Version_EFCore_PostgreSQL Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-preview.6</Version_EFCore_PostgreSQL>
+		<Version_EFCore_PostgreSQL Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-rc.1.1</Version_EFCore_PostgreSQL>
 		<Version_OpenTelemetry>1.18.0</Version_OpenTelemetry>
 		<Version_MagickDotNet>14.17.1</Version_MagickDotNet>
 	</PropertyGroup>
@@ -67,7 +67,7 @@
 	<!-- 👇 xunit 单元测试 -->
 	<ItemGroup>
 		<PackageVersion Include="coverlet.collector" Version="10.1.0" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
 		<PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
 		<PackageVersion Include="xunit.v3" Version="4.0.2" />
 		<PackageVersion Include="Moq" Version="4.20.72" />
@@ -107,7 +107,7 @@
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.OpenApi" Version="$(Version_OpenApi)" />
-		<PackageVersion Include="Scalar.AspNetCore" Version="2.17.14" />
+		<PackageVersion Include="Scalar.AspNetCore" Version="2.18.0" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
 	<ItemGroup>
@@ -180,7 +180,7 @@
 	</ItemGroup>
 	<!-- 👇 CommandLine -->
 	<ItemGroup>
-		<PackageVersion Include="System.CommandLine" Version="2.0.12" />
+		<PackageVersion Include="System.CommandLine" Version="2.0.13" />
 	</ItemGroup>
 	<!-- 👇 ReverseProxy -->
 	<ItemGroup>
@@ -256,7 +256,7 @@
 	</ItemGroup>
 	<!-- 👇 DotNext -->
 	<ItemGroup>
-		<PackageVersion Include="DotNext.Threading" Version="6.9.0" />
+		<PackageVersion Include="DotNext.Threading" Version="6.10.0" />
 	</ItemGroup>
 	<!-- 👇 Aprillz.MewUI -->
 	<ItemGroup>
