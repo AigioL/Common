@@ -115,7 +115,12 @@ public partial interface IRenameCommand : ICommand
                 if (handlerFileExs.Any(x => itFilePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     bool move = false;
-                    if (itFilePath.Contains("AigioLTemplate.Server", StringComparison.InvariantCulture))
+                    if (itFilePath.Contains("AigioLTemplate.ServerSdk", StringComparison.InvariantCulture))
+                    {
+                        itFilePath = itFilePath.Replace("AigioLTemplate.ServerSdk", $"{projNameTrimServer}.ServerSdk", StringComparison.InvariantCulture);
+                        move = true;
+                    }
+                    else if (itFilePath.Contains("AigioLTemplate.Server", StringComparison.InvariantCulture))
                     {
                         itFilePath = itFilePath.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCulture);
                         move = true;
@@ -133,6 +138,7 @@ public partial interface IRenameCommand : ICommand
                     var content = File.ReadAllText(itFilePath);
                     var content2 = content;
                     // 替换文件内容
+                    content = content.Replace("AigioLTemplate.ServerSdk", $"{projNameTrimServer}.ServerSdk", StringComparison.InvariantCulture);
                     content = content.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCulture);
                     content = content.Replace("AigioLTemplate", projNameTrimServer, StringComparison.InvariantCulture);
                     content = content.Replace("aigioltemplate", projNameLower, StringComparison.InvariantCulture);
@@ -150,7 +156,12 @@ public partial interface IRenameCommand : ICommand
             {
                 bool move = false;
                 var itDirPath = d;
-                if (itDirPath.Contains("AigioLTemplate.Server", StringComparison.InvariantCultureIgnoreCase))
+                if (itDirPath.Contains("AigioLTemplate.ServerSdk", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    itDirPath = itDirPath.Replace("AigioLTemplate.ServerSdk", $"{projNameTrimServer}.ServerSdk", StringComparison.InvariantCulture);
+                    move = true;
+                }
+                else if (itDirPath.Contains("AigioLTemplate.Server", StringComparison.InvariantCultureIgnoreCase))
                 {
                     itDirPath = itDirPath.Replace("AigioLTemplate.Server", projNameTrimServer, StringComparison.InvariantCulture);
                     move = true;
