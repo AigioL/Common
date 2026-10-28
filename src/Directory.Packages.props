@@ -1,8 +1,8 @@
 <Project>
 	<PropertyGroup>
 		<Version_OpenIddict>7.5.0</Version_OpenIddict>
-		<Version_NET>10.0.13</Version_NET>
-		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-rc.2.26504.105</Version_NET>
+		<Version_NET>10.0.14</Version_NET>
+		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-rc.3.26522.148</Version_NET>
 		<Version_OpenApi>2.12.0</Version_OpenApi>
 		<Version_OpenApi Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">3.10.0</Version_OpenApi>
 		<Version_Aspire>13.5.3</Version_Aspire>
@@ -13,7 +13,7 @@
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.366" />
+		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.367" />
 		<PackageVersion Include="System.Management" Version="10.0.6" />
 		<PackageVersion Include="WmiLight" Version="7.3.0" />
 		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(Version_NET)" />
@@ -75,6 +75,7 @@
 	<!-- 👇 哈希算法 -->
 	<ItemGroup>
 		<PackageVersion Include="System.IO.Hashing" Version="$(Version_NET)" />
+		<PackageVersion Include="Blake3" Version="3.0.2" />
 	</ItemGroup>
 	<!-- 👇 JsonWebToken -->
 	<ItemGroup>
@@ -107,7 +108,7 @@
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.OpenApi" Version="$(Version_OpenApi)" />
-		<PackageVersion Include="Scalar.AspNetCore" Version="2.18.2" />
+		<PackageVersion Include="Scalar.AspNetCore" Version="2.18.3" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
 	<ItemGroup>
@@ -180,7 +181,7 @@
 	</ItemGroup>
 	<!-- 👇 CommandLine -->
 	<ItemGroup>
-		<PackageVersion Include="System.CommandLine" Version="2.0.13" />
+		<PackageVersion Include="System.CommandLine" Version="2.0.14" />
 	</ItemGroup>
 	<!-- 👇 ReverseProxy -->
 	<ItemGroup>
@@ -256,7 +257,7 @@
 	</ItemGroup>
 	<!-- 👇 DotNext -->
 	<ItemGroup>
-		<PackageVersion Include="DotNext.Threading" Version="6.10.0" />
+		<PackageVersion Include="DotNext.Threading" Version="6.11.0" />
 	</ItemGroup>
 	<!-- 👇 Aprillz.MewUI -->
 	<ItemGroup>
