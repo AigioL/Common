@@ -1,3 +1,4 @@
+#if !DISABLE_MP2 && !NETFRAMEWORK
 using MemoryPack;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
@@ -227,3 +228,4 @@ file static class JsonConstants
     internal const int MaximumFormatDateTimeLengthU8 = 84; // Encoding.UTF8.GetMaxByteCount(27)
     internal const int MaximumFormatDateTimeOffsetLengthU8 = 102; // Encoding.UTF8.GetMaxByteCount(33)
 }
+#endif
