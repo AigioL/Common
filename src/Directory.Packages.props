@@ -12,6 +12,8 @@
 		<Version_MagickDotNet>15.1.0</Version_MagickDotNet>
 		<Version_AspNet_Security>10.1.0</Version_AspNet_Security>
 		<Version_AspNet_Security Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0</Version_AspNet_Security>
+		<Version_AspNet_Security_OpenId_STM>10.0.0</Version_AspNet_Security_OpenId_STM>
+		<Version_AspNet_Security_OpenId_STM Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0</Version_AspNet_Security_OpenId_STM>
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
@@ -123,7 +125,7 @@
 		<PackageVersion Include="AspNet.Security.OAuth.QQ" Version="$(Version_AspNet_Security)" />
 		<PackageVersion Include="AspNet.Security.OAuth.Alipay" Version="$(Version_AspNet_Security)" />
 		<PackageVersion Include="AspNet.Security.OAuth.Feishu" Version="$(Version_AspNet_Security)" />
-		<PackageVersion Include="AspNet.Security.OpenId.Steam" Version="$(Version_AspNet_Security)" />
+		<PackageVersion Include="AspNet.Security.OpenId.Steam" Version="$(Version_AspNet_Security_OpenId_STM)" />
 	</ItemGroup>
 	<!-- 👇 Redis -->
 	<ItemGroup>
@@ -133,7 +135,9 @@
 	</ItemGroup>
 	<!-- 👇 Quartz -->
 	<ItemGroup>
+		<PackageVersion Include="Quartz" Version="3.22.10" />
 		<PackageVersion Include="Quartz.AspNetCore" Version="3.22.10" />
+		<PackageVersion Include="Quartz.Extensions.DependencyInjection" Version="3.22.10" />
 	</ItemGroup>
 	<!-- 👇 Json -->
 	<ItemGroup>
@@ -154,9 +158,9 @@
 		<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.10.0" />
 		<PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(Version_OpenTelemetry)" />
 		<PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="$(Version_OpenTelemetry)" />
-		<PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(Version_OpenTelemetry)" />
-		<PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="$(Version_OpenTelemetry)" />
-		<PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="$(Version_OpenTelemetry)" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.20.2" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.20.2" />
+		<PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.20.1" />
 		<PackageVersion Include="Aspire.Hosting.Testing" Version="$(Version_Aspire)" />
 		<PackageVersion Include="Aspire.Hosting.Docker" Version="$(Version_Aspire)" />
 		<PackageVersion Include="Aspire.Hosting.Kubernetes" Version="13.5.3-preview.1.26425.3" />
