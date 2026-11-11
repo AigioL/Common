@@ -1,8 +1,8 @@
 <Project>
 	<PropertyGroup>
 		<Version_OpenIddict>7.5.0</Version_OpenIddict>
-		<Version_NET>10.0.14</Version_NET>
-		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0-rc.3.26522.148</Version_NET>
+		<Version_NET>10.0.15</Version_NET>
+		<Version_NET Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">11.0.0</Version_NET>
 		<Version_OpenApi>2.12.0</Version_OpenApi>
 		<Version_OpenApi Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">3.10.0</Version_OpenApi>
 		<Version_Aspire>13.5.3</Version_Aspire>
@@ -13,7 +13,7 @@
 	</PropertyGroup>
 	<!-- 👇 Windows Only -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.367" />
+		<PackageVersion Include="Microsoft.Windows.CsWin32" Version="0.3.371" />
 		<PackageVersion Include="System.Management" Version="10.0.6" />
 		<PackageVersion Include="WmiLight" Version="7.3.0" />
 		<PackageVersion Include="System.Security.Cryptography.ProtectedData" Version="$(Version_NET)" />
@@ -61,15 +61,15 @@
 		<PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="$(Version_NET)" />
 		<PackageVersion Include="NLog" Version="6.2.2" />
-		<PackageVersion Include="NLog.Extensions.Logging" Version="6.2.2" />
+		<PackageVersion Include="NLog.Extensions.Logging" Version="6.3.0" />
 		<PackageVersion Include="NLog.Web.AspNetCore" Version="6.2.1" />
 	</ItemGroup>
 	<!-- 👇 xunit 单元测试 -->
 	<ItemGroup>
 		<PackageVersion Include="coverlet.collector" Version="10.1.0" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
+		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.1" />
 		<PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
-		<PackageVersion Include="xunit.v3" Version="4.0.2" />
+		<PackageVersion Include="xunit.v3" Version="4.0.3" />
 		<PackageVersion Include="Moq" Version="4.20.72" />
 	</ItemGroup>
 	<!-- 👇 哈希算法 -->
@@ -85,7 +85,7 @@
 	</ItemGroup>
 	<!-- 👇 可回收内存流 -->
 	<ItemGroup>
-		<PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+		<PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="4.0.1" />
 	</ItemGroup>
 	<!-- 👇 EF Core -->
 	<ItemGroup>
@@ -101,14 +101,14 @@
 	</ItemGroup>
 	<!-- 👇 序列化 -->
 	<ItemGroup>
-		<PackageVersion Include="MemoryPack" Version="1.21.4" />
-		<PackageVersion Include="MemoryPack.Streaming" Version="1.21.4" />
+		<PackageVersion Include="MemoryPack" Version="1.22.0" />
+		<PackageVersion Include="MemoryPack.Streaming" Version="1.22.0" />
 	</ItemGroup>
 	<!-- 👇 OpenApi -->
 	<ItemGroup>
 		<PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(Version_NET)" />
 		<PackageVersion Include="Microsoft.OpenApi" Version="$(Version_OpenApi)" />
-		<PackageVersion Include="Scalar.AspNetCore" Version="2.18.3" />
+		<PackageVersion Include="Scalar.AspNetCore" Version="2.20.0" />
 	</ItemGroup>
 	<!-- 👇 ExternalLogin 外部账号登录 -->
 	<ItemGroup>
@@ -181,7 +181,7 @@
 	</ItemGroup>
 	<!-- 👇 CommandLine -->
 	<ItemGroup>
-		<PackageVersion Include="System.CommandLine" Version="2.0.14" />
+		<PackageVersion Include="System.CommandLine" Version="3.0.0" />
 	</ItemGroup>
 	<!-- 👇 ReverseProxy -->
 	<ItemGroup>
@@ -257,7 +257,7 @@
 	</ItemGroup>
 	<!-- 👇 DotNext -->
 	<ItemGroup>
-		<PackageVersion Include="DotNext.Threading" Version="6.11.0" />
+		<PackageVersion Include="DotNext.Threading" Version="6.12.1" />
 	</ItemGroup>
 	<!-- 👇 Aprillz.MewUI -->
 	<ItemGroup>
@@ -287,6 +287,6 @@
 	<!-- 👇 Protocol Buffers -->
 	<ItemGroup>
 		<PackageVersion Include="protobuf-net" Version="3.4.21" />
-		<PackageVersion Include="Grpc.AspNetCore.Server" Version="2.84.0" />
+		<PackageVersion Include="Grpc.AspNetCore.Server" Version="2.85.0" />
 	</ItemGroup>
 </Project>
