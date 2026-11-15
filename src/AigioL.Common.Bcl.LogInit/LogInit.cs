@@ -172,6 +172,39 @@ file static partial class _8b7542f7
         logger.Info("init main");
 #endif
     }
+
+    static NLogLevel GetNLogLevel(LogLevel l)
+    {
+        switch (l)
+        {
+            case LogLevel.Trace:
+                return NLogLevel.Trace;
+            case LogLevel.Debug:
+                return NLogLevel.Debug;
+            case LogLevel.Information:
+                return NLogLevel.Info;
+            case LogLevel.Warning:
+                return NLogLevel.Warn;
+            case LogLevel.Error:
+                return NLogLevel.Error;
+            case LogLevel.Critical:
+                return NLogLevel.Fatal;
+            case LogLevel.None:
+                return NLogLevel.Off;
+            default:
+                {
+                    if (l < LogLevel.Trace)
+                    {
+                        return NLogLevel.Trace;
+                    }
+                    else
+                    {
+                        return NLogLevel.Off;
+                    }
+                }
+        }
+    }
+
     /// <summary>
     /// 初始化 NLog 配置
     /// </summary>
@@ -182,12 +215,9 @@ file static partial class _8b7542f7
         CreateDirectory(logsPath);
 
         InternalLogger.LogFile = $"{logsPath}{Path.DirectorySeparatorChar}internal-nlog.txt";
-        InternalLogger.LogLevel =
-#if DEBUG
-            NLogLevel.Info;
-#else
-            NLogLevel.Error;
-#endif
+
+        var nlogLevel = GetNLogLevel(logLevelConst);
+        InternalLogger.LogLevel = nlogLevel;
         //// enable asp.net core layout renderers
         //LogManager.Setup().SetupExtensions(s => s.RegisterAssembly("NLog.Web.AspNetCore"));
 
@@ -219,15 +249,8 @@ file static partial class _8b7542f7
         };
         objConfig.AddTarget(lifetimeConsole);
 
-        var ruleMinLevel =
-#if DEBUG
-            NLogLevel.Trace;
-#else
-            NLogLevel.Error;
-#endif
-
         // All logs, including from Microsoft
-        objConfig.AddRule(ruleMinLevel, NLogLevel.Fatal, allfile, "*");
+        objConfig.AddRule(nlogLevel, NLogLevel.Fatal, allfile, "*");
         //objConfig.AddRule(ruleMinLevel, NLogLevel.Fatal, ownFile_web, "*");
 
         foreach (var target in objConfig.AllTargets)
