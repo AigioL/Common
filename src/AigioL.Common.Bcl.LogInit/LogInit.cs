@@ -349,7 +349,7 @@ file static partial class _8b7542f7 // 全局日志等级
 #if DEBUG
         Debug;
 #else
-        Information;
+        Warning;
 #endif
 
     internal static LogLevel GetLogLevel()
